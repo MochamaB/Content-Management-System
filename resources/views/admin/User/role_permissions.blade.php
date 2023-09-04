@@ -4,7 +4,7 @@
 <hr>
 <!-- Menu Access content -->
 <div id="accordion">
-    @foreach ($groupedPermissions as $module => $modulePermissions)
+    @foreach ($groupedPermissions->sortBy->keys() as $module => $modulePermissions)
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center" id="{{$module}}">
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $module}}Collapse" aria-expanded="true" aria-controls="collapseOne">
@@ -61,7 +61,7 @@
 @endif
 <hr>
 <div id="accordion">
-    @foreach ($groupedPermissions as $module => $modulePermissions)
+    @foreach ($groupedPermissions->sortBy->keys() as $module => $modulePermissions)
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center" id="{{$module}}">
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $module}}Collapse" aria-expanded="true" aria-controls="collapseOne">

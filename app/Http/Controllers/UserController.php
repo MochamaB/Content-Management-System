@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserCreate;
 use App\Models\User;
 use App\Models\Unit;
 use App\Models\Property;
@@ -12,6 +13,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\Auth\StoreUserRequest;
 use App\Http\Requests\Auth\UpdateUserRequest;
+use App\Mail\WelcomeMail;
+use App\Notifications\UserCreatedNotification;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\UserDeletedNotification;
 
 class UserController extends Controller
 {
@@ -64,7 +70,7 @@ class UserController extends Controller
         }else{
             $tablevalues = $filteredUsers->all();
         }
-        $mainfilter =  $this->model::pluck('status')->toArray();
+        $mainfilter =  Role::pluck('name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
@@ -163,12 +169,14 @@ class UserController extends Controller
             'status' => 'Active',
             'profilepicture' => 'avatar.png',
         ]));
+        //// assign role////
         $user->assignRole($role);
         
         $unitIds = $request->input('unit_id', []);  
         // Attach the relationship with pivot data
       //  dd($propertyId);
         $user->supervisedUnits()->attach($unitIds);
+        $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
 
 
         return redirect('user')->with('status','User Added Successfully');
@@ -182,7 +190,14 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        
+     //   event(new UserCreate($user));
+   //  Notification::send(auth()->user(), new UserDeletedNotification($user));
+   
+   
+
+  //   return View('email.template', compact('user','data','linkmessage'));
+
     }
 
     /**
@@ -274,14 +289,18 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-      
+        $role = $user->getRoleNames()->first();
+        
         if($user->id == 1 ){
             return redirect()->back()->with('statuserror','Super Admin user cannot be deleted');
         }
         
-   //     $user->delete();
-    //    $user->supervisors()->detach();
-        
+     
+        $user->supervisedUnits()->detach();   /////// Remove assigned units
+        $user->removeRole($role);  
+        $user->delete();   //// Delete User          //////// Remove Role
+        $user->notify(new UserDeletedNotification($user)); ////// Send Email for deletion.
+
     return redirect()->back()->with('status','User deleted successfully.');
     }
 

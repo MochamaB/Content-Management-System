@@ -65,6 +65,8 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['testimonial' => $testimonial]);
         });
 
+        
+
         /////////ADMIN//////////////////////////////
 
         view()->composer('layouts.admin.adminheader', function ($view) {
@@ -81,10 +83,18 @@ class AppServiceProvider extends ServiceProvider
             // Get the authenticated user, assuming you are using the default 'auth' guard
             $user = auth()->user();
             $sitesettings = SettingSite::first();
+            $notifications = $user->notifications;
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
                 'user' => $user
-                ,'sitesettings' => $sitesettings]);
+                ,'sitesettings' => $sitesettings,
+                'notifications' =>$notifications]);
+        });
+
+        ////////////////// EMAIL //////////////////////////
+        view()->composer('email.template', function($view) {
+            $sitesettings = SettingSite::first();
+            $view->with(['sitesettings' => $sitesettings]);
         });
     }
 }

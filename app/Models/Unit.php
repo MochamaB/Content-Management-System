@@ -74,6 +74,7 @@ class Unit extends Model
         ->withTimestamps();
     }
 
+    ////////// view all units and properties for superadmin
     public static function viewallunits()
     {
         $units = static::with('property')->get();
@@ -81,6 +82,11 @@ class Unit extends Model
         return $units->groupBy('property_id')->map(function ($propertyUnits) {
             return $propertyUnits;
         });
+    }
+
+    public function unitdetails()
+    {
+        return $this->hasMany(UnitDetail::class);
     }
 
 }

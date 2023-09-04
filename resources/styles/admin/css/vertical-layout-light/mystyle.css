@@ -1,16 +1,111 @@
-.navbar .navbar-brand-wrapper {
-    border-right: 1px solid #c8c8c9;
-    background: #F4F5F7;
+/*------------------------------------------------------------------
+ [Custom Stylesheet]
+
+  Project:	Bridgetech Properties
+  Version:	1.2.1
+-------------------------------------------------------------------*/
+/*--------------------------- Top Navbar  */
+.navbar .navbar-menu-wrapper {
+  background: #F4F5F7;
+  transition: width 0.25s ease;
+  -webkit-transition: width 0.25s ease;
+  -moz-transition: width 0.25s ease;
+  -ms-transition: width 0.25s ease;
+  color: #6C7383;
+  padding-left: 3.5rem;
+  padding-right: 2.187rem;
+  padding-top: 30px;
+  padding-bottom: 25px;
+  width: calc(100% - 255px);
+  height: 97px;
+}
+
+  .navbar .navbar-brand-wrapper {
+    background: #1F3BB3;
     transition: width 0.25s ease, background 0.25s ease;
     -webkit-transition: width 0.25s ease, background 0.25s ease;
     -moz-transition: width 0.25s ease, background 0.25s ease;
     -ms-transition: width 0.25s ease, background 0.25s ease;
-   
+    width: 248px;
+    height: 97px;
+    padding: 20px 30px;
   }
 
+  .navbar-toggler {
+    background-color: white; /* Set the initial background color to white */
+    font-weight:500;
+    transition: background-color 0.3s; /* Add a transition effect for smooth color change */
+  }
+  
+  .navbar-toggler.collapsed {
+    background-color: black; /* Change the background color to black when collapsed */
+  }
+  /*--------------------------- Side Bar */
+
 #sidebar {
-    background-color:#F4F5F7;
+    background-color:#00308F;
     border-right:2px solid #c8c8c9;
+}
+.sidebar {
+  min-height: calc(100vh - 97px);
+  background: #1F3BB3;
+  font-family: "Manrope", sans-serif;
+  font-weight: 500;
+  border-right:2px solid #c8c8c9;
+  width: 255px;
+  padding:0px;
+  z-index: 11;
+  transition: width 0.25s ease, background 0.25s ease;
+  -webkit-transition: width 0.25s ease, background 0.25s ease;
+  -moz-transition: width 0.25s ease, background 0.25s ease;
+  -ms-transition: width 0.25s ease, background 0.25s ease;
+}
+
+
+
+
+/*--------------------------- Sidebar Category Text  */
+.sidebar .nav .nav-item.nav-category {
+
+    color: #fff;
+    margin: 0 30px;
+        margin-top: 0px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 20px 0px 5px 0px;
+    text-transform: uppercase;
+
+}
+
+.sidebar .nav .nav-item .nav-link {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  white-space: nowrap;
+  padding: 10px 35px 10px 35px;
+  color: #fff;
+  border-radius: 0px 0px 0px 0px;
+  -webkit-transition-duration: 0.45s;
+  -moz-transition-duration: 0.45s;
+  -o-transition-duration: 0.45s;
+  transition-duration: 0.45s;
+  transition-property: color;
+  -webkit-transition-property: color;
+  font-weight: 600;
+}
+
+.sidebar .nav .nav-item .nav-link i.menu-icon {
+  font-size: 25px;
+  line-height: 1;
+  margin-right: 1rem;
+  color: #fff;
+}
+.sidebar .nav .nav-item.active .nav-link i.menu-icon {
+  font-size: 25px;
+  line-height: 1;
+  margin-right: 1rem;
+  color: #1F3BB3;
 }
 .sidebar .nav .nav-item.active {
     border-radius: 0px 0px 0px 0px;
@@ -19,14 +114,16 @@
     border-bottom: 1px solid #0576f8;
   }
   .sidebar .nav .nav-item.active > .nav-link {
-    background: #fff;
+    background: #adb5bd;
     position: relative;
     font-weight: bold;
     font-size: 13px;
     border-radius: 0px 0px;
     
 
+    
   }
+  
 
   .sidebar .nav.sub-menu {
     margin-bottom: 0;
@@ -37,7 +134,7 @@
     padding-bottom: 12px;
   }
   .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link[aria-expanded="true"] {
-    border-radius: 8px 8px 0 0;
+    border-radius: 0px;
     background: #fff;
     color: #1F3BB3;
   }
@@ -46,6 +143,16 @@
     background: transparent;
     border-left: 5px solid #1F3BB3;
     
+  }
+  .sidebar .nav.sub-menu .nav-item .nav-link:hover {
+    color: orange;
+    background: transparent;
+    border-left: 5px solid orange;
+  }
+
+  .sidebar .nav:not(.sub-menu) > .nav-item:hover > .nav-link, .sidebar .nav:not(.sub-menu) > .nav-item:hover[aria-expanded="true"] {
+    background: #adb5bd;
+    color: #fff;
   }
 
 .home-tab .nav-tabs {
@@ -134,6 +241,19 @@
     
     
     }
+  .form-controlcreate{
+    padding: .4375rem .75rem;
+    border: 1px solid #dee2e6;
+    font-weight: 400;
+    font-size: 14px;
+    border-radius: 0px;
+    height: 2rem;
+    color:#777;
+    padding-right:120px;
+    width: 100%;
+    
+    
+  }
 #filter{
     margin-top:25px;
     margin-left:-15px;
@@ -213,7 +333,8 @@ body {font-family: "Lato", sans-serif;}
   border: 1px solid #ccc;
   background-color: #f1f1f1;
   width: 25%;
-  height: 300px;
+  overflow:hidden;
+height:1%;
 }
 
 /* Style the buttons inside the tab */
@@ -239,6 +360,11 @@ body {font-family: "Lato", sans-serif;}
 /* Create an active/current "tab button" class */
 .tab button.active {
   background-color: #ccc;
+  font-size: 22px;
+  font-weight:800;
+  color:#00308F;
+  border-left: 7px solid #0000ff;
+
 }
 
 /* Style the tab content */
@@ -247,7 +373,7 @@ body {font-family: "Lato", sans-serif;}
   padding: 30px 32px;
   border: 1px solid #ccc;
   width: 75%;
-  border-left: none;
+  border-left: 1px solid #ccc;
   height: auto;
 }
 
@@ -279,3 +405,6 @@ input.form-control.form-control-sm.search-input:focus {
   border: 2px solid #0000ff;
   width: 700px; /* Set the desired width on hover */
 }
+
+
+/* wizard css*/

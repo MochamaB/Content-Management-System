@@ -60,7 +60,7 @@ class SliderController extends Controller
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->id,
-                '<img src="'.url('resources/uploads/images/'.$item->slider_picture).'" style="width:350px;height:200px">',
+                '<img src="'.url('resources/uploads/images/'.$item->slider_picture ?? 'noimage.jpg').'" style="width:350px;height:200px">',
                 '<div class="col-sm-3" style=" width: 300px;
                 overflow: hidden;
                 white-space: wrap;

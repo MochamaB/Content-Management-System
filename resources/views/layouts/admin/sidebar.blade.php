@@ -1,7 +1,7 @@
 <!-- partial:partials/_sidebar.html -->
 
 
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
+<nav class="sidebar sidebar-offcanvas">
   <ul class="nav">
     <li class="nav-item">
       <a class="nav-link" href="{{ url('/dashboard') }}">
@@ -41,6 +41,64 @@
           </div>
         </li>
     @endif
+    <!-----     -------------------->
+        <!-----     -------------------->
+        <li class="nav-item nav-category">LEASING</li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="collapse" href="#leasing" aria-expanded="false" aria-controls="leasing">
+            <i class="menu-icon mdi mdi-key"></i>
+            <span class="menu-title">Leasing</span>
+            <i class="menu-arrow"></i>
+          </a>
+          <div class="collapse" id="leasing">
+            <ul class="nav flex-column sub-menu">
+              <li class="nav-item"> <a class="nav-link" href="{{ url('/lease') }}">Rent Roll</a></li>
+              @if($routeParts[0] === 'lease' && $routeParts[1] === 'show')
+              <!-- Show link for the show method -->
+              <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/lease/' . $urlParts[5]) }}">Show</a></li>
+              @elseif($routeParts[0] === 'lease') <!-- Condition to show the Add chartofaccounts menu -->
+              <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/lease/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
+              @endif
+        
+
+            </ul>
+          </div>
+        </li>
+        
+        <!-----     -------------------->
+        <!-----     -------------------->
+
+        <!-----     -------------------->
+        <!-----     -------------------->
+        <li class="nav-item nav-category">ACCOUNTING</li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="collapse" href="#accounting" aria-expanded="false" aria-controls="accounting">
+            <i class="menu-icon mdi mdi-cash-usd"></i>
+            <span class="menu-title">Accounting</span>
+            <i class="menu-arrow"></i>
+          </a>
+          <div class="collapse" id="accounting">
+            <ul class="nav flex-column sub-menu">
+              <li class="nav-item"> <a class="nav-link" href="{{ url('/chartofaccounts') }}">Chart of Accounts</a></li>
+              @if($routeParts[0] === 'chartofaccounts' && $routeParts[1] === 'show')
+              <!-- Show link for the show method -->
+              <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/chartofaccounts/' . $urlParts[5]) }}">Show</a></li>
+              @elseif($routeParts[0] === 'property') <!-- Condition to show the Add chartofaccounts menu -->
+              <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/chartofaccounts/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
+              @endif
+        
+
+            </ul>
+          </div>
+        </li>
+        
+        <!-----     -------------------->
+        <!-----     -------------------->
+
+        <!-----     -------------------->
+        <!-----     -------------------->
+        <li class="nav-item nav-category">COMMUNICATION</li>
+        
         <!-----     -------------------->
         <!-----     -------------------->
         <li class="nav-item nav-category">SETTINGS</li>

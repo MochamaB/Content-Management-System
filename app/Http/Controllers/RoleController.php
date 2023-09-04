@@ -191,6 +191,19 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        //
+        $rolePermissions = $role->permissions;
+        if ($role->users()->count() > 0) {
+
+            return redirect()->back()->with('statuserror', 'The role has active users. Delete the users before deleting this role.');
+        }
+        if($role->id == 1 ){
+            return redirect()->back()->with('statuserror','Admin Role cannot be deleted');
+        }
+        // Detach the role from users
+        $role->users()->detach();
+        $role->revokePermissionTo($rolePermissions);
+        $role->delete();
+        
+        return redirect()->back()->with('status','Role deleted successfully.');
     }
 }

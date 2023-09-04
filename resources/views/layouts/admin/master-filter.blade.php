@@ -2,7 +2,7 @@
                         <div class="form-group">
                             <label class="label">{{ $routeParts[0] ?? '' }} filter</label>
                             <select name="controller" id="controller" class="formcontrol2" onchange="applyFilters('controller')">
-                                <option>All {{ $routeParts[0] ?? '' }}</option>
+                                <option>ALL </option>
                                 @if ($mainfilter && count($mainfilter) > 0)
                                 @foreach ($mainfilter as $item)
                                 <option value="{{ $item ?? '' }}" style="text-transform: capitalize;">{{ $item ?? '' }}</option>

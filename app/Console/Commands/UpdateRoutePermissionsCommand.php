@@ -6,21 +6,22 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 
-class CreateRoutePermissionsCommand extends Command
+
+class UpdateRoutePermissionsCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'permission:create-permission-routes';
+    protected $signature = 'permission:update-permission-routes';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a permission routes.';
+    protected $description = 'Update permission routes.';
 
     /**
      * Create a new command instance.
@@ -49,14 +50,16 @@ class CreateRoutePermissionsCommand extends Command
                 $action = isset($parts[1]) ? $parts[1] : $parts[0];
                 $groupName = $route->getAction()['groupName'] ?? null;
 
-                 // Use the full route name as 'name'
-                 $name = $routeName;
+                // Use the full route name as 'name'
+                $name = $routeName;
 
-                 if (count($parts) > 1) {
-                     // Use the first part as 'sub-model'
-                     $subModel = $parts[0];
-                     // Reconstruct the full route name without the first part
-                 }
+                if (count($parts) > 1) {
+                    // Use the first part as 'sub-model'
+                    $subModel = $parts[0];
+                    // Reconstruct the full route name without the first part
+                }
+                
+                // Find existing permission by name
                 $permission = Permission::where('name', $routeName)->first();
 
                 if (!is_null($permission)) {
@@ -79,9 +82,6 @@ class CreateRoutePermissionsCommand extends Command
             }
         }
 
-        $this->info('Permission routes added successfully.');
+        $this->info('Permission routes updated successfully.');
     }
 }
-
-    
-    

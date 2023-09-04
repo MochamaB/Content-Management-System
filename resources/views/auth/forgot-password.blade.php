@@ -42,8 +42,8 @@
                                         </ul>
                                     </div>
                                 @endif
-                            <form method="POST" action="{{ route('login') }}">
-                                @csrf
+                                <form method="POST" action="{{ route('password.email') }}">
+                                    @csrf
                                 <div class="form-group">
                                     <label for="email">Email</label>
                                     <input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus>

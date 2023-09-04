@@ -22,9 +22,9 @@
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/js/select.dataTables.min.css') }}">
 
-   <!--- Plugins for bootstrap table--------->
-   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
-   <script src="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>  
+  <!--- Plugins for bootstrap table--------->
+  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
+  <script src="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- End plugin css for this page -->
   <!-- inject:css -->
@@ -32,4 +32,49 @@
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/mystyle.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />
+  <style>
+    #loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+    .loader {
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite;
+      /* Safari */
+      animation: spin 2s linear infinite;
+    }
+
+    /* Safari */
+    @-webkit-keyframes spin {
+      0% {
+        -webkit-transform: rotate(0deg);
+      }
+
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>

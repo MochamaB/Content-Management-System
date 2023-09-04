@@ -25,16 +25,10 @@ class WelcomeMail extends Mailable
      */
     public function build()
     {
-        $address = 'janeexampexample@example.com';
-        $subject = 'This is a demo!';
-        $name = 'Jane Doe';
         
-        return $this->view('emails.test')
-                    ->from($address, $name)
-                    ->cc($address, $name)
-                    ->bcc($address, $name)
-                    ->replyTo($address, $name)
-                    ->subject($subject)
-                    ->with([ 'message' => $this->data['message'] ]);
+
+    
+        $subject = 'Welcome';
+        return $this->view('email.welcomemail')->subject($subject);
     }
 }

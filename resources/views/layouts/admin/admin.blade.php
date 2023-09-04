@@ -3,6 +3,11 @@
 
 @include('layouts.admin.adminheader')
 <body>
+  <!---- Page Loader ------------->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+    </div>
+
   <div class="container-scroller">
 
     <!-- partial:partials/_navbar.html -->

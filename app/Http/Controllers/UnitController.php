@@ -139,6 +139,7 @@ class UnitController extends Controller
         'headers' => ['USER','PROPERTY', 'ROLE'],
         'rows' => [],
     ];
+    //// shows users attached to the house
     $users =$unit->unitSupervisors;
     $property = $unit->property;
     foreach ($users as $user) {
@@ -153,12 +154,12 @@ class UnitController extends Controller
     }
         
         $viewData = $this->formData($this->model,$unit);
-      //  $unitviewData = $result['unitviewData'];
+        $unitdetails = $unit->unitdetails;
          // Render the Blade views for each tab content
          $tabContents = [];
          foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-             $tabContents[] = View('admin.property.unit_'.$title,$unitEditData)->render();
+             $tabContents[] = View('admin.property.unit_'.$title,$unitEditData,compact('unit','unitdetails'))->render();
             }if ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_'.$title,['data' => $tableData], compact('unit'))->render();
                }
