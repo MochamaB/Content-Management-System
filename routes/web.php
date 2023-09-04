@@ -7,12 +7,16 @@ use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\AmenityController;
+use App\Http\Controllers\ChartOfAccountsController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UnitDetailsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\LeaseController;
 
 
 /*
@@ -37,11 +41,25 @@ Route::get('/', [ App\Http\Controllers\client\HomeController::class, 'index'])->
 
 Route::group(['middleware' => ['auth','permission']], function () {
 
+    Route::group(['groupName' => 'Communication'], function () {
+        Route::resource('notification', NotificationController::class); 
+    });
+
+    Route::group(['groupName' => 'Accounting'], function () {
+        Route::resource('chartofaccounts', ChartOfAccountsController::class); 
+    });
+
+    Route::group(['groupName' => 'Leasing'], function () {
+        Route::resource('lease', LeaseController::class); 
+        
+    });
+
     Route::group(['groupName' => 'Property'], function () {
       
         Route::resource('property',PropertyController::class);
         Route::post('update-amenities/{id}', [PropertyController::class, 'updateAmenities'])->name('property.update_amenities');
         Route::resource('unit',UnitController::class);
+        Route::resource('unitdetail',UnitDetailsController::class);
     });
     Route::group(['groupName' => 'Settings'], function () {
         Route::resource('amenity',AmenityController::class);
@@ -64,15 +82,6 @@ Route::group(['middleware' => ['auth','permission']], function () {
         
     });
     
-    
-  
-   
-   
-   
-    
-  
-   
-
 
 });  
 
