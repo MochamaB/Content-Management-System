@@ -91,6 +91,12 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($value);
     }
+
+    public function units()
+    {
+        return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
+            ->withTimestamps();
+    }
     
 
 
@@ -110,6 +116,8 @@ class User extends Authenticatable
             return $propertyUnits;
         });
     }
+
+    
 
     ////////////Return units that have leases that a logged in user can see
 

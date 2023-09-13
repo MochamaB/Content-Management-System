@@ -10,9 +10,9 @@
         <tbody>
             @foreach($data['rows'] as $key => $row)
             <tr>
-                <td><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
+                <td style="padding-left: 15px;"><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
                 @foreach(array_slice($row, 2) as $cell)
-                <td>{!! $cell !!}</td>
+                <td style="text-transform: capitalize;padding-left: 15px;">{!! $cell !!}</td>
                 @endforeach
                 <td>
                     <a href="{{url($routeParts[0].'/'.$row['id'])}}" class="btn btn-primary btn-sm text-white"><i class="mdi mdi-clipboard-text"></i>Summary</a>

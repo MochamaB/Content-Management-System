@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Events\AssignUserToUnit;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Events\UserCreate;
+use App\Listeners\AssignUserToUnitListener;
 use App\Listeners\SendWelcomeEmailNotification;
 
 class EventServiceProvider extends ServiceProvider
@@ -22,6 +24,8 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserCreate::class => [
             SendWelcomeEmailNotification::class,
+        ],AssignUserToUnit::class => [
+            AssignUserToUnitListener::class,
         ],
         
     ];

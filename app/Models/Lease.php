@@ -90,5 +90,19 @@ class Lease extends Model
     {
         return $this->belongsTo(User::class,'user_id');
     }
+
+    public function scopeUserUnits($query)
+{
+    // Get the authenticated user
+    $user = auth()->user();
+
+    if ($user) {
+        // Get the IDs of units assigned to the user
+        $unitIds = $user->units->pluck('id')->toArray();
+
+        // Apply the filter to the query
+        $query->whereIn('unit_id', $unitIds);
+    }
+}
     
 }

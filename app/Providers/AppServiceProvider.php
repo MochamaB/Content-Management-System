@@ -5,9 +5,14 @@ namespace App\Providers;
 use App\Models\SettingSite;
 use App\Models\Slider;
 use App\Models\Testimonial;
+use App\Models\Lease;
+use App\Models\User;
+use App\Models\Property;
+use App\Models\Unit;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
+use App\Scopes\UnitAccessScope;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +34,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+          // Apply the UnitAccessScope to specific models
+        Lease::addGlobalScope(new UnitAccessScope);
+        
+    //    Unit::addGlobalScope(new UnitAccessScope);
+    // Invoice::addGlobalScope(new UnitAccessScope);
 
 
         /////////// GLOBAL VIEW COMPOSERS

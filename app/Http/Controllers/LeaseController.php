@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\AssignUserToUnit;
 use App\Models\Chartofaccounts;
 use App\Models\lease;
 use App\Models\Property;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Http\Requests\StoreUnitChargeRequest;
 use App\Models\Utilities;
+use Carbon\Carbon;
 
 class LeaseController extends Controller
 {
@@ -37,13 +39,8 @@ class LeaseController extends Controller
     }
     public function index()
     {
-        $user = Auth::user();
-        if (Gate::allows('view-all', $user)) {
-            $tablevalues = lease::with('property','unit','user')->get();
-        } else {
-            $tablevalues =$user->supervisedUnits;
-        }
-
+      //  $user = Auth::user();
+        $tablevalues = lease::with('property','unit','user')->get();
         $mainfilter =  $this->model::pluck('status')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
@@ -56,9 +53,10 @@ class LeaseController extends Controller
         foreach ($tablevalues as  $item) {
             $tableData['rows'][] = [
                 'id' => $item->id,
-                $item,
-             //   $item->property->property_name.' - '.$item->unit->unit_number.' * '.$item->user->firstname.' '.$item->user->lastname,
-                $item->lease_period,
+              //  $item,
+                $item->property->property_name.' - '.$item->unit->unit_number.' * '.$item->user->firstname.' '.$item->user->lastname,
+                $item->lease_period.'</br></br><span class="text-muted" style="font-weight:500;font-style: italic">'.
+                Carbon::parse($item->startdate)->format('Y-m-d').' - '. Carbon::parse($item->enddate)->format('Y-m-d').'</span>',
                 $item->status,
 
             ];
@@ -161,6 +159,12 @@ class LeaseController extends Controller
             $request->session()->put('lease', $lease);
             $lease->update();
         }
+
+         ///Attach user to Unit
+         $user = User::find($lease->user_id);
+         $unitId =Unit::find($lease->user_id);
+
+         event(new AssignUserToUnit($user, $unitId));
 
         // Redirect to the lease.create route with a success message
 

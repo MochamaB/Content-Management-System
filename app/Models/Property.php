@@ -73,6 +73,13 @@ class Property extends Model
         return $this->hasMany(Utilities::class);
     }
 
+    public function units()
+    {
+        return $this->hasMany(Unit::class);
+    }
+
+
+
     
 
 
