@@ -20,7 +20,7 @@ class CreateLeasesTable extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->string('lease_period');
             $table->string('status');
-            $table->timestamp("startdate")->nullable();
+            $table->timestamp("startdate");
             $table->timestamp("enddate")->nullable();
             $table->timestamps();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');

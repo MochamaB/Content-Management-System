@@ -17,7 +17,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\LeaseController;
-
+use App\Http\Controllers\TenantDetailsController;
+use App\Http\Controllers\UnitChargeController;
+use App\Http\Controllers\UtilitiesController;
+use App\Http\Controllers\PropertyTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,18 +53,29 @@ Route::group(['middleware' => ['auth','permission']], function () {
     });
 
     Route::group(['groupName' => 'Leasing'], function () {
-        Route::resource('lease', LeaseController::class); 
+        Route::resource('lease', LeaseController::class);
+        ///lease wizard///////
+        Route::post('rent', [LeaseController::class, 'rent']); 
+        Route::post('deposit', [LeaseController::class, 'deposit']); 
+        Route::post('assignutilities', [LeaseController::class, 'assignUtilities']); 
+        Route::post('savelease', [LeaseController::class, 'saveLease']); 
+        Route::get('skiprent', [LeaseController::class, 'skiprent']);
+        ///////////////
+        Route::resource('unitcharge', UnitChargeController::class); 
+        Route::resource('utilities', UtilitiesController::class);
+     
         
     });
 
     Route::group(['groupName' => 'Property'], function () {
       
         Route::resource('property',PropertyController::class);
-        Route::post('update-amenities/{id}', [PropertyController::class, 'updateAmenities'])->name('property.update_amenities');
+        Route::post('update-amenities/{id}', [PropertyController::class, 'updateAmenities']);
         Route::resource('unit',UnitController::class);
         Route::resource('unitdetail',UnitDetailsController::class);
     });
     Route::group(['groupName' => 'Settings'], function () {
+        Route::resource('propertytype',PropertyTypeController::class);
         Route::resource('amenity',AmenityController::class);
         Route::resource('setting',SettingController::class);
         Route::resource('settingsite',SettingSiteController::class);
@@ -74,6 +88,7 @@ Route::group(['middleware' => ['auth','permission']], function () {
         Route::resource('permission', PermissionController::class);
         Route::resource('role', RoleController::class);
         Route::resource('user',UserController::class);
+        Route::resource('tenantdetails',TenantDetailsController::class);
         
     });
 
@@ -84,5 +99,9 @@ Route::group(['middleware' => ['auth','permission']], function () {
     
 
 });  
+
+Route::post('api/fetch-leaserent', [LeaseController::class, 'fetchleaserent']);
+Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
+
 
 require __DIR__.'/auth.php';

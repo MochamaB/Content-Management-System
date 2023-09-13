@@ -2,21 +2,24 @@
     <div class="col-3 tab" style="padding:0px;">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             @foreach($tabTitles as $index => $title)
-            <button class="tablinks @if($loop->first) active @endif" id="v-pills-{{ $loop->iteration }}-tab" data-toggle="pill" href="#v-pills-{{ $loop->iteration }}" role="tab" aria-controls="v-pills-{{ $loop->iteration }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}">
+            @php
+            $isDisabled = ($routeParts[1] === 'create') ? 'disabled' : '';
+            @endphp
+            <button class="tablinks @if($loop->first) active @endif" id="v-pills-{{ $loop->iteration }}-tab" data-toggle="pill" href="#v-pills-{{ $loop->iteration }}" role="tab" aria-controls="v-pills-{{ $loop->iteration }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}" >
                 {{ $title }}
             </button>
             @endforeach
         </div>
     </div>
     <div class="col-9 tabcontent ">
-       
-            <div class="tab-content" id="v-pills-tabContent">
-                @foreach($tabContents as $index => $content)
-                <div class="tab-pane fade @if($loop->first) show active @endif" id="v-pills-{{ $loop->iteration }}" role="tabpanel" aria-labelledby="v-pills-{{ $loop->iteration }}-tab">
-                    {!! $content !!}
-                </div>
-                @endforeach
+
+        <div class="tab-content" id="v-pills-tabContent">
+            @foreach($tabContents as $index => $content)
+            <div class="tab-pane fade @if($loop->first) show active @endif" id="v-pills-{{ $loop->iteration }}" role="tabpanel" aria-labelledby="v-pills-{{ $loop->iteration }}-tab">
+                {!! $content !!}
             </div>
+            @endforeach
+        </div>
     </div>
 </div>
 
@@ -28,7 +31,8 @@
     $(document).ready(function() {
         const $tabs = $("#v-pills-tab .tablinks");
         const $tabContents = $("#v-pills-tabContent .tab-pane");
-        let currentTab = 0;
+        let currentTab = '{{ $activetab ?? 0 }}';
+       // alert(currentTab);
 
         const showTab = (tabIndex) => {
             $tabs.removeClass("active").eq(tabIndex).addClass("active");

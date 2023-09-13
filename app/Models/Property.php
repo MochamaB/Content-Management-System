@@ -45,12 +45,13 @@ class Property extends Model
     public static function getFieldData($field)
     {
     switch ($field) {
-        case 'property_type':
-            $data = [
-                'RESIDENTIAL' => ['Apartment', 'Town House', 'Office'],
-                'COMMERCIAL' => ['Industrial', 'Office', 'Retail', 'Shopping center', 'Storage', 'Parking space'],
-            ];
-
+       
+            case 'property_type':
+                $propertytype = PropertyType::all();
+                $propertytypes = $propertytype->groupBy('property_category');
+                foreach ($propertytypes as $category => $propertytype) {
+                    $data[$category] = $propertytype->pluck('property_type','id')->toArray();
+                }
             return $data;
         case 'property_manager':
             return  ['Notset', 'Set'];
@@ -66,6 +67,13 @@ class Property extends Model
         return $this->belongsToMany(Amenity::class, 'properties_amenities');
 
     }
+
+    public function utilities()
+    {
+        return $this->hasMany(Utilities::class);
+    }
+
+    
 
 
 }

@@ -55,7 +55,7 @@ class Unit extends Model
             case 'unit_type':
                 return [
                     'rent' => 'For Rent',
-                    'sale', 'For Sale'];
+                    'sale'=> 'For Sale'];
         // Add more cases for additional filter fields
         default:
             return [];
@@ -67,6 +67,10 @@ class Unit extends Model
     {
         return $this->belongsTo(Property::class);
     }
+    public function lease()
+    {
+        return $this->hasOne(Lease::class, 'unit_id');
+    }
 
     public function unitSupervisors()
     {
@@ -77,7 +81,7 @@ class Unit extends Model
     ////////// view all units and properties for superadmin
     public static function viewallunits()
     {
-        $units = static::with('property')->get();
+        $units = static::with('property','lease')->get();
 
         return $units->groupBy('property_id')->map(function ($propertyUnits) {
             return $propertyUnits;

@@ -6,7 +6,7 @@
         @csrf
         <input type="hidden" name="model_name" value="{{ ucfirst($routeParts[0]) }}">
         @foreach($fields as $field => $attributes)
-        <div class="col-md-4">
+        <div class="col-md-5">
             <div class="form-group">
                 <!--- LABEL -->
                 <label class="label">{{ $attributes['label'] }}
@@ -26,8 +26,8 @@
                 <select class="formcontrol2" id="{{ $field }}" name="{{ $field }}">
                     @foreach ($data[$field] as $groupLabel => $options)
                     <optgroup label="{{ $groupLabel }}">
-                        @foreach ($options as $option)
-                        <option value="{{ $option }}">{{ $option }}</option>
+                        @foreach ($options as $id => $option)
+                        <option value="{{ $id }}">{{ $option }}</option>
                         @endforeach
                     </optgroup>
                     @endforeach

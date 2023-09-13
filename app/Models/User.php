@@ -91,13 +91,14 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($value);
     }
+    
 
 
-    ///// Returning units and properties that are in the user_unit pivot 
+    ///// Returning units that are in the user_unit pivot, Has additional data such as properties and leasedata 
     public function supervisedUnits()
     {
         return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
-            ->with('property')
+            ->with('property','lease')
             ->withTimestamps();
     }
      ///// Group properties that are in the user_unit pivot to avoid duplicates in view//////// 
@@ -110,8 +111,27 @@ class User extends Authenticatable
         });
     }
 
+    ////////////Return units that have leases that a logged in user can see
+
+    
+    
+
     //////// Gate to check if user is superAdmin //////// 
-   
+    ////scope////
+    public function scopeWithoutActiveLease($query, $role)
+    {
+        return $query->role($role)
+            ->whereNotIn('id', function ($subquery) {
+                $subquery->select('user_id')
+                    ->from('leases')
+                    ->where('status', 'active');
+            });
+        }
+    
+        public function lease()
+        {
+            return $this->hasOne(Lease::class, 'user_id');
+        }
     
 
     

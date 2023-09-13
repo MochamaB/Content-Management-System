@@ -21,7 +21,7 @@
 }
 
   .navbar .navbar-brand-wrapper {
-    background: #1F3BB3;
+    background: #0a2351;
     transition: width 0.25s ease, background 0.25s ease;
     -webkit-transition: width 0.25s ease, background 0.25s ease;
     -moz-transition: width 0.25s ease, background 0.25s ease;
@@ -43,12 +43,12 @@
   /*--------------------------- Side Bar */
 
 #sidebar {
-    background-color:#00308F;
+    background-color:#0a2351;
     border-right:2px solid #c8c8c9;
 }
 .sidebar {
   min-height: calc(100vh - 97px);
-  background: #1F3BB3;
+  background: #0a2351;
   font-family: "Manrope", sans-serif;
   font-weight: 500;
   border-right:2px solid #c8c8c9;
@@ -406,5 +406,13 @@ input.form-control.form-control-sm.search-input:focus {
   width: 700px; /* Set the desired width on hover */
 }
 
+.dynamicadd{
+  border-left: 5px solid #0000ff;
+  border-top: 1px solid #b6b6b6;
+  padding:20px;
+  margin-bottom:30px;
+  box-shadow: 0.5rem 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+
+}
 
 /* wizard css*/

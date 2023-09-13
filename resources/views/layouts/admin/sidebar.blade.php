@@ -29,12 +29,21 @@
               @elseif($routeParts[0] === 'property') <!-- Condition to show the Add Property menu -->
               <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/property/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
               @endif
+
               <li class="nav-item"> <a class="nav-link" href="{{ url('/unit') }}">Units</a></li>
               @if($routeParts[0] === 'unit' && $routeParts[1] === 'show')
               <!-- Show link for the show method -->
               <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/unit/' . $urlParts[5]) }}">Show</a></li>
               @elseif($routeParts[0] === 'unit') <!-- Condition to show the Add Property menu -->
               <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/unit/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
+              @endif
+
+              <li class="nav-item"> <a class="nav-link" href="{{ url('/utilities') }}">Utilities</a></li>
+              @if($routeParts[0] === 'utilities' && $routeParts[1] === 'show')
+              <!-- Show link for the show method -->
+              <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/utilities/' . $urlParts[5]) }}">Show</a></li>
+              @elseif($routeParts[0] === 'utilities') <!-- Condition to show the Add Property menu -->
+              <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/utilities/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
               @endif
 
             </ul>
@@ -83,7 +92,7 @@
               @if($routeParts[0] === 'chartofaccounts' && $routeParts[1] === 'show')
               <!-- Show link for the show method -->
               <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/chartofaccounts/' . $urlParts[5]) }}">Show</a></li>
-              @elseif($routeParts[0] === 'property') <!-- Condition to show the Add chartofaccounts menu -->
+              @elseif($routeParts[0] === 'chartofaccounts') <!-- Condition to show the Add chartofaccounts menu -->
               <li class="nav-item"><a class="nav-link" style="text-transform: capitalize;" href="{{ url('/chartofaccounts/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
               @endif
         

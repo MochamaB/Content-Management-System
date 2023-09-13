@@ -1,12 +1,13 @@
 @extends('layouts.admin.admin')
 
 @section('content')
-    @if(($routeParts[1] === 'create'))
-        @include('admin.CRUD.tabs_vertical')
+@if(($routeParts[1] === 'create'))
 
-    @elseif(($routeParts[1] === 'edit'))
-    
-        @include('admin.CRUD.tabs_vertical')
-    @endif
+    @include('admin.CRUD.wizard')
+
+@elseif(($routeParts[1] === 'edit'))
+
+    @include('admin.CRUD.tabs_vertical')
+@endif
 
 @endsection

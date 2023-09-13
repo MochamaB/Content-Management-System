@@ -39,7 +39,16 @@
             <h4>Property Settings</h4>
             <hr><br/>
             <div class="col-md-6" style="padding-bottom:30px;">
-                <a class="" href="{{ url('/amenity') }}"><h4>Property Acess</h4></a>
+                <a class="" href="{{ url('/propertytype') }}"><h4>Property Types</h4></a>
+                <div class="media ">
+                  <i class="ti-home icon-md text-info d-flex align-self-start me-3 text-warning"></i>
+                  <div class="media-body">
+                    <p class="card-text">Add Users to your Properties..</p>
+                  </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="padding-bottom:30px;">
+                <a class="" href="{{ url('/amenity') }}"><h4>Property Access</h4></a>
                 <div class="media ">
                   <i class="ti-key icon-md text-info d-flex align-self-start me-3 text-warning"></i>
                   <div class="media-body">

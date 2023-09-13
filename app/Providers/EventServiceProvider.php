@@ -23,6 +23,7 @@ class EventServiceProvider extends ServiceProvider
         UserCreate::class => [
             SendWelcomeEmailNotification::class,
         ],
+        
     ];
 
     /**

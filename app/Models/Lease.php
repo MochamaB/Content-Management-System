@@ -16,7 +16,7 @@ class Lease extends Model
         'user_id',
         'lease_period',
         'status',
-        'start_date',
+        'startdate',
         'enddate',
 
     ];
@@ -27,7 +27,7 @@ class Lease extends Model
         'user_id' => ['label' => 'Tenant Name', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'lease_period' => ['label' => 'Lease Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'status' => ['label' => 'Status', 'inputType' => 'select', 'required' => false, 'readonly' => ''],
-        'start_date' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
+        'startdate' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
         'enddate' => ['label' => 'End Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
 
 
@@ -90,4 +90,5 @@ class Lease extends Model
     {
         return $this->belongsTo(User::class,'user_id');
     }
+    
 }
