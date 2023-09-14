@@ -160,12 +160,7 @@ class LeaseController extends Controller
             $lease->update();
         }
 
-         ///Attach user to Unit
-         $user = User::find($lease->user_id);
-         $unitId =Unit::find($lease->user_id);
-
-         event(new AssignUserToUnit($user, $unitId));
-
+     
         // Redirect to the lease.create route with a success message
 
         return redirect()->route('lease.create', ['active_tab' => '1'])
@@ -225,9 +220,9 @@ class LeaseController extends Controller
                 ->doesntHave('lease')
                 ->pluck('unit_number', 'id')->toArray();
         } else {
-            $data = auth()->user()->supervisedUnits
+            $data = auth()->user()->unitswithoutlease
                 ->where('property_id', $request->property_id)
-                ->has('lease')
+           //     ->doesntHave('lease')
                 ->pluck('unit_number', 'id')->toArray();
         }
 
@@ -341,6 +336,15 @@ class LeaseController extends Controller
     }
     public function saveLease(Request $request)
     {
+        $leasedetails = $request->session()->get('lease');
+
+        ///Attach user to Unit
+        $user = User::find($leasedetails->user_id);
+        $unitId =Unit::find($leasedetails->unit_id);
+        
+
+        event(new AssignUserToUnit($user, $unitId));
+
 
         $tenantdetails = $request->session()->get('tenantdetails');
         $tenantdetails->save();

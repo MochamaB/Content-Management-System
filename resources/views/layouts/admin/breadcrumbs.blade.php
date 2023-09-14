@@ -1,7 +1,7 @@
 <div class="" style="padding-bottom:10px;">
     <!-- Breadcrumb -->
-    <nav class="d-flex">
-        <h6 class="mb-0">
+    <nav class="d-flex"style="padding:10px;border-left:5px solid orange">
+        <h6 class="mb-1">
             @php
                 $routeName = Route::currentRouteName();
                 $routeParts = explode('.', $routeName);
@@ -14,7 +14,7 @@
                 @endif
             @endforeach
         </h6>
-    </nav><br/>
+    </nav>
     <!-- Breadcrumb -->
     @include('layouts.admin.messages')
 </div>

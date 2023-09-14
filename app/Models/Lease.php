@@ -35,24 +35,15 @@ class Lease extends Model
     ];
     public static function getFieldData($field)
     {
+        $leases = Lease::with('property', 'unit', 'user')->get();
         switch ($field) {
             case 'property_id':
                 // Retrieve the supervised units' properties
-
-                if (Gate::allows('view-all', auth()->user())) {
-                    $properties = Property::pluck('property_name', 'id')->toArray();
-                } else {
-                    $properties = auth()->user()->supervisedUnits->pluck('property.property_name', 'property.id')->toArray();
-                }
+                    $properties = $leases->pluck('property.property_name','property.id')->toArray();
                 return $properties;
             case 'unit_id':
                 // Retrieve the supervised units' properties
-
-                if (Gate::allows('view-all', auth()->user())) {
-                    $units = Unit::pluck('unit_number', 'id')->toArray();
-                } else {
-                    $units = auth()->user()->supervisedUnits->pluck('unit_number', 'id')->toArray();
-                }
+                    $units = $leases->pluck('unit.unit_number', 'unit.id')->toArray();
                 return $units;
             case 'user_id':
                 $tenants = User::selectRaw('CONCAT(firstname, " ", lastname) as full_name, id')

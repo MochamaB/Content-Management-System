@@ -97,6 +97,14 @@ class User extends Authenticatable
         return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
             ->withTimestamps();
     }
+
+    public function unitswithoutlease()
+    {
+        return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
+        ->leftJoin('leases', 'units.id', '=', 'leases.unit_id')
+        ->whereNull('leases.id')
+        ->withTimestamps();
+    }
     
 
 

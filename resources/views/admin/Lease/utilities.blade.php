@@ -26,11 +26,9 @@
         <div class="form-group">
             <label class="label">Bill Cycle<span class="requiredlabel">*</span></label>
             <select name="charge_cycle" id="charge_cycle" class="formcontrol2" placeholder="Select" required>
-                @foreach($utilityCharges as $utilitycharges)
-                @if ($utilitycharges->charge_name === $utility->charge_name)
+          
                 <option value="{{$utilitycharges->charge_cycle ?? ''}}">{{$utilitycharges->charge_cycle ?? 'Select Bill Cycle'}}</option>
-                @endif
-                @endforeach
+          
                 <option value="Monthly"> Monthly</option>
                 <option value="Quaterly">Quaterly</option>
                 <option value="Halfyear">6 Months</option>

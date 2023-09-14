@@ -13,15 +13,9 @@ class AssignUserToUnitListener
      *
      * @return void
      */
-    public function __construct(AssignUserToUnit $event)
+    public function __construct()
     {
-        $user = $event->user;
-        $unitId = $event->unitId;
-
-         // Detach the old Units from user
-         $user()->unit()->detach();
-        ///Attach the new ones
-         $user()->unit()->attach($unitId);
+       
     }
 
     /**
@@ -30,8 +24,15 @@ class AssignUserToUnitListener
      * @param  object  $event
      * @return void
      */
-    public function handle($event)
+    public function handle(AssignUserToUnit $event)
     {
-        //
+        $user = $event->user;
+        $unitId = $event->unitId;
+
+        // Detach the old Units from user
+        $user->units()->detach();
+
+        // Attach the new ones
+        $user->units()->attach($unitId);
     }
 }

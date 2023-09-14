@@ -9,6 +9,8 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
+use App\Models\Unit;
 
 class AssignUserToUnit
 {
@@ -20,14 +22,15 @@ class AssignUserToUnit
     /**
      * Create a new event instance.
      *
+     * @param \App\User $user
+     * @param int $unitId
      * @return void
      */
-    public function __construct($user,$unitId)
+    public function __construct(User $user,Unit $unitId)
     {
         $this->user = $user;
         $this->unitId = $unitId;
     }
-
     /**
      * Get the channels the event should broadcast on.
      *

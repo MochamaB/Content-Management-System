@@ -1,5 +1,5 @@
-<div class="row">
-    <div class="col-3 tab" style="padding:0px;">
+<div class="row" style="margin-left:0px">
+    <div class="col-md-3 tab" style="padding:0px;">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             @foreach($tabTitles as $index => $title)
             @php
@@ -11,7 +11,7 @@
             @endforeach
         </div>
     </div>
-    <div class="col-9 tabcontent ">
+    <div class="col-md-9 tabcontent ">
 
         <div class="tab-content" id="v-pills-tabContent">
             @foreach($tabContents as $index => $content)

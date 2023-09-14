@@ -12,6 +12,7 @@ use App\Models\Unit;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Permission;
 use App\Scopes\UnitAccessScope;
 
 class AppServiceProvider extends ServiceProvider
@@ -99,6 +100,30 @@ class AppServiceProvider extends ServiceProvider
                 'user' => $user
                 ,'sitesettings' => $sitesettings,
                 'notifications' =>$notifications]);
+        });
+
+        view()->composer('layouts.admin.sidebar', function ($view) {
+            // Get the authenticated user, assuming you are using the default 'auth' guard
+            $user = auth()->user();
+            $userRoles = auth()->user()->roles;
+            $userPermissions = $userRoles->map->permissions->flatten();
+            $sidebar = collect([
+                'Property' => ['icon' => 'bank', 'submodules' => ['property', 'unit', 'utilities']],
+                'Leasing' => ['icon' => 'key','submodules' => ['lease']],
+                'Accounting' => ['icon' => 'cash-usd', 'submodules' => ['chartofaccounts']],
+                'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
+                'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
+                'Tasks' => ['icon' => 'timetable', 'submodules' => ['',]],
+                'Files' => ['icon' => 'file-multiple', 'submodules' => ['',]],
+                'Settings' => ['icon' => 'settings', 'submodules' => ['setting']],
+                'User' => ['icon' => 'account-circle-outline', 'submodules' => ['user', 'role', 'permission']],
+            ]);
+          //  $notifications = $user->notifications;
+            // Pass the authenticated user data to the 'layouts.admin' view
+            $view->with([
+                'user' => $user,
+                'sidebar' => $sidebar,
+                'userPermissions' =>$userPermissions]);
         });
 
         ////////////////// EMAIL //////////////////////////

@@ -35,7 +35,7 @@ class UnitController extends Controller
         if (Gate::allows('view-all', $user)) {
             $tablevalues = $this->model::with('property')->get();
         }else{
-            $tablevalues = $user->supervisedUnits;
+            $tablevalues = $user->units;
         }
     
         $mainfilter =  $this->model::pluck('unit_type')->toArray();
