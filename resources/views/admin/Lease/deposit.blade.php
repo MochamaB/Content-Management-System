@@ -56,7 +56,7 @@
 
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label">Next Due Date<span class="requiredlabel">*</span></label>
+                <label class="label"> Due Date<span class="requiredlabel">*</span></label>
                 <input type="hidden" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}" required>
                 <input type="date" class="form-control" id="nextdate" name="nextdate" value="{{$depositcharge->nextdate ?? ''}}" required>
                 <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="no">

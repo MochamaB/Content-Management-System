@@ -15,7 +15,7 @@
     @endphp
     @if ($hasPermission || Auth::user()->id === 1)
           <li class="nav-item nav-category"></li>
-          <li class="nav-item">
+          <li class="nav-item" >
             <a class="nav-link" data-bs-toggle="collapse" href="#{{$module}}" aria-expanded="false" aria-controls="{{$module}}">
               <i class="menu-icon mdi mdi mdi-{{$moduleData['icon']}}"></i>
               <span class="menu-title" style="text-transform: uppercase;">

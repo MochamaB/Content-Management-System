@@ -28,7 +28,7 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label class="label">Add Tenant<span class="requiredlabel">*</span></label>
+            <label class="label">Add Tenant <span class="requiredlabel">*</span></label>
             <select name="user_id" id="user_id" class="formcontrol2" placeholder="Select" required>
             <option value="{{$lease->user_id ?? ''}}">{{$lease->user->firstname  ?? 'Select'}} {{$lease->user->lastname  ?? 'Tenant'}}</option>
                 @foreach($tenants as $key => $item)
@@ -51,7 +51,7 @@
     <div class="col-md-6">
         <div class="form-group">
     
-            <input type="hidden" class="form-control" id="status" name="status" value="Active" readonly>
+            <input type="hidden" class="form-control" id="status" name="status" value="Draft" readonly>
         </div>
     </div>
     <div class=row>

@@ -29,6 +29,7 @@
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/wizard.css') }}">
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/mystyle.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />

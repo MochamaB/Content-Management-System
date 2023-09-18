@@ -28,13 +28,15 @@ class UtilitiesController extends Controller
             '1' => 'New Utility',
         ]);
     }
-    public function index()
+    public function index($property = null)
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            $tablevalues = Utilities::all();
+        //    $tablevalues = Utilities::all();
+            $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
         } else {
-            $tablevalues = Utilities::with('property')->get();
+        //    $tablevalues = Utilities::with('property')->get();
+            $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
         }
 
         $mainfilter =  $this->model::pluck('utility_name')->toArray();
@@ -56,6 +58,8 @@ class UtilitiesController extends Controller
 
             ];
         }
+
+        $utilitiesviewData = compact('tableData', 'mainfilter', 'viewData','controller');
 
         return View(
             'admin.CRUD.form',
@@ -108,7 +112,11 @@ class UtilitiesController extends Controller
      */
     public function show(Utilities $utilities)
     {
-        //
+       // $utility = Utilities::find($utilities->id);
+        dd($utilities);
+        // $viewData = $this->formData($this->model,$amenity);
+
+        return View('admin.CRUD.edit',compact('utilities'));
     }
 
     /**
@@ -119,7 +127,9 @@ class UtilitiesController extends Controller
      */
     public function edit(Utilities $utilities)
     {
-        $viewData = $this->formData($this->model, $utilities,);
+       // dd($utilities);
+       
+        $viewData = $this->formData($this->model,$utilities);
 
         return View('admin.CRUD.form', $viewData);
     }

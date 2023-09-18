@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Http\Requests\StoreUnitChargeRequest;
 use App\Models\Utilities;
+use App\Notifications\LeaseAgreementNotification;
 use Carbon\Carbon;
 
 class LeaseController extends Controller
@@ -54,10 +55,10 @@ class LeaseController extends Controller
             $tableData['rows'][] = [
                 'id' => $item->id,
               //  $item,
-                $item->property->property_name.' - '.$item->unit->unit_number.' * '.$item->user->firstname.' '.$item->user->lastname,
+                $item->property->property_name.' - '.$item->unit->unit_number.' . '.$item->user->firstname.' '.$item->user->lastname,
                 $item->lease_period.'</br></br><span class="text-muted" style="font-weight:500;font-style: italic">'.
                 Carbon::parse($item->startdate)->format('Y-m-d').' - '. Carbon::parse($item->enddate)->format('Y-m-d').'</span>',
-                $item->status,
+                '<span class="badge badge-primary">'.$item->status.'</span>'
 
             ];
         }
@@ -160,8 +161,9 @@ class LeaseController extends Controller
             $lease->update();
         }
 
-     
+        $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
+        $lease->notify(new LeaseAgreementNotification($user,$lease)); ///// Send Lease Agreement
 
         return redirect()->route('lease.create', ['active_tab' => '1'])
             ->with('status', 'Lease Created Successfully. Enter Tenant Details');

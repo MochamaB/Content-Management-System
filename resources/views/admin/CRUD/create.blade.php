@@ -1,6 +1,6 @@
 <div class=" contwrapper">
 
-    <h4><b> New {{ $routeParts[0] }}</b></h4>
+    <h4 style="text-transform: capitalize;"><b> New {{ $routeParts[0] }}</b></h4>
     <hr>
     <form method="POST" action="{{ url($routeParts[0]) }}" id="myForm" enctype="multipart/form-data" novalidate>
         @csrf
@@ -63,7 +63,7 @@
         </div>
         @endforeach
         <div class="col-md-4">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" id="submit">Create {{$routeParts[0]}}</button>
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;" id="submit">Create {{$routeParts[0]}}</button>
         </div>
     </form>
 

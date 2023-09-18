@@ -145,13 +145,16 @@
 
 
 
-    <div class="col-md-5">
+    <div class="col-md-8">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 previousBtn">Previous:Cosigners</button>
             </div>
-            <div class="col-md-6">
-                <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 nextBtn" id="nextBtn">Next:Deposit</button>
+            <div class="col-md-3">
+            <a href="{{ url('skiprent') }}" class="btn btn-danger btn-lg text-white mb-0 me-0 previousBtn nextBtn" id="">Skip:Utilities</a>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 nextBtn" id="">Next:Deposit</button>
             </div>
         </div>
     </div>

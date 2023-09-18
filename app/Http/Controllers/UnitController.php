@@ -33,9 +33,11 @@ class UnitController extends Controller
         $user = Auth::user();
         
         if (Gate::allows('view-all', $user)) {
-            $tablevalues = $this->model::with('property')->get();
+         //   $tablevalues = $this->model::with('property')->get();
+            $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
         }else{
-            $tablevalues = $user->units;
+          //  $tablevalues = $user->units;
+            $tablevalues = ($property) ? $user->units()->where('property_id', $property->id)->get() : $user->units;
         }
     
         $mainfilter =  $this->model::pluck('unit_type')->toArray();

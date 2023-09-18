@@ -24,32 +24,32 @@ class PropertyController extends Controller
 
     public function __construct()
     {
-        $this->model = Property::class; 
-        
+        $this->model = Property::class;
+
         $this->controller = collect([
             '0' => 'property', // Use a string for the controller name
             '1' => 'New Property',
         ]);
     }
 
- 
+
 
     public function index()
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            $tablevalues= Unit::viewallunits();
-        }else{
-            $tablevalues =$user->assignedunits();
+            $tablevalues = Unit::viewallunits();
+        } else {
+            $tablevalues = $user->assignedunits();
         }
 
-        
+
         $mainfilter =  $this->model::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['PROPERTY', 'LOCATION','MANAGER', 'TYPE','ACTIONS'],
+            'headers' => ['PROPERTY', 'LOCATION', 'MANAGER', 'TYPE', 'ACTIONS'],
             'rows' => [],
         ];
 
@@ -57,15 +57,19 @@ class PropertyController extends Controller
             $property = $item->first()->property;
             $tableData['rows'][] = [
                 'id' => $property->id,
-                $property->property_name.' - '.$property->property_streetname,
+                $property->property_name . ' - ' . $property->property_streetname,
                 $property->property_location,
                 $property->property_manager,
                 $property->property_type,
             ];
         }
 
-        return View('admin.CRUD.form',compact('mainfilter','tableData','controller'),$viewData, 
-        ['controller' => $this->controller]);
+        return View(
+            'admin.CRUD.form',
+            compact('mainfilter', 'tableData', 'controller'),
+            $viewData,
+            ['controller' => $this->controller]
+        );
     }
 
     /**
@@ -74,13 +78,13 @@ class PropertyController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     
+
 
     public function create()
     {
         $viewData = $this->formData($this->model);
 
-        return View('admin.CRUD.form',$viewData);
+        return View('admin.CRUD.form', $viewData);
     }
 
     /**
@@ -91,25 +95,24 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-         //// Data Entry validation/////////////
-         if (Property::where('property_name', $request->property_name)
-         ->exists()) {
-            return redirect('admin.property.properties_index')->with('statuserror','Property is already in the system');
-         }
-         else
-         {
+        //// Data Entry validation/////////////
+        if (Property::where('property_name', $request->property_name)
+            ->exists()
+        ) {
+            return redirect('admin.property.properties_index')->with('statuserror', 'Property is already in the system');
+        } else {
 
-             $property = new Property;
-             $property->property_name = $request->input('property_name');
-             $property->property_type = $request->input('property_type');
-             $property->property_location = $request->input('property_location');
-             $property->property_streetname = $request->input('property_streetname');
-             $property->property_manager = $request->input('property_manager');
-             $property->property_status = $request->input('property_status'); 
-             $property->save();
-             
-             return redirect('property')->with('status','Property Added Successfully');
-         }
+            $property = new Property;
+            $property->property_name = $request->input('property_name');
+            $property->property_type = $request->input('property_type');
+            $property->property_location = $request->input('property_location');
+            $property->property_streetname = $request->input('property_streetname');
+            $property->property_manager = $request->input('property_manager');
+            $property->property_status = $request->input('property_status');
+            $property->save();
+
+            return redirect('property')->with('status', 'Property Added Successfully');
+        }
     }
 
     /**
@@ -130,12 +133,12 @@ class PropertyController extends Controller
         $tabTitles = collect([
             'Summary',
             'Units',
-         //   'Utilities',
-        //    'Maintenance',
-        //    'Financials',
-        //    'Users',
-        //    'Invoices',
-        //    'Payments'
+            'Utilities',
+            //    'Maintenance',
+            //    'Financials',
+            //    'Users',
+            //    'Invoices',
+            //    'Payments'
             // Add more tab titles as needed
         ]);
         $amenities = $property->amenities;
@@ -144,32 +147,40 @@ class PropertyController extends Controller
         $result = app('App\Http\Controllers\UnitController')->index($property);
         // Access the individual variables from the $result array
         $unitviewData = $result->getData();
+        $resultUtilites = app('App\Http\Controllers\UtilitiesController')->index($property);
+         // Access the individual variables from the $result array
+         $utilitiesviewData = $resultUtilites->getData();
 
         // Access the variables directly from the array
         $tableData = $unitviewData['tableData'];
         $mainfilter = $unitviewData['mainfilter'];
-     //   $viewData = $unitviewData['viewData'];
+        //   $viewData = $unitviewData['viewData'];
 
 
-  
-        
 
-        
-        $viewData = $this->formData($this->model,$property);
-      //  $unitviewData = $result['unitviewData'];
-         // Render the Blade views for each tab content
-         $tabContents = [];
-         foreach ($tabTitles as $title) {
+
+
+
+        $viewData = $this->formData($this->model, $property);
+        //  $unitviewData = $result['unitviewData'];
+        // Render the Blade views for each tab content
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-             $tabContents[] = View('admin.property.show_'.$title,$viewData,compact('amenities','allamenities'))->render();
-            }if ($title === 'Units') {
-                $tabContents[] = View('admin.CRUD.index',$unitviewData, 
-                compact('amenities', 'allamenities'))->render();
-               }
-            
-         }
+                $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities'))->render();
+            } elseif ($title === 'Units') {
+                $tabContents[] = View(
+                    'admin.CRUD.index',
+                    $unitviewData,
+                    compact('amenities', 'allamenities')
+                )->render();
+            } elseif ($title === 'Utilities') {
+                $tabContents[] = View('admin.CRUD.index',$utilitiesviewData,compact('amenities', 'allamenities')
+                )->render();
+            }
+        }
 
-        return View('admin.CRUD.form',compact('pageheadings','tabTitles','tabContents'));
+        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**
@@ -180,14 +191,14 @@ class PropertyController extends Controller
      */
     public function edit(Property $property)
     {
-        $viewData = $this->formData($this->model,$property);
+        $viewData = $this->formData($this->model, $property);
         $pageheadings = collect([
             '0' => $property->property_name,
             '1' => $property->property_streetname,
             '2' => $property->property_location,
         ]);
 
-        return View('admin.CRUD.form',compact('pageheadings'),$viewData);
+        return View('admin.CRUD.form', compact('pageheadings'), $viewData);
     }
 
     /**
@@ -214,13 +225,11 @@ class PropertyController extends Controller
     }
 
 
-    public function updateAmenities(Request $request, $id){
+    public function updateAmenities(Request $request, $id)
+    {
         $property = Property::find($id);
         $property->amenities()->sync($request->amenities);
 
-    return redirect()->back()->with('success', 'Amenities synced successfully!');
-
-
+        return redirect()->back()->with('success', 'Amenities synced successfully!');
     }
-    
 }

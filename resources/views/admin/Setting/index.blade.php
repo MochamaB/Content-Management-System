@@ -43,7 +43,7 @@
                 <div class="media ">
                   <i class="ti-home icon-md text-info d-flex align-self-start me-3 text-warning"></i>
                   <div class="media-body">
-                    <p class="card-text">Add Users to your Properties..</p>
+                    <p class="card-text">Add Categories of Property Types..</p>
                   </div>
                 </div>
             </div>

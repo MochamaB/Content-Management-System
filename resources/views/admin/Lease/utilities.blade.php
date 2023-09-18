@@ -3,7 +3,7 @@
 <div class="d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
         <i class="mdi mdi-information text-muted me-1"></i>
-        <h5> Utilities are managed in property settings</a></h5>
+        <h5> Utilities are managed in property settings.</a></h5>
        
     </div>
 </div><br />

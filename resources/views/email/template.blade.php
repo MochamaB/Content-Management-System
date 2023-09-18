@@ -18,15 +18,15 @@
             <div class="col-md-8">
                 <div class="box-for overflow">
                     <div class="col-md-12 col-xs-12 login-blocks">
-                        <h2> {{$data['subject']}} </h2>
+                        <h2> {{$data['subject'] ?? ''}} </h2>
                         <p>Dear {{$user->firstname ?? ''}} {{$user->lastname ?? ''}}</p>
                         <p>{{$data['message'] ?? ''}}</p>
                         @foreach ($data as $line => $content)
                         @if (!empty($content))
                         @if ($line === 'action')
-                        <p>{{ $linkmessage}}: <a href="{{url($content) }}">{{ __('Click here') }}</a></p>
+                        <p>{{ $linkmessage ?? ''}}: <a href="{{url($content) }}">{{ __('Click here') }}</a></p>
                         @else
-                        <p>{{ $content }}</p>
+                        <p>{{ $content ?? '' }}</p>
                         @endif
                         @endif
                         @endforeach

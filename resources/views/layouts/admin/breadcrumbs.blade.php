@@ -14,6 +14,13 @@
                 @endif
             @endforeach
         </h6>
+        <div class="btn-group ms-auto" >
+                          <button type="button" onclick="history.back()" class="btn btn-outline-primary" style="border: 2px solid blue;">
+                            <i class="mdi mdi-arrow-left-bold-circle mdi-24" style="font-size: 17px;color:blue"> BACK</i>
+                            
+                          </button>
+                        
+                        </div>
     </nav>
     <!-- Breadcrumb -->
     @include('layouts.admin.messages')

@@ -131,5 +131,9 @@ class AppServiceProvider extends ServiceProvider
             $sitesettings = SettingSite::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
+        view()->composer('email.emailtemplate', function($view) {
+            $sitesettings = SettingSite::first();
+            $view->with(['sitesettings' => $sitesettings]);
+        });
     }
 }
