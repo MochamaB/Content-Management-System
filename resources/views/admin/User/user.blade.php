@@ -11,11 +11,7 @@
     <form method="POST" action="{{ url($routeParts[0].'/'.$user->id) }}" id="myForm" enctype="multipart/form-data" novalidate>
         @method('PUT')
         @csrf
-        <div class="pageheading">
-            <h4>{{$user->roles->first()->name ?? ''}}</h4>
-            <p>{{$user->firstname ?? ''}} | {{$user->lastname ?? ''}} </p>
-        </div>
-        <br />
+      
         @include('admin.CRUD.tabs_vertical')
     </form>
 @endif

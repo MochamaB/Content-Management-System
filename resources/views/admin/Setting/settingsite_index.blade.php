@@ -13,14 +13,14 @@
 </ul>
 @if(empty($sitesettings))
 
-<button class="btn btn-primary btn-lg text-white mb-0 me-0" style="float:right" type="button" onclick="window.location='{{ url("/settingsite/create") }}'">
+<button class="btn btn-primary btn-lg text-white mb-0 me-0" style="float:right" type="button" onclick="window.location='{{ url("/websitesetting/create") }}'">
     Add Site Information</button>
 <br /><br /><br />
 <div class=" contwrapper">
     <h2>No site settings found.</h2>
 </div>
 @else
-<form method="POST" action="{{ url('settingsite/1') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ url('websitesetting/1') }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 

@@ -19,11 +19,11 @@ class CreateSuperUserSeeder extends Seeder
             'lastname' => 'SuperAdmin', 
             'email' => 'propertysuperadmin@gmail.com',
             'email_verified_at'=> '2023-03-12 15:36:35',
-            'password' => Hash::make('admin!23') ,
+            'password' => 'admin!23',
             'phonenumber' => '0123456789',
             'idnumber' => '0123456789',
             'status' => 'Active',
-            'profilepicture' => 'avatar.jpg',
+            'profilepicture' => 'avatar.png',
         ]);
     
     }

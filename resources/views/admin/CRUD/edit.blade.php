@@ -1,10 +1,3 @@
-@if(!empty($pageheadings))
-<div class="pageheading">
-    <h4>{{$pageheadings[0] ?? ''}}</h4>
-    <p>{{$pageheadings[1] ?? ''}} |{{$pageheadings[2] ?? ''}} </p>
-</div>
-<br />
-@endif
 
 <form method="POST" action="{{ url($routeParts[0].'/'.$actualvalues->id) }}" id="myForm" enctype="multipart/form-data" novalidate>
     @csrf

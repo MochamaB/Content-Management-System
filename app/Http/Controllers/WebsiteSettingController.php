@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SettingSite;
+use App\Models\WebsiteSetting;
 use Illuminate\Http\Request;
 
-class SettingSiteController extends Controller
+class WebsiteSettingController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +14,7 @@ class SettingSiteController extends Controller
      */
     public function index()
     {
-        $sitesettings = SettingSite::first();
+        $sitesettings = WebsiteSetting::first();
         return View('admin.setting.settingsite_index',compact('sitesettings'));
     }
 
@@ -37,7 +37,7 @@ class SettingSiteController extends Controller
      */
     public function store(Request $request)
     {
-        $settingSite = new SettingSite();
+        $settingSite = new WebsiteSetting();
         $settingSite->site_name = $request->input('site_name');
         $settingSite->company_name = $request->input('company_name');
         $settingSite->company_telephone = $request->input('company_telephone');
@@ -61,7 +61,7 @@ class SettingSiteController extends Controller
         $settingSite->banner_desc = $request->input('banner_desc');
         $settingSite->save();
 
-        return redirect('settingsite')->with('status','Site Settings Added Successfully');
+        return redirect('websitesetting')->with('status','Site Settings Added Successfully');
 
         
     }
@@ -98,7 +98,7 @@ class SettingSiteController extends Controller
     public function update(Request $request, $id)
     {
         $id =1;
-        $settingSite = SettingSite::find($id);
+        $settingSite = WebsiteSetting::find($id);
         $settingSite->site_name = $request->input('site_name');
         $settingSite->company_name = $request->input('company_name');
         $settingSite->company_telephone = $request->input('company_telephone');
@@ -122,7 +122,7 @@ class SettingSiteController extends Controller
         $settingSite->banner_desc = $request->input('banner_desc');
         $settingSite->update();
 
-        return redirect('settingsite')->with('status','Site Settings Updated Successfully');
+        return redirect('websitesetting')->with('status','Site Settings Updated Successfully');
     }
 
     /**

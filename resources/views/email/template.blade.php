@@ -31,7 +31,7 @@
                         @endif
                         @endforeach
                         <p>Kind Regards</p>
-                        <p>{{$sitesettings->company_name}}</p>
+                        <p>{{$sitesettings->company_name ?? ""}}</p>
 
                     </div>
                 </div>

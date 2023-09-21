@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Spatie\Permission\Exceptions\UnauthorizedException;
+use Illuminate\Support\Str;
 
 class PermissionMiddleware
 {
@@ -37,12 +38,18 @@ class PermissionMiddleware
 
         if ( is_null($permission) ) {
             $permission = $request->route()->getName();
-
+           
+           
             $permissions = array($permission);
+           
         }
         
 
         foreach ($permissions as $permission) {
+            if (Str::contains($permission, ['update', 'show', 'store'])) {
+                return $next($request);
+            }
+            
             if ($authGuard->user()->can($permission)) {
                 return $next($request);
             }

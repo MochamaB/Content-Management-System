@@ -271,10 +271,7 @@
   word-wrap: break-word;
 }
 
-.pageheading{
-  border-left:5px solid #ffaf00;
-  padding:10px;
-}
+
 .textformcontrol{
   display: block;
   width: 100%;
@@ -527,6 +524,17 @@ input, select {
   font-size: 16px;
   letter-spacing: 1px;
   height: 40px !important;
+}
+input[type="checkbox"] {
+  /* Your checkbox styles here */
+  padding: 2px;
+  border-radius: 0px;
+  box-sizing: border-box;
+  color: #9E9E9E;
+  border: 1px solid #BDBDBD;
+  font-size: 16px;
+  letter-spacing: 1px;
+  height: 17px !important;
 }
 
 

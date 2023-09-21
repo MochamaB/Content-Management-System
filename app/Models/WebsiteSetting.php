@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SettingSite extends Model
+class WebsiteSetting extends Model
 {
     use HasFactory;
-    protected $table = 'setting_sites';
+    protected $table = 'website_settings';
     protected $fillable = [
             'company_name',
             'site_name',

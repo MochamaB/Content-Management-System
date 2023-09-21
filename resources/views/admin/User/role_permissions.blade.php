@@ -10,7 +10,7 @@
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $module}}Collapse" aria-expanded="true" aria-controls="collapseOne">
                 <i class="menu-icon mdi mdi-plus"></i>
             </button>
-            <h4>{{ $module}} ({{ $modulePermissions->flatten()->count() }})</h4>
+            <h4>{{ $module}} Menu ({{ $modulePermissions->flatten()->count() }})</h4>
             <div class="form-check form-check-inline ">
                 <input class="form-check-input p-0 header-checkbox" type="checkbox" name="header-checkbox" id="header-checkbox">
                 <label class="checkboxlabel pt-0 m-0" for="">
@@ -27,11 +27,15 @@
                     <div class="form-check form-check-inline align-items-center">
                         <input class="form-check-input p-0 body-checkbox" type="checkbox" name="permission[{{$permission->name}}]" value="{{$permission->name}}" id="">
                         <label class="checkboxlabelbody pt-0 m-0" for="">
+                        @if( $permission->action ==="index")
+                                View
+                            @else
                             {{ $permission->action }}
+                            @endif
                         </label>
                     </div>
                     @endforeach
-                    <div class="" style="width: 120px;">
+                    <div class="" style="width: 200px;">
                         <span style="color: blue;text-transform:capitalize">{{$submoduleName}}</span>
                     </div>
                 </div>
@@ -67,7 +71,7 @@
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $module}}Collapse" aria-expanded="true" aria-controls="collapseOne">
                 <i class="menu-icon mdi mdi-plus"></i>
             </button>
-            <h4>{{ $module}} ({{ $modulePermissions->flatten()->filter(function ($permission) use ($rolePermissions) {
+            <h4>{{ $module}} Menu ({{ $modulePermissions->flatten()->filter(function ($permission) use ($rolePermissions) {
             return in_array($permission->name, $rolePermissions);
         })->count() }} / {{ $modulePermissions->flatten()->count() }})</h4>
       
@@ -91,11 +95,15 @@
                                                     : '' }}>
                                                             
                         <label class="checkboxlabelbody pt-0 m-0" for="">
+                            @if( $permission->action ==="index")
+                                View
+                            @else
                             {{ $permission->action }}
+                            @endif
                         </label>
                     </div>
                     @endforeach
-                    <div class="" style="width: 120px;">
+                    <div class="" style="width: 200px;">
                         <span style="color: blue;text-transform:capitalize">{{$submoduleName}}</span>
                     </div>
                 </div>

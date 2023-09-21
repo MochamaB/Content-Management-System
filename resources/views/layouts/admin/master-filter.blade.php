@@ -36,7 +36,7 @@
                                     @if ($options['inputType'] === 'selectgroup')
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="">{{ $options['label'] }}</label>
+                                            <label class="label">{{ $options['label'] }}</label>
                                             <select class="formcontrol2" id="{{ $field }}" onchange="applyFilters('{{ $field }}')">
                                                 @foreach ($data[$field] as $groupLabel => $options)
                                                 <optgroup label="{{ $groupLabel }}">
@@ -51,7 +51,7 @@
                                     @elseif ($options['inputType'] === 'select')
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label class="">{{ $options['label'] }}</label>
+                                            <label class="label">{{ $options['label'] }}</label>
                                             <select class="formcontrol2" id="{{ $field }}Filter" onchange="applyFilters('{{ $field }}')">
                                                 <option value="All">All</option>
                                                 @foreach ($data[$field] as $option)

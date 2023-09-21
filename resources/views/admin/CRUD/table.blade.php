@@ -20,7 +20,7 @@
                     <a href="{{url($routeParts[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
                     @endif
 
-                    @if( Auth::user()->can($controller[0].'.create') || Auth::user()->id === 1)
+                    @if( Auth::user()->can($controller[0].'.destroy') || Auth::user()->id === 1)
                     <form action="{{ url($routeParts[0].'/'.$row['id']) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')

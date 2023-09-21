@@ -24,11 +24,21 @@ class Property extends Model
         'property_name' => ['label' => 'Property Name', 'inputType' => 'text','required' =>true, 'readonly' => true],
         'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
         'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
-        'property_manager' => ['label' => 'Property Manager', 'inputType' => 'select', 'required' =>false,'readonly' => ''],
+        'property_manager' => ['label' => 'Property Manager', 'inputType' => 'hidden', 'required' =>false,'readonly' => ''],
         'property_status' => ['label' => 'Property Status', 'inputType' => 'select', 'required' =>true,'readonly' => ''],
        
       
         // Add more fields as needed
+    ];
+
+    public static $validation =[
+        'property_type' => 'required', 
+        'property_name' => 'required', 
+        'property_location' => 'required', 
+        'property_streetname' => 'required',
+        'property_manager' => 'required',
+        'property_status' => 'required',
+       
     ];
 
      /////Filter options
@@ -54,7 +64,7 @@ class Property extends Model
                 }
             return $data;
         case 'property_manager':
-            return  ['Notset', 'Set'];
+            return  ['Notset'=>'Notset'];
         case 'property_status':
             return  ['Active', 'InActive'];
         // Add more cases for additional filter fields

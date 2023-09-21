@@ -47,6 +47,13 @@
           </li>
     @endif
     @endforeach
+    <li class="nav-item nav-category"></li>
+     <li class="nav-item">
+      <a class="nav-link" href="{{ url('/user/'.Auth::user()->id) }}">
+        <i class="menu-icon mdi mdi-account-card-details "></i>
+        <span class="menu-title" style="text-transform: uppercase;">PROFILE</span>
+      </a>
+    </li>
 
   </ul>
 </nav>

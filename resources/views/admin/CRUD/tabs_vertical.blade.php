@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row" style="margin-left:0px">
     <div class="col-3 tab" style="padding:0px;">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             @foreach($tabTitles as $index => $title)

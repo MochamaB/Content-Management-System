@@ -190,13 +190,36 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        
-     //   event(new UserCreate($user));
-   //  Notification::send(auth()->user(), new UserDeletedNotification($user));
-   
+        $pageheadings = collect([
+            '0' => $user->email,
+            '1' => $user->firstname,
+            '2' => $user->lastname,
+        ]);
+        $tabTitles = collect([
+            'Profile',
+            'Invoices',
+            'Payments',
+            //    'Maintenance',
+            //    'Financials',
+            //    'Users',
+            //    'Invoices',
+            //    'Payments'
+            // Add more tab titles as needed
+        ]);
    
 
-  //   return View('email.template', compact('user','data','linkmessage'));
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
+            if ($title === 'Profile') {
+                $tabContents[] = View('admin.user.user_profile')->render();
+            } elseif ($title === 'Invoices') {
+                $tabContents[] = View('admin.user.user_profile')->render();
+            } elseif ($title === 'Payments') {
+                $tabContents[] = View('admin.user.user_profile')->render();
+            }
+        }
+
+        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
 
     }
 
@@ -212,6 +235,11 @@ class UserController extends Controller
         $roles = Role::all();
         $userRole =$user->roles->pluck('name');
         $assignedproperties = $user->supervisedUnits->pluck('id')->toArray();
+        $pageheadings = collect([
+            '0' => $user->email,
+            '1' => $user->firstname,
+            '2' => $user->lastname,
+        ]);
 
        
         if (Gate::allows('view-all', $loggeduser)) {  
@@ -243,7 +271,7 @@ class UserController extends Controller
             }
         }
 
-        return View('admin.user.user', compact('tabTitles','tabContents','user'));
+        return View('admin.user.user', compact('pageheadings','tabTitles','tabContents','user'));
     }
 
     /**

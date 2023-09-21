@@ -19,7 +19,6 @@ class CreatePropertiesTable extends Migration
             $table->string('property_type');
             $table->string('property_location');
             $table->string('property_streetname');
-            $table->string('property_manager');
             $table->string('property_status');
             $table->timestamps();
         });

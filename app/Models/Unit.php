@@ -67,11 +67,7 @@ class Unit extends Model
     {
         return $this->belongsTo(Property::class);
     }
-    public function user()
-    {
-        return $this->belongsToMany(User::class, 'user_unit', 'unit_id', 'user_id')
-        ->withTimestamps();
-    }
+
 
     public function lease()
     {

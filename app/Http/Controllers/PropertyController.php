@@ -28,7 +28,7 @@ class PropertyController extends Controller
 
         $this->controller = collect([
             '0' => 'property', // Use a string for the controller name
-            '1' => 'New Property',
+            '1' => 'Property',
         ]);
     }
 
@@ -208,9 +208,14 @@ class PropertyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Property $property, Request $request)
     {
-        //
+        $validationRules = Property::$validation;
+        $validatedData = $request->validate($validationRules);
+        $property->fill($validatedData);
+        $property->save();
+
+        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**

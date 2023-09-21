@@ -13,8 +13,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        
-        return View('admin.Report.dashboard');
+        $user = auth()->user()->load('units');
+        $units = $user->units;
+
+        return View('admin.Report.dashboard',compact('units'));
     }
 
     /**

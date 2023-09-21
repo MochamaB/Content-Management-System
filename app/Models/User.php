@@ -92,6 +92,8 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
+    //// Units loggedin user can see
+
     public function units()
     {
         return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')

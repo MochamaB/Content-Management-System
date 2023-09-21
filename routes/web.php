@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\client\HomeController;
-use App\Http\Controllers\SettingSiteController;
+use App\Http\Controllers\WebsiteSettingController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SettingController;
@@ -34,7 +34,7 @@ use App\Http\Controllers\PropertyTypeController;
 */
 
 
-Route::get('/', [ App\Http\Controllers\client\HomeController::class, 'index'])->name('Home.index');
+Route::get('/', [ App\Http\Controllers\client\HomeController::class, 'index']);
 
 
 
@@ -42,7 +42,7 @@ Route::get('/', [ App\Http\Controllers\client\HomeController::class, 'index'])->
 
 
 
-Route::group(['middleware' => ['auth','permission']], function () {
+Route::group(['middleware' => ['auth']], function () {
 
     Route::group(['groupName' => 'Communication'], function () {
         Route::resource('notification', NotificationController::class); 
@@ -78,7 +78,7 @@ Route::group(['middleware' => ['auth','permission']], function () {
         Route::resource('propertytype',PropertyTypeController::class);
         Route::resource('amenity',AmenityController::class);
         Route::resource('setting',SettingController::class);
-        Route::resource('settingsite',SettingSiteController::class);
+        Route::resource('websitesetting',WebsiteSettingController::class);
         Route::resource('slider',SliderController::class);
         Route::resource('testimonial',TestimonialController::class);
         

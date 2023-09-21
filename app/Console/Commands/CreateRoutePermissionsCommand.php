@@ -49,14 +49,19 @@ class CreateRoutePermissionsCommand extends Command
                 $action = isset($parts[1]) ? $parts[1] : $parts[0];
                 $groupName = $route->getAction()['groupName'] ?? null;
 
-                 // Use the full route name as 'name'
-                 $name = $routeName;
+                // Skip the 'store' and 'update' actions
+                if (in_array($action, ['show','store', 'update'])) {
+                    continue;
+                }
 
-                 if (count($parts) > 1) {
-                     // Use the first part as 'sub-model'
-                     $subModel = $parts[0];
-                     // Reconstruct the full route name without the first part
-                 }
+                // Use the full route name as 'name'
+                $name = $routeName;
+
+                if (count($parts) > 1) {
+                    // Use the first part as 'sub-model'
+                    $subModel = $parts[0];
+                    // Reconstruct the full route name without the first part
+                }
                 $permission = Permission::where('name', $routeName)->first();
 
                 if (!is_null($permission)) {
@@ -82,6 +87,3 @@ class CreateRoutePermissionsCommand extends Command
         $this->info('Permission routes added successfully.');
     }
 }
-
-    
-    

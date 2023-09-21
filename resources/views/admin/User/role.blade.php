@@ -4,7 +4,7 @@
     @if(($routeParts[1] === 'create'))
     <form method="POST" action="{{ url($routeParts[0]) }}" id="myForm" enctype="multipart/form-data" novalidate>
         @csrf
-        @include('admin.CRUD.tabs_vertical')
+        @include('admin.CRUD.wizard')
     </form>
 
     @elseif(($routeParts[1] === 'edit'))

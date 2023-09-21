@@ -8,7 +8,7 @@
             <hr><br/>
             <div class="row">
             <div class="col-md-6" style="padding-bottom:30px;">
-            <a class="" href="{{ url('/settingsite') }}"><h4>Application Branding</h4></a>
+            <a class="" href="{{ url('/websitesetting') }}"><h4>Application Branding</h4></a>
                   <div class="media">
                     <i class="ti-world icon-md text-info d-flex align-self-start me-3 text-warning"></i>
                     <div class="media-body">

@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\SettingSite;
+use App\Models\WebsiteSetting;
 use App\Models\Slider;
 use App\Models\Testimonial;
 use App\Models\Lease;
@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
           // Apply the UnitAccessScope to specific models
         Lease::addGlobalScope(new UnitAccessScope);
         
-    //    Unit::addGlobalScope(new UnitAccessScope);
+      //  Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);
 
 
@@ -57,11 +57,11 @@ class AppServiceProvider extends ServiceProvider
 
         //////////////  FRONT END/////////////
         view()->composer('layouts.client.navbar', function($view) {
-            $sitesettings = SettingSite::first();
+            $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
         view()->composer('layouts.client.footer', function($view) {
-            $sitesettings = SettingSite::first();
+            $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
 
@@ -83,7 +83,7 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('layouts.admin.adminheader', function ($view) {
             // Get the authenticated user, assuming you are using the default 'auth' guard
             $user = auth()->user();
-            $sitesettings = SettingSite::first();
+            $sitesettings = WebsiteSetting::first();
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
                 'user' => $user
@@ -93,7 +93,7 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('layouts.admin.adminnavbar', function ($view) {
             // Get the authenticated user, assuming you are using the default 'auth' guard
             $user = auth()->user();
-            $sitesettings = SettingSite::first();
+            $sitesettings = WebsiteSetting::first();
             $notifications = $user->notifications;
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
@@ -128,11 +128,11 @@ class AppServiceProvider extends ServiceProvider
 
         ////////////////// EMAIL //////////////////////////
         view()->composer('email.template', function($view) {
-            $sitesettings = SettingSite::first();
+            $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
         view()->composer('email.emailtemplate', function($view) {
-            $sitesettings = SettingSite::first();
+            $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
     }

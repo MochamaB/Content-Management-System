@@ -19,6 +19,8 @@ class UnitAccessScope implements Scope
 
             // Apply the filter to the query
             $builder->whereIn('unit_id', $unitIds);
+         //   $builder->whereIn('id', $unitIds)
+          //  ->orWhereIn('unit_id', $unitIds);
         }
     }
 }

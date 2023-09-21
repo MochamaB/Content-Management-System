@@ -122,8 +122,8 @@
             <ul class="nav flex-column sub-menu">
               <li class="nav-item"> <a class="nav-link" href="{{ url('/setting') }}">All Settings</a></li>
 
-              @if(Request::url() === url('/settingsite')) <!-- Condition to show the Settings menu -->
-              <li class="nav-item"> <a class="nav-link" href="{{ url('/settingsite') }}">Web Site Settings</a></li>
+              @if(Request::url() === url('/websitesetting')) <!-- Condition to show the Settings menu -->
+              <li class="nav-item"> <a class="nav-link" href="{{ url('/websitesetting') }}">Web Site Settings</a></li>
               @endif
               <!-- Condition to show the Add Slider menu -->
               @if(($routeParts[0] === 'slider')) 

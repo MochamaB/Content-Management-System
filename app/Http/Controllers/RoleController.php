@@ -136,6 +136,11 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        $pageheadings = collect([
+            '0' => $role->name,
+            '1' => $role->guard_name,
+            '2' => $role->description,
+        ]);
         $user = Auth::user();
         $rolePermissions = $role->permissions->pluck('name')->toArray();
         $permissions = Permission::orderby('name', 'ASC')->get();
@@ -161,7 +166,7 @@ class RoleController extends Controller
             } 
         }
 
-        return View('admin.user.role', compact('tabTitles','tabContents','role'));
+        return View('admin.user.role', compact('pageheadings','tabTitles','tabContents','role'));
     }
 
     /**

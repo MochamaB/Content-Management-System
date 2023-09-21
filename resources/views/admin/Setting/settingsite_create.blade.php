@@ -11,7 +11,7 @@
         Logos</a >
   </li>
 </ul>
-<form method="POST" action="{{ url('settingsite/create') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ url('websitesetting/create') }}" enctype="multipart/form-data">
         @csrf
 
 <div class="tab-content" id="ex1-content">
