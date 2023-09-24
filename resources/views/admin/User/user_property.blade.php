@@ -31,6 +31,7 @@
                 
                     <div class="form-check form-check-inline align-items-center">
                         <input class="form-check-input p-0 body-checkbox" type="checkbox" name="unit_id[{{ $unit->id }}]" value="{{ $unit->id }}" id="">
+                        <input type="hidden" name="property_id[{{ $unit->id }}]" value="{{ $unit->property_id }}">
                         <label class="checkboxlabelbody pt-0 m-0" for="">
                             {{ $unit->unit_number }}
                         </label>
@@ -96,6 +97,7 @@
                         {{ in_array($unit->id, $assignedproperties) 
                                                     ? 'checked'
                                                     : '' }}>
+                        <input type="hidden" name="property_id[{{ $unit->id }}]" value="{{ $unit->property_id }}">
                         <label class="checkboxlabelbody pt-0 m-0" for="">
                             {{ $unit->unit_number }}
                         </label>

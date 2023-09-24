@@ -96,33 +96,47 @@ class User extends Authenticatable
     /**
      * The units that belong to the user.
      */
-    
+
 
 
     public function units()
     {
-        return $this->belongsToMany(Unit::class, 'user_unit')
+
+        return $this->belongsToMany(Unit::class, 'unit_user')
+            ->withPivot('property_id')
             ->withTimestamps();
     }
 
     public function unitswithoutlease()
     {
-        return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
+        return $this->belongsToMany(Unit::class, 'unit_user', 'user_id', 'unit_id')
             ->leftJoin('leases', 'units.id', '=', 'leases.unit_id')
             ->whereNull('leases.id')
             ->withTimestamps();
     }
 
+    public function allUnits()
+    {
+        // Check if the user is superadmin (user ID 1)
+        if ($this->id === 1) {
+            // If the user is superadmin, return all units
+            return Unit::all();
+        }
+
+        // For other users, load the units relationship as usual
+        return $this->units;
+    }
 
 
-    ///// Returning units that are in the user_unit pivot, Has additional data such as properties and leasedata 
+
+    ///// Returning units that are in the unit_user pivot, Has additional data such as properties and leasedata 
     public function supervisedUnits()
     {
-        return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
+        return $this->belongsToMany(Unit::class, 'unit_user', 'user_id', 'unit_id')
             ->with('property', 'lease')
             ->withTimestamps();
     }
-    ///// Group properties that are in the user_unit pivot to avoid duplicates in view//////// 
+    ///// Group properties that are in the unit_user pivot to avoid duplicates in view//////// 
 
     public function assignedunits()
     {
@@ -178,15 +192,15 @@ class User extends Authenticatable
     public function filterUsers()
     {
         // Check if the user's ID is 1 and return false
-       
+
         $loggedInUserRoles = $this->roles;
         $loggedInUserPermissions = $loggedInUserRoles->flatMap(function ($role) {
             return $role->permissions;
         });
 
         $allUsers = self::with('roles.permissions')
-        ->where('id', '!=', 1) // Exclude users with id 1
-        ->get();
+            ->where('id', '!=', 1) // Exclude users with id 1
+            ->get();
         //dd($allUsers);
 
         $filteredUsers = $allUsers->filter(function ($user) use ($loggedInUserPermissions) {
@@ -196,7 +210,6 @@ class User extends Authenticatable
                 if ($rolePermissions->count() > $loggedInUserPermissions->count()) {
                     return false;
                 }
-                
             }
             return true;
         });

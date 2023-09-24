@@ -30,8 +30,8 @@ class Unit extends Model
         'unit_type' => ['label' => 'Type', 'inputType' => 'select','required' =>true, 'readonly' => ''],
         'unit_number' => ['label' => 'Unit Number', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
         'rent' => ['label' => 'Market Rent', 'inputType' => 'number', 'required' =>false,'readonly' => ''],
-        'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'text','required' =>false,'readonly' => true],
-        'size' => ['label' => 'Size', 'inputType' => 'text','required' =>false, 'readonly' => ''],
+        'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'number','required' =>false,'readonly' => true],
+        'size' => ['label' => 'Size (Sqm)', 'inputType' => 'number','required' =>false, 'readonly' => ''],
         'bathrooms' => ['label' => 'No of Bathrooms', 'inputType' => 'number', 'required' =>true,'readonly' => ''],
         'bedrooms' => ['label' => 'No of Bedrooms', 'inputType' => 'number', 'required' =>true,'readonly' => ''],
         'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' =>false,'readonly' => ''],
@@ -43,13 +43,13 @@ class Unit extends Model
         'property_id' => 'required', 
         'unit_type' => 'required', 
         'unit_number' => 'required', 
-        'rent' => 'numeric',
-        'security_deposit' => 'numeric',
-        'size' => 'numeric', 
-        'bathrooms' => 'required', 
-        'bedrooms' => 'required', 
+        'rent' => 'nullable|numeric',
+        'security_deposit' => 'nullable|numeric',
+        'size' => 'required|numeric', 
+        'bathrooms' => 'required|numeric', 
+        'bedrooms' => 'required|numeric', 
         'description' => 'nullable',
-        'selling_price' => 'numeric',
+        'selling_price' => 'nullable|numeric',
         
        
     ];
@@ -58,13 +58,7 @@ class Unit extends Model
     switch ($field) {
         case 'property_id':
             // Retrieve the supervised units' properties
-      
-                if (Gate::allows('view-all', auth()->user())) {
-                    $properties = Property::pluck('property_name','id')->toArray();
-                   
-                } else {
-                    $properties = auth()->user()->supervisedUnits->pluck('property.property_name', 'property.id')->toArray();
-                }         
+                    $properties = Property::pluck('property_name','id')->toArray();   
                 return $properties;
           //  return Property::pluck('property_name','id')->toArray();
             case 'unit_type':
@@ -91,14 +85,16 @@ class Unit extends Model
     /**
      * The users that belong to the unit.
      */
-    public function users(): BelongsToMany
+    public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'unit_user')
+        ->withPivot('property_id')
+        ->withTimestamps();
     }
 
     public function unitSupervisors()
     {
-        return $this->belongsToMany(User::class, 'user_unit', 'unit_id', 'user_id')
+        return $this->belongsToMany(User::class, 'unit_user', 'unit_id', 'user_id')
         ->withTimestamps();
     }
 

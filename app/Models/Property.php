@@ -15,33 +15,33 @@ class Property extends Model
         'property_location',
         'property_streetname',
         'property_status',
-            
+
     ];
     ////////// FIELDS FOR CREATE AND EDIT METHOD
     public static $fields = [
-        'property_type' => ['label' => 'Property Type', 'inputType' => 'selectgroup','required' =>true,'readonly' => true],
-        'property_name' => ['label' => 'Property Name', 'inputType' => 'text','required' =>true, 'readonly' => true],
-        'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
-        'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
-        'property_status' => ['label' => 'Property Status', 'inputType' => 'select', 'required' =>true,'readonly' => ''],
-       
-      
+        'property_type' => ['label' => 'Property Type', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => true],
+        'property_name' => ['label' => 'Property Name', 'inputType' => 'text', 'required' => true, 'readonly' => true],
+        'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
+        'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
+        'property_status' => ['label' => 'Property Status', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+
+
         // Add more fields as needed
     ];
 
-    public static $validation =[
-        'property_type' => 'required', 
-        'property_name' => 'required', 
-        'property_location' => 'required', 
+    public static $validation = [
+        'property_type' => 'required',
+        'property_name' => 'required',
+        'property_location' => 'required',
         'property_streetname' => 'required',
         'property_status' => 'required',
-       
+
     ];
 
-     /////Filter options
-     public static $filter = [
+    /////Filter options
+    public static $filter = [
         'property_location' => 'Type',
-        'property_streetname' => 'Location', 
+        'property_streetname' => 'Location',
         'property_status' => 'Status',
         // Add more filter fields as needed
     ];
@@ -51,29 +51,30 @@ class Property extends Model
 
     public static function getFieldData($field)
     {
-    switch ($field) {
-       
+        switch ($field) {
+
             case 'property_type':
                 $propertytype = PropertyType::all();
                 $propertytypes = $propertytype->groupBy('property_category');
+                $data = []; // Initialize $data as an empty array
                 foreach ($propertytypes as $category => $propertytype) {
-                    $data[$category] = $propertytype->pluck('property_type','id')->toArray();
+                    $data[$category] = $propertytype->pluck('property_type', 'id')->toArray();
                 }
-            return $data;
-        case 'property_status':
-            return  ['Active', 'InActive'];
-        // Add more cases for additional filter fields
-        default:
-            return [];
-    }
+                return $data;
+            case 'property_status':
+                return  ['Active', 'InActive'];
+                // Add more cases for additional filter fields
+            default:
+                return [];
+        }
     }
     /**
      * The amenities that belong to the property.
      */
 
-    public function amenities(){
+    public function amenities()
+    {
         return $this->belongsToMany(Amenity::class, 'properties_amenities');
-
     }
 
     public function utilities()
@@ -86,30 +87,18 @@ class Property extends Model
         return $this->hasMany(Unit::class);
     }
 
-    public function propertiesWithUnit()
-{
-    // Get the IDs of units assigned to the user
-    $unitIds = $this->units->pluck('id')->toArray();
-
-    // Get the properties that have a relationship with unit in pivot
-    $properties = Property::whereIn('unit_id', $unitIds)->get();
-
-    // Return the properties
-    return $properties;
-}
-/// scope showing properties with units
-public function scopeWithUserUnits($query)
-{
-    $user = auth()->user();
-    if ($user  && $user->id !== 1) {
-    return $query->whereHas('units', function ($query) {
-        $query->where('id', auth()->id());
-    });
-}
-}
-
-
-    
-
-
+    /// scope showing properties with units
+    public function scopeWithUnitUser($query)
+    {
+        $user = auth()->user();
+        if ($user->id !== 1) {
+            $userUnits = $user->units;
+            $propertyIds = $userUnits->pluck('pivot.property_id')->unique();
+            
+            // Retrieve properties based on the extracted property_ids
+            return $query->whereIn('id', $propertyIds);
+       
+        }
+       
+    }
 }

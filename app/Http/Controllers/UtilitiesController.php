@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
+use App\Models\Property;
 
 class UtilitiesController extends Controller
 {
@@ -32,14 +33,14 @@ class UtilitiesController extends Controller
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-        //    $tablevalues = Utilities::all();
-            $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
+            $tablevalues = Utilities::all();
+          //  $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
         } else {
-        //    $tablevalues = Utilities::with('property')->get();
-            $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
+            $tablevalues = Utilities::with('property')->get();
+          //  $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
         }
 
-        $mainfilter =  $this->model::pluck('utility_name')->toArray();
+        $mainfilter =  Property::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////

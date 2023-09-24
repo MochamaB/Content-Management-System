@@ -28,11 +28,12 @@ class AssignUserToUnitListener
     {
         $user = $event->user;
         $unitId = $event->unitId;
+        $propertyId = $event->propertyId;
 
         // Detach the old Units from user
         $user->units()->detach();
 
         // Attach the new ones
-        $user->units()->attach($unitId);
+        $user->units()->attach($unitId, ['property_id' => $propertyId]);
     }
 }

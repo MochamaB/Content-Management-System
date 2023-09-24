@@ -155,9 +155,15 @@ class UserController extends Controller
         $user->assignRole($role);
         
         $unitIds = $request->input('unit_id', []);  
-        // Attach the relationship with pivot data
-      //  dd($propertyId);
-        $user->supervisedUnits()->attach($unitIds);
+        foreach ($unitIds as $unitId => $selected) {
+            if ($selected) {
+                // Retrieve the corresponding property_id from the hidden field
+                $propertyId = $request->input("property_id.{$unitId}");
+    
+                // Attach the unit to the user with the associated property_id
+                $user->units()->attach($unitId, ['property_id' => $propertyId]);
+            }
+        }
         $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
 
 
@@ -279,10 +285,20 @@ class UserController extends Controller
       
             $model->update($request->all());
             $unitIds = $request->input('unit_id', []);
+            $model->units()->detach();  
+            foreach ($unitIds as $unitId => $selected) {
+                if ($selected) {
+                    // Retrieve the corresponding property_id from the hidden field
+                    $propertyId = $request->input("property_id.{$unitId}");
+        
+                    // Attach the unit to the user with the associated property_id
+                    $model->units()->attach($unitId, ['property_id' => $propertyId]);
+                }
+            }
          
                 // Attach the relationship with pivot data
               //  dd($propertyId);
-                $model->supervisedUnits()->sync($unitIds);
+        //        $model->supervisedUnits()->sync($unitIds);
         
         
         

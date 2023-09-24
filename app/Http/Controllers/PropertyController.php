@@ -36,12 +36,7 @@ class PropertyController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
-        if(Property::doesntHave('units')){
-            $tablevalues = Property::all();
-        }else{
-            $tablevalues = Property::withUserUnits()->get();  
-        }
+        $tablevalues = Property::all();
      //   $tablevalues = Property::withUserUnits()->get();
 
         $mainfilter =  $this->model::pluck('property_name')->toArray();
@@ -100,8 +95,6 @@ class PropertyController extends Controller
         ) {
             return redirect('admin.property.properties_index')->with('statuserror', 'Property is already in the system');
         } else {
-
-
             $validationRules = Property::$validation;
             $validatedData = $request->validate($validationRules);
             $property = new Property;

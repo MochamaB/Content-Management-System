@@ -19,8 +19,7 @@
 
   <!-- endinject -->
   <!-- Plugin css for this page -->
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/js/select.dataTables.min.css') }}">
+
 
   <!--- Plugins for bootstrap table--------->
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
@@ -29,7 +28,6 @@
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/wizard.css') }}">
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/mystyle.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />

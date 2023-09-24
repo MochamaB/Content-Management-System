@@ -14,7 +14,7 @@ class UnitAccessScope implements Scope
         $user = auth()->user();
         $userRole =$user->roles->pluck('name');
 
-        if ($user  && $user->id !== 1 && $userRole ==="Admin") {
+        if ($user  && $user->id) {
             // Get the IDs of units assigned to the user
             $unitIds = $user->units->pluck('id')->toArray();
 

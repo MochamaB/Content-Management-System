@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Unit;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Events\AssignUserToUnit;
 
 class UnitController extends Controller
 {
@@ -21,31 +23,31 @@ class UnitController extends Controller
 
     public function __construct()
     {
-        $this->model = Unit::class; 
+        $this->model = Unit::class;
         $this->controller = collect([
             '0' => 'unit', // Use a string for the controller name
             '1' => 'New Unit',
         ]);
     }
-    
+
     public function index($property = null)
     {
         $user = Auth::user();
-        
+
         if (Gate::allows('view-all', $user)) {
-         //   $tablevalues = $this->model::with('property')->get();
-            $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
-        }else{
-          //  $tablevalues = $user->units;
-            $tablevalues = ($property) ? $user->units()->where('property_id', $property->id)->get() : $user->units;
+            $tablevalues = $this->model::with('property')->get();
+            //   $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
+        } else {
+            $tablevalues = $user->units;
+            //  $tablevalues = ($property) ? $user->units()->where('property_id', $property->id)->get() : $user->units;
         }
-    
+
         $mainfilter =  $this->model::pluck('unit_type')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['UNIT', 'PROPERTY','TENANT', 'EVENTS','ACTIONS'],
+            'headers' => ['UNIT', 'PROPERTY', 'TENANT', 'EVENTS', 'ACTIONS'],
             'rows' => [],
         ];
 
@@ -53,19 +55,19 @@ class UnitController extends Controller
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->unit_number,
-                $item->property->property_name.'-'. $item->property->property_location,
+                $item->property->property_name . '-' . $item->property->property_location,
                 $item->unit_type,
                 $item->unit_type,
             ];
         }
-        $unitviewData = compact('tableData', 'mainfilter', 'viewData','controller');
-    //    return [
+        $unitviewData = compact('tableData', 'mainfilter', 'viewData', 'controller');
+        //    return [
 
-      //      'unitviewData' => $unitviewData,
-      //      // Add other variables you want to return here...
-       // ];
+        //      'unitviewData' => $unitviewData,
+        //      // Add other variables you want to return here...
+        // ];
 
-        return View('admin.CRUD.form',compact('mainfilter','tableData','controller'),$viewData,$unitviewData);
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'), $viewData, $unitviewData);
     }
 
     /**
@@ -77,7 +79,7 @@ class UnitController extends Controller
     {
         $viewData = $this->formData($this->model);
 
-        return View('admin.CRUD.form',$viewData);
+        return View('admin.CRUD.form', $viewData);
     }
 
     /**
@@ -88,26 +90,30 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        $model = new  $this->model;
-        // Get the list of fillable fields from the model
-        $fillableFields = $model->getFillable();
-        // Loop through the fillable fields and set the values from the request
-        foreach ($fillableFields as $field) {
-            // Make sure the field exists in the request before setting it
-            if ($request->has($field)) {
-                $model->$field = $request->input($field);
-            }
-            // Handle file upload if the current field is a file input
-        if ($request->hasFile($field)) {
-            $file = $request->file($field);
-            $filename = date('YmdHi') . $file->getClientOriginalName();
-            $file->move(base_path('resources/uploads/images'), $filename);
-            $model->$field = $filename;
+        //// Data Entry validation/////////////
+        if (Unit::where('unit_number', $request->unit_number)
+                 ->where('property_id', $request->property_id)
+                ->exists())  {
+            return redirect()->back()->with('statuserror', 'Unit Number Already in system.');
+        } 
+        $validationRules = Unit::$validation;
+        $validatedData = $request->validate($validationRules);
+        $unit = new Unit;
+        $unit->fill($validatedData);
+        $unit->save();
+
+        // Attach the currently authenticated user to the unit_user pivot table
+        $user = Auth::user();
+        $unitId = Unit::find($unit->id);
+        $propertyId = $unit->property_id;
+        if ($user->id !== 1) {
+            /// Event to attach the user who created the unit
+            //    event(new AssignUserToUnit($user, $unitId, $propertyId));
+            $unit->users()->attach($user, ['property_id' => $propertyId]);
         }
-        }
-       
-        $model->save();
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+
+            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+        
     }
 
     /**
@@ -118,7 +124,7 @@ class UnitController extends Controller
      */
     public function show(Unit $unit)
     {
-        $unit->load('property','unitSupervisors');
+     //   $unit->load('property', 'unitSupervisors');
         $pageheadings = collect([
             '0' => $unit->unit_number,
             '1' => $unit->property->property_name,
@@ -127,48 +133,48 @@ class UnitController extends Controller
         $tabTitles = collect([
             'Summary',
             'Users',
-         //   'Utilities',
-        //    'Maintenance',
-        //    'Financials',
-        //    'Users',
-        //    'Invoices',
-        //    'Payments'
+            //   'Utilities',
+            //    'Maintenance',
+            //    'Financials',
+            //    'Users',
+            //    'Invoices',
+            //    'Payments'
             // Add more tab titles as needed
         ]);
-   
-     $unitEditData =$this->edit($unit)->getData();
-     $tableData = [
-        'headers' => ['USER','PROPERTY', 'ROLE'],
-        'rows' => [],
-    ];
-    //// shows users attached to the house
-    $users =$unit->unitSupervisors;
-    $property = $unit->property;
-    foreach ($users as $user) {
-        $role = $user->roles->first();
-        $tableData['rows'][] = [
-         //   'id' => $item->id,
-            $user->firstname .' '.  $user->lastname,
-            $property->property_name,
-            $role->name,
-           
-        ];
-    }
-        
-        $viewData = $this->formData($this->model,$unit);
-        $unitdetails = $unit->unitdetails;
-         // Render the Blade views for each tab content
-         $tabContents = [];
-         foreach ($tabTitles as $title) {
-            if ($title === 'Summary') {
-             $tabContents[] = View('admin.property.unit_'.$title,$unitEditData,compact('unit','unitdetails'))->render();
-            }if ($title === 'Users') {
-                $tabContents[] = View('admin.property.unit_'.$title,['data' => $tableData], compact('unit'))->render();
-               }
-            
-         }
 
-        return View('admin.CRUD.form',compact('pageheadings','tabTitles','tabContents'));
+        $unitEditData = $this->edit($unit)->getData();
+        $tableData = [
+            'headers' => ['USER', 'PROPERTY', 'ROLE'],
+            'rows' => [],
+        ];
+        //// shows users attached to the house
+        $users = $unit->users;
+        $property = $unit->property;
+        foreach ($users as $user) {
+            $role = $user->roles->first();
+            $tableData['rows'][] = [
+                //   'id' => $item->id,
+                $user->firstname . ' ' .  $user->lastname,
+                $property->property_name,
+                $role->name,
+
+            ];
+        }
+
+        $viewData = $this->formData($this->model, $unit);
+        $unitdetails = $unit->unitdetails;
+        // Render the Blade views for each tab content
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
+            if ($title === 'Summary') {
+                $tabContents[] = View('admin.property.unit_' . $title, $unitEditData, compact('unit', 'unitdetails'))->render();
+            }
+            if ($title === 'Users') {
+                $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
+            }
+        }
+
+        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**
@@ -184,12 +190,12 @@ class UnitController extends Controller
             'property_id' => $unit->property->property_name, // Use a string for the controller name
             '1' => 'New Unit',
         ]);
-        $viewData = $this->formData($this->model,$unit,$specialvalue);
-        $unitEditData = compact( 'specialvalue');
+        $viewData = $this->formData($this->model, $unit, $specialvalue);
+        $unitEditData = compact('specialvalue');
 
-        
 
-        return View('admin.CRUD.form',$viewData);
+
+        return View('admin.CRUD.form', $viewData);
     }
 
     /**
@@ -212,8 +218,11 @@ class UnitController extends Controller
      */
     public function destroy(Unit $unit)
     {
-        //
-    }
+        //Check if unit is first attached to leases, invoices,payments,  
+        $unit->users()->detach();   /////// Remove assigned units
+        $unit->delete();   //// Delete User          //////// Remove Role
 
-    
+
+        return redirect()->back()->with('status', 'Unit deleted successfully.');
+    }
 }

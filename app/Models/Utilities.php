@@ -46,15 +46,14 @@ class Utilities extends Model
             case 'chartofaccounts_id':
                 $account = Chartofaccounts::all();
                 $accounts = $account->groupBy('account_type');
-                $data = [];
-
-                if (isset($accounts)) {
+                $data = []; // Initialize $data as an empty array
+           
                     foreach ($accounts as $accountType => $accounts) {
                         $data[$accountType] = $accounts->pluck('account_name', 'id')->toArray();
                     }
-                } else {
-                    $data = null; // or an empty array or whatever is appropriate for your use case
-                }
+
+                    return $data;// or an empty array or whatever is appropriate for your use case
+                
 
             case 'utility_type':
                 return [

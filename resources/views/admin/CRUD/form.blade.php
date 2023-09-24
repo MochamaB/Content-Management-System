@@ -23,3 +23,5 @@
         @endif
 
 @endsection
+
+@include('layouts.admin.scripts')

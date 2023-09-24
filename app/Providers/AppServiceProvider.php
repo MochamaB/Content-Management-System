@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use App\Scopes\UnitAccessScope;
-use App\Scopes\UserAccessScope;
+use App\Scopes\PropertyAccessScope;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
           // Apply the UnitAccessScope to specific models
         Lease::addGlobalScope(new UnitAccessScope);
-       // Property::addGlobalScope(new UnitAccessScope);
+        Property::addGlobalScope(new PropertyAccessScope);
         
       //  Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);

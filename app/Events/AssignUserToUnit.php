@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Property;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -18,6 +19,7 @@ class AssignUserToUnit
 
     public $user;
     public $unitId;
+    public $propertyId;
 
     /**
      * Create a new event instance.
@@ -26,10 +28,11 @@ class AssignUserToUnit
      * @param int $unitId
      * @return void
      */
-    public function __construct(User $user,Unit $unitId)
+    public function __construct(User $user,Unit $unitId,$propertyId)
     {
         $this->user = $user;
         $this->unitId = $unitId;
+        $this->propertyId = $propertyId;
     }
     /**
      * Get the channels the event should broadcast on.
