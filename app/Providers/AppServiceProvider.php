@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use App\Scopes\UnitAccessScope;
+use App\Scopes\UserAccessScope;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -37,9 +38,11 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
           // Apply the UnitAccessScope to specific models
         Lease::addGlobalScope(new UnitAccessScope);
+       // Property::addGlobalScope(new UnitAccessScope);
         
       //  Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);
+     //  User::addGlobalScope(new UserAccessScope);
 
 
         /////////// GLOBAL VIEW COMPOSERS
@@ -115,7 +118,7 @@ class AppServiceProvider extends ServiceProvider
                 'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
                 'Tasks' => ['icon' => 'timetable', 'submodules' => ['',]],
                 'Files' => ['icon' => 'file-multiple', 'submodules' => ['',]],
-                'Settings' => ['icon' => 'settings', 'submodules' => ['setting']],
+                'Settings' => ['icon' => 'settings', 'submodules' => ['setting','websitesetting']],
                 'User' => ['icon' => 'account-circle-outline', 'submodules' => ['user', 'role', 'permission']],
             ]);
           //  $notifications = $user->notifications;

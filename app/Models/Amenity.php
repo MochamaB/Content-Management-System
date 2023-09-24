@@ -39,10 +39,12 @@ class Amenity extends Model
             return [];
     }
     }
-
+/**
+     * The properties that belong to the amenities.
+     */
 
     public function properties()
     {
-        return $this->belongsToMany(Property::class, 'properties_amenities', 'amenity_id', 'property_id');
+        return $this->belongsToMany(Property::class, 'properties_amenities');
     }
 }

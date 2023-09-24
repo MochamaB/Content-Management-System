@@ -1,4 +1,4 @@
-@if(!$routeParts[0] ==='Dashboard')
+@if($routeParts[0] !=='dashboard')
 <div class="" style="padding:10px 0px 0px 10px;border-left:5px solid #ffaf00;margin-bottom: 15px;">
     <!-- Breadcrumb -->
     <nav class="d-flex"style="">
@@ -32,4 +32,5 @@
     @include('layouts.admin.messages')
 </div>
 @endif
+
 

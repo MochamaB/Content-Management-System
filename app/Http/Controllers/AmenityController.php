@@ -34,12 +34,8 @@ class AmenityController extends Controller
 
     public function index()
     {
-        if (Gate::allows('view-all', $this->user)) {
-            $tablevalues = Amenity::with('properties')->get();
-        }else{
+        
         $tablevalues = Amenity::with('properties')->get();
-        }
-
         $mainfilter =  $this->model::pluck('amenity_name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;

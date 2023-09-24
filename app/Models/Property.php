@@ -14,7 +14,6 @@ class Property extends Model
         'property_type',
         'property_location',
         'property_streetname',
-        'property_manager',
         'property_status',
             
     ];
@@ -24,7 +23,6 @@ class Property extends Model
         'property_name' => ['label' => 'Property Name', 'inputType' => 'text','required' =>true, 'readonly' => true],
         'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
         'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
-        'property_manager' => ['label' => 'Property Manager', 'inputType' => 'hidden', 'required' =>false,'readonly' => ''],
         'property_status' => ['label' => 'Property Status', 'inputType' => 'select', 'required' =>true,'readonly' => ''],
        
       
@@ -36,7 +34,6 @@ class Property extends Model
         'property_name' => 'required', 
         'property_location' => 'required', 
         'property_streetname' => 'required',
-        'property_manager' => 'required',
         'property_status' => 'required',
        
     ];
@@ -63,8 +60,6 @@ class Property extends Model
                     $data[$category] = $propertytype->pluck('property_type','id')->toArray();
                 }
             return $data;
-        case 'property_manager':
-            return  ['Notset'=>'Notset'];
         case 'property_status':
             return  ['Active', 'InActive'];
         // Add more cases for additional filter fields
@@ -72,6 +67,9 @@ class Property extends Model
             return [];
     }
     }
+    /**
+     * The amenities that belong to the property.
+     */
 
     public function amenities(){
         return $this->belongsToMany(Amenity::class, 'properties_amenities');
@@ -88,6 +86,27 @@ class Property extends Model
         return $this->hasMany(Unit::class);
     }
 
+    public function propertiesWithUnit()
+{
+    // Get the IDs of units assigned to the user
+    $unitIds = $this->units->pluck('id')->toArray();
+
+    // Get the properties that have a relationship with unit in pivot
+    $properties = Property::whereIn('unit_id', $unitIds)->get();
+
+    // Return the properties
+    return $properties;
+}
+/// scope showing properties with units
+public function scopeWithUserUnits($query)
+{
+    $user = auth()->user();
+    if ($user  && $user->id !== 1) {
+    return $query->whereHas('units', function ($query) {
+        $query->where('id', auth()->id());
+    });
+}
+}
 
 
     

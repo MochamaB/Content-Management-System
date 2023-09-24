@@ -42,33 +42,15 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-                // Retrieve the logged-in user's roles and their associated permissions
-    //    $loggedInUser = Auth::user();
-        $loggedInUserRoles = $user->roles;
-        $loggedInUserPermissions = $loggedInUserRoles->flatMap(function ($role) {
-            return $role->permissions;
-        });
-        // Retrieve all users with their roles and associated permissions
-        $allUsers = User::with('roles.permissions')->get();
-        // Filter users with roles having lesser permissions
-        $filteredUsers = $allUsers->filter(function ($user) use ($loggedInUserPermissions) {
-            foreach ($user->roles as $role) {
-                $rolePermissions = $role->permissions;
-                
-                // Compare the number of permissions in each role with the logged-in user's permissions
-                if ($rolePermissions->count() > $loggedInUserPermissions->count()) {
-                    return false; // Exclude users with roles having more or equal permissions
-                }
-            }
-            return true;
-        });
+  
 
-// Now you have the users with roles having lesser permissions
 
         if (Gate::allows('view-all', $user)) {
             $tablevalues = $this->model::all();
         }else{
-            $tablevalues = $filteredUsers->all();
+
+            $tablevalues = $user->filterUsers();
+          //  $tablevalues = $user->units; // Users with roles having lesser permissions
         }
         $mainfilter =  Role::pluck('name')->toArray();
         $viewData = $this->formData($this->model);

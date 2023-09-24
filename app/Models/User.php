@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -92,32 +93,36 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
-    //// Units loggedin user can see
+    /**
+     * The units that belong to the user.
+     */
+    
+
 
     public function units()
     {
-        return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
+        return $this->belongsToMany(Unit::class, 'user_unit')
             ->withTimestamps();
     }
 
     public function unitswithoutlease()
     {
         return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
-        ->leftJoin('leases', 'units.id', '=', 'leases.unit_id')
-        ->whereNull('leases.id')
-        ->withTimestamps();
+            ->leftJoin('leases', 'units.id', '=', 'leases.unit_id')
+            ->whereNull('leases.id')
+            ->withTimestamps();
     }
-    
+
 
 
     ///// Returning units that are in the user_unit pivot, Has additional data such as properties and leasedata 
     public function supervisedUnits()
     {
         return $this->belongsToMany(Unit::class, 'user_unit', 'user_id', 'unit_id')
-            ->with('property','lease')
+            ->with('property', 'lease')
             ->withTimestamps();
     }
-     ///// Group properties that are in the user_unit pivot to avoid duplicates in view//////// 
+    ///// Group properties that are in the user_unit pivot to avoid duplicates in view//////// 
 
     public function assignedunits()
     {
@@ -127,12 +132,12 @@ class User extends Authenticatable
         });
     }
 
-    
+
 
     ////////////Return units that have leases that a logged in user can see
 
-    
-    
+
+
 
     //////// Gate to check if user is superAdmin //////// 
     ////scope////
@@ -144,13 +149,58 @@ class User extends Authenticatable
                     ->from('leases')
                     ->where('status', 'active');
             });
-        }
-    
-        public function lease()
-        {
-            return $this->hasOne(Lease::class, 'user_id');
-        }
-    
+    }
 
-    
+    public function lease()
+    {
+        return $this->hasOne(Lease::class, 'user_id');
+    }
+    public function scopeWithLowerPermissions($query)
+    {
+
+        $loggedInUser = Auth::user(); // Assuming you're using this inside a controller or middleware
+
+        $loggedInUserRoles = $loggedInUser->roles;
+        $loggedInUserPermissions = $loggedInUserRoles->flatMap(function ($role) {
+            return $role->permissions;
+        });
+        // Retrieve all users with their roles and associated permissions
+        $allUsers = User::with('roles.permissions')->get();
+
+        return $query->where('id', '=', $loggedInUser->id)
+            ->whereHas('roles.permissions', function ($subquery) use ($loggedInUserPermissions) {
+                $subquery->groupBy('id')
+                    ->selectRaw('COUNT(*) as permission_count, id')
+                    ->having('permission_count', '<', $loggedInUserPermissions->count());
+            });
+    }
+
+    public function filterUsers()
+    {
+        // Check if the user's ID is 1 and return false
+       
+        $loggedInUserRoles = $this->roles;
+        $loggedInUserPermissions = $loggedInUserRoles->flatMap(function ($role) {
+            return $role->permissions;
+        });
+
+        $allUsers = self::with('roles.permissions')
+        ->where('id', '!=', 1) // Exclude users with id 1
+        ->get();
+        //dd($allUsers);
+
+        $filteredUsers = $allUsers->filter(function ($user) use ($loggedInUserPermissions) {
+            foreach ($user->roles as $role) {
+                $rolePermissions = $role->permissions;
+
+                if ($rolePermissions->count() > $loggedInUserPermissions->count()) {
+                    return false;
+                }
+                
+            }
+            return true;
+        });
+
+        return $filteredUsers;
+    }
 }

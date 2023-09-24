@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 
 class Unit extends Model
@@ -37,6 +38,20 @@ class Unit extends Model
         'selling_price' => ['label' => 'Selling Price', 'inputType' => 'number', 'required' =>false,'readonly' => ''],
       
         // Add more fields as needed
+    ];
+    public static $validation =[
+        'property_id' => 'required', 
+        'unit_type' => 'required', 
+        'unit_number' => 'required', 
+        'rent' => 'numeric',
+        'security_deposit' => 'numeric',
+        'size' => 'numeric', 
+        'bathrooms' => 'required', 
+        'bedrooms' => 'required', 
+        'description' => 'nullable',
+        'selling_price' => 'numeric',
+        
+       
     ];
     public static function getFieldData($field)
     {
@@ -72,6 +87,13 @@ class Unit extends Model
     public function lease()
     {
         return $this->hasOne(Lease::class, 'unit_id');
+    }
+    /**
+     * The users that belong to the unit.
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class);
     }
 
     public function unitSupervisors()

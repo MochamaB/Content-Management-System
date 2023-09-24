@@ -37,12 +37,12 @@ class PropertyController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if (Gate::allows('view-all', $user)) {
-            $tablevalues = Unit::viewallunits();
-        } else {
-            $tablevalues = $user->assignedunits();
+        if(Property::doesntHave('units')){
+            $tablevalues = Property::all();
+        }else{
+            $tablevalues = Property::withUserUnits()->get();  
         }
-
+     //   $tablevalues = Property::withUserUnits()->get();
 
         $mainfilter =  $this->model::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
@@ -53,14 +53,13 @@ class PropertyController extends Controller
             'rows' => [],
         ];
 
-        foreach ($tablevalues as $propertyId  => $item) {
-            $property = $item->first()->property;
+        foreach ($tablevalues as $item) {
             $tableData['rows'][] = [
-                'id' => $property->id,
-                $property->property_name . ' - ' . $property->property_streetname,
-                $property->property_location,
-                $property->property_manager,
-                $property->property_type,
+                'id' => $item->id,
+                $item->property_name . ' - ' . $item->property_streetname,
+                $item->property_location,
+                $item->property_manager,
+                $item->property_type,
             ];
         }
 
@@ -102,13 +101,11 @@ class PropertyController extends Controller
             return redirect('admin.property.properties_index')->with('statuserror', 'Property is already in the system');
         } else {
 
+
+            $validationRules = Property::$validation;
+            $validatedData = $request->validate($validationRules);
             $property = new Property;
-            $property->property_name = $request->input('property_name');
-            $property->property_type = $request->input('property_type');
-            $property->property_location = $request->input('property_location');
-            $property->property_streetname = $request->input('property_streetname');
-            $property->property_manager = $request->input('property_manager');
-            $property->property_status = $request->input('property_status');
+            $property->fill($validatedData);
             $property->save();
 
             return redirect('property')->with('status', 'Property Added Successfully');
@@ -148,8 +145,8 @@ class PropertyController extends Controller
         // Access the individual variables from the $result array
         $unitviewData = $result->getData();
         $resultUtilites = app('App\Http\Controllers\UtilitiesController')->index($property);
-         // Access the individual variables from the $result array
-         $utilitiesviewData = $resultUtilites->getData();
+        // Access the individual variables from the $result array
+        $utilitiesviewData = $resultUtilites->getData();
 
         // Access the variables directly from the array
         $tableData = $unitviewData['tableData'];
@@ -175,7 +172,10 @@ class PropertyController extends Controller
                     compact('amenities', 'allamenities')
                 )->render();
             } elseif ($title === 'Utilities') {
-                $tabContents[] = View('admin.CRUD.index',$utilitiesviewData,compact('amenities', 'allamenities')
+                $tabContents[] = View(
+                    'admin.CRUD.index',
+                    $utilitiesviewData,
+                    compact('amenities', 'allamenities')
                 )->render();
             }
         }
@@ -213,7 +213,7 @@ class PropertyController extends Controller
         $validationRules = Property::$validation;
         $validatedData = $request->validate($validationRules);
         $property->fill($validatedData);
-        $property->save();
+        $property->update();
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
