@@ -6,6 +6,7 @@ use App\Models\WebsiteSetting;
 use App\Models\Slider;
 use App\Models\Testimonial;
 use App\Models\Lease;
+use App\Models\Utility;
 use App\Models\User;
 use App\Models\Property;
 use App\Models\Unit;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use App\Scopes\UnitAccessScope;
 use App\Scopes\PropertyAccessScope;
+use App\Scopes\UtilityAccessScope;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -38,7 +40,9 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
           // Apply the UnitAccessScope to specific models
         Lease::addGlobalScope(new UnitAccessScope);
+
         Property::addGlobalScope(new PropertyAccessScope);
+        Utility::addGlobalScope(new UtilityAccessScope);
         
       //  Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);
@@ -111,9 +115,9 @@ class AppServiceProvider extends ServiceProvider
             $userRoles = auth()->user()->roles;
             $userPermissions = $userRoles->map->permissions->flatten();
             $sidebar = collect([
-                'Property' => ['icon' => 'bank', 'submodules' => ['property', 'unit', 'utilities']],
+                'Property' => ['icon' => 'bank', 'submodules' => ['property', 'unit', 'utility']],
                 'Leasing' => ['icon' => 'key','submodules' => ['lease']],
-                'Accounting' => ['icon' => 'cash-usd', 'submodules' => ['chartofaccounts']],
+                'Accounting' => ['icon' => 'cash-usd', 'submodules' => ['chartofaccount']],
                 'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
                 'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
                 'Tasks' => ['icon' => 'timetable', 'submodules' => ['',]],

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Chartofaccounts extends Model
+class Chartofaccount extends Model
 {
     use HasFactory;
     protected $table = 'chartofaccounts';

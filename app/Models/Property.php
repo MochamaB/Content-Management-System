@@ -77,9 +77,9 @@ class Property extends Model
         return $this->belongsToMany(Amenity::class, 'properties_amenities');
     }
 
-    public function utilities()
+    public function Utility()
     {
-        return $this->hasMany(Utilities::class);
+        return $this->hasMany(Utility::class);
     }
 
     public function units()

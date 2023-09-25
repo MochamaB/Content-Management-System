@@ -7,7 +7,7 @@ use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\AmenityController;
-use App\Http\Controllers\ChartOfAccountsController;
+use App\Http\Controllers\ChartOfAccountController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitDetailsController;
@@ -19,7 +19,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\LeaseController;
 use App\Http\Controllers\TenantDetailsController;
 use App\Http\Controllers\UnitChargeController;
-use App\Http\Controllers\UtilitiesController;
+use App\Http\Controllers\utilityController;
 use App\Http\Controllers\PropertyTypeController;
 
 /*
@@ -49,7 +49,7 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     Route::group(['groupName' => 'Accounting'], function () {
-        Route::resource('chartofaccounts', ChartOfAccountsController::class); 
+        Route::resource('chartofaccount', ChartOfAccountController::class); 
     });
 
     Route::group(['groupName' => 'Leasing'], function () {
@@ -62,7 +62,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('skiprent', [LeaseController::class, 'skiprent']);
         ///////////////
         Route::resource('unitcharge', UnitChargeController::class); 
-        Route::resource('utilities', UtilitiesController::class);
+        Route::resource('utility', utilityController::class);
      
         
     });

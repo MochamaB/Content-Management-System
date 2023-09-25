@@ -137,7 +137,7 @@ class PropertyController extends Controller
         $result = app('App\Http\Controllers\UnitController')->index($property);
         // Access the individual variables from the $result array
         $unitviewData = $result->getData();
-        $resultUtilites = app('App\Http\Controllers\UtilitiesController')->index($property);
+        $resultUtilites = app('App\Http\Controllers\UtilityController')->index($property);
         // Access the individual variables from the $result array
         $utilitiesviewData = $resultUtilites->getData();
 

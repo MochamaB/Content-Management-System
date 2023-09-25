@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\AssignUserToUnit;
-use App\Models\Chartofaccounts;
+use App\Models\Chartofaccount;
 use App\Models\lease;
 use App\Models\Property;
 use App\Models\Unit;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Http\Requests\StoreUnitChargeRequest;
-use App\Models\Utilities;
+use App\Models\Utility;
 use App\Notifications\LeaseAgreementNotification;
 use Carbon\Carbon;
 
@@ -92,9 +92,9 @@ class LeaseController extends Controller
         $rentcharge = $request->session()->get('rentcharge');
         $splitRentcharges = $request->session()->get('splitRentcharges');
         $depositcharge = $request->session()->get('depositcharge');
-        $account = Chartofaccounts::all();
+        $account = Chartofaccount::all();
         $accounts = $account->groupBy('account_type');
-        $utilities = Utilities::where('property_id', $lease->property_id ?? '')->get();
+        $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
         $utilityCharges = $request->session()->get('utilityCharges');
 
         //  dd($splitcharges);

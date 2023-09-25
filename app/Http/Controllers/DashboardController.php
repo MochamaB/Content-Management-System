@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use App\Models\Unit;
+use App\Models\Property;
 
 class DashboardController extends Controller
 {
@@ -13,10 +17,16 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $user = auth()->user()->load('units');
-        $units = $user->units;
+        $user = auth()->user();
+        if (Gate::allows('view-all', $user)) {
+          
+            $units = Unit::all(); 
+        } else {
+            $units = $user->units;
+        }
+        $properties = Property::all();
 
-        return View('admin.Report.dashboard',compact('units'));
+        return View('admin.Report.dashboard',compact('units','properties'));
     }
 
     /**

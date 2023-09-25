@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Chartofaccounts;
+use App\Models\Chartofaccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 
-class ChartOfAccountsController extends Controller
+class ChartOfAccountController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,10 +21,10 @@ class ChartOfAccountsController extends Controller
 
     public function __construct()
     {
-        $this->model = Chartofaccounts::class; 
+        $this->model = Chartofaccount::class; 
         
         $this->controller = collect([
-            '0' => 'chartofaccounts', // Use a string for the controller name
+            '0' => 'chartofaccount', // Use a string for the controller name
             '1' => 'New Chart of accounts',
         ]);
     }
@@ -34,9 +34,9 @@ class ChartOfAccountsController extends Controller
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            $tablevalues= Chartofaccounts::all();
+            $tablevalues= Chartofaccount::all();
         }else{
-            $tablevalues = Chartofaccounts::all();
+            $tablevalues = Chartofaccount::all();
         }
 
         
@@ -83,12 +83,12 @@ class ChartOfAccountsController extends Controller
      */
     public function store(Request $request)
     {
-        if (Chartofaccounts::where('account_number', $request->account_number)
+        if (Chartofaccount::where('account_number', $request->account_number)
         ->exists()) {
             return back()->with('status','Account already exists.');
         }
        
-        $model = new Chartofaccounts();
+        $model = new Chartofaccount();
         // Get the list of fillable fields from the model
         $fillableFields = $model->getFillable();
         // Loop through the fillable fields and set the values from the request
@@ -109,7 +109,7 @@ class ChartOfAccountsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Chartofaccounts $chartofaccounts)
+    public function show(Chartofaccount $chartofaccount)
     {
         //
     }
@@ -120,10 +120,10 @@ class ChartOfAccountsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Chartofaccounts $chartofaccounts)
+    public function edit(Chartofaccount $chartofaccount)
     {
-        dd($chartofaccounts);
-         $viewData = $this->formData($this->model,$chartofaccounts);
+       // dd($chartofaccount);
+         $viewData = $this->formData($this->model,$chartofaccount);
 
 
         return View('admin.CRUD.form',$viewData);
@@ -147,7 +147,7 @@ class ChartOfAccountsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Chartofaccounts $chartofaccounts)
+    public function destroy(Chartofaccount $chartofaccount)
     {
         //
     }

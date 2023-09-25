@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 
-class Utilities extends Model
+class Utility extends Model
 {
     use HasFactory;
     protected $table = 'utilities';
@@ -24,7 +24,7 @@ class Utilities extends Model
         'utility_name' => ['label' => 'Utility Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'chartofaccounts_id' => ['label' => 'Account', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => ''],
         'utility_type' => ['label' => 'Utility Type', 'inputType' => 'select', 'required' => false, 'readonly' => ''],
-        'rate' => ['label' => 'Rate or Amount', 'inputType' => 'text', 'required' => false, 'readonly' => true],
+        'rate' => ['label' => 'Rate or Amount', 'inputType' => 'text', 'required' => false, 'readonly' =>''],
 
 
         // Add more fields as needed
@@ -35,16 +35,11 @@ class Utilities extends Model
         switch ($field) {
             case 'property_id':
                 // Retrieve the supervised units' properties
-
-                if (Gate::allows('view-all', auth()->user())) {
                     $properties = Property::pluck('property_name', 'id')->toArray();
-                } else {
-                    $properties = auth()->user()->supervisedUnits->pluck('property.property_name', 'property.id')->toArray();
-                }
                 return $properties;
                 //  return Property::pluck('property_name','id')->toArray();
             case 'chartofaccounts_id':
-                $account = Chartofaccounts::all();
+                $account = Chartofaccount::all();
                 $accounts = $account->groupBy('account_type');
                 $data = []; // Initialize $data as an empty array
            

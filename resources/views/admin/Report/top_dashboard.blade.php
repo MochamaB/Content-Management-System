@@ -7,7 +7,7 @@
                 <h4>Properties</h4>
             </div>
             <div class="card-body">
-            <h3 class="rate-percentage">32.53%</h3>
+            <h3 class="rate-percentage">{{$properties->count()}}</h3>
 
             </div>
         </div>
@@ -18,7 +18,7 @@
                 <h4>Units</h4>
             </div>
             <div class="card-body">
-            <h3 class="rate-percentage">{{$units}}</h3>
+            <h3 class="rate-percentage">{{$units->count()}}</h3>
 
             </div>
         </div>

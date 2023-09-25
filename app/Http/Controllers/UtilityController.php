@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Utilities;
+use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Models\Property;
 
-class UtilitiesController extends Controller
+class UtilityController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,24 +22,18 @@ class UtilitiesController extends Controller
 
     public function __construct()
     {
-        $this->model = Utilities::class;
+        $this->model = Utility::class;
 
         $this->controller = collect([
-            '0' => 'utilities', // Use a string for the controller name
+            '0' => 'utility', // Use a string for the controller name
             '1' => 'New Utility',
         ]);
     }
     public function index($property = null)
     {
         $user = Auth::user();
-        if (Gate::allows('view-all', $user)) {
-            $tablevalues = Utilities::all();
-          //  $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
-        } else {
-            $tablevalues = Utilities::with('property')->get();
-          //  $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
-        }
-
+       
+        $tablevalues = Utility::with('property')->get();
         $mainfilter =  Property::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
@@ -60,7 +54,7 @@ class UtilitiesController extends Controller
             ];
         }
 
-        $utilitiesviewData = compact('tableData', 'mainfilter', 'viewData','controller');
+        $utilityviewData = compact('tableData', 'mainfilter', 'viewData','controller');
 
         return View(
             'admin.CRUD.form',
@@ -98,9 +92,9 @@ class UtilitiesController extends Controller
             'utility_type' => 'required',
             'rate' => 'required|numeric',
         ]);
-        $utilities = new Utilities();
-        $utilities->fill($validatedData);
-        $utilities->save();
+        $utility = new Utility();
+        $utility->fill($validatedData);
+        $utility->save();
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
     }
@@ -108,29 +102,29 @@ class UtilitiesController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Utilities  $utilities
+     * @param  \App\Models\utility  $utility
      * @return \Illuminate\Http\Response
      */
-    public function show(Utilities $utilities)
+    public function show(Utility $utility)
     {
-       // $utility = Utilities::find($utilities->id);
-        dd($utilities);
+       // $utility = utility::find($utility->id);
+        dd($utility);
         // $viewData = $this->formData($this->model,$amenity);
 
-        return View('admin.CRUD.edit',compact('utilities'));
+        return View('admin.CRUD.edit',compact('utility'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Utilities  $utilities
+     * @param  \App\Models\utility  $utility
      * @return \Illuminate\Http\Response
      */
-    public function edit(Utilities $utilities)
+    public function edit(Utility $utility)
     {
-       // dd($utilities);
+       // dd($utility);
        
-        $viewData = $this->formData($this->model,$utilities);
+        $viewData = $this->formData($this->model,$utility);
 
         return View('admin.CRUD.form', $viewData);
     }
@@ -139,10 +133,10 @@ class UtilitiesController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Utilities  $utilities
+     * @param  \App\Models\utility  $utility
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Utilities $utilities)
+    public function update(Request $request, Utility $utility)
     {
         $validatedData = $request->validate([
             'property_id' => 'required',
@@ -151,9 +145,9 @@ class UtilitiesController extends Controller
             'utility_type' => 'required',
             'rate' => 'required|numeric',
         ]);
-        $utilities = Utilities::find($utilities);
-        $utilities->fill($validatedData);
-        $utilities->update();
+        $utility = Utility::find($utility->id);
+        $utility->fill($validatedData);
+        $utility->update();
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
@@ -161,10 +155,10 @@ class UtilitiesController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Utilities  $utilities
+     * @param  \App\Models\utility  $utility
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Utilities $utilities)
+    public function destroy(utility $utility)
     {
         //
     }

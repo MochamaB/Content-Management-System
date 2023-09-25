@@ -32,7 +32,7 @@
               <ul class="nav flex-column sub-menu">
                 @foreach($moduleData['submodules'] as $submodule)
                 @if( Auth::user()->can($submodule.'.index') || Auth::user()->id === 1)
-                <li class="nav-item"> <a class="nav-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule) }}">{{ $submodule }}</a></li>
+                <li class="nav-item"> <a class="nav-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule) }}">{{ $submodule }}s</a></li>
                 @if($routeParts[0] === $submodule && $routeParts[1] === 'show')
                 <!-- Show link for the show method -->
                 <li class="nav-item"><a  class="nav-link reload-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule.'/'. $urlParts[5]) }}">Show</a></li>
