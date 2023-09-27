@@ -3,11 +3,8 @@
 
 <h4>Property Access</h4>
 <hr>
-<div id="accordion">
-    @foreach ($propertyaccess as $propertyId  => $unitList)
-    @php
-        $property = $unitList->first()->property;
-    @endphp
+<div id="accordion" class="propertyaccess">
+    @foreach ($propertyaccess as $property)
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center" id="{{ $property->id}}">
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $property->id}}Collapse" aria-expanded="true" aria-controls="collapseOne">
@@ -20,13 +17,11 @@
                     Select All
                 </label>
             </div>
-
-
         </div>
 
         <div id="{{ $property->id}}Collapse" class="collapse hide" aria-labelledby="{{ $property->id}}" data-parent="#accordion">
             <div class="card-body">
-            @foreach ($unitList as $unit)
+            @foreach ($property->units as $unit)
                 <div style="padding:7px 5px 7px 40px; border-bottom:2px solid #ced4da" class="col-md-4">
                 
                     <div class="form-check form-check-inline align-items-center">
@@ -61,16 +56,13 @@
 <a href="" class="editLink">Edit</a></h4>
 @endif
 <hr>
-<div id="accordion">
+<div id="accordion" class="propertyacess">
 
     @if ($propertyaccess->isEmpty())
     @include('layouts.admin.nodata', ['message' => 'No accessible units available. Contact Admin'])
     @endif
     
-    @foreach ($propertyaccess as $propertyId  => $unitList)
-    @php
-        $property = $unitList->first()->property;
-    @endphp
+    @foreach ($propertyaccess as $key  => $property)
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center" id="{{ $property->id}}">
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $property->id}}Collapse" aria-expanded="true" aria-controls="collapseOne">
@@ -89,7 +81,7 @@
 
         <div id="{{ $property->id}}Collapse" class="collapse hide" aria-labelledby="{{ $property->id}}" data-parent="#accordion">
             <div class="card-body">
-            @foreach ($unitList as $unit)
+            @foreach ($property->units as $unit)
                 <div style="padding:7px 5px 7px 40px; border-bottom:2px solid #ced4da" class="col-md-4">
                 
                     <div class="form-check form-check-inline align-items-center">
@@ -120,3 +112,4 @@
 
 
 @endif
+

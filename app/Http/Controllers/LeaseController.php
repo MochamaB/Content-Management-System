@@ -79,12 +79,8 @@ class LeaseController extends Controller
     public function create(Request $request)
     {
 
-        if (Gate::allows('view-all', auth()->user())) {
-            $properties = Property::pluck('property_name', 'id')->toArray();
-        } else {
-            $properties = auth()->user()->supervisedUnits->pluck('property.property_name', 'property.id')->toArray();
-        }
-
+       
+        $properties = Property::pluck('property_name', 'id')->toArray();
         $role = 'tenant'; // Replace with the desired role
         $tenants = User::withoutActiveLease($role)->get(); ///tenantdetailsview
         $lease = $request->session()->get('lease');
@@ -139,15 +135,8 @@ class LeaseController extends Controller
     public function store(Request $request)
     {
 
-        $validatedData = $request->validate([
-            'property_id' => 'required',
-            'unit_id' => 'required|numeric',
-            'user_id' => 'required',
-            'lease_period' => 'required',
-            'status' => 'required',
-            'startdate' => 'required|date',
-            'enddate' => 'nullable|date',
-        ]);
+        $validationRules = Lease::$validation;
+        $validatedData = $request->validate($validationRules);
 
         if (empty($request->session()->get('lease'))) {
             $lease = new Lease();
@@ -342,10 +331,12 @@ class LeaseController extends Controller
 
         ///Attach user to Unit
         $user = User::find($leasedetails->user_id);
-        $unitId =Unit::find($leasedetails->unit_id);
-        
+        $unit =Unit::find($leasedetails->unit_id);
+        $propertyId = $leasedetails->property_id;
 
-        event(new AssignUserToUnit($user, $unitId));
+        $unit->users()->attach($user, ['property_id' => $propertyId]);
+
+     //   event(new AssignUserToUnit($user, $unitId));
 
 
         $tenantdetails = $request->session()->get('tenantdetails');

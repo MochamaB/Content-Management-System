@@ -51,3 +51,26 @@
                 </div>
             </div>
 @endif
+<script>
+        $(document).ready(function () {
+            // Initially hide the Property Access tab
+            $(".propertyaccess").show();
+            $("#role").on("change", function () {
+                // Get the selected role
+                var selectedRole = $(this).find(":selected").text();
+                
+             
+                // Check if the selected role is "Tenant"
+                if (selectedRole === "Tenant") {
+                 
+                    // Hide the Property Access tab
+                    $(".propertyaccess").hide();
+                } else {
+                    // Show the Property Access tab
+                    $(".property-access").show();
+                }
+            });
+
+        });
+        
+    </script>

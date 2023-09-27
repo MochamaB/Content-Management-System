@@ -34,6 +34,17 @@ class Lease extends Model
 
         // Add more fields as needed
     ];
+
+    public static $validation = [
+        'property_id' => 'required',
+        'unit_id' => 'required|numeric',
+        'user_id' => 'required',
+        'lease_period' => 'required',
+        'status' => 'required',
+        'startdate' => 'required|date',
+        'enddate' => 'nullable|date',
+    ];
+
     public static function getFieldData($field)
     {
         $leases = Lease::with('property', 'unit', 'user')->get();

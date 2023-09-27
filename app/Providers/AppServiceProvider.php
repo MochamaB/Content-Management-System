@@ -17,6 +17,7 @@ use Spatie\Permission\Models\Permission;
 use App\Scopes\UnitAccessScope;
 use App\Scopes\PropertyAccessScope;
 use App\Scopes\UtilityAccessScope;
+use App\Scopes\UserAccessScope;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -46,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         
       //  Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);
-     //  User::addGlobalScope(new UserAccessScope);
+    //   User::addGlobalScope(new UnitAccessScope);
 
 
         /////////// GLOBAL VIEW COMPOSERS

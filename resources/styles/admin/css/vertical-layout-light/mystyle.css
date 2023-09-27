@@ -455,14 +455,14 @@ height:1%;
 .wizardtab button.active > .number {
   /* Your styles for the active number element go here */
   border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    padding: 8px;
+    width: 75px;
+    height: 75px;
+    padding: 6px;
     background: #0000ff;
-    border: 2px solid #0000ff;
+    border: 1px solid transparent;
     color: #fff;
     text-align: center;
-    font-size: 20px;;
+    font-size: 20px;
   /* Add any other styles you want */
 }
 .wizardtabcontent {

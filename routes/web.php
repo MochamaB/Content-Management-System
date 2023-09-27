@@ -88,6 +88,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('permission', PermissionController::class);
         Route::resource('role', RoleController::class);
         Route::resource('user',UserController::class);
+        ////// Routes for User Wizard 
+        Route::post('role', [UserController::class, 'role']); 
         Route::resource('tenantdetails',TenantDetailsController::class);
         
     });

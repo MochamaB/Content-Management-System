@@ -93,6 +93,7 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
+
     /**
      * The units that belong to the user.
      */
@@ -101,10 +102,13 @@ class User extends Authenticatable
 
     public function units()
     {
-
         return $this->belongsToMany(Unit::class, 'unit_user')
             ->withPivot('property_id')
             ->withTimestamps();
+    }
+    public function lease()
+    {
+        return $this->hasOne(Lease::class, 'user_id');
     }
 
     public function unitswithoutlease()
@@ -114,20 +118,6 @@ class User extends Authenticatable
             ->whereNull('leases.id')
             ->withTimestamps();
     }
-
-    public function allUnits()
-    {
-        // Check if the user is superadmin (user ID 1)
-        if ($this->id === 1) {
-            // If the user is superadmin, return all units
-            return Unit::all();
-        }
-
-        // For other users, load the units relationship as usual
-        return $this->units;
-    }
-
-
 
     ///// Returning units that are in the unit_user pivot, Has additional data such as properties and leasedata 
     public function supervisedUnits()
@@ -146,15 +136,7 @@ class User extends Authenticatable
         });
     }
 
-
-
-    ////////////Return units that have leases that a logged in user can see
-
-
-
-
-    //////// Gate to check if user is superAdmin //////// 
-    ////scope////
+    ////scopes////
     public function scopeWithoutActiveLease($query, $role)
     {
         return $query->role($role)
@@ -165,10 +147,6 @@ class User extends Authenticatable
             });
     }
 
-    public function lease()
-    {
-        return $this->hasOne(Lease::class, 'user_id');
-    }
     public function scopeWithLowerPermissions($query)
     {
 
@@ -188,6 +166,18 @@ class User extends Authenticatable
                     ->having('permission_count', '<', $loggedInUserPermissions->count());
             });
     }
+    public function scopeUserAcess($query)
+    {
+        $user = auth()->user();
+        if ($user  && $user->id) {
+            // Get the IDs of units assigned to the logged-in user
+            $unitIds = $user->units->pluck('id')->toArray();
+
+            return $query->whereHas('units', function ($query) use ($unitIds) {
+                $query->whereIn('unit_id', $unitIds);
+            });
+        }
+    }
 
     public function filterUsers()
     {
@@ -198,10 +188,19 @@ class User extends Authenticatable
             return $role->permissions;
         });
 
-        $allUsers = self::with('roles.permissions')
+        // Apply the UserAcess scope to the query
+        $query = self::query(); // Initialize the query builder
+
+        if (auth()->user()->id !== 1) {
+            $query->userAcess(); // Apply the scope conditionally
+        }
+
+        $allUsers = $query
+            ->with('roles.permissions')
             ->where('id', '!=', 1) // Exclude users with id 1
             ->get();
-        //dd($allUsers);
+      //  dd($allUsers);
+
 
         $filteredUsers = $allUsers->filter(function ($user) use ($loggedInUserPermissions) {
             foreach ($user->roles as $role) {

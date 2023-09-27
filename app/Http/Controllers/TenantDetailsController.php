@@ -14,7 +14,7 @@ class TenantDetailsController extends Controller
      */
     public function index()
     {
-        dd('tenantcontroller-index');
+        return View('admin.CRUD.formwizard');
     }
 
     /**

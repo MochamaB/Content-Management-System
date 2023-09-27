@@ -29,6 +29,7 @@
   <!-- inject:css -->
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/style.css') }}">
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/mystyle.css') }}">
+  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/wizard.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />
   <style>

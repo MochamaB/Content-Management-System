@@ -42,15 +42,10 @@ class UserController extends Controller
     public function index()
     {
         $user = Auth::user();
-  
-
-
         if (Gate::allows('view-all', $user)) {
             $tablevalues = $this->model::all();
         }else{
-
             $tablevalues = $user->filterUsers();
-          //  $tablevalues = $user->units; // Users with roles having lesser permissions
         }
         $mainfilter =  Role::pluck('name')->toArray();
         $viewData = $this->formData($this->model);
@@ -100,12 +95,10 @@ class UserController extends Controller
             // Compare the number of permissions in the role with the logged-in user's permissions
             return $rolePermissions->count() < $loggedUserPermissions->count();
         });
-
+        $propertyaccess = Property::with('units')->get();
         if (Gate::allows('view-all', $user)) {
-            $propertyaccess = Unit::viewallunits();
             $roles = Role::all();
         }else{
-            $propertyaccess = $user->assignedunits();
             $roles =  $filteredRoles->all();
         }
         
@@ -222,19 +215,13 @@ class UserController extends Controller
         $loggeduser = Auth::user();
         $roles = Role::all();
         $userRole =$user->roles->pluck('name');
-        $assignedproperties = $user->supervisedUnits->pluck('id')->toArray();
+        $assignedproperties = $user->units->pluck('id')->toArray();
         $pageheadings = collect([
             '0' => $user->email,
             '1' => $user->firstname,
             '2' => $user->lastname,
         ]);
-
-       
-        if (Gate::allows('view-all', $loggeduser)) {  
-            $propertyaccess = Unit::viewallunits();
-        }else{   
-            $propertyaccess = $loggeduser->assignedunits();           
-        }
+        $propertyaccess = Property::with('units')->get();
         $tabTitles = collect([
             'Contact Information',
             'Roles',
@@ -345,4 +332,19 @@ class UserController extends Controller
 
         return back()->with('status','Profile picture updated successfully.');
     }
+
+
+    ///////////user creation Wizard/////////
+    public function role(Request $request)
+    {
+        if (empty($request->session()->get('role'))) {
+            $role = $request->role;
+            $request->session()->put('rentcharge', $role);    
+        } else {
+            $role = $request->session()->get('role');
+            $request->session()->put('role', $role);
+        }
+    }
+
+    
 }
