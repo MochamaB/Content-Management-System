@@ -117,6 +117,11 @@ class RoleController extends Controller
                         ->with('status','Role created successfully');
     }
 
+    public function assignpermissions(Request $request){
+
+        $role->syncPermissions($request->get('permission'));
+    }
+
     /**
      * Display the specified resource.
      *

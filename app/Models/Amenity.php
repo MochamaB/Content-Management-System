@@ -32,8 +32,7 @@ class Amenity extends Model
     {
     switch ($field) {
 
-        case 'amenity_name':
-            return  Amenity::pluck('amenity_name')->toArray();
+       
         // Add more cases for additional filter fields
         default:
             return [];

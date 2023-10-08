@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Chartofaccounts;
+use App\Models\Chartofaccount;
 use Illuminate\Database\Seeder;
 
 class ChartOfAccountsSeeder extends Seeder
@@ -168,7 +168,7 @@ class ChartOfAccountsSeeder extends Seeder
         ];
 
         foreach ($chartOfAccounts as $chartOfAccountData) {
-            Chartofaccounts::create($chartOfAccountData);
+            Chartofaccount::create($chartOfAccountData);
         }
     }
 }

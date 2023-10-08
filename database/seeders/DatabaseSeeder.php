@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CreateSuperUserSeeder::class,
             PropertyTypeSeeder::class,
+            ChartOfAccountsSeeder::class,
         ]);
     }
 }
