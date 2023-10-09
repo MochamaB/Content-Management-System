@@ -2,10 +2,8 @@
 
 @section('content')
     @if(($routeParts[1] === 'create'))
-    <form method="POST" action="{{ url($routeParts[0]) }}" id="myForm" enctype="multipart/form-data" novalidate>
-        @csrf
-        @include('admin.CRUD.wizard')
-    </form>
+   
+        @include('admin.CRUD.formwizard')
 
     @elseif(($routeParts[1] === 'edit'))
     <form method="POST" action="{{ url($routeParts[0].'/'.$role->id) }}" id="myForm" enctype="multipart/form-data" novalidate>

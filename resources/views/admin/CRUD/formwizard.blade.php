@@ -4,145 +4,87 @@
 
 <div class="row" style="margin-left:0px">
     <div class="col-md-3 left-side">
-
         <ul class="progress-bar">
-            @foreach($tabTitles as $index => $title)
+            @foreach($steps as $index => $title)
             <li class="{{ $index === 0 ? 'active' : '' }}">{{ $title }}</li>
             @endforeach
         </ul>
     </div>
     <div class="col-md-9 right-side">
-        @foreach($tabContents as $index => $content)
+        @foreach($stepContents as $index => $content)
         <div class="main {{ $index === 0 ? 'active' : '' }}">
             {!! $content !!}
         </div>
         @endforeach
-        <hr>
-        <div class="row">
-            <div class="col-md-3">
-                <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 previousBtn">Previous Step</button>
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 nextBtn" id="nextBtn">Next Step</button>
-            </div>
-        </div>
+
 
     </div>
 </div>
 
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script type='text/javascript'>
-    var next_click = document.querySelectorAll(".next_button");
-    var main_form = document.querySelectorAll(".main");
-    var step_list = document.querySelectorAll(".progress-bar li");
-    var num = document.querySelector(".step-number");
-    let formnumber = 0;
 
-    next_click.forEach(function(next_click_form) {
-        next_click_form.addEventListener('click', function() {
-            if (!validateform()) {
-                return false
+<script>
+    $(document).ready(function() {
+        const $tabs = $(".progress-bar li");
+        const $tabContents = $(".right-side .main");
+        const totalSteps = '{{ count($steps) }}'
+        let currentTab = '{{ $activetab ?? 0 }}';
+        // alert(currentTab);
+
+        const showTab = (tabIndex) => {
+            $tabs.removeClass("active").eq(tabIndex).addClass("active");
+            $tabContents.removeClass("show active").eq(tabIndex).addClass("show active");
+            // Toggle visibility of previous button based on currentTab value
+            $(".previousBtn").toggle(tabIndex > 0);
+            // Change next button text to "Complete" when it's the last tab
+            if (tabIndex >= $tabs.length - 1) {
+             //   alert($tabs.length);
+                $(".nextbutton").text("Complete & Save");
+            } else {
+                $(".nextbutton").text("Next Step");
             }
-            formnumber++;
-            updateform();
-            progress_forward();
-            contentchange();
-        });
-    });
-
-    var back_click = document.querySelectorAll(".back_button");
-    back_click.forEach(function(back_click_form) {
-        back_click_form.addEventListener('click', function() {
-            formnumber--;
-            updateform();
-            progress_backward();
-            contentchange();
-        });
-    });
-
-    var username = document.querySelector("#user_name");
-    var shownname = document.querySelector(".shown_name");
-
-
-    var submit_click = document.querySelectorAll(".submit_button");
-    submit_click.forEach(function(submit_click_form) {
-        submit_click_form.addEventListener('click', function() {
-            shownname.innerHTML = username.value;
-            formnumber++;
-            updateform();
-        });
-    });
-
-    var heart = document.querySelector(".fa-heart");
-    heart.addEventListener('click', function() {
-        heart.classList.toggle('heart');
-    });
-
-
-    var share = document.querySelector(".fa-share-alt");
-    share.addEventListener('click', function() {
-        share.classList.toggle('share');
-    });
+        };
 
 
 
-    function updateform() {
-        main_form.forEach(function(mainform_number) {
-            mainform_number.classList.remove('active');
-        })
-        main_form[formnumber].classList.add('active');
-    }
-
-    function progress_forward() {
-        // step_list.forEach(list => {
-
-        //     list.classList.remove('active');
-
-        // }); 
-
-
-        num.innerHTML = formnumber + 1;
-        step_list[formnumber].classList.add('active');
-    }
-
-    function progress_backward() {
-        var form_num = formnumber + 1;
-        step_list[form_num].classList.remove('active');
-        num.innerHTML = form_num;
-    }
-
-    var step_num_content = document.querySelectorAll(".step-number-content");
-
-    function contentchange() {
-        step_num_content.forEach(function(content) {
-            content.classList.remove('active');
-            content.classList.add('d-none');
-        });
-        step_num_content[formnumber].classList.add('active');
-    }
-
-
-    function validateform() {
-        validate = true;
-        var validate_inputs = document.querySelectorAll(".main.active input");
-        validate_inputs.forEach(function(vaildate_input) {
-            vaildate_input.classList.remove('warning');
-            if (vaildate_input.hasAttribute('require')) {
-                if (vaildate_input.value.length == 0) {
-                    validate = false;
-                    vaildate_input.classList.add('warning');
-                }
+        $(".nextBtn").on("click", function() {
+            currentTab++;
+            if (currentTab >= $tabs.length) {
+                currentTab = $tabs.length - 1;
             }
+            showTab(currentTab);
         });
-        return validate;
 
-    }
+        // Show the first tab on page load
+        showTab(currentTab);
+
+        $(".previousBtn").on("click", function() {
+            currentTab--;
+            if (currentTab < 0) {
+                currentTab = 0;
+            }
+            showTab(currentTab);
+        });
+
+        // Show the first tab on page load
+        showTab(currentTab);
+    });
 </script>
-<script type='text/javascript'>
-    var myLink = document.querySelector('a[href="#"]');
-    myLink.addEventListener('click', function(e) {
-        e.preventDefault();
+<script>
+    $(document).ready(function() {
+        // Add a change event listener to the "Select All" checkbox in each collapsible
+        $('.header-checkbox').on('change', function() {
+            // Find the parent collapsible section
+            var collapsible = $(this).closest('.card-header').siblings('.collapse');
+
+            // Get the state of the "Select All" checkbox
+            var isChecked = $(this).prop('checked');
+
+            // Find and set the state of body checkboxes within the same collapsible
+            collapsible.find('.body-checkbox').prop('checked', isChecked);
+        });
     });
 </script>
 

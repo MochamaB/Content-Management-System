@@ -1,17 +1,10 @@
 @if(($routeParts[1] === 'create'))
-
+<form method="POST" action="{{ url('assignreports') }}" id="myForm" enctype="multipart/form-data" novalidate>
+        @csrf
 <h4>Report Access</h4>
 <hr>
-    <div class="col-md-5">
-      <div class="row">
-        <div class="col-md-6">
-          <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 previousBtn" id="previousBtn">Previous: Module</button>
-        </div>
-        <div class="col-md-6">
-          <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Create Role</button>
-        </div>
-      </div>
-    </div>
+@include('admin.CRUD.wizardbuttons')
+</form>
 
 @elseif(($routeParts[1] === 'edit'))
 <h4 style="text-transform: capitalize;">Report Acess &nbsp; 

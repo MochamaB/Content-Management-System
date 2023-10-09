@@ -7,6 +7,7 @@ use App\Models\Chartofaccount;
 use App\Models\lease;
 use App\Models\Property;
 use App\Models\Unit;
+use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\Unitcharge;
 use Illuminate\Http\Request;
@@ -78,10 +79,13 @@ class LeaseController extends Controller
      */
     public function create(Request $request)
     {
-
+        
        
         $properties = Property::pluck('property_name', 'id')->toArray();
         $role = 'tenant'; // Replace with the desired role
+        if (!Role::where('name', $role)->exists()) {
+            return back()->with('statuserror', 'There no tenant Role in system. Create Role and Tenants First');
+        }
         $tenants = User::withoutActiveLease($role)->get(); ///tenantdetailsview
         $lease = $request->session()->get('lease');
         $tenantdetails = $request->session()->get('tenantdetails');

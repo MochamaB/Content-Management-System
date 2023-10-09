@@ -28,9 +28,10 @@
     <p style="text-transform: capitalize;">{{$pageheadings[1] ?? ""}} <span class="mb-2" style="font-size:20px"> | </span>{{$pageheadings[2] ?? ""}}</p>
    @endif
     
-    <!-- Breadcrumb -->
-    @include('layouts.admin.messages')
+   
 </div>
+ <!-- Breadcrumb -->
+ @include('layouts.admin.messages')
 @endif
 
 

@@ -1,4 +1,4 @@
-<div class=" contwrapper">
+
 
     <h4 style="text-transform: capitalize;"><b> New {{ $routeParts[0] }}</b></h4>
     <hr>
@@ -69,7 +69,7 @@
         </div>
     </form>
 
-</div>
+
 <!---- Create Unit Validation ------------>
 
 <script>

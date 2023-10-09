@@ -15,7 +15,7 @@
                 <td style="text-transform: capitalize;padding-left: 15px;">{!! $cell !!}</td>
                 @endforeach
                 <td>
-                    <a href="{{url($routeParts[0].'/'.$row['id'])}}" class="btn btn-primary btn-sm text-white"><i class="mdi mdi-clipboard-text"></i>Summary</a>
+                    <a href="{{url($routeParts[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-clipboard-text mdi-24px text-dark"></i></a>
                     @if( Auth::user()->can($controller[0].'.edit') || Auth::user()->id === 1)
                     <a href="{{url($routeParts[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
                     @endif

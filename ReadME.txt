@@ -5,13 +5,16 @@ php artisan db:seed
 
 Order TO fill Data
 1. Settings
+2. Roles
+3. Users
+
 Admin
 Has control of every module and properties and cannot be edited
 
 Agency Company
 Has access to all modules but can only manage assigned properties and units
 
-PropertyOwner
+Property Owner
 Has access to most modules but can only manage assigned properties and units
 
 
@@ -26,4 +29,5 @@ Has access to maintenance workflows
 
 Tenant
 Has access to their information
+
 
