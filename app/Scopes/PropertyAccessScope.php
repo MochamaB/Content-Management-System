@@ -11,7 +11,8 @@ class PropertyAccessScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $user = auth()->user();
-        if ($user->id !== 1) {
+        $userRole =$user->roles->pluck('name');
+        if ($user->id !== 1 && $userRole !== 'Administrator') {
             $userUnits = $user->units;
             $propertyIds = $userUnits->pluck('pivot.property_id')->unique();
             

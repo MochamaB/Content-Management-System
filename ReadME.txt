@@ -6,9 +6,11 @@ php artisan db:seed
 Order TO fill Data
 1. Settings
 2. Roles
+3. Properties
+4. Units
 3. Users
 
-Admin
+Administrator
 Has control of every module and properties and cannot be edited
 
 Agency Company
@@ -26,6 +28,9 @@ Has access to the leasing workflow
 
 Manager Staff
 Has access to maintenance workflows
+
+Staff
+Has access to tasks only
 
 Tenant
 Has access to their information

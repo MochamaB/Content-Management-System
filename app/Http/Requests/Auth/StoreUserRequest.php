@@ -29,8 +29,10 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|email:rfc,dns|unique:users,email',
             'phonenumber' => 'required|unique:users,phonenumber',
             'idnumber' => 'numeric',
-            'password' => 'required|min:6', // Minimum length of 6 characters
-            'password_confirmation' => 'required_with:password|same:password', // Confirm password
+          //  'password' => 'required|min:6', // Minimum length of 6 characters
+            'status' => 'required',
+            'profilepicture' => 'required',
+            
 
         ];
     }

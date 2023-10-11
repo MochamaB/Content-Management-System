@@ -523,7 +523,7 @@ input, select {
   border: 1px solid #BDBDBD;
   font-size: 16px;
   letter-spacing: 1px;
-  height: 40px !important;
+  height: 50px !important;
 }
 input[type="checkbox"] {
   /* Your checkbox styles here */
@@ -555,4 +555,21 @@ input:focus, select:focus {
 }
 
 
-/* wizard css*/
+/* badges */
+.badge {
+  border-radius: 20px;
+  font-size: 12px;
+  line-height: 1;
+  padding: .375rem .5625rem;
+  font-weight:bold;
+}
+.badge-success {
+background: #2d9143 !important;
+color: 1px solid #2d9143 !important;
+}
+
+.badge-danger {
+  color: #c50000c4 !important;
+  border: 1px solid #c50000c4 !important;
+  }
+  

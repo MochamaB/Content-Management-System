@@ -78,9 +78,11 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        $user = Auth::user();
+        $userRole = $request->session()->get('userRole');
+        $user = $request->session()->get('user');
+        $savedRole = Role::where('id',$userRole)->first();
         $loggeduser = Auth::user();
         $loggeduserRoles = $loggeduser->roles;
         $loggedUserPermissions = $loggeduserRoles->flatMap(function ($role) {
@@ -96,56 +98,83 @@ class UserController extends Controller
             return $rolePermissions->count() < $loggedUserPermissions->count();
         });
         $propertyaccess = Property::with('units')->get();
-        if (Gate::allows('view-all', $user)) {
+        if (Gate::allows('view-all', $loggeduser)) {
             $roles = Role::all();
         }else{
             $roles =  $filteredRoles->all();
         }
         
-        $tabTitles = collect([
+        $steps = collect([
             'Roles',
             'Contact Information',
-            'Login Access',
             'Property Access',
-            //    'Financials',
-            //    'Users',
-            //    'Invoices',
-            //    'Payments'
-            // Add more tab titles as needed
         ]);
-        $tabContents = [];
-        foreach ($tabTitles as $title) {
+        $activetab = $request->query('active_tab', '0');
+        $stepContents = [];
+        foreach ($steps as $title) {
             if ($title === 'Roles') {
-                $tabContents[] = View('admin.user.user_roles', compact('roles'))->render();
+                $stepContents[] = View('admin.user.user_roles', compact('roles','savedRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $tabContents[] = View('admin.user.user_contactinfo')->render();
-            } elseif ($title === 'Login Access') {
-                $tabContents[] = View('admin.user.user_logins')->render();
+                $stepContents[] = View('admin.user.user_contactinfo',compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $tabContents[] = View('admin.user.user_property',compact('propertyaccess'))->render();
+                $stepContents[] = View('admin.user.user_property',compact('propertyaccess','savedRole'))->render();
             }
         }
 
-        return View('admin.user.user', compact('tabTitles','tabContents'));
+        return View('admin.user.user', compact('steps','stepContents','activetab'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreUserRequest $request)
+    public function roleuser(Request $request)
+    {
+        if (empty($request->session()->get('userRole'))) {
+            $userRole = $request->role;
+            $request->session()->put('userRole', $userRole);
+        } else {
+            $userRole = $request->session()->get('userRole');
+            $role = $request->role;
+            $request->session()->put('userRole', $role);
+        }
+        return redirect()->route('user.create', ['active_tab' => '1'])
+        ->with('status', 'Role Picked Successfully. Enter user details');
+
+    }
+
+    public function userinfo(StoreUserRequest $request)
+    {
+    
+        $validatedData = $request->validated();
+
+        if (empty($request->session()->get('user'))) {
+            $user = new User();
+            $user->fill($validatedData);
+            $request->session()->put('user', $user);
+        } else {
+            $user = $request->session()->get('user');
+            $user->fill($validatedData);
+            $request->session()->put('user', $user);
+        }
+
+        return redirect()->route('user.create', ['active_tab' => '2'])
+        ->with('status', 'User details added Successfully. Assign properties');
+
+    }
+
+
+ 
+
+
+    public function store(Request $request)
     {
        
+        $userRole = $request->session()->get('userRole');
+        $newuser = $request->session()->get('user')->toArray();
 
-        $role = $request->role;
-        $user =  User::create(array_merge($request->validated(), [
-            'status' => 'Active',
-            'profilepicture' => 'avatar.png',
-        ]));
+        $user = new User();
+        $user->fill($newuser);
+        $user->password = 'property123';
+        $user->save();
         //// assign role////
-        $user->assignRole($role);
+        $user->assignRole($userRole);
         
         $unitIds = $request->input('unit_id', []);  
         foreach ($unitIds as $unitId => $selected) {
@@ -157,6 +186,8 @@ class UserController extends Controller
                 $user->units()->attach($unitId, ['property_id' => $propertyId]);
             }
         }
+        $request->session()->forget('userRole');
+        $request->session()->forget('user');
         $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
 
 

@@ -2,7 +2,7 @@
 <form method="POST" action="{{ url($routeParts[0].'/'.$actualvalues->id) }}" id="myForm" enctype="multipart/form-data" novalidate>
     @csrf
     @method('PUT')
-    <div class=" contwrapper">
+
         <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Details &nbsp; 
         @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
             <a href=""  class="editLink">Edit</a></h4>
@@ -67,7 +67,7 @@
                 <br/>
                  <!---- NUMBER INPUT ------------->
                 @elseif($attributes['inputType'] === 'number')
-                    <input type="{{ $attributes['inputType'] }}" class="form-control" id="{{ $field }}" name="{{ $field }}" @if($attributes['required']) required @endif >
+                    <input type="{{ $attributes['inputType'] }}" class="form-control" id="{{ $field }}" value="{{ $actualvalues->$field }}" name="{{ $field }}" @if($attributes['required']) required @endif >
                 <!---- NORMAL INPUT ------------->
                 @else
                 <input type="{{ $attributes['inputType'] }}" class="form-control" id="{{ $field }}" value="{{ $actualvalues->$field }}" name="{{ $field }}" 
@@ -81,7 +81,7 @@
         <div class="col-md-4">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" id="submitBtn">Edit {{$routeParts[0]}}</button>
         </div>
-    </div>
+
 
 </form>
 

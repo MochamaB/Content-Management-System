@@ -1,13 +1,14 @@
 <!------------ Create------------------->
 @if(($routeParts[1] === 'create'))
-
+<form method="POST" action="{{ url('roleuser') }}" id="myForm" enctype="multipart/form-data" novalidate>
+    @csrf
 <h4>Select Role</h4>
 <hr>
 <div class="col-md-6">
     <div class="form-group">
         <label class="label">Role Name<span class="requiredlabel">*</span></label>
         <select name="role" id="role" class="formcontrol2" required>
-            <option value="">Select A Role</option>
+            <option value="{{$savedRole->id ?? ''}}">{{$savedRole->name ?? "Select A Role" }}</option>
             @foreach($roles as $item)
             <option value="{{$item->id}}">{{$item->name}}</option>
             @endforeach
@@ -16,9 +17,8 @@
     <br />
 
 </div>
-<div class="col-md-4">
-    <button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0 nextBtn" id="nextBtn">Next:Contact Information</button>
-</div>
+@include('admin.CRUD.wizardbuttons')
+</form>
 
 @elseif(($routeParts[1] === 'edit'))
 <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Role &nbsp; 

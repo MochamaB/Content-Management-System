@@ -89,6 +89,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('role', RoleController::class);
         Route::resource('user',UserController::class);
         Route::resource('tenantdetails',TenantDetailsController::class);
+
+        //// user wizard
+        Route::post('roleuser', [UserController::class, 'roleuser']); 
+        Route::post('userinfo', [UserController::class, 'userinfo']); 
+        Route::post('propertyaccess', [UserController::class, 'propertyaccess']); 
         
         /////role wizard
         Route::post('assignpermission', [RoleController::class, 'assignpermission']); 

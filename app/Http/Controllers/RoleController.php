@@ -157,7 +157,7 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        //
+        return redirect()->route('role.edit', ['role' => $role]);
     }
 
     /**

@@ -72,6 +72,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+ //   protected $attributes = [
+ //       'password' => 'property123', // Replace 'default_password_value' with your desired default password
+  //  ];
+
     /**
      * The attributes that should be cast.
      *

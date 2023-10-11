@@ -35,7 +35,7 @@ class UnitController extends Controller
         $user = Auth::user();
 
         if (Gate::allows('view-all', $user)) {
-            $tablevalues = $this->model::with('property')->get();
+            $tablevalues = $this->model::with('property','lease')->get();
             //   $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
         } else {
             $tablevalues = $user->units;
@@ -47,17 +47,19 @@ class UnitController extends Controller
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['UNIT', 'PROPERTY', 'TENANT', 'EVENTS', 'ACTIONS'],
+            'headers' => ['UNIT','TYPE', 'BEDS', 'BATHS', 'LEASE', 'ACTIONS'],
             'rows' => [],
         ];
 
         foreach ($tablevalues as $item) {
+            $leaseStatus = $item->lease ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
             $tableData['rows'][] = [
                 'id' => $item->id,
-                $item->unit_number,
-                $item->property->property_name . '-' . $item->property->property_location,
+                $item->unit_number.' - '.$item->property->property_name.'('.$item->property->property_location.')',
                 $item->unit_type,
-                $item->unit_type,
+                $item->bedrooms,
+                $item->bathrooms,
+                $leaseStatus,
             ];
         }
         $unitviewData = compact('tableData', 'mainfilter', 'viewData', 'controller');
@@ -207,7 +209,10 @@ class UnitController extends Controller
      */
     public function update(Request $request, Unit $unit)
     {
-        //
+        $unit->update($request->all());
+       
+
+        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**

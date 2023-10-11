@@ -6,7 +6,7 @@
         @csrf
         <input type="hidden" name="model_name" value="{{ ucfirst($routeParts[0]) }}">
         @foreach($fields as $field => $attributes)
-        <div class="col-md-5">
+        <div class="col-md-6">
             <div class="form-group">
                 <!--- LABEL -->
                 <label class="label" id="label-{{ $field }}">{{ $attributes['label'] }}

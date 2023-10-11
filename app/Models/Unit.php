@@ -13,62 +13,66 @@ class Unit extends Model
     use HasFactory;
     protected $table = 'units';
     protected $fillable = [
-            'property_id',
-            'unit_number',
-            'unit_type',
-            'rent',
-            'security_deposit',
-            'size',
-            'bathrooms',
-            'bedrooms',
-            'description',
-            'selling_price',
+        'property_id',
+        'unit_number',
+        'unit_type',
+        'rent',
+        'security_deposit',
+        'size',
+        'bathrooms',
+        'bedrooms',
+        'description',
+        'selling_price',
+    ];
+    protected $attributes = [
+        'description' => 'Spacious Unit Available', // Replace 'default_description_value'
     ];
 
     public static $fields = [
-        'property_id' => ['label' => 'Property Name', 'inputType' => 'select','required' =>true,'readonly' => true],
-        'unit_type' => ['label' => 'Type', 'inputType' => 'select','required' =>true, 'readonly' => ''],
-        'unit_number' => ['label' => 'Unit Number', 'inputType' => 'text', 'required' =>true,'readonly' => ''],
-        'rent' => ['label' => 'Market Rent', 'inputType' => 'number', 'required' =>false,'readonly' => ''],
-        'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'number','required' =>false,'readonly' => true],
-        'size' => ['label' => 'Size (Sqm)', 'inputType' => 'number','required' =>false, 'readonly' => ''],
-        'bathrooms' => ['label' => 'No of Bathrooms', 'inputType' => 'number', 'required' =>true,'readonly' => ''],
-        'bedrooms' => ['label' => 'No of Bedrooms', 'inputType' => 'number', 'required' =>true,'readonly' => ''],
-        'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' =>false,'readonly' => ''],
-        'selling_price' => ['label' => 'Selling Price', 'inputType' => 'number', 'required' =>false,'readonly' => ''],
-      
+        'property_id' => ['label' => 'Property Name', 'inputType' => 'select', 'required' => true, 'readonly' => true],
+        'unit_type' => ['label' => 'Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'unit_number' => ['label' => 'Unit Number', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
+        'rent' => ['label' => 'Market Rent', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
+        'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'number', 'required' => false, 'readonly' => true],
+        'size' => ['label' => 'Size (Sqm)', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
+        'bathrooms' => ['label' => 'No of Bathrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
+        'bedrooms' => ['label' => 'No of Bedrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
+        'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' => false, 'readonly' => ''],
+        'selling_price' => ['label' => 'Selling Price', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
+
         // Add more fields as needed
     ];
-    public static $validation =[
-        'property_id' => 'required', 
-        'unit_type' => 'required', 
-        'unit_number' => 'required', 
+    public static $validation = [
+        'property_id' => 'required',
+        'unit_type' => 'required',
+        'unit_number' => 'required',
         'rent' => 'nullable|numeric',
         'security_deposit' => 'nullable|numeric',
-        'size' => 'required|numeric', 
-        'bathrooms' => 'required|numeric', 
-        'bedrooms' => 'required|numeric', 
+        'size' => 'required|numeric',
+        'bathrooms' => 'required|numeric',
+        'bedrooms' => 'required|numeric',
         'description' => 'nullable',
         'selling_price' => 'nullable|numeric',
-        
-       
+
+
     ];
     public static function getFieldData($field)
     {
-    switch ($field) {
-        case 'property_id':
-            // Retrieve the supervised units' properties
-                    $properties = Property::pluck('property_name','id')->toArray();   
+        switch ($field) {
+            case 'property_id':
+                // Retrieve the supervised units' properties
+                $properties = Property::pluck('property_name', 'id')->toArray();
                 return $properties;
-          //  return Property::pluck('property_name','id')->toArray();
+                //  return Property::pluck('property_name','id')->toArray();
             case 'unit_type':
                 return [
                     'rent' => 'For Rent',
-                    'sale'=> 'For Sale'];
-        // Add more cases for additional filter fields
-        default:
-            return [];
-    }
+                    'sale' => 'For Sale'
+                ];
+                // Add more cases for additional filter fields
+            default:
+                return [];
+        }
     }
 
 
@@ -88,20 +92,20 @@ class Unit extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'unit_user')
-        ->withPivot('property_id')
-        ->withTimestamps();
+            ->withPivot('property_id')
+            ->withTimestamps();
     }
 
     public function unitSupervisors()
     {
         return $this->belongsToMany(User::class, 'unit_user', 'unit_id', 'user_id')
-        ->withTimestamps();
+            ->withTimestamps();
     }
 
     ////////// view all units and properties for superadmin
     public static function viewallunits()
     {
-        $units = static::with('property','lease')->get();
+        $units = static::with('property', 'lease')->get();
 
         return $units->groupBy('property_id')->map(function ($propertyUnits) {
             return $propertyUnits;
@@ -112,5 +116,4 @@ class Unit extends Model
     {
         return $this->hasMany(UnitDetail::class);
     }
-
 }

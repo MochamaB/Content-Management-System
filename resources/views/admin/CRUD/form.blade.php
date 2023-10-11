@@ -8,13 +8,15 @@
             @include('admin.CRUD.index')
 <!------------ Create------------------->
         @elseif(($routeParts[1] === 'create'))
-
+        <div class=" contwrapper">
                 @include('admin.CRUD.create')
+        </div>
 <!------ Edit---------------->
 
         @elseif(($routeParts[1] === 'edit'))
-
+        <div class=" contwrapper">
                 @include('admin.CRUD.edit')
+        </div>
 <!------ show---------------->
 
         @elseif(($routeParts[1] === 'show'))

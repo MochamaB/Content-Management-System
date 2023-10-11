@@ -1,45 +1,42 @@
 <!------------ Create------------------->
 @if(($routeParts[1] === 'create'))
+<form method="POST" action="{{ url('userinfo') }}" id="myForm" enctype="multipart/form-data" novalidate>
+    @csrf
 <h4>Contact Information</h4>
 <hr>
-<div class="col-md-6">
+<div class="col-md-8">
     <div class="form-group">
         <label class="label">First Name<span class="requiredlabel">*</span></label>
-        <input type="text" name="firstname" id="name" class="form-control" value="{{ old('firstname') }}" required />
+        <input type="text" name="firstname" id="name" class="form-control" value="{{$user->firstname ?? old('firstname') }}" required />
     </div>
 </div>
 
-<div class="col-md-6">
+<div class="col-md-8">
     <div class="form-group">
         <label class="label">Last Name<span class="requiredlabel">*</span></label>
-        <input type="text" name="lastname" id="name" class="form-control" value="{{ old('lastname') }}" required />
+        <input type="text" name="lastname" id="name" class="form-control" value="{{$user->lastname ?? old('lastname') }}" required />
     </div>
 </div>
-<div class="col-md-6">
+<div class="col-md-8">
     <div class="form-group">
         <label class="label">Email<span class="requiredlabel">*</span></label>
-        <input type="text" name="email" id="name" class="form-control" value="{{ old('email') }}" required />
+        <input type="text" name="email" id="name" class="form-control" value="{{$user->email ?? old('email') }}" required />
     </div>
 </div>
-<div class="col-md-6">
+<div class="col-md-8">
     <div class="form-group">
         <label class="label">Phone Number<span class="requiredlabel">*</span></label>
-        <input type="tel" name="phonenumber" id="name" class="form-control" value="{{ old('phonenumber') }}" required />
+        <input type="tel" name="phonenumber" id="name" class="form-control" value="{{$user->phonenumber ?? old('phonenumber') }}" required />
+
+        <input type="hidden" name="idnumber" id="name" class="form-control" value="00000000" required />
+        <input type="hidden" name="password" id="name" class="form-control" value="property123" required />
+        <input type="hidden" name="status" id="name" class="form-control" value="Active" required />
+        <input type="hidden" name="profilepicture" id="name" class="form-control" value="avatar.png" required />
     </div>
 </div>
 
-
-
-<div class="col-md-5">
-    <div class="row">
-        <div class="col-md-6">
-            <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 previousBtn">Previous: Roles</button>
-        </div>
-        <div class="col-md-6">
-            <button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0 nextBtn" id="nextBtn">Next:Login Access</button>
-        </div>
-    </div>
-</div>
+@include('admin.CRUD.wizardbuttons')
+</form>
 
 @elseif(($routeParts[1] === 'edit'))
             <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Information &nbsp; 
