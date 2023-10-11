@@ -210,7 +210,7 @@ class User extends Authenticatable
             foreach ($user->roles as $role) {
                 $rolePermissions = $role->permissions;
 
-                if ($rolePermissions->count() > $loggedInUserPermissions->count()) {
+                if ($rolePermissions->count() >= $loggedInUserPermissions->count()) {
                     return false;
                 }
             }

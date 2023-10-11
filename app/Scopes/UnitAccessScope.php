@@ -13,13 +13,14 @@ class UnitAccessScope implements Scope
         // Get the authenticated user
         $user = auth()->user();
         $userRole =$user->roles->pluck('name');
+        if ($user->id !== 1) {
+            // Get the IDs of units assigned to the logged in user
+            $userUnits = $user->units;
+            
+            $unitIds = $userUnits->pluck('unit_id')->toArray();
 
-        if ($user  && $user->id) {
-            // Get the IDs of units assigned to the user
-            $unitIds = $user->units->pluck('id')->toArray();
-
-            // Apply the filter to the query
-            $builder->whereIn('unit_id', $unitIds);
+            // Apply the filter to the query. Return units with id that has the same $unitIds that logged in user has
+            $builder->whereIn('id', $unitIds);
          //   $builder->whereIn('id', $unitIds)
           //  ->orWhereIn('unit_id', $unitIds);
         }

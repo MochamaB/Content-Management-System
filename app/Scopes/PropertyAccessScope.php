@@ -13,10 +13,12 @@ class PropertyAccessScope implements Scope
         $user = auth()->user();
         $userRole =$user->roles->pluck('name');
         if ($user->id !== 1 && $userRole !== 'Administrator') {
+            /// returns all units loggedinuser should access
             $userUnits = $user->units;
+            //// returns all the property ids in pivot table that loggedinuser has
             $propertyIds = $userUnits->pluck('pivot.property_id')->unique();
             
-            // Retrieve properties based on the extracted property_ids
+            // Retrieve properties based on the whether the propertyids the loggedinuser has that
             $builder->whereIn('id', $propertyIds);
        
         }

@@ -38,18 +38,20 @@ class RoleController extends Controller
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['ROLE', 'NUMBER OF USERS', 'ACTIONS'],
+            'headers' => ['ROLE', 'NO OF USERS','PERMISSIONS', 'ACTIONS'],
             'rows' => [],
         ];
 
         foreach ($tablevalues as $item) {
             $showLink = url($this->controller['0'] . 'show' . $item->id);
             $userCount = $item->users->count();
+            $permissionCount = $item->permissions->count();
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->name . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     $item->description . '</span>',
                 $userCount,
+                $permissionCount,
 
             ];
         }

@@ -26,7 +26,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('view-all', function ($user) {
-            return $user->id === 1 ; // Replace with your superuser condition
+            return $user->id === 1 || $user->roles->contains(function ($role) {
+                return str_contains(strtolower($role->name), 'admin');
+            });
         });
         
     }
