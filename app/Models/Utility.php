@@ -30,6 +30,14 @@ class Utility extends Model
         // Add more fields as needed
     ];
 
+    public static $validation = [
+        'property_id' => 'required',
+        'utility_name' => 'required',
+        'chartofaccounts_id' => 'required',
+        'utility_type' => 'required',
+        'rate' => 'required',
+    ];
+
     public static function getFieldData($field)
     {
         switch ($field) {

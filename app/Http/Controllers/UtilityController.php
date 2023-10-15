@@ -84,6 +84,9 @@ class UtilityController extends Controller
      */
     public function store(Request $request)
     {
+        if (Utility::where('utility_name', $request->get('utility_name'))->exists()) {
+            return redirect()->back()->with('statuserror', ' The Utility is already attached to the property');
+        }
 
         $validatedData = $request->validate([
             'property_id' => 'required',

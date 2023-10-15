@@ -17,6 +17,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\LeaseController;
+use App\Http\Controllers\MeterReadingController;
 use App\Http\Controllers\TenantDetailsController;
 use App\Http\Controllers\UnitChargeController;
 use App\Http\Controllers\utilityController;
@@ -64,6 +65,7 @@ Route::group(['middleware' => ['auth']], function () {
         ///////////////
         Route::resource('unitcharge', UnitChargeController::class); 
         Route::resource('utility', utilityController::class);
+        Route::resource('meterreading', MeterReadingController::class); 
      
         
     });

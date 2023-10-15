@@ -6,12 +6,13 @@ php artisan db:seed
 Order TO fill Data
 1. Settings
 2. Roles
-3. Properties
-4. Units
 3. Users
 
+Roles
+Super Admin is the only one who can create and edit roles, permissions, properties
 Administrator
 Has control of every module and properties and cannot be edited
++ creates Units, Unitdetails, so by this he has access to all units
 
 Agency Company
 Has access to all modules but can only manage assigned properties and units
