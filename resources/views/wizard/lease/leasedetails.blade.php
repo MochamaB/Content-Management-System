@@ -1,10 +1,11 @@
+@if(($routeParts[1] === 'create'))
 <h4><b> New {{ $routeParts[0] }}</b></h4>
 <hr>
 
-<form method="POST" action="{{ url($routeParts[0]) }}" id="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
  
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="form-group">
             <label class="label">Select Property<span class="requiredlabel">*</span></label>
             <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required>
@@ -16,7 +17,7 @@
 
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="form-group">
             <label class="label"> Select Unit<span class="requiredlabel">*</span></label>
             <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required>
@@ -26,7 +27,7 @@
             </select>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="form-group">
             <label class="label">Add Tenant <span class="requiredlabel">*</span></label>
             <select name="user_id" id="user_id" class="formcontrol2" placeholder="Select" required>
@@ -37,7 +38,7 @@
             </select>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="form-group">
             <label class="label">Lease Period<span class="requiredlabel">*</span></label>
             <select name="lease_period" id="lease_period" class="formcontrol2" placeholder="Select" required>
@@ -48,20 +49,20 @@
             </select>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="form-group">
     
             <input type="hidden" class="form-control" id="status" name="status" value="Draft" readonly>
         </div>
     </div>
     <div class=row>
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="form-group">
                 <label class="label">Start Date<span class="requiredlabel">*</span></label>
                 <input type="date" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}"  required>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="form-group" id="enddate">
                 <label class="label">End Date<span class="requiredlabel"></span></label>
                 <input type="date" class="form-control" name="enddate" value="{{$lease->enddate ?? ''}}" >
@@ -69,14 +70,9 @@
         </div>
     </div>
 
-    <div class="col-md-5">
-        <div class="row">
-            <div class="col-md-6">
-                <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 " id="">Next:Tenant Details</button>
-            </div>
-        </div>
-    </div>
+    @include('admin.CRUD.wizardbuttons')
 </form>
+@endif
 
 <script>
     $(document).ready(function() {

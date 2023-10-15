@@ -8,7 +8,7 @@
        
     </div>
 </div><br />
-<form method="POST" action="{{ url('deposit') }}" id="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url('deposit') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
     <div class="col-md-6">
 
@@ -56,9 +56,8 @@
 
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label"> Due Date<span class="requiredlabel">*</span></label>
-                <input type="hidden" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}" required>
-                <input type="date" class="form-control" id="nextdate" name="nextdate" value="{{$depositcharge->nextdate ?? ''}}" required>
+                <label class="label"> Start Date<span class="requiredlabel">*</span></label>
+                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}" required>
                 <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="no">
             </div>
         </div>
@@ -67,14 +66,5 @@
 
     </div><br />
 
-<div class="col-md-5">
-    <div class="row">
-        <div class="col-md-6">
-            <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 previousBtn">Previous: Rent</button>
-        </div>
-        <div class="col-md-6">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 " id="">Next:Utilities</button>
-        </div>
-    </div>
-</div>
+    @include('admin.CRUD.wizardbuttons')
 </form>

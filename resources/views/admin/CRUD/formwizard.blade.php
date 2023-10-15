@@ -49,13 +49,7 @@
 
 
 
-        $(".nextBtn").on("click", function() {
-            currentTab++;
-            if (currentTab >= $tabs.length) {
-                currentTab = $tabs.length - 1;
-            }
-            showTab(currentTab);
-        });
+     
 
         // Show the first tab on page load
         showTab(currentTab);

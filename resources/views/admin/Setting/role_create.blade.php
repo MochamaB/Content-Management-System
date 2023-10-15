@@ -7,7 +7,7 @@
   <button class="tablinks" onclick="openCity(event, 'Paris')" id="tabParis">Menu Access</button>
   <button class="tablinks" onclick="openCity(event, 'Tokyo')" id="tabTokyo">Report Access</button>
 </div>
-<form method="POST" action="{{ url($routeParts[0]) }}" id="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
   @csrf
 
   <div id="London" class="tabcontent">

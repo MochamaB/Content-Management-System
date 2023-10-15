@@ -1,3 +1,4 @@
+@if(($routeParts[1] === 'create'))
 <h4><b> Add Rent Details</b></h4>
 <hr>
 
@@ -8,7 +9,7 @@
        
     </div>
 </div><br />
-<form method="POST" action="{{ url('rent') }}" id="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url('rent') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
     <div class="col-md-6">
 
@@ -67,8 +68,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Next Due Date<span class="requiredlabel">*</span></label>
-                <input type="hidden" class="form-control" id="startdate" name="startdate" value="{{$rentcharge->startdate ?? $lease->startdate ?? ''}}" required>
-                <input type="date" class="form-control" id="nextdate" name="nextdate" value="{{$rentcharge->nextdate ?? ''}}" required>
+                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$rentcharge->startdate ?? $lease->startdate ?? ''}}" required>
                 <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="yes">
             </div>
         </div>
@@ -89,14 +89,14 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Charge Name<span class=""></span></label>
-                    <input type="text" class="form-control" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge->charge_name ?? '' }}">
+                    <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge->charge_name ?? '' }}">
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Account<span class=""></span></label>
-                    <select name="splitchartofaccounts_id" id="splitchartofaccounts_id" class="formcontrol2" placeholder="Select" required>
+                    <select name="splitchartofaccounts_id " id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
                     <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">{{$splitCharge->chartofaccounts->account_name ?? 'Select Account'}}</option>
                         @foreach($accounts as $accounttype => $account)
                         <optgroup label="{{ $accounttype }}">
@@ -111,7 +111,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Charge Type<span class="requiredlabel">*</span></label>
-                    <select name="splitcharge_type" id="splitcharge_type" class="formcontrol2" placeholder="Select" required>
+                    <select name="splitcharge_type" id="splitcharge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
                     <option value="{{$splitCharge['charge_type'] ?? ''}}">{{$splitCharge['charge_type'] ?? 'Select Account'}}</option>
                         <option value="fixed"> Fixed Amount</option>
                         <option value="units"> By Units</option>
@@ -121,7 +121,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                 <label class="label ratelabel">Amount<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control" name="splitrate" value="{{$splitCharge['rate'] ?? ''}}" required>
+                    <input type="text" class="form-control dynamic-field" name="splitrate" value="{{$splitCharge['rate'] ?? ''}}" required>
                 </div>
             </div>
         </div>
@@ -137,29 +137,10 @@
             <span class="text-muted">(Will be included in Rent Invoices & Payments)</span>
         </h5>
     </div>
+    @include('admin.CRUD.wizardbuttons')
 
-
-
-
-
-
-
-
-    <div class="col-md-8">
-        <div class="row">
-            <div class="col-md-4">
-                <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 previousBtn">Previous:Cosigners</button>
-            </div>
-            <div class="col-md-3">
-            <a href="{{ url('skiprent') }}" class="btn btn-danger btn-lg text-white mb-0 me-0 previousBtn nextBtn" id="">Skip:Utilities</a>
-            </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 nextBtn" id="">Next:Deposit</button>
-            </div>
-        </div>
-    </div>
 </form>
-
+@endif
 <script>
     $(document).ready(function() {
         // Define the container where dynamic fields will be added
@@ -189,13 +170,13 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="label">Charge Name<span class="requiredlabel">*</span></label>
-                        <input type="text" class="form-control" id="splitcharge_name[]" name="splitcharge_name[]" placeholder="Enter name of charge" value="" required>
+                        <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" placeholder="Enter name of charge" value="" required>
                     </div>
                 </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="label">Account<span class="requiredlabel">*</span></label>
-                            <select name="splitchartofaccounts_id" id="splitchartofaccounts_id" class="formcontrol2" placeholder="Select" required>
+                            <select name="splitchartofaccounts_id" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
                                 <option value="">Select Account</option>
                                 @foreach($accounts as $accounttype => $account)
                                 <optgroup label="{{ $accounttype }}">
@@ -210,7 +191,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="label">Charge Type<span class="requiredlabel">*</span></label>
-                            <select name="splitcharge_type" id="splitcharge_type" class="formcontrol2 splitcharge_type" placeholder="Select" required>
+                            <select name="splitcharge_type" id="splitcharge_type" class="formcontrol2 splitcharge_type dynamic-field" placeholder="Select" required>
                                 <option value="">Select Bill Type</option>
                                 <option value="fixed"> Fixed Amount</option>
                                 <option value="units"> By Units</option>
@@ -220,7 +201,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="label ratelabel">Amount<span class="requiredlabel">*</span></label>
-                            <input type="text" class="form-control" name="splitrate" value="" required>
+                            <input type="text" class="form-control dynamic-field" name="splitrate" value="" required>
                         </div>
                     </div>             
             `);
@@ -258,3 +239,4 @@
 
     });
 </script>
+

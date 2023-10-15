@@ -7,7 +7,7 @@
 
 
 @elseif(($routeParts[1] === 'edit'))
-    <form method="POST" action="{{ url($routeParts[0].'/'.$user->id) }}" id="myForm" enctype="multipart/form-data" novalidate>
+    <form method="POST" action="{{ url($routeParts[0].'/'.$user->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
         @method('PUT')
         @csrf
       

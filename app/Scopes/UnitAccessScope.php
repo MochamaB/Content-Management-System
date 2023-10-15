@@ -13,16 +13,15 @@ class UnitAccessScope implements Scope
         // Get the authenticated user
         $user = auth()->user();
         $userRole =$user->roles->pluck('name');
-        if ($user->id !== 1) {
-            // Get the IDs of units assigned to the logged in user
+        if ($user->id !== 1 && $userRole !== 'Administrator') {
+            /// returns all units loggedinuser should access
             $userUnits = $user->units;
+            //// returns all the property ids in pivot table that loggedinuser has
+            $propertyIds = $userUnits->pluck('pivot.property_id')->unique();
             
-            $unitIds = $userUnits->pluck('unit_id')->toArray();
-
-            // Apply the filter to the query. Return units with id that has the same $unitIds that logged in user has
-            $builder->whereIn('id', $unitIds);
-         //   $builder->whereIn('id', $unitIds)
-          //  ->orWhereIn('unit_id', $unitIds);
+            // Retrieve properties based on the whether the propertyids the loggedinuser has that
+            $builder->whereIn('id', $propertyIds);
+       
         }
     }
 }

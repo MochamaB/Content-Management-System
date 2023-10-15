@@ -41,6 +41,7 @@ class UnitController extends Controller
             $tablevalues = $user->units;
             //  $tablevalues = ($property) ? $user->units()->where('property_id', $property->id)->get() : $user->units;
         }
+      //  dd($tablevalues);
 
         $mainfilter =  $this->model::pluck('unit_type')->toArray();
         $viewData = $this->formData($this->model);

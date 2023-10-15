@@ -1,33 +1,30 @@
 <!---- Validation ------------>
 <script>
-    $(document).ready(function() {
-        const $myForm = $("#myForm");
-        const $requiredFields = $myForm.find('[required]');
+ $(document).ready(function () {
+    $('.myForm').on("submit", function (event) {
+        const $form = $(this);
+        const $requiredFields = $form.find('[required]');
+        let isValid = true;
 
-        const validateForm = () => {
-            let isValid = true;
-            $requiredFields.each(function() {
-                const $field = $(this);
-                if ($field.val().trim() === '') {
-                    $field.addClass('is-invalid');
-                    $field.siblings('.invalid-feedback').show();
-                    $field.after('<div class="invalid-feedback">Please fill in this field.</div>');
-                    isValid = false;
-                } else {
-                    $field.removeClass('is-invalid');
-                    $field.siblings('.invalid-feedback').hide();
-                }
-            });
-
-            return isValid;
-        };
-
-        $myForm.on("submit", function(event) {
-            if (!validateForm()) {
-                event.preventDefault(); // Prevent form submission if validation fails
+        $requiredFields.each(function () {
+            const $field = $(this);
+            if ($field.val().trim() === '') {
+                $field.addClass('is-invalid');
+                $field.siblings('.invalid-feedback').show();
+                $field.after('<div class="invalid-feedback">Please fill in this field.</div>');
+                isValid = false;
+            } else {
+                $field.removeClass('is-invalid');
+                $field.siblings('.invalid-feedback').hide();
             }
         });
+
+        if (!isValid) {
+            event.preventDefault(); // Prevent form submission if validation fails
+        }
     });
+});
+
 </script>
 <script>
     $(document).ready(function() {

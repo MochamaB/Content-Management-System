@@ -36,28 +36,7 @@ class TenantDetailsController extends Controller
     public function store(Request $request)
     {
     
-        $validatedData = $request->validate([
-            'user_id' => 'required',
-            'user_relationship' => 'required',
-            'emergency_name' => 'required',
-            'emergency_number' => 'required',
-            'emergency_email' => 'required|email',
-        ]);
-
-        if(empty($request->session()->get('tenantdetails'))){
-            $tenantdetails = new Tenantdetails();
-            $tenantdetails->fill($validatedData);
-            $request->session()->put('tenantdetails', $tenantdetails);
-        }else{
-            $tenantdetails = $request->session()->get('tenantdetails');
-            $tenantdetails->fill($validatedData);
-            $request->session()->put('tenantdetails', $tenantdetails);
-        }
-
-        // Redirect to the lease.create route with a success message
-
-        return redirect()->route('lease.create', ['active_tab' => '2'])
-            ->with('status', 'Tenant Details Created Successfully. Enter Rent Details');
+     
     }
     
 

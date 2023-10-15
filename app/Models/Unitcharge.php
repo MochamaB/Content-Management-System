@@ -33,7 +33,7 @@ class Unitcharge extends Model
     }
     public function chartofaccounts()
     {
-        return $this->belongsTo(Chartofaccounts::class);
+        return $this->belongsTo(Chartofaccount::class);
     }
 
       // Accessor to get the chartofaccounts name

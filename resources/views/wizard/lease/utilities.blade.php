@@ -1,3 +1,4 @@
+@if(($routeParts[1] === 'create'))
 <h4><b> Add Utilities </b></h4>
 <hr>
 <div class="d-flex justify-content-between align-items-center">
@@ -7,7 +8,7 @@
        
     </div>
 </div><br />
-<form method="POST" action="{{ url('assignutilities') }}" id="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url('assignutilities') }}" class="myForm" enctype="multipart/form-data" novalidate>
 @csrf
     @if(!empty($utilities))
 <div class="addfields" style="margin-bottom:30px">
@@ -53,14 +54,6 @@
 </div>
 
 
-<div class="col-md-5">
-    <div class="row">
-        <div class="col-md-6">
-            <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 previousBtn">Previous: Deposit</button>
-        </div>
-        <div class="col-md-6">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 nextBtn" id="submitBtn">Next:Terms.</button>
-        </div>
-    </div>
-</div>
+@include('admin.CRUD.wizardbuttons')
 </form>
+@endif

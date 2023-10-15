@@ -7,6 +7,7 @@ use App\Models\Chartofaccount;
 use App\Models\lease;
 use App\Models\Property;
 use App\Models\Unit;
+use App\Models\Tenantdetails;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
 use App\Models\Unitcharge;
@@ -53,13 +54,16 @@ class LeaseController extends Controller
         ];
 
         foreach ($tablevalues as  $item) {
+            $leaseStatus = $item->lease
+    ? '<span class="badge badge-success">Active</span>'
+    : '<span class="badge badge-danger">No Lease</span>';
             $tableData['rows'][] = [
                 'id' => $item->id,
               //  $item,
                 $item->property->property_name.' - '.$item->unit->unit_number.' . '.$item->user->firstname.' '.$item->user->lastname,
                 $item->lease_period.'</br></br><span class="text-muted" style="font-weight:500;font-style: italic">'.
                 Carbon::parse($item->startdate)->format('Y-m-d').' - '. Carbon::parse($item->enddate)->format('Y-m-d').'</span>',
-                '<span class="badge badge-primary">'.$item->status.'</span>'
+                $item->status,
 
             ];
         }
@@ -101,33 +105,33 @@ class LeaseController extends Controller
 
         //   $viewData = $this->formData($this->model);
 
-        $tabTitles = collect([
-            '0' => 'Lease Details',
-            '1' => 'Tenant Cosigners',
-            '2' => 'Rent',
-            '3' => 'Security Deposit',
-            '4' => 'Utilities',
-            '5' => 'Lease Agreement',
+        $steps = collect([
+            'Lease Details',
+            'Tenant Cosigners',
+            'Rent',
+            'Security Deposit',
+            'Utilities',
+            'Lease Agreement',
         ]);
         $activetab = $request->query('active_tab', '0');
-        $tabContents = [];
-        foreach ($tabTitles as $title) {
+        $stepContents = [];
+        foreach ($steps as $title) {
             if ($title === 'Lease Details') {
-                $tabContents[] = View('admin.lease.leasedetails', compact('properties', 'tenants', 'lease'))->render();
+                $stepContents[] = View('wizard.lease.leasedetails', compact('properties', 'tenants', 'lease'))->render();
             } elseif ($title === 'Tenant Cosigners') {
-                $tabContents[] = View('admin.lease.tenantdetails', compact('lease', 'tenantdetails'))->render();
+                $stepContents[] = View('wizard.lease.tenantdetails', compact('lease', 'tenantdetails'))->render();
             } elseif ($title === 'Rent') {
-                $tabContents[] = View('admin.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges'))->render();
+                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges'))->render();
             } elseif ($title === 'Security Deposit') {
-                $tabContents[] = View('admin.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
+                $stepContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Utilities') {
-                $tabContents[] = View('admin.lease.utilities', compact('lease', 'rentcharge','utilities', 'utilityCharges'))->render();
+                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge','utilities', 'utilityCharges'))->render();
             } elseif ($title === 'Lease Agreement') {
-                $tabContents[] = View('admin.lease.leaseagreement')->render();
+                $stepContents[] = View('wizard.lease.leaseagreement')->render();
             }
         }
 
-        return View('admin.lease.lease', compact('tabTitles', 'tabContents', 'activetab'));
+        return View('admin.lease.lease', compact('steps', 'stepContents', 'activetab'));
     }
 
     /**
@@ -225,17 +229,66 @@ class LeaseController extends Controller
     }
 
     /////////// lease wizard
+    public function cosigner(Request $request)
+    {
+
+        $validatedData = $request->validate([
+            'user_id' => 'required',
+            'user_relationship' => 'required',
+            'emergency_name' => 'required',
+            'emergency_number' => 'required',
+            'emergency_email' => 'required|email',
+        ]);
+
+        if(empty($request->session()->get('tenantdetails'))){
+            $tenantdetails = new Tenantdetails();
+            $tenantdetails->fill($validatedData);
+            $request->session()->put('tenantdetails', $tenantdetails);
+        }else{
+            $tenantdetails = $request->session()->get('tenantdetails');
+            $tenantdetails->fill($validatedData);
+            $request->session()->put('tenantdetails', $tenantdetails);
+        }
+
+        // Redirect to the lease.create route with a success message
+
+        return redirect()->route('lease.create', ['active_tab' => '2'])
+            ->with('status', 'Tenant Details Created Successfully. Enter Rent Details');
+    }
     public function rent(StoreUnitChargeRequest $request)
     {
         $validatedData = $request->validated();
+        $rules = [
+            'splitcharge_name.*' => 'required|string|max:255',
+            // Add other validation rules for the remaining fields
+        ];
+        $request->validate($rules);
+        /// value of nextdate/////////
+        $chargeCycle = $request->input('charge_cycle');
+        $startDate = Carbon::parse($request->input('startdate'));
+        $nextDate = null;
+
+        if ($chargeCycle === 'Monthly') {
+            $nextDate = $startDate->addMonth(); // Adds 1 month to the start date
+        } elseif ($chargeCycle === 'Twomonths') {
+            $nextDate = $startDate->addMonths(2); // Adds 2 months to the start date
+        }elseif ($chargeCycle === 'Quarterly') {
+            $nextDate = $startDate->addMonths(3); // Adds 3 months to the start date
+        } elseif ($chargeCycle === 'Halfyear') {
+            $nextDate = $startDate->addMonths(6); // Adds 6 months to the start date
+        } elseif ($chargeCycle === 'Year') {
+            $nextDate = $startDate->addYear(); // Adds 1 year to the start date
+        }
         if (empty($request->session()->get('rentcharge'))) {
             $rentcharge = new Unitcharge();
             $rentcharge->fill($validatedData);
+            $rentcharge->nextdate = $nextDate;
             $request->session()->put('rentcharge', $rentcharge);
             $rentcharge->save();
         } else {
             $rentcharge = $request->session()->get('rentcharge');
             $rentcharge->fill($validatedData);
+            $rentcharge->nextdate = $nextDate;
             $request->session()->put('rentcharge', $rentcharge);
             $rentcharge->update();
         }
@@ -261,6 +314,7 @@ class LeaseController extends Controller
                     $splitRentCharges[] = $splitRentCharge;
                 }
         }
+    
         if (empty($request->session()->get('splitRentcharges'))) {
             $request->session()->put('splitRentcharges', $splitRentCharges);
         }else{
@@ -303,6 +357,21 @@ class LeaseController extends Controller
     {
 
         $utilityCharges = [];
+        $chargeCycle = $request->input('charge_cycle');
+        $startDate = Carbon::parse($request->input('startdate'));
+        $nextDate = null;
+
+        if ($chargeCycle === 'Monthly') {
+            $nextDate = $startDate->addMonth(); // Adds 1 month to the start date
+        } elseif ($chargeCycle === 'Twomonths') {
+            $nextDate = $startDate->addMonths(2); // Adds 2 months to the start date
+        }elseif ($chargeCycle === 'Quarterly') {
+            $nextDate = $startDate->addMonths(3); // Adds 3 months to the start date
+        } elseif ($chargeCycle === 'Halfyear') {
+            $nextDate = $startDate->addMonths(6); // Adds 6 months to the start date
+        } elseif ($chargeCycle === 'Year') {
+            $nextDate = $startDate->addYear(); // Adds 1 year to the start date
+        }
     if (!empty($request->input('charge_name'))) {
         foreach ($request->input('charge_name') as $index => $chargeName) {
             $utilitycharge =[
@@ -316,7 +385,7 @@ class LeaseController extends Controller
                 'parent_utility' => $request->input('parent_utility'),
                 'recurring_charge' => $request->input('recurring_charge'),
                 'startdate' => $request->input('startdate'),
-                'nextdate' => $request->input('nextdate'),
+                'nextdate' => $nextDate,
                 // ... Other fields ...
             ];
 

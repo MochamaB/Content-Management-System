@@ -2,7 +2,7 @@
 
     <h4 style="text-transform: capitalize;"><b> New {{ $routeParts[0] }}</b></h4>
     <hr>
-    <form method="POST" action="{{ url($routeParts[0]) }}" id="myForm" enctype="multipart/form-data" novalidate>
+    <form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
         <input type="hidden" name="model_name" value="{{ ucfirst($routeParts[0]) }}">
         @foreach($fields as $field => $attributes)

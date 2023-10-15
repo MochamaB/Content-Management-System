@@ -6,7 +6,7 @@
 
         <h4>New Property</h4>
         <hr>
-    <form method="POST" action="{{ url('property/create') }}" id="myForm"  novalidate >
+    <form method="POST" action="{{ url('property/create') }}" class="myForm"  novalidate >
         @csrf
         <div class="col-md-4">
             <div class="form-group">
@@ -78,7 +78,7 @@
 </div>
 <script>
     $(document).ready(function () {
-        const $myForm = $("#myForm");
+        const $myForm = $(".myForm");
         const $requiredFields = $myForm.find('[required]');
 
         const validateForm = () => {

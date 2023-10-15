@@ -241,6 +241,12 @@
     
     
     }
+    .formcontrol2.is-invalid {
+      border-color: #dc3545; /* Red border color for invalid inputs */
+     /* Light red background color for invalid inputs */
+      color: grey; /* Dark red text color for invalid inputs */
+      /* Add any other custom styles for invalid inputs with class .formcontrol2 here */
+  }
   .form-controlcreate{
     padding: .4375rem .75rem;
     border: 1px solid #dee2e6;
@@ -564,8 +570,8 @@ input:focus, select:focus {
   font-weight:bold;
 }
 .badge-success {
-background: #2d9143 !important;
 color: 1px solid #2d9143 !important;
+border: 1px solid #2d9143 !important;
 }
 
 .badge-danger {

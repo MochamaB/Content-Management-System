@@ -1,5 +1,5 @@
 @if(($routeParts[1] === 'create'))
-<form method="POST" action="{{ url('user') }}" id="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url('user') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
     <h4>Property Access</h4>
     <hr>

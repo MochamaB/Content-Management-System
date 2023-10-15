@@ -55,6 +55,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['groupName' => 'Leasing'], function () {
         Route::resource('lease', LeaseController::class);
         ///lease wizard///////
+        Route::post('cosigner', [LeaseController::class, 'cosigner']); 
         Route::post('rent', [LeaseController::class, 'rent']); 
         Route::post('deposit', [LeaseController::class, 'deposit']); 
         Route::post('assignutilities', [LeaseController::class, 'assignUtilities']); 
@@ -88,7 +89,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('permission', PermissionController::class);
         Route::resource('role', RoleController::class);
         Route::resource('user',UserController::class);
-        Route::resource('tenantdetails',TenantDetailsController::class);
+        Route::resource('tenantdetail',TenantDetailsController::class);
 
         //// user wizard
         Route::post('roleuser', [UserController::class, 'roleuser']); 

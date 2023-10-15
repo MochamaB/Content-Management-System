@@ -6,7 +6,7 @@
         @include('admin.CRUD.formwizard')
 
     @elseif(($routeParts[1] === 'edit'))
-    <form method="POST" action="{{ url($routeParts[0].'/'.$role->id) }}" id="myForm" enctype="multipart/form-data" novalidate>
+    <form method="POST" action="{{ url($routeParts[0].'/'.$role->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
         @method('PUT')    
         @csrf
         @include('admin.CRUD.tabs_vertical')

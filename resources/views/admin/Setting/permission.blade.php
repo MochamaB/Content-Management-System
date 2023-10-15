@@ -4,7 +4,7 @@
 <div class=" contwrapper">
 
     @if(($routeParts[1] === 'create'))
-    <form method="POST" action="{{ url($routeParts[0]) }}" id="myForm" enctype="multipart/form-data" novalidate>
+    <form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
 
         <h4>New Permission</h4>
@@ -56,7 +56,7 @@
 
     </form>
     @elseif(($routeParts[1] === 'edit'))
-    <form method="POST" action="{{ url($routeParts[0].'/'.$permission->id) }}" id="myForm" enctype="multipart/form-data" novalidate>
+    <form method="POST" action="{{ url($routeParts[0].'/'.$permission->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
         @method('PUT')
         
