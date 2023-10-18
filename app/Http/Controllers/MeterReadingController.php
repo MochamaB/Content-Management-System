@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MeterReading;
 use Illuminate\Http\Request;
+use App\Traits\FormDataTrait;
 
 class MeterReadingController extends Controller
 {
@@ -12,9 +13,49 @@ class MeterReadingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    use FormDataTrait;
+    protected $controller;
+    protected $model;
+
+    public function __construct()
+    {
+        $this->model = MeterReading::class;
+
+        $this->controller = collect([
+            '0' => 'meterreading', // Use a string for the controller name
+            '1' => 'New Reading',
+        ]);
+    }
+
+    public function getMeterReadingsData($meterReadings)
+    {
+        $tableData = [
+            'headers' => ['UNIT', 'CHARGE', 'LAST READING', 'RATE AT READING', 'ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($meterReadings as $item) {
+           
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $item,
+                $item,
+                $item,
+                $item,
+            ];
+        }
+
+        return $tableData;
+    }
+
     public function index()
     {
-        //
+        $meterReadings = MeterReading::all();
+        $mainfilter =  $this->model::pluck('unit_id')->toArray();
+        $controller = $this->controller;
+        $tableData = $this->getMeterReadingsData($meterReadings);
+
+        return View('admin.CRUD.form', compact('mainfilter','tableData', 'controller'));
     }
 
     /**

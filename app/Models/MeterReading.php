@@ -25,7 +25,7 @@ class MeterReading extends Model
      public static $fields = [
         'property_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'unit_id' => ['label' => 'Unit', 'inputType' => 'select', 'required' => true, 'readonly' => true],
-        'unitcharge_id' => ['label' => 'Tenant Name', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'unitcharge_id' => ['label' => 'Charge', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'lastreading' => ['label' => 'Lease Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'currentreading' => ['label' => 'Status', 'inputType' => 'select', 'required' => false, 'readonly' => ''],
         'rate_at_reading' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
@@ -50,15 +50,14 @@ class MeterReading extends Model
 
     public static function getFieldData($field)
     {
-        $leases = Lease::with('property', 'unit', 'user')->get();
         switch ($field) {
             case 'property_id':
                 // Retrieve the supervised units' properties
-                    $properties = $leases->pluck('property.property_name','property.id')->toArray();
+                $properties = Property::pluck('property_name', 'id')->toArray();
                 return $properties;
             case 'unit_id':
                 // Retrieve the supervised units' properties
-                    $units = $leases->pluck('unit.unit_number', 'unit.id')->toArray();
+                    $units = Property::pluck('property_name', 'id')->toArray();
                 return $units;
             case 'user_id':
                 $tenants = User::selectRaw('CONCAT(firstname, " ", lastname) as full_name, id')
@@ -81,6 +80,12 @@ class MeterReading extends Model
             default:
                 return [];
         }
+    }
+
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
  
 }

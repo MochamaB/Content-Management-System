@@ -116,4 +116,14 @@ class Unit extends Model
     {
         return $this->hasMany(UnitDetail::class);
     }
+
+    public function unitcharges()
+    {
+        return $this->hasMany(Unitcharge::class);
+    }
+
+    public function meterReadings()
+    {
+        return $this->hasMany(MeterReading::class);
+    }
 }

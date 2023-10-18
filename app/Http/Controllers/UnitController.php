@@ -9,6 +9,7 @@ use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Events\AssignUserToUnit;
+use App\Http\Controllers\MeterReadingController;
 
 class UnitController extends Controller
 {
@@ -30,29 +31,15 @@ class UnitController extends Controller
         ]);
     }
 
-    public function index($property = null)
+    public function getUnitData($unitdata)
     {
-        $user = Auth::user();
-
-        if (Gate::allows('view-all', $user)) {
-            $tablevalues = $this->model::with('property','lease')->get();
-            //   $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
-        } else {
-            $tablevalues = $user->units;
-            //  $tablevalues = ($property) ? $user->units()->where('property_id', $property->id)->get() : $user->units;
-        }
-      //  dd($tablevalues);
-
-        $mainfilter =  $this->model::pluck('unit_type')->toArray();
-        $viewData = $this->formData($this->model);
-        $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
             'headers' => ['UNIT','TYPE', 'BEDS', 'BATHS', 'LEASE', 'ACTIONS'],
             'rows' => [],
         ];
 
-        foreach ($tablevalues as $item) {
+        foreach ($unitdata as $item) {
             $leaseStatus = $item->lease ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
             $tableData['rows'][] = [
                 'id' => $item->id,
@@ -63,14 +50,36 @@ class UnitController extends Controller
                 $leaseStatus,
             ];
         }
-        $unitviewData = compact('tableData', 'mainfilter', 'viewData', 'controller');
+
+        return $tableData;
+    }
+
+    public function index($property = null)
+    {
+        $user = Auth::user();
+
+        if (Gate::allows('view-all', $user)) {
+            $unitdata = $this->model::with('property','lease')->get();
+            //   $tablevalues = ($property) ? $this->model::with('property')->where('property_id', $property->id)->get() : $this->model::with('property')->get();
+        } else {
+            $unitdata = $user->units;
+            //  $tablevalues = ($property) ? $user->units()->where('property_id', $property->id)->get() : $user->units;
+        }
+      //  dd($tablevalues);
+
+        $mainfilter =  $this->model::pluck('unit_type')->toArray();
+        $viewData = $this->formData($this->model);
+        $controller = $this->controller;
+        $tableData = $this->getUnitData($unitdata);
+        
+      //  $unitviewData = compact('tableData', 'mainfilter', 'viewData', 'controller');
         //    return [
 
         //      'unitviewData' => $unitviewData,
         //      // Add other variables you want to return here...
         // ];
 
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'), $viewData, $unitviewData);
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
     }
 
     /**
@@ -133,10 +142,12 @@ class UnitController extends Controller
             '1' => $unit->property->property_name,
             '2' => $unit->property->property_streetname,
         ]);
+        $controller = $this->controller;
         $tabTitles = collect([
             'Summary',
             'Users',
-            //   'Utilities',
+            'Charges & Utilities',
+            'Meter Readings',
             //    'Maintenance',
             //    'Financials',
             //    'Users',
@@ -160,20 +171,27 @@ class UnitController extends Controller
                 $user->firstname . ' ' .  $user->lastname,
                 $property->property_name,
                 $role->name,
-
             ];
         }
-
+        
         $viewData = $this->formData($this->model, $unit);
         $unitdetails = $unit->unitdetails;
+        $charges = $unit->unitcharges; ///data for utilities page
+        $meterReadings = $unit->meterReadings;
+        $meterReaderController = new MeterReadingController();
+        $MeterReadingsTableData = $meterReaderController->getMeterReadingsData($meterReadings);
+        $mainfilter =  $this->model::pluck('id')->toArray();
         // Render the Blade views for each tab content
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.property.unit_' . $title, $unitEditData, compact('unit', 'unitdetails'))->render();
-            }
-            if ($title === 'Users') {
+            }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
+            }elseif ($title === 'Charges & Utilities') {
+                $tabContents[] = View('admin.property.unit_utilities',  compact('charges'))->render();
+            }elseif ($title === 'Meter Readings') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData], compact('controller'))->render();
             }
         }
 
