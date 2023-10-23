@@ -3,11 +3,11 @@
                             <label class="label">{{ $routeParts[0] ?? '' }} filter</label>
                             <select name="controller" id="controller" class="formcontrol2" onchange="applyFilters('controller')">
                                 <option>ALL </option>
-                                @isset($mainfilter)
+                               
                                 @foreach ($mainfilter as $item)
                                 <option value="{{ $item ?? '' }}" style="text-transform: capitalize;">{{ $item ?? '' }}</option>
                                 @endforeach
-                                @endisset
+                              
                             </select>
                         </div>
 

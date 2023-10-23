@@ -17,10 +17,14 @@
                 <!---- NORMAL SELECT ------------->
                 @if($attributes['inputType'] === 'select')
                 <select class="formcontrol2 @error($field) is-invalid @enderror" id="{{ $field }}" name="{{ $field }}">
-                <option value=""> Select Value'</option>
+                <option value=""> Select Value'
+
+                
+                </option>
                     @foreach ($data[$field] as $key => $value)
                     <option value="{{ $key }}">{{ $value }}</option>
                     @endforeach
+                    
                 </select>
                 <!---- GROUP SELECT ------------->
                 @elseif($attributes['inputType'] === 'selectgroup')
@@ -56,7 +60,8 @@
                 <!---- NORMAL INPUT ------------->
 
                 @else
-                <input type="{{ $attributes['inputType'] }}" class="form-control @error($field) is-invalid  @enderror" id="{{ $field }}" name="{{ $field }}"  value="{{ old($field) }}" @if($attributes['required']) required @endif>
+                <input type="{{ $attributes['inputType'] }}" class="form-control @error($field) is-invalid  @enderror" id="{{ $field }}" name="{{ $field }}"  value="{{ old($field) }}" 
+                @if($attributes['required']) required @endif  @if($attributes['readonly']) readonly @endif>
                 @endif
 
 

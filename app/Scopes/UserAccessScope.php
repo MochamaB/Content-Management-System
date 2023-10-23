@@ -10,18 +10,18 @@ class UserAccessScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        // Get the authenticated user
-        $user = auth()->user();
-    //    $userRole =$user->roles->pluck('name');
+ 
+    $user = auth()->user();
+    $userRole =$user->roles->pluck('name');
 
-        if ($user  && $user->id) {
-         // Get the IDs of units assigned to the logged-in user
-        $unitIds = $user->units->pluck('id')->toArray();
-
-        // Apply the scope to filter users who have the same units
-        $builder->whereHas('units', function ($query) use ($unitIds) {
-            $query->whereIn('unit_id', $unitIds);
+    if ($user->id !== 1 && $userRole !== 'Administrator') {
+        // Filter units based on the logged-in user's unit_ids
+        $builder->whereHas('unit', function ($query) use ($user) {
+            $query->whereHas('users', function ($subQuery) use ($user) {
+                $subQuery->where('user_id', $user->id);
+            });
         });
-        }
+   
+    }
     }
 }

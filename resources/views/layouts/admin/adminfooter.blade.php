@@ -79,6 +79,51 @@
     });
 </script>
 @endif
+
+<script>
+    $(document).ready(function() {
+        $('#property_id').on('change', function() {
+            var query = this.value;
+            // Clear existing unit options before appending new ones
+            $('#unit_id').empty();
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{url('api/fetch-units')}}",
+                type: "POST",
+                data: {
+                    property_id: query,
+
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function(data) {
+
+                    // Loop through the properties of the data object
+                    for (var unitId in data) {
+                        if (data.hasOwnProperty(unitId)) {
+                            // Access each unit ID and unit number
+                            var unitNumber = data[unitId];
+                            console.log('Unit ID: ' + unitId + ', Unit Number: ' + unitNumber);
+
+                            // You can use these values as needed, for example, to populate a select element
+                            // Here's an example of adding options to a select element with the id "unit_id"
+                            $('#unit_id').append(new Option(unitNumber, unitId));
+                        }
+                    }
+
+                }
+            });
+
+        });
+
+
+    });
+</script>
+
 <!-- plugins:js -->
 <script src="{{ asset('resources/styles/admin/vendors/js/vendor.bundle.base.js') }}"></script>
 <!-- endinject -->

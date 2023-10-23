@@ -9,7 +9,7 @@ use App\Models\Property;
 use App\Models\Amenity;
 use App\Models\Unit;
 use Illuminate\Http\Request;
-use App\Http\UnitController;
+use App\Http\Controllers\UnitController;
 
 class PropertyController extends Controller
 {
@@ -37,7 +37,7 @@ class PropertyController extends Controller
     public function index()
     {
         $tablevalues = Property::all();
-     //   $tablevalues = Property::withUserUnits()->get();
+        //   $tablevalues = Property::withUserUnits()->get();
 
         $mainfilter =  $this->model::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
@@ -120,6 +120,7 @@ class PropertyController extends Controller
             '1' => $property->property_streetname,
             '2' => $property->property_location,
         ]);
+        
         $tabTitles = collect([
             'Summary',
             'Units',
@@ -134,21 +135,14 @@ class PropertyController extends Controller
         $amenities = $property->amenities;
         $allamenities = Amenity::all();
 
-        $result = app('App\Http\Controllers\UnitController')->index($property);
-        // Access the individual variables from the $result array
-        $unitviewData = $result->getData();
-        $resultUtilites = app('App\Http\Controllers\UtilityController')->index($property);
-        // Access the individual variables from the $result array
-        $utilitiesviewData = $resultUtilites->getData();
+        $units = $property->units;
+        $unitController = new UnitController();
+        $unitTableData = $unitController->getUnitData($units);
+        $mainfilter = $unitController->index()->getData()['mainfilter'];
 
-        // Access the variables directly from the array
-        $tableData = $unitviewData['tableData'];
-        $mainfilter = $unitviewData['mainfilter'];
-        //   $viewData = $unitviewData['viewData'];
-
-
-
-
+        $utilities = $property->utilities;
+        $utilityController = new UtilityController();
+        $utilityTableData = $utilityController->getUtilitiesData($utilities);
 
 
         $viewData = $this->formData($this->model, $property);
@@ -159,17 +153,11 @@ class PropertyController extends Controller
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Units') {
-                $tabContents[] = View(
-                    'admin.CRUD.index',
-                    $unitviewData,
-                    compact('amenities', 'allamenities')
-                )->render();
+                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $unitTableData,'controller' => 'unit'], 
+                compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Utilities') {
-                $tabContents[] = View(
-                    'admin.CRUD.index',
-                    $utilitiesviewData,
-                    compact('amenities', 'allamenities')
-                )->render();
+                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $utilityTableData,'controller' => 'utility'], 
+                compact('amenities', 'allamenities'))->render();
             }
         }
 

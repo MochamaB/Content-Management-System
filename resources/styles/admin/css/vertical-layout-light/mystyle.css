@@ -564,18 +564,21 @@ input:focus, select:focus {
 /* badges */
 .badge {
   border-radius: 20px;
-  font-size: 12px;
-  line-height: 1;
-  padding: .375rem .5625rem;
-  font-weight:bold;
+  font-size: 13px;
+  line-height: 19px;
+  padding: 0 10px 0;
+  font-weight:700;
+  text-transform: uppercase;
 }
-.badge-success {
-color: 1px solid #2d9143 !important;
-border: 1px solid #2d9143 !important;
+.badge-active {
+color: #038d21 !important;
+border: 1px solid #038d21 !important;
+background-color:#c0e4c3  ;
 }
 
 .badge-danger {
   color: #c50000c4 !important;
-  border: 1px solid #c50000c4 !important;
+  background-color:#f9e2df  ;
+  border: 2px solid #c50000c4 !important;
   }
   

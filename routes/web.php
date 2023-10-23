@@ -65,7 +65,11 @@ Route::group(['middleware' => ['auth','permission']], function () {
         ///////////////
         Route::resource('unitcharge', UnitChargeController::class); 
         Route::resource('utility', utilityController::class);
-        Route::resource('meterreading', MeterReadingController::class); 
+        Route::get('meter-reading/create/{id}', [
+            'as' => 'meter-reading.create',
+            'uses' => 'App\Http\Controllers\MeterReadingController@create'
+        ]);
+        Route::resource('meter-reading', MeterReadingController::class, ['except' => 'create']); 
      
         
     });

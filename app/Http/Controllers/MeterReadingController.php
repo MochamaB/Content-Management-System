@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\MeterReading;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
-
+use App\Models\Unit;
+use App\Models\Property;
 class MeterReadingController extends Controller
 {
     /**
@@ -22,7 +23,7 @@ class MeterReadingController extends Controller
         $this->model = MeterReading::class;
 
         $this->controller = collect([
-            '0' => 'meterreading', // Use a string for the controller name
+            '0' => 'meter-reading', // Use a string for the controller name
             '1' => 'New Reading',
         ]);
     }
@@ -63,10 +64,24 @@ class MeterReadingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($parentmodel = null)
     {
-        //
+        $unit = Unit::find($parentmodel);
+        session(['unit' => $unit]);
+     //   $property = Property::where('id',$unit->property->id)->pluck('property_name', 'id')->toArray();
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        $defaultData = [
+            'property_id' => $properties,
+            'unit_id' => $unit->id,
+            // Add more default data for other fields as needed
+        ];
+       // dd($defaultData);
+  
+        $viewData = $this->formData($this->model, $unit, $defaultData);
+
+        return View('admin.CRUD.form', $viewData);
     }
+    
 
     /**
      * Store a newly created resource in storage.

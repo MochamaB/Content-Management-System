@@ -39,13 +39,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
-          // Apply the UnitAccessScope to specific models
-        Lease::addGlobalScope(new UnitAccessScope);
+          // Apply the UserAccessScope to specific models
+        Lease::addGlobalScope(new UserAccessScope);
 
         Property::addGlobalScope(new PropertyAccessScope);
         Utility::addGlobalScope(new UtilityAccessScope);
         
-      //  Unit::addGlobalScope(new UnitAccessScope);
+        Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);
     //   User::addGlobalScope(new UnitAccessScope);
 

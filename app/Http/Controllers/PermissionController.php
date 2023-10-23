@@ -153,6 +153,13 @@ class PermissionController extends Controller
      */
     public function destroy(Permission $permission)
     {
-        //
+        $permission->roles()->detach();
+
+        // Delete the permission
+        $permission->delete();
+
+        return redirect('permission')
+        ->with('status','Permission Deleted Successfully');
+
     }
 }

@@ -8,10 +8,8 @@
     <br /><br /><br />
     <div class=" contwrapper">
         <div class="row">
-
-        @if($routeParts[0]=== $controller[0])
             @include('layouts.admin.master-filter')
-        @endif
+
             <hr>
 
             @include('admin.CRUD.table', ['data' => $tableData])

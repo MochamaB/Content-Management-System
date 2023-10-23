@@ -29,21 +29,16 @@ class UtilityController extends Controller
             '1' => 'New Utility',
         ]);
     }
-    public function index($property = null)
+
+    public function getUtilitiesData($utilitiesdata)
     {
-        $user = Auth::user();
-       
-        $tablevalues = Utility::with('property')->get();
-        $mainfilter =  Property::pluck('property_name')->toArray();
-        $viewData = $this->formData($this->model);
-        $controller = $this->controller;
-        /// TABLE DATA ///////////////////////////
-        $tableData = [
+         /// TABLE DATA ///////////////////////////
+         $tableData = [
             'headers' => ['UTILITY', 'PROPERTY', 'TYPE', 'RATE', 'ACTIONS'],
             'rows' => [],
         ];
 
-        foreach ($tablevalues as  $item) {
+        foreach ($utilitiesdata as  $item) {
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->utility_name,
@@ -54,14 +49,19 @@ class UtilityController extends Controller
             ];
         }
 
-        $utilityviewData = compact('tableData', 'mainfilter', 'viewData','controller');
+        return $tableData;
+    }
 
-        return View(
-            'admin.CRUD.form',
-            compact('mainfilter', 'tableData', 'controller'),
-            $viewData,
-            ['controller' => $this->controller]
-        );
+    public function index()
+    {
+      
+        $utilitiesdata = Utility::with('property')->get();
+        $mainfilter =  Property::pluck('property_name')->toArray();
+        $viewData = $this->formData($this->model);
+        $controller = $this->controller;
+        $tableData = $this->getUtilitiesData($utilitiesdata);
+      
+        return View('admin.CRUD.form',compact('mainfilter', 'tableData', 'controller'));
     }
 
     /**

@@ -26,10 +26,10 @@ class MeterReading extends Model
         'property_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'unit_id' => ['label' => 'Unit', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'unitcharge_id' => ['label' => 'Charge', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
-        'lastreading' => ['label' => 'Lease Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
-        'currentreading' => ['label' => 'Status', 'inputType' => 'select', 'required' => false, 'readonly' => ''],
-        'rate_at_reading' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
-        'startdate' => ['label' => 'End Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
+        'lastreading' => ['label' => 'Last Reading', 'inputType' => 'text', 'required' => true, 'readonly' => true],
+        'currentreading' => ['label' => 'Current Reading', 'inputType' => 'text', 'required' => false, 'readonly' =>''],
+        'rate_at_reading' => ['label' => 'Rate', 'inputType' => 'text', 'required' => true, 'readonly' => true],
+        'startdate' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
         'enddate' => ['label' => 'End Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
 
 
