@@ -161,10 +161,18 @@ class UnitController extends Controller
         $viewData = $this->formData($this->model, $unit);
         $unitdetails = $unit->unitdetails;
         $charges = $unit->unitcharges; ///data for utilities page
+        $unitChargeController = new UnitChargeController();
+        $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
+
+
+
+
         $meterReadings = $unit->meterReadings;
         $meterReaderController = new MeterReadingController();
         $MeterReadingsTableData = $meterReaderController->getMeterReadingsData($meterReadings);
         $parentmodel = $unit;
+
+        
         // Render the Blade views for each tab content
         $tabContents = [];
         foreach ($tabTitles as $title) {
@@ -173,7 +181,7 @@ class UnitController extends Controller
             }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges & Utilities') {
-                $tabContents[] = View('admin.property.unit_utilities',  compact('charges'))->render();
+                $tabContents[] = View('admin.CRUD.show_index',['tableData' => $unitChargeTableData,'controller' => 'unitcharge'], compact('charges'))->render();
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $MeterReadingsTableData,'controller' => 'meter-reading'], 
                 compact('parentmodel'))->render();

@@ -118,6 +118,7 @@ Route::group(['middleware' => ['auth','permission']], function () {
 
 Route::post('api/fetch-leaserent', [LeaseController::class, 'fetchleaserent']);
 Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
+Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
 
 
 require __DIR__.'/auth.php';

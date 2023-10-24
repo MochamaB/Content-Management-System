@@ -9,7 +9,7 @@
 <div class=" contwrapper">
     <div class="row">    
         <hr>
-        @include('admin.CRUD.table', ['data' => $tableData])
+        @include('admin.CRUD.show_table', ['data' => $tableData])
 
     </diV>
 </div>

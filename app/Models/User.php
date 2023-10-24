@@ -141,13 +141,14 @@ class User extends Authenticatable
     }
 
     ////scopes////
+    protected $allowedStatuses = ['active', 'draft', 'suspended'];
     public function scopeWithoutActiveLease($query, $role)
     {
         return $query->role($role)
             ->whereNotIn('id', function ($subquery) {
                 $subquery->select('user_id')
                     ->from('leases')
-                    ->where('status', 'active');
+                    ->whereIn('status', $this->allowedStatuses);
             });
     }
 

@@ -7,7 +7,11 @@
 
 @elseif(($routeParts[1] === 'edit'))
 
-    @include('admin.CRUD.tabs_vertical')
+<form method="POST" action="{{ url($routeParts[0].'/'.$lease->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
+        @method('PUT')    
+        @csrf
+        @include('wizard.lease.leasedetails')
+    </form>
 @endif
 
 @endsection

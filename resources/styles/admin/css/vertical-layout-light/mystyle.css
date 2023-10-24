@@ -20,40 +20,45 @@
   height: 97px;
 }
 
-  .navbar .navbar-brand-wrapper {
-    background: #0a2351;
-    transition: width 0.25s ease, background 0.25s ease;
-    -webkit-transition: width 0.25s ease, background 0.25s ease;
-    -moz-transition: width 0.25s ease, background 0.25s ease;
-    -ms-transition: width 0.25s ease, background 0.25s ease;
-    width: 248px;
-    height: 97px;
-    padding: 20px 30px;
-  }
+.navbar .navbar-brand-wrapper {
+  background: #0a2351;
+  transition: width 0.25s ease, background 0.25s ease;
+  -webkit-transition: width 0.25s ease, background 0.25s ease;
+  -moz-transition: width 0.25s ease, background 0.25s ease;
+  -ms-transition: width 0.25s ease, background 0.25s ease;
+  width: 248px;
+  height: 97px;
+  padding: 20px 30px;
+}
 
-  .navbar-toggler {
-    background-color: white; /* Set the initial background color to white */
-    font-weight:500;
-    transition: background-color 0.3s; /* Add a transition effect for smooth color change */
-  }
-  
-  .navbar-toggler.collapsed {
-    background-color: black; /* Change the background color to black when collapsed */
-  }
-  /*--------------------------- Side Bar */
+.navbar-toggler {
+  background-color: white;
+  /* Set the initial background color to white */
+  font-weight: 500;
+  transition: background-color 0.3s;
+  /* Add a transition effect for smooth color change */
+}
+
+.navbar-toggler.collapsed {
+  background-color: black;
+  /* Change the background color to black when collapsed */
+}
+
+/*--------------------------- Side Bar */
 
 #sidebar {
-    background-color:#0a2351;
-    border-right:2px solid #c8c8c9;
+  background-color: #0a2351;
+  border-right: 2px solid #c8c8c9;
 }
+
 .sidebar {
   min-height: calc(100vh - 97px);
   background: #0a2351;
   font-family: "Manrope", sans-serif;
   font-weight: 500;
-  border-right:2px solid #c8c8c9;
+  border-right: 2px solid #c8c8c9;
   width: 255px;
-  padding:0px;
+  padding: 0px;
   z-index: 11;
   transition: width 0.25s ease, background 0.25s ease;
   -webkit-transition: width 0.25s ease, background 0.25s ease;
@@ -67,13 +72,13 @@
 /*--------------------------- Sidebar Category Text  */
 .sidebar .nav .nav-item.nav-category {
 
-    color: #fff;
-    margin: 0 30px;
-    margin-top: 0px;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 20px 0px 5px 0px;
-    text-transform: uppercase;
+  color: #fff;
+  margin: 0 30px;
+  margin-top: 0px;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 20px 0px 5px 0px;
+  text-transform: uppercase;
 
 }
 
@@ -101,119 +106,126 @@
   margin-right: 1rem;
   color: #ffaf00;
 }
+
 .sidebar .nav .nav-item.active .nav-link i.menu-icon {
   font-size: 25px;
   line-height: 1;
   margin-right: 1rem;
   color: #1F3BB3;
 }
+
 .sidebar .nav .nav-item.active {
-    border-radius: 0px 0px 0px 0px;
-    background: #F4F5F7;
-    border-top: 1px solid #0576f8;
-    border-bottom: 1px solid #0576f8;
-  }
-  .sidebar .nav .nav-item.active > .nav-link {
-    background: #adb5bd;
-    position: relative;
-    font-weight: bold;
-    font-size: 13px;
-    border-radius: 0px 0px;
-    
+  border-radius: 0px 0px 0px 0px;
+  background: #F4F5F7;
+  border-top: 1px solid #0576f8;
+  border-bottom: 1px solid #0576f8;
+}
 
-    
-  }
-  
+.sidebar .nav .nav-item.active>.nav-link {
+  background: #adb5bd;
+  position: relative;
+  font-weight: bold;
+  font-size: 13px;
+  border-radius: 0px 0px;
 
-  .sidebar .nav.sub-menu {
-    margin-bottom: 0;
-    margin-top: 0;
-    list-style: none;
-    padding: 0.25rem 0 0 3.07rem;
-    background: #fff;
-    padding-bottom: 12px;
-  }
-  .sidebar .nav:not(.sub-menu) > .nav-item > .nav-link[aria-expanded="true"] {
-    border-radius: 0px;
-    background: #fff;
-    color: #1F3BB3;
-  }
-  .sidebar .nav.sub-menu .nav-item .nav-link.active {
-    color: #1F3BB3;
-    background: transparent;
-    border-left: 5px solid #1F3BB3;
-    
-  }
-  .sidebar .nav.sub-menu .nav-item .nav-link:hover {
-    color: orange;
-    background: transparent;
-    border-left: 5px solid orange;
-  }
 
-  .sidebar .nav:not(.sub-menu) > .nav-item:hover > .nav-link, .sidebar .nav:not(.sub-menu) > .nav-item:hover[aria-expanded="true"] {
-    background: #adb5bd;
-    color: #fff;
-  }
+
+}
+
+
+.sidebar .nav.sub-menu {
+  margin-bottom: 0;
+  margin-top: 0;
+  list-style: none;
+  padding: 0.25rem 0 0 3.07rem;
+  background: #fff;
+  padding-bottom: 12px;
+}
+
+.sidebar .nav:not(.sub-menu)>.nav-item>.nav-link[aria-expanded="true"] {
+  border-radius: 0px;
+  background: #fff;
+  color: #1F3BB3;
+}
+
+.sidebar .nav.sub-menu .nav-item .nav-link.active {
+  color: #1F3BB3;
+  background: transparent;
+  border-left: 5px solid #1F3BB3;
+
+}
+
+.sidebar .nav.sub-menu .nav-item .nav-link:hover {
+  color: orange;
+  background: transparent;
+  border-left: 5px solid orange;
+}
+
+.sidebar .nav:not(.sub-menu)>.nav-item:hover>.nav-link,
+.sidebar .nav:not(.sub-menu)>.nav-item:hover[aria-expanded="true"] {
+  background: #adb5bd;
+  color: #fff;
+}
 
 .home-tab .nav-tabs {
-    font-family: "Manrope", sans-serif;
-    border-bottom: 2px solid #dee2e6;
-  }
-  
+  font-family: "Manrope", sans-serif;
+  border-bottom: 2px solid #dee2e6;
+}
+
 .home-tab .nav-tabs .nav-item .nav-link {
-    font-style: normal;
-    font-weight: 500;
-    font-size:18px;
-    line-height: 18px;
-    color: #212121;
-    padding: 22px 14px 14px 20px;
-    border: none;
-   
-    font-family: "Manrope", sans-serif;
-    background: transparent;
-  }
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 18px;
+  color: #212121;
+  padding: 22px 14px 14px 20px;
+  border: none;
+
+  font-family: "Manrope", sans-serif;
+  background: transparent;
+}
 
 .home-tab .nav-tabs .nav-item .nav-link.active {
-    background: transparent;
-    color: #1F3BB3;
-    border-bottom: 7px solid blue;
-  }
+  background: transparent;
+  color: #1F3BB3;
+  border-bottom: 7px solid blue;
+}
 
-  .tab-content {
-    border: 1px solid #dee2e6;
-    border-top: 0;
-    padding-left:12px;
-    text-align: justify;
-  }
+.tab-content {
+  border: 1px solid #dee2e6;
+  border-top: 0;
+  padding-left: 12px;
+  text-align: justify;
+}
 
-  .contwrapper{
+.contwrapper {
 
-    border: 1px solid #dee2e6;
-    padding:30px;
-  }
+  border: 1px solid #dee2e6;
+  padding: 30px;
+}
 
-  .horizontalline{
-    border:2px solid #dee2e6;
-  }
+.horizontalline {
+  border: 2px solid #dee2e6;
+}
 
-  .requiredlabel{
-    font-size:20px;
-    padding-left:5px;
-    color: red;
-  }
+.requiredlabel {
+  font-size: 20px;
+  padding-left: 5px;
+  color: red;
+}
 
-  .label {
-    font-size: 18px;
-    font-weight:600;
-    text-transform: uppercase;
-    line-height: 1.4rem;
-    vertical-align: top;
-    margin-bottom: 0.5rem;
+.label {
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 1.4rem;
+  vertical-align: top;
+  margin-bottom: 0.5rem;
 }
 
 .checkboxlabel {
   font-size: 15px;
-  font-weight:600;
+  font-weight: 600;
   text-transform: uppercase;
   line-height: 1.4rem;
   vertical-align: top;
@@ -222,55 +234,61 @@
 
 .checkboxlabelbody {
   font-size: 13px;
-  font-weight:500;
+  font-weight: 500;
   text-transform: uppercase;
   line-height: 1.4rem;
   vertical-align: top;
   margin-bottom: 0.5rem;
 }
+
 .formcontrol2 {
-    padding: .4375rem .75rem;
-    border: 1px solid #dee2e6;
-    font-weight: 400;
-    font-size: 14px;
-    border-radius: 0px;
-    height: 2rem;
-    color:#777;
-    padding-right:120px;
-    width: 100%;
-    
-    
-    }
-    .formcontrol2.is-invalid {
-      border-color: #dc3545; /* Red border color for invalid inputs */
-     /* Light red background color for invalid inputs */
-      color: grey; /* Dark red text color for invalid inputs */
-      /* Add any other custom styles for invalid inputs with class .formcontrol2 here */
-  }
-  .form-controlcreate{
-    padding: .4375rem .75rem;
-    border: 1px solid #dee2e6;
-    font-weight: 400;
-    font-size: 14px;
-    border-radius: 0px;
-    height: 2rem;
-    color:#777;
-    padding-right:120px;
-    width: 100%;
-    
-    
-  }
-#filter{
-    margin-top:25px;
-    margin-left:-15px;
-    border-radius: 0px; 
-    border-left: blue solid 10px
+  padding: .4375rem .75rem;
+  border: 1px solid #dee2e6;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 0px;
+  height: 2rem;
+  color: #777;
+  padding-right: 120px;
+  width: 100%;
+
+
 }
 
-.filterbody{
-    border-left: 5px solid #ffaf00;
-    padding: 20px;
-    background-color: #F1F1F1;
+.formcontrol2.is-invalid {
+  border-color: #dc3545;
+  /* Red border color for invalid inputs */
+  /* Light red background color for invalid inputs */
+  color: grey;
+  /* Dark red text color for invalid inputs */
+  /* Add any other custom styles for invalid inputs with class .formcontrol2 here */
+}
+
+.form-controlcreate {
+  padding: .4375rem .75rem;
+  border: 1px solid #dee2e6;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 0px;
+  height: 2rem;
+  color: #777;
+  padding-right: 120px;
+  width: 100%;
+
+
+}
+
+#filter {
+  margin-top: 25px;
+  margin-left: -15px;
+  border-radius: 0px;
+  border-left: blue solid 10px
+}
+
+.filterbody {
+  border-left: 5px solid #ffaf00;
+  padding: 20px;
+  background-color: #F1F1F1;
 }
 
 .word-wrap {
@@ -278,10 +296,10 @@
 }
 
 
-.textformcontrol{
+.textformcontrol {
   display: block;
   width: 100%;
-  padding:  1px 10px 75px 5px;
+  padding: 1px 10px 75px 5px;
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1;
@@ -293,6 +311,7 @@
   border-radius: 0px;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+
 .card {
   position: relative;
   display: flex;
@@ -305,30 +324,38 @@
   border-radius: 0px;
 }
 
-.modalheader{
-  background-color:darkblue;
+.modalheader {
+  background-color: darkblue;
 }
-.modaltitle{
-  color:white;
+
+.modaltitle {
+  color: white;
 }
 
 a.table:link {
-  color:#1F3BB3;
+  color: #1F3BB3;
   font-size: 15px;
-  font-weight:600;
+  font-weight: 600;
   text-decoration: none;
   text-transform: capitalize;
 }
+
 a.table:visited {
-  color:#0000ff;
+  color: #0000ff;
 }
+
 a.table:hover {
-  color:#ffaf00;
+  color: #ffaf00;
   font-size: 17px;
 }
 
-* {box-sizing: border-box}
-body {font-family: "Lato", sans-serif;}
+* {
+  box-sizing: border-box
+}
+
+body {
+  font-family: "Lato", sans-serif;
+}
 
 /* Style the tab */
 .tab {
@@ -336,8 +363,8 @@ body {font-family: "Lato", sans-serif;}
   border: 1px solid #ccc;
   background-color: #e3e3e3;
   width: 25%;
-  overflow:hidden;
-height:1%;
+  overflow: hidden;
+  height: 1%;
 }
 
 /* Style the buttons inside the tab */
@@ -364,31 +391,40 @@ height:1%;
 .tab button.active {
   background-color: #ccc;
   font-size: 22px;
-  font-weight:800;
-  color:#00308F;
+  font-weight: 800;
+  color: #00308F;
   border-left: 5px solid #0000ff;
 
 }
-.tab button.active > .number {
+
+.tab button.active>.number {
   /* Your styles for the active number element go here */
   font-size: 22px;
   font-weight: 800;
   background-color: #0000ff;
-  color:#F1F1F1;
+  color: #F1F1F1;
   border-left: 5px solid #0000ff;
-margin-left: 5px;
-  border-radius: 50%; /* Use 50% for a round shape */
-  padding: 5px; /* 
+  margin-left: 5px;
+  border-radius: 50%;
+  /* Use 50% for a round shape */
+  padding: 5px;
+  /* 
   /* Add any other styles you want */
 }
-.tab button.active > .number::before {
-  content: ''; /* Create an empty content for the pseudo-element */
+
+.tab button.active>.number::before {
+  content: '';
+  /* Create an empty content for the pseudo-element */
   position: absolute;
-  left: -10px; /* Adjust this value to control the distance between the number and the line */
+  left: -10px;
+  /* Adjust this value to control the distance between the number and the line */
   top: 50%;
-  height: 100%; /* Set the height to cover the entire height of the container */
-  width: 2px; /* Adjust this value to control the width of the line */
-  background-color: #000; /* Set the color of the line */
+  height: 100%;
+  /* Set the height to cover the entire height of the container */
+  width: 2px;
+  /* Adjust this value to control the width of the line */
+  background-color: #000;
+  /* Set the color of the line */
   transform: translateY(-50%);
 }
 
@@ -399,19 +435,19 @@ margin-left: 5px;
   border: 1px solid #ccc;
   width: 75%;
   border-left: 1px solid #ccc;
-  height
-  
-  : auto;
+  height: auto;
 }
+
 /* Wizard style the tab content */
 .wizardtab {
   float: left;
   border: 1px solid #ccc;
   background-color: #fff;
   width: 25%;
-  overflow:hidden;
-height:1%;
+  overflow: hidden;
+  height: 1%;
 }
+
 .wizardtab button {
   display: block;
   background-color: inherit;
@@ -424,22 +460,25 @@ height:1%;
   cursor: pointer;
   transition: 0.3s;
   font-size: 17px;
-  
+
 }
-.wizardtab button > .number {
+
+.wizardtab button>.number {
   /* Your styles for the active number element go here */
   border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    padding: 8px;
-    background: #fff;
-    border: 2px solid #666;
-    color: #666;
-    text-align: center;
-    font-size: 15px;;
+  width: 25px;
+  height: 25px;
+  padding: 8px;
+  background: #fff;
+  border: 2px solid #666;
+  color: #666;
+  text-align: center;
+  font-size: 15px;
+  ;
   /* Add any other styles you want */
 }
-.wizardtab button > .connector {
+
+.wizardtab button>.connector {
   border-left: 6px solid green;
   height: 50px;
   left: 50%;
@@ -450,36 +489,37 @@ height:1%;
 .wizardtab button:hover {
   background-color: #9E9E9E;
 }
+
 .wizardtab button.active {
   background-color: #ccc;
   font-size: 22px;
-  font-weight:800;
-  color:#00308F;
+  font-weight: 800;
+  color: #00308F;
   border-left: 5px solid #0000ff;
 
 }
-.wizardtab button.active > .number {
+
+.wizardtab button.active>.number {
   /* Your styles for the active number element go here */
   border-radius: 50%;
-    width: 75px;
-    height: 75px;
-    padding: 6px;
-    background: #0000ff;
-    border: 1px solid transparent;
-    color: #fff;
-    text-align: center;
-    font-size: 20px;
+  width: 75px;
+  height: 75px;
+  padding: 6px;
+  background: #0000ff;
+  border: 1px solid transparent;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
   /* Add any other styles you want */
 }
+
 .wizardtabcontent {
   float: left;
   padding: 20px 32px;
   border: 1px solid #ccc;
   width: 75%;
   border-left: 1px solid #ccc;
-  height
-  
-  : auto;
+  height: auto;
 }
 
 
@@ -491,7 +531,8 @@ input.form-control.form-control-sm.search-input {
   font-weight: 900;
   text-transform: uppercase;
   width: 400px;
-  transition: width 0.3s; /* Add a smooth transition effect for width changes */
+  transition: width 0.3s;
+  /* Add a smooth transition effect for width changes */
 }
 
 /* Style the placeholder text */
@@ -503,25 +544,28 @@ input.form-control.form-control-sm.search-input::placeholder {
 /* Increase width on hover */
 input.form-control.form-control-sm.search-input:hover {
   border: 2px solid #ffaf00;
-  width: 700px; /* Set the desired width on hover */
+  width: 700px;
+  /* Set the desired width on hover */
 }
 
 /* Increase width when input is focused */
 input.form-control.form-control-sm.search-input:focus {
   border: 2px solid #0000ff;
-  width: 700px; /* Set the desired width on hover */
+  width: 700px;
+  /* Set the desired width on hover */
 }
 
-.dynamicadd{
+.dynamicadd {
   border-left: 5px solid #0000ff;
   border-top: 1px solid #b6b6b6;
-  padding:20px;
-  margin-bottom:30px;
+  padding: 20px;
+  margin-bottom: 30px;
   box-shadow: 0.5rem 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 
 }
 
-input, select {
+input,
+select {
   padding: 2px;
   border-radius: 0px;
   box-sizing: border-box;
@@ -531,6 +575,7 @@ input, select {
   letter-spacing: 1px;
   height: 50px !important;
 }
+
 input[type="checkbox"] {
   /* Your checkbox styles here */
   padding: 2px;
@@ -545,7 +590,8 @@ input[type="checkbox"] {
 
 
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   -moz-box-shadow: none !important;
   -webkit-box-shadow: none !important;
   box-shadow: none !important;
@@ -553,7 +599,7 @@ input:focus, select:focus {
   outline-width: 0 !important;
 }
 
-.buttonoutline{
+.buttonoutline {
   border: 1px solid #081031;
   border-left: 2px solid #081031;
   color: #081031;
@@ -564,21 +610,40 @@ input:focus, select:focus {
 /* badges */
 .badge {
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 19px;
   padding: 0 10px 0;
-  font-weight:700;
+  font-weight: 900;
   text-transform: uppercase;
 }
+
 .badge-active {
-color: #038d21 !important;
-border: 1px solid #038d21 !important;
-background-color:#c0e4c3  ;
+  color: #038d21 !important;
+  border: 1px solid #038d21 !important;
+  background-color: #c0e4c3;
+}
+
+.badge-error {
+  color: #c50000c4 !important;
+  background-color: #f9e2df;
+  border: 2px solid #c50000c4 !important;
+}
+
+.badge-warning {
+  color: #ffaf00!important;
+  background-color: #f7f5e0;
+  border: 2px solid #fdac25 !important;
 }
 
 .badge-danger {
-  color: #c50000c4 !important;
-  background-color:#f9e2df  ;
-  border: 2px solid #c50000c4 !important;
-  }
-  
+  color: #f83d3dc4 !important;
+  background-color: #f9e2df;
+  border: 2px solid #f83d3dc4 !important;
+}
+
+.badge-information {
+  color: #3302a5c4 !important;
+  background-color: #dae3fa;
+  border: 2px solid #3302a5c4 !important;
+}
+

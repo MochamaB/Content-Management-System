@@ -9,7 +9,7 @@
         @endif
         <hr>
 
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="form-group">
                 @foreach($fields as $field => $attributes)
                 <!--- LABEL -->

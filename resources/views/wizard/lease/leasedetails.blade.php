@@ -4,7 +4,7 @@
 
 <form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
- 
+
     <div class="col-md-8">
         <div class="form-group">
             <label class="label">Select Property<span class="requiredlabel">*</span></label>
@@ -21,9 +21,9 @@
         <div class="form-group">
             <label class="label"> Select Unit<span class="requiredlabel">*</span></label>
             <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required>
-                @if(!empty($lease))
+              
                 <option value="{{$lease->unit_id ?? ''}}">{{$lease->unit->unit_number ?? 'Select Unit'}}</option>
-                @endif
+             
             </select>
         </div>
     </div>
@@ -31,7 +31,7 @@
         <div class="form-group">
             <label class="label">Add Tenant <span class="requiredlabel">*</span></label>
             <select name="user_id" id="user_id" class="formcontrol2" placeholder="Select" required>
-            <option value="{{$lease->user_id ?? ''}}">{{$lease->user->firstname  ?? 'Select'}} {{$lease->user->lastname  ?? 'Tenant'}}</option>
+                <option value="{{$lease->user_id ?? ''}}">{{$lease->user->firstname ?? 'Select'}} {{$lease->user->lastname ?? 'Tenant'}}</option>
                 @foreach($tenants as $key => $item)
                 <option value="{{ $item->id }}">{{ $item->firstname }} {{ $item->lastname }}</option>
                 @endforeach
@@ -42,7 +42,7 @@
         <div class="form-group">
             <label class="label">Lease Period<span class="requiredlabel">*</span></label>
             <select name="lease_period" id="lease_period" class="formcontrol2" placeholder="Select" required>
-            <option value="{{$lease->lease_period ?? ''}}">{{$lease->lease_period ?? 'Select Period'}}</option>
+                <option value="{{$lease->lease_period ?? ''}}">{{$lease->lease_period ?? 'Select Period'}}</option>
                 <option value="open"> Open (Terminated at-will)</option>
                 <option value="fixed">Fixed</option>
 
@@ -51,7 +51,7 @@
     </div>
     <div class="col-md-8">
         <div class="form-group">
-    
+
             <input type="hidden" class="form-control" id="status" name="status" value="Draft" readonly>
         </div>
     </div>
@@ -59,74 +59,117 @@
         <div class="col-md-8">
             <div class="form-group">
                 <label class="label">Start Date<span class="requiredlabel">*</span></label>
-                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}"  required>
+                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}" required>
             </div>
         </div>
         <div class="col-md-8">
             <div class="form-group" id="enddate">
                 <label class="label">End Date<span class="requiredlabel"></span></label>
-                <input type="date" class="form-control" name="enddate" value="{{$lease->enddate ?? ''}}" >
+                <input type="date" class="form-control" name="enddate" value="{{$lease->enddate ?? ''}}">
             </div>
         </div>
     </div>
 
     @include('admin.CRUD.wizardbuttons')
 </form>
+@elseif(($routeParts[1] === 'edit'))
+
+<div class=" contwrapper">
+    <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Information &nbsp;
+        @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
+        <a href="" class="editLink">Edit</a>
+    </h4>
+    @endif
+    <hr>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="label">Lease Period<span class="requiredlabel">*</span></label>
+            <h5>
+                <small class="text-muted">
+                    {{ $lease->lease_period}}
+                </small>
+            </h5>
+            <select name="lease_period" id="lease_period" class="formcontrol2" placeholder="Select" required>
+                <option value="{{$lease->lease_period ?? ''}}">{{$lease->lease_period ?? 'Select Period'}}</option>
+                <option value="open"> Open (Terminated at-will)</option>
+                <option value="fixed">Fixed</option>
+
+            </select>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="label">Lease Status<span class="requiredlabel">*</span></label>
+            <h5>
+                <small class="text-muted">
+                    {{ $lease->status}}
+                </small>
+            </h5>
+            <select name="status" id="status" class="formcontrol2" placeholder="Select" required>
+                <option value="{{$lease->status?? ''}}">{{$lease->status ?? 'Select Status'}}</option>
+                <option value="Active"> Active</option>
+                <option value="Suspended">Suspended</option>
+                <option value="Expired">Expired</option>
+                <option value="Terminated"> Terminated</option>
+                <option value="Draft">Draft</option>
+
+            </select>
+        </div>
+    </div>
+    <div class=row>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="label">Start Date<span class="requiredlabel">*</span></label>
+                <h5>
+                    <small class="text-muted">
+                        {{ $lease->startdate}}
+                    </small>
+                </h5>
+                <input type="text" class="form-control" name="" value="{{ $lease->startdate ?? '' }}" readonly>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group" id="enddate">
+                <label class="label">End Date<span class="requiredlabel"></span></label>
+                <h5>
+                    <small class="text-muted">
+                        {{ $lease->enddate ?? 'Not set' }}
+                    </small>
+                </h5>
+                <input type="date" class="form-control" name="enddate" value="{{ $lease->enddate ?? '' }}">
+            </div>
+        </div>
+        <br /><br />
+        <hr>
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit:Lease Details</button>
+        </div>
+
+
+    </div>
+</div>
+
+
 @endif
 
-<script>
-    $(document).ready(function() {
-        $('#property_id').on('change', function() {
-            var query = this.value;
-            // Clear existing unit options before appending new ones
-            $('#unit_id').empty();
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-            $.ajax({
-                url: "{{url('api/fetch-units')}}",
-                type: "POST",
-                data: {
-                    property_id: query,
 
-                    _token: '{{csrf_token()}}'
-                },
-                dataType: 'json',
-                success: function(data) {
-
-                    // Loop through the properties of the data object
-                    for (var unitId in data) {
-                        if (data.hasOwnProperty(unitId)) {
-                            // Access each unit ID and unit number
-                            var unitNumber = data[unitId];
-                            console.log('Unit ID: ' + unitId + ', Unit Number: ' + unitNumber);
-
-                            // You can use these values as needed, for example, to populate a select element
-                            // Here's an example of adding options to a select element with the id "unit_id"
-                            $('#unit_id').append(new Option(unitNumber, unitId));
-                        }
-                    }
-
-                }
-            });
-
-        });
-
-
-    });
-</script>
 <script>
     $(document).ready(function() {
         const $enddate = $("#enddate");
-        $enddate.hide();
+        const endDateValue = $enddate.val();
+           //   alert(endDateValue);
+        if (endDateValue === '') {
+            $enddate.hide();
+        }
+        //    $enddate.show();
         $('#lease_period').on('change', function() {
             var query = this.value;
-            if (query === "fixed") {
-                $enddate.show();
-            }else{
+            if (query === "open") {
                 $enddate.hide();
+            } else {
+                $enddate.show();
             }
 
         });

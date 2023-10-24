@@ -10,18 +10,18 @@
         <tbody>
             @foreach($data['rows'] as $key => $row)
             <tr>
-                <td style="padding-left: 15px;"><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
+                <td style="padding-left: 15px;"><a class="table" href="{{url($controller.'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
                 @foreach(array_slice($row, 2) as $cell)
                 <td style="text-transform: capitalize;padding-left: 15px;">{!! $cell !!}</td>
                 @endforeach
                 <td>
-                    <a href="{{url($routeParts[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-clipboard-text mdi-24px text-dark"></i></a>
-                    @if( Auth::user()->can($controller[0].'.edit') || Auth::user()->id === 1)
-                    <a href="{{url($routeParts[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
+                    <a href="{{url($controller.'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-clipboard-text mdi-24px text-dark"></i></a>
+                    @if( Auth::user()->can($controller.'.edit') || Auth::user()->id === 1)
+                    <a href="{{url($controller.'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
                     @endif
 
-                    @if( Auth::user()->can($controller[0].'.destroy') || Auth::user()->id === 1)
-                    <form action="{{ url($routeParts[0].'/'.$row['id']) }}" method="POST" style="display: inline;">
+                    @if( Auth::user()->can($controller.'.destroy') || Auth::user()->id === 1)
+                    <form action="{{ url($controller.'/'.$row['id']) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="button" class="" style="border:0px;" data-toggle="modal" data-target="#deleteConfirmationModal"><i class="mdi mdi-delete mdi-24px text-danger"></i></button>
@@ -36,7 +36,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to delete this {{$controller[0]}}?
+                                        Are you sure you want to delete this {{$controller}}?
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-outline-danger btn-lg text-danger mb-0 me-0" data-dismiss="modal">Cancel</button>

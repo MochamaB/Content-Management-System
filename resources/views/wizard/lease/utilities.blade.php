@@ -31,6 +31,7 @@
                 <option value="{{$utilitycharges->charge_cycle ?? ''}}">{{$utilitycharges->charge_cycle ?? 'Select Bill Cycle'}}</option>
           
                 <option value="Monthly"> Monthly</option>
+                <option value="Twomonths">Two Months</option>
                 <option value="Quaterly">Quaterly</option>
                 <option value="Halfyear">6 Months</option>
                 <option value="Year">1 Year</option>
@@ -56,4 +57,91 @@
 
 @include('admin.CRUD.wizardbuttons')
 </form>
+@elseif(($routeParts[1] === 'edit'))
+<form method="POST" action="{{ url($routeParts[0].'/'.$unitcharge->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
+        @method('PUT')    
+        @csrf
+    <h4 style="text-transform: capitalize;"> Edit Charge Details &nbsp;
+        @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
+        <a href="" class="editLink">Edit</a>
+        @endif
+    </h4>
+    <hr>
+    <div class="col-md-5">
+        <div class="form-group">
+            <label class="label"> {{ $unitcharge->charge_name}} Cycle<span class="requiredlabel">*</span></label>
+            <h5>
+                <small class="text-muted">
+                    {{ $rentcharge->charge_cycle}}
+                </small>
+            </h5>
+            <select name="charge_cycle" id="charge_cycle" class="formcontrol2" placeholder="Select" required>
+                <option value="{{$rentcharge->charge_cycle ?? ''}}">{{$rentcharge->charge_cycle ?? 'Select Rent Cycle'}}</option>
+                <option value="Monthly"> Monthly</option>
+                <option value="Twomonths">Two Months</option>
+                <option value="Quaterly">Quaterly</option>
+                <option value="Halfyear">6 Months</option>
+                <option value="Year">1 Year</option>
+
+            </select>
+        </div>
+    </div>
+    <!---------   ---->
+    <div class="row">
+    <div class="col-md-6">
+                <div class="form-group">
+                    <label class="label">Charge Type<span class="requiredlabel">*</span></label>
+                    <h5>
+                    <small class="text-muted">
+                        {{ $unitcharge->charge_type}}
+                    </small>
+                </h5>
+                    <select name="unitcharge->charge_type" id="unitcharge->charge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
+                        <option value="{{$unitcharge->charge_type ?? ''}}">{{$unitcharge->charge_type ?? 'Select Account'}}</option>
+                        <option value="fixed"> Fixed Amount</option>
+                        <option value="units"> By Units</option>
+                    </select>
+                </div>
+            </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="label">Account<span class="requiredlabel">*</span></label>
+                <h5>
+                    <small class="text-muted">
+                        {{ $rentcharge->chartofaccounts->account_name}}
+                    </small>
+                </h5>
+                <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
+                    <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account'}}</option>
+                    @foreach($accounts as $accounttype => $account)
+                    <optgroup label="{{ $accounttype }}">
+                        @foreach($account as $item)
+                        <option value="{{ $item->id }}">{{ $item->account_name  }}</option>
+                        @endforeach
+                    </optgroup>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="label">Amount<span class="requiredlabel">*</span></label>
+                <h5>
+                    <small class="text-muted">
+                        {{ $rentcharge->rate}}
+                    </small>
+                </h5>
+                <input type="text" class="form-control" name="rate" value="{{$rentcharge->rate ?? ''}}" required>
+            </div>
+        </div>
+    </div><br />
+    <hr>
+    <div class="col-md-6">
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit:Utility Details</button>
+        </div>
+
+
+</form>
+
 @endif

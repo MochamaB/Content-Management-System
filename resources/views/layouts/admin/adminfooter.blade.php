@@ -79,7 +79,7 @@
     });
 </script>
 @endif
-
+<!---- Fetch Units ----->
 <script>
     $(document).ready(function() {
         $('#property_id').on('change', function() {

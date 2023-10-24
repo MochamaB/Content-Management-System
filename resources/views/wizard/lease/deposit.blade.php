@@ -1,3 +1,5 @@
+
+@if(($routeParts[1] === 'create'))
 <h4><b> Add Security Deposit Details</b></h4>
 <hr>
 
@@ -68,3 +70,14 @@
 
     @include('admin.CRUD.wizardbuttons')
 </form>
+@elseif(($routeParts[1] === 'edit'))
+<h4 style="text-transform: capitalize;">Edit Security Deposit &nbsp;
+    @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
+    <a href="" class="editLink">Edit</a>
+</h4>
+@endif
+<hr>
+
+
+
+@endif

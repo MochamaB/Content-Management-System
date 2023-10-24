@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
 use App\Models\Unit;
 use App\Models\Property;
+use App\Models\Unitcharge;
+
 class MeterReadingController extends Controller
 {
     /**
@@ -67,19 +69,20 @@ class MeterReadingController extends Controller
     public function create($parentmodel = null)
     {
         $unit = Unit::find($parentmodel);
-        session(['unit' => $unit]);
-     //   $property = Property::where('id',$unit->property->id)->pluck('property_name', 'id')->toArray();
-        $properties = Property::pluck('property_name', 'id')->toArray();
-        $defaultData = [
-            'property_id' => $properties,
-            'unit_id' => $unit->id,
+       // session(['unit' => $unit]);
+        $property = Property::where('id',$unit->property->id)->first();
+        $unitcharge = Unitcharge::where 
+     //   $properties = Property::pluck('property_name', 'id')->toArray();
+     //   $defaultData = [
+//     'property_id' => $properties,
+          //  'unit_id' => $unit->id,
             // Add more default data for other fields as needed
-        ];
+   //     ];
        // dd($defaultData);
   
-        $viewData = $this->formData($this->model, $unit, $defaultData);
+   //     $viewData = $this->formData($this->model, $unit, $defaultData);
 
-        return View('admin.CRUD.form', $viewData);
+        return View('admin.property.create_meterreading', compact('property','unit'));
     }
     
 
