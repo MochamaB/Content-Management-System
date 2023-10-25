@@ -10,35 +10,34 @@
 
 <!---- Validation ----->
 <script>
-  $(document).ready(function () {
-    $('.myForm').on("submit", function (event) {
-        const $form = $(this);
-        const $requiredFields = $form.find('[required]');
-        let isValid = true;
+    $(document).ready(function() {
+        $('.myForm').on("submit", function(event) {
+            const $form = $(this);
+            const $requiredFields = $form.find('[required]');
+            let isValid = true;
 
-        $requiredFields.each(function () {
-            const $field = $(this);
-            if ($field.val().trim() === '') {
-                $field.addClass('is-invalid');
-                $field.siblings('.invalid-feedback').show();
-                $field.after('<div class="invalid-feedback">Please fill in this field.</div>');
-                isValid = false;
-            } else {
-                $field.removeClass('is-invalid');
-                $field.siblings('.invalid-feedback').hide();
+            $requiredFields.each(function() {
+                const $field = $(this);
+                if ($field.val().trim() === '') {
+                    $field.addClass('is-invalid');
+                    $field.siblings('.invalid-feedback').show();
+                    $field.after('<div class="invalid-feedback">Please fill in this field.</div>');
+                    isValid = false;
+                } else {
+                    $field.removeClass('is-invalid');
+                    $field.siblings('.invalid-feedback').hide();
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault(); // Prevent form submission if validation fails
             }
         });
-
-        if (!isValid) {
-            event.preventDefault(); // Prevent form submission if validation fails
-        }
     });
-});
-
 </script>
 @if(($routeParts[1] === 'edit'))
 
-<script >
+<script>
     $(document).ready(function() {
         // Elements
         const $editLink = $(".editLink");
@@ -113,6 +112,62 @@
                             // Here's an example of adding options to a select element with the id "unit_id"
                             $('#unit_id').append(new Option(unitNumber, unitId));
                         }
+                    }
+
+                }
+            });
+
+        });
+
+
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#unitcharge_id').on('change', function() {
+            var inputValue = $(this).val();
+            var propertyId = $('#property_id').val();
+            var unitId = $('#unit_id').val(); // Get unit_id from input
+
+            // alert(unitId);
+
+            // Clear existing unit options before appending new ones
+            $('#lastreading').empty();
+            $('#startdate').empty();
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{url('api/fetch-meterReading')}}",
+                type: "POST",
+                data: {
+                    unitcharge_id: inputValue,
+                    property_id: propertyId, // Pass property_id to the server
+                    unit_id: unitId,
+
+                    _token: '{{csrf_token()}}'
+                },
+                dataType: 'json',
+                success: function(data) {
+                    console.log(data);
+                    var currentReadingValue = data.currentreading;
+                    var endDateValue = data.enddate;
+                    if (data && data.currentreading && data.enddate) {
+                        //  alert(endDateValue);
+                        $('#lastreading').val(currentReadingValue);
+                        $('#startdate').val(endDateValue);
+                    } else {
+                        $('#lastreading').val("0.00");
+                        $('#lastreading').prop('readonly', false);
+                        var today = new Date();
+                        var year = today.getFullYear();
+                        var month = String(today.getMonth() + 1).padStart(2, '0'); // Add leading zero if needed
+                        var day = String(today.getDate()).padStart(2, '0'); // Add leading zero if needed
+                        var formattedDate = year + '-' + month + '-' + day;
+                        $('#startdate').val(formattedDate);
                     }
 
                 }

@@ -42,10 +42,10 @@ class MeterReading extends Model
         'unitcharge_id' => 'required',
         'lastreading' => 'required',
         'currentreading' => 'required',
-        'rate_at_reading' => 'required',
-        'startdate' => 'required',
+        'rate_at_reading' => 'nullable',
+        'startdate' => 'nullable',
         'enddate' => 'required',
-        'recorded_by' => 'required',
+        'recorded_by' => 'nullable',
     ];
 
     public static function getFieldData($field)
@@ -86,6 +86,11 @@ class MeterReading extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function unitcharge()
+    {
+        return $this->belongsTo(Unitcharge::class);
     }
  
 }

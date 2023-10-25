@@ -211,10 +211,18 @@ class LeaseController extends Controller
         $unitChargeController = new UnitChargeController();
         $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
+
+        
+        $meterReadings = $unit->meterReadings;
+        $meterReaderController = new MeterReadingController();
+        $MeterReadingsTableData = $meterReaderController->getMeterReadingsData($meterReadings);
+        $parentmodel = $unit;
+
         $tabTitles = collect([
             'Summary',
             'Charges and Utilities',
             'Deposits and Payments',
+            'Meter Readings',
             'Maintenance Tasks',
             'Files',
         ]);
@@ -226,7 +234,10 @@ class LeaseController extends Controller
                 $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $unitChargeTableData, 'controller' => 'unitcharge'])->render();
             } elseif ($title === 'Deposits and Payments') {
                 $tabContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
-            } elseif ($title === 'Maintenance Tasks') {
+            } elseif ($title === 'Meter Readings') {
+                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $MeterReadingsTableData,'controller' => 'meter-reading'], 
+                compact('parentmodel'))->render();
+            }elseif ($title === 'Maintenance Tasks') {
                 $tabContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities'))->render();
             } elseif ($title === 'Files') {
                 $tabContents[] = View('wizard.lease.leaseagreement')->render();

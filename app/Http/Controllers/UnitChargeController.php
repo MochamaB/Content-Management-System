@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\unitcharge;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Lease;
@@ -130,8 +131,7 @@ class UnitChargeController extends Controller
         $account = Chartofaccount::all();
         $accounts = $account->groupBy('account_type');
 
-
-
+        session::flash('previousUrl',request()->server('HTTP_REFERER'));
         return View('admin.lease.charges', compact('pageheadings', 'accounts', 'lease', 'rentcharge', 'splitRentcharges', 'unitcharge'));
     }
 
@@ -177,9 +177,8 @@ class UnitChargeController extends Controller
         }
     }
         
-
-    return redirect()->route('lease.show', ['lease' => $leaseid->id])
-    ->with('status', 'Charge Edited Successfully');
+    $previousUrl = Session::get('previousUrl');
+        return redirect($previousUrl)->with('status', 'Charge Edited Successfully');
     }
 
     /**

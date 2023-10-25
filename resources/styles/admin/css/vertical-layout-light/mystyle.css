@@ -264,6 +264,8 @@
   /* Add any other custom styles for invalid inputs with class .formcontrol2 here */
 }
 
+
+
 .form-controlcreate {
   padding: .4375rem .75rem;
   border: 1px solid #dee2e6;
@@ -574,6 +576,18 @@ select {
   font-size: 16px;
   letter-spacing: 1px;
   height: 50px !important;
+}
+
+
+select[readonly] {
+  /* Your CSS styles for disabled select elements go here */
+  color: #999999d2; /* Change text color to gray */
+  background-color: #ffffff; /* Change background color */
+  appearance: none; /* Remove default appearance (dropdown arrow) in modern browsers */
+  -webkit-appearance: none; 
+  border:none;
+  cursor: not-allowed; /* Example cursor style for readonly state */
+  pointer-events: none; /
 }
 
 input[type="checkbox"] {

@@ -22,6 +22,7 @@ use App\Http\Controllers\TenantDetailsController;
 use App\Http\Controllers\UnitChargeController;
 use App\Http\Controllers\utilityController;
 use App\Http\Controllers\PropertyTypeController;
+use App\Models\MeterReading;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,8 +66,7 @@ Route::group(['middleware' => ['auth','permission']], function () {
         ///////////////
         Route::resource('unitcharge', UnitChargeController::class); 
         Route::resource('utility', utilityController::class);
-        Route::get('meter-reading/create/{id}', [
-            'as' => 'meter-reading.create',
+        Route::get('meter-reading/create/{id}', ['as' => 'meter-reading.create',
             'uses' => 'App\Http\Controllers\MeterReadingController@create'
         ]);
         Route::resource('meter-reading', MeterReadingController::class, ['except' => 'create']); 
@@ -119,6 +119,7 @@ Route::group(['middleware' => ['auth','permission']], function () {
 Route::post('api/fetch-leaserent', [LeaseController::class, 'fetchleaserent']);
 Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
 Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
+Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
 
 
 require __DIR__.'/auth.php';
