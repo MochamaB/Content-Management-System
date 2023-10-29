@@ -87,7 +87,7 @@ class Property extends Model
         return $this->hasMany(Unit::class);
     }
 
-    /// scope showing properties with units
+ /// scope showing properties with units
     public function scopeWithUnitUser($query)
     {
         $user = auth()->user();

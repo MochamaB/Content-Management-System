@@ -356,11 +356,7 @@ class LeaseController extends Controller
     }
     public function rent(StoreUnitChargeRequest $request)
     {
-        if ( Unitcharge::where('property_id', $request->property_id)
-        ->where('charge_name', $request->charge_name)
-        ->exists()) {
-            return redirect()->back()->with('statuserror', ' The Utility is already attached to the property');
-        }
+       
         $validatedData = $request->validated();
         $rules = [
             'splitcharge_name.*' => 'required|string|max:255',

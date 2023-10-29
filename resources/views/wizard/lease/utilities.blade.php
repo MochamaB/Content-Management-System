@@ -87,22 +87,7 @@
         </div>
     </div>
     <!---------   ---->
-    <div class="row">
-    <div class="col-md-6">
-                <div class="form-group">
-                    <label class="label">Charge Type<span class="requiredlabel">*</span></label>
-                    <h5>
-                    <small class="text-muted">
-                        {{ $unitcharge->charge_type}}
-                    </small>
-                </h5>
-                    <select name="unitcharge->charge_type" id="unitcharge->charge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
-                        <option value="{{$unitcharge->charge_type ?? ''}}">{{$unitcharge->charge_type ?? 'Select Account'}}</option>
-                        <option value="fixed"> Fixed Amount</option>
-                        <option value="units"> By Units</option>
-                    </select>
-                </div>
-            </div>
+  
         <div class="col-md-5">
             <div class="form-group">
                 <label class="label">Account<span class="requiredlabel">*</span></label>
@@ -122,20 +107,7 @@
                     @endforeach
                 </select>
             </div>
-        </div>
-
-        <div class="col-md-5">
-            <div class="form-group">
-                <label class="label">Amount<span class="requiredlabel">*</span></label>
-                <h5>
-                    <small class="text-muted">
-                        {{ $rentcharge->rate}}
-                    </small>
-                </h5>
-                <input type="text" class="form-control" name="rate" value="{{$rentcharge->rate ?? ''}}" required>
-            </div>
-        </div>
-    </div><br />
+        </div><br />
     <hr>
     <div class="col-md-6">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit:Utility Details</button>

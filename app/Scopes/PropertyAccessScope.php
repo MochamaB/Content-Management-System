@@ -12,7 +12,7 @@ class PropertyAccessScope implements Scope
     {
         $user = auth()->user();
         $userRole =$user->roles->pluck('name');
-        if ($user->id !== 1 && $userRole !== 'Administrator') {
+        if ($user->id !== 1 && stripos($userRole, 'admin') === false) {
             /// returns all units loggedinuser should access
             $userUnits = $user->units;
             //// returns all the property ids in pivot table that loggedinuser has

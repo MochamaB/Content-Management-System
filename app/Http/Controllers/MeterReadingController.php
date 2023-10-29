@@ -88,6 +88,7 @@ class MeterReadingController extends Controller
         if ($unitcharge->isEmpty()) {
             return redirect()->back()->with('statuserror', ' Cannot Add Meter reading. No Charge of type units is not attached to this unit.');
         }
+        
 
         //   dd($latestReading);
 

@@ -45,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         Property::addGlobalScope(new PropertyAccessScope);
         Utility::addGlobalScope(new UtilityAccessScope);
         
-        Unit::addGlobalScope(new UnitAccessScope);
+      Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);
     //   User::addGlobalScope(new UnitAccessScope);
 

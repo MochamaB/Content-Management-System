@@ -42,7 +42,7 @@ class UnitChargeController extends Controller
 
         foreach ($unitchargedata as $item) {
             $nextDateFormatted = empty($item->nextdate) ? 'Charged Once' : Carbon::parse($item->nextdate)->format('Y-m-d');
-
+            
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->charge_name,
@@ -110,15 +110,15 @@ class UnitChargeController extends Controller
     public function edit(unitcharge $unitcharge)
     {
        
-        // Check if the parent_utility is not 0
-        if ($unitcharge->parent_utility !== "0") {
+    // Check if the parent_utility is not 0
+        if ($unitcharge->parent_utility !== 0) {
             // If parent_utility is not 0, open the parent utility and pass it as the $unitcharge
             $parentUtility = Unitcharge::find($unitcharge->parent_utility);
             // Pass the parent utility as the $unitcharge
             $unitcharge = $parentUtility;  
         }
         $pageheadings = collect([
-            '0' =>  $unitcharge->charge_name,
+            '0' => $unitcharge->charge_name,
             '1' => $unitcharge->unit->unit_number,
             '2' => $unitcharge->property->property_name,
         ]);
@@ -144,7 +144,6 @@ class UnitChargeController extends Controller
      */
     public function update(Request $request, unitcharge $unitcharge)
     {
-        $leaseid = Lease::find($unitcharge->unit_id);
         $unitchargedata = Unitcharge::findOrFail($unitcharge->id);
         $unitchargedata->update($request->all());
 
