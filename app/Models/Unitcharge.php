@@ -70,12 +70,12 @@ class Unitcharge extends Model
           return $this->chartofaccounts->account_name;
       }
 
-      public function parentcharge()
+      public function parent()
     {
         return $this->belongsTo(Unitcharge::class, 'parent_utility');
     }
 
-    public function childrencharge()
+    public function children()
     {
         return $this->hasMany(Unitcharge::class, 'parent_utility');
     }

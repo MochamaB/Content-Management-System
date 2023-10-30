@@ -22,6 +22,7 @@ use App\Http\Controllers\TenantDetailsController;
 use App\Http\Controllers\UnitChargeController;
 use App\Http\Controllers\utilityController;
 use App\Http\Controllers\PropertyTypeController;
+use App\Http\Controllers\InvoiceController;
 use App\Models\MeterReading;
 
 /*
@@ -70,7 +71,8 @@ Route::group(['middleware' => ['auth','permission']], function () {
             'uses' => 'App\Http\Controllers\MeterReadingController@create'
         ]);
         Route::resource('meter-reading', MeterReadingController::class, ['except' => 'create']); 
-     
+        Route::resource('invoice', InvoiceController::class);
+        Route::post('generateinvoice', [InvoiceController::class, 'generateInvoice']); 
         
     });
 

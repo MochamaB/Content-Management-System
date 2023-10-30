@@ -207,7 +207,7 @@ class LeaseController extends Controller
             '2' => $lease->user->firstname . ' ' . $lease->user->lastname,
         ]);
         $unit = Unit::where('id', $lease->unit_id)->first();
-        $charges = $unit->unitcharges; ///data for utilities page
+        $charges = $unit->unitcharges->parent; ///data for utilities page
         $unitChargeController = new UnitChargeController();
         $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
