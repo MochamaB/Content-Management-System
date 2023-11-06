@@ -31,8 +31,8 @@ class StoreUnitChargeRequest extends FormRequest
             'charge_cycle' => 'required',
             'charge_type' => 'required',
             'rate' => 'required',
-            'parent_utility' => 'required',
-            'recurring_charge' => 'nullable|',
+            'parent_id' => 'nullable',
+            'recurring_charge' => 'nullable',
             'startdate' => 'nullable|date',
             'nextdate' => 'nullable|date', 
         ];

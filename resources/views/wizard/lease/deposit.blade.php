@@ -16,7 +16,6 @@
 
         <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
         <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
-        <input type="hidden" class="form-control" id="parent_utility" name="parent_utility" value="0">
         <div class="form-group">
             <h4>Security Deposit <span class="text-muted">(optional)</span></h4>
             <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="security_deposit" readonly>

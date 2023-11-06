@@ -191,7 +191,7 @@ class LeaseController extends Controller
 
         $rentcharge = Unitcharge::where('unit_id', $lease->unit_id)->where('charge_name', 'rent')->first();
         if($rentcharge !== null) {
-            $splitRentcharges = Unitcharge::where('parent_utility', $rentcharge->id)->get();  
+            $splitRentcharges = Unitcharge::where('parent_id', $rentcharge->id)->get();  
         }
         $depositcharge = Unitcharge::where('unit_id', $lease->unit_id)->where('charge_name', 'security_deposit')->first();
         $account = Chartofaccount::all();
@@ -321,11 +321,11 @@ class LeaseController extends Controller
             ->exists();
 
          if ($utilityNameExists || $chargeNameExists) {
-            return response()->json(['message' => 'The Utility/Charge already exists. Please choose a different name.'], 422);
+            return response()->json(['message' => 'The Charge already exists. Choose another name.'], 422);
         }
 
         // If the charge name does not exist, return a success response
-        return response()->json(['message' => 'Success!'], 200);
+      //  return response()->json(['message' => 'Success!'], 200);
     }
     /////////// lease wizard
     public function cosigner(Request $request)
@@ -392,6 +392,17 @@ class LeaseController extends Controller
             $request->session()->put('rentcharge', $rentcharge);
             $rentcharge->update();
         }
+        /////////// check if charge name exists
+        $utilityNameExists = Utility::where('property_id', $request->property_id)
+            ->where('utility_name', $request->charge_name)
+            ->exists();
+        $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
+            ->where('charge_name', $request->charge_name)
+            ->exists();
+
+     if ($utilityNameExists || $chargeNameExists) {
+        return redirect()->back()->with('statuserror', 'Charge Name already defined in system.');
+     }
 
         $splitRentCharges = [];
 
@@ -405,7 +416,7 @@ class LeaseController extends Controller
                     'charge_cycle' => $rentcharge->charge_cycle,
                     'charge_type' => $request->input('splitcharge_type'),
                     'rate' => $request->input('splitrate'),
-                    'parent_utility' => $rentcharge->id,
+                    'parent_id' => $rentcharge->id,
                     'recurring_charge' => $rentcharge->recurring_charge,
                     'startdate' => $rentcharge->startdate,
                     'nextdate' => $rentcharge->nextdate,
@@ -482,7 +493,7 @@ class LeaseController extends Controller
                     'charge_cycle' => $request->input('charge_cycle'),
                     'charge_type' => $request->input('charge_type'),
                     'rate' => $request->input('rate'),
-                    'parent_utility' => $request->input('parent_utility'),
+                    'parent_id' => $request->input('parent_id'),
                     'recurring_charge' => $request->input('recurring_charge'),
                     'startdate' => $request->input('startdate'),
                     'nextdate' => $nextDate,

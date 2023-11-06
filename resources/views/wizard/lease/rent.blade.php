@@ -15,7 +15,6 @@
 
         <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
         <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
-        <input type="hidden" class="form-control" id="parent_utility" name="parent_utility" value="0">
         <div class="form-group">
             <h4>Rent <span class="text-muted">(optional)</span></h4>
             <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="rent" readonly>
@@ -91,6 +90,7 @@
                 <div class="form-group">
                     <label class="label">Charge Name<span class=""></span></label>
                     <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge->charge_name ?? '' }}">
+                    <div class="invalid-feedback"></div>
                 </div>
             </div>
 
@@ -226,6 +226,7 @@
                     </small>
                     </h5>
                     <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge->charge_name ?? '' }}">
+                    <div class="invalid-feedback"></div>
                 </div>
             </div>
 
@@ -326,6 +327,7 @@
                     <div class="form-group">
                         <label class="label">Charge Name<span class="requiredlabel">*</span></label>
                         <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" placeholder="Enter name of charge" value="" required>
+                        <div class="invalid-feedback"></div>
                     </div>
                 </div>
                     <div class="col-md-6">
@@ -400,6 +402,7 @@
         var inputValue = $(this).val();
         var propertyId = $('#property_id').val();
         var unitId = $('#unit_id').val(); // Get unit_id from hidden input
+        var $inputField = $(this);
 
         $.ajaxSetup({
             headers: {
@@ -422,8 +425,10 @@
             },
             error: function(xhr, status, error) {
                 // Handle the error response here and show it to the user
-                var errorMessage = xhr.responseJSON.message; // Assuming the error message is returned from the server
-                alert(errorMessage); // You can show the error message in an alert or any other way you prefer
+                var errorMessage = xhr.responseJSON.message; 
+                $inputField.addClass('is-invalid');
+                $inputField.siblings('.invalid-feedback').text(errorMessage).show();
+              //  alert(errorMessage); // You can show the error message in an alert or any other way you prefer
             }
         });
     });

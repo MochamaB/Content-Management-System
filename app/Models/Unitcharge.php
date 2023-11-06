@@ -17,7 +17,7 @@ class Unitcharge extends Model
         'charge_cycle',
         'charge_type',
         'rate',
-        'parent_utility',
+        'parent_id',
         'recurring_charge',
         'startdate',
         'nextdate',     
@@ -70,14 +70,14 @@ class Unitcharge extends Model
           return $this->chartofaccounts->account_name;
       }
 
-      public function parent()
+    public function parent()
     {
-        return $this->belongsTo(Unitcharge::class, 'parent_utility');
+        return $this->belongsTo(Unitcharge::class, 'parent_id');
     }
 
     public function children()
     {
-        return $this->hasMany(Unitcharge::class, 'parent_utility');
+        return $this->hasMany(Unitcharge::class, 'parent_id');
     }
 
     

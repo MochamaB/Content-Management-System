@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Unitcharge;
 use App\Models\Unit;
+use App\Models\Lease;
+use App\Models\MeterReading;
 use App\Models\InvoiceItems;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -18,11 +20,16 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $unitCharges = Unitcharge::where('recurring_charge', 'Yes')
-      //  ->where('nextdate', '<=', now()) // Check nextdate for generating invoices
-        ->get();
-
-        dd($unitCharges);
+        $unitCharges = Unitcharge::where('recurring_charge', 'yes')
+            // $unitCharges = Unitcharge::where('charge_name', 'rent')
+            //  ->where('nextdate', '<=', now()) // Check nextdate for generating invoices
+            ->get();
+        foreach ($unitCharges as $item) {
+            $items = $item;
+        }
+        $children = $unitCharges->children;
+        //   $parent = $unitCharges->parent;
+        dd($children);
     }
 
     /**
@@ -32,10 +39,7 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        $unitCharges = Unitcharge::where('recurring_charge', 'yes')
-        ->where('nextdate', '<=', now()) // Check nextdate for generating invoices
-        ->get()->dd();
-        
+        return View('admin.lease.invoice');
     }
 
     /**
@@ -46,49 +50,113 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        
     }
     public function generateInvoice(Request $request)
     {
-        $unitcharges = Unitcharge::where('recurring_charge', 'yes')->get();
+        $unitcharges = Unitcharge::where('recurring_charge', 'yes')
+                    ->where('parent_id',null)    
+                    ->get();
+
+              
 
         foreach ($unitcharges as $unitcharge) {
             // Check if it's time to generate invoice
-            $nextDate = Carbon::parse($unitcharge->nextdate);
-            $invoicenodate = Carbon::parse($nextDate)->format('ym');
-            $unitnumber = Unit::where('unit_id',$unitcharge->unit_id)->first();
-            ///
-            if($unitcharge->charge_type !== 'fixed')
+           
+              
+         //   if ($this->isTimeToGenerateInvoice($unitcharge)) {
+                $invoiceData = $this->invoiceData($unitcharge);
+                $invoice = $this->createInvoice($invoiceData);
 
-            if (Carbon::now()->gte($nextDate)) {
-                // Create invoice header
-                $invoice = Invoice::create([
-                    'property_id' => $unitcharge->property_id,
-                    'unit_id' => $unitcharge->unit_id,
-                    'referenceno' =>$invoicenodate.$unitnumber, // generate reference number logic,
-                    'invoice_type' => 'Utilities', // specify invoice type,
-                    'totalamount' => '',// calculate total amount,
-                    'status' => 'unpaid', // or any default status
-                    'duedate' => '',// calculate due date based on your logic,
-                ]);
-
-                // Create invoice items////
-                InvoiceItems::create([
-                    'invoice_id' => $invoice->id,
-                    'unitcharge_id' => $unitcharge->id,
-                    'chartofaccount_id' => $unitcharge->chartofaccounts_id, // specify chart of account id,
-                    'charge_name' =>$unitcharge->charge_name, // specify charge name,
-                    'description' =>'', // specify description,
-                    'amount' =>$unitcharge->rate, // specify amount,
-                ]);
+                // Create invoice items
+                $this->createInvoiceItems($invoice, $unitcharge);
 
                 // Update the nextdate based on charge_cycle logic
-                $nextDate->addMonths($unitcharge->charge_cycle); // or any other logic based on your requirements
+          //      $this->updateNextDate($unitcharge);
+          //  }
+        }
+        return redirect()->back()->with('status', 'Charge Name already defined in system.');
+    }
 
-                $unitcharge->update(['nextdate' => $nextDate]);
+    ///////Check time
+    private function isTimeToGenerateInvoice($unitcharge)
+    {
+        $nextDate = Carbon::parse($unitcharge->nextdate);
+        return Carbon::now()->isSameDay($nextDate);
+    }
+
+    private function invoiceData($unitcharge)
+    {
+        $today = Carbon::now();
+        $invoicenodate = $today->format('ym');
+        $unitnumber = Unit::where('id', $unitcharge->unit_id)->first();
+        $user = Lease::where('unit_id', $unitcharge->unit_id)->first();
+
+        return [
+            'property_id' => $unitcharge->property_id,
+            'unit_id' => $unitcharge->unit_id,
+            'user_id' => $user->user_id,
+            'referenceno' => $invoicenodate . $unitnumber->unit_number,
+            'invoice_type' => $unitcharge->charge_name,
+            'totalamount' => null,
+            'status' => 'unpaid',
+            'duedate' => null,
+        ];
+    }
+
+    private function createInvoice($data)
+    {
+        return Invoice::create($data);
+    }
+
+    
+
+    private function createInvoiceItems($invoice, $unitcharge)
+    {
+        if ($unitcharge->charge_type === 'units') {
+            $nextdateFormatted = Carbon::parse($unitcharge->nextdate)->format('Y-m-d');
+            $updatedFormatted = Carbon::parse($unitcharge->updated_at ?? Carbon::now())->format('Y-m-d');
+          
+            $amount = 0.00; 
+            $meterReadings = MeterReading::where('unit_id', $unitcharge->unit_id)
+            ->where('unitcharge_id',$unitcharge->id)
+            ->where('startdate', '>=', $updatedFormatted) // Check readings after updated_at
+            ->where('startdate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
+            ->get();
+              
+            foreach ($meterReadings as $reading) {
+                // Calculate the amount based on meter readings and assign it to $amount
+                $amount = $reading->amount;
+                    }
+                } else {
+                    // If charge_type is not 'units', use the unitcharge rate as the amount
+                    $amount = $unitcharge->rate;
+                }
+        // Create invoice items
+        InvoiceItems::create([
+            'invoice_id' => $invoice->id,
+            'unitcharge_id' => $unitcharge->id,
+            'chartofaccount_id' => $unitcharge->chartofaccounts_id,
+            'charge_name' => $unitcharge->charge_name,
+            'description' => '',
+            'amount' => $amount,
+        ]);
+
+       
+            $childcharges = Unitcharge::where('parent_id', $unitcharge->id)->get();
+            if ($childcharges->count() > 0) {
+            // Create invoice items for child charges
+            foreach ($childcharges as $childcharge) {
+                InvoiceItems::create([
+                    'invoice_id' => $invoice->id,
+                    'unitcharge_id' => $childcharge->id,
+                    'chartofaccount_id' => $childcharge->chartofaccounts_id,
+                    'charge_name' => $childcharge->charge_name,
+                    'description' => '',
+                    'amount' => $childcharge->rate,
+                ]);
             }
         }
-
+        
     }
 
     /**

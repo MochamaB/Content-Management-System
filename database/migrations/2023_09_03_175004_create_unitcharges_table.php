@@ -15,7 +15,7 @@ class CreateUnitchargesTable extends Migration
     {
         Schema::create('unitcharges', function (Blueprint $table) {
             $table->id()->index();
-            $table->unsignedBigInteger('parent_utility')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->index();
             $table->unsignedBigInteger('chartofaccounts_id')->index();
@@ -27,7 +27,7 @@ class CreateUnitchargesTable extends Migration
             $table->timestamp("startdate")->nullable();
             $table->timestamp("nextdate")->nullable();
             $table->timestamps();
-            $table->foreign('parent_utility')->references('id')->on('unitcharges')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('unitcharges')->onDelete('cascade');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('chartofaccounts_id')->references('id')->on('chartofaccounts')->onDelete('cascade');

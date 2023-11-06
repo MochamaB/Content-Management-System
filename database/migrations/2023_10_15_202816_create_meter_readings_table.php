@@ -21,6 +21,7 @@ class CreateMeterReadingsTable extends Migration
             $table->decimal('lastreading');
             $table->decimal("currentreading");
             $table->decimal('rate_at_reading');
+            $table->decimal('amount');
             $table->date('startdate');
             $table->date('enddate');
             $table->string('recorded_by')->nullable();

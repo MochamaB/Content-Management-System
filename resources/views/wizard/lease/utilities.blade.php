@@ -17,7 +17,6 @@
     <div class="row dynamicadd">
         <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
         <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
-        <input type="hidden" class="form-control" id="parent_utility" name="parent_utility" value="0">
         <input type="hidden" class="form-control" id="chartofaccounts_id" name="chartofaccounts_id" value="{{$utility->chartofaccounts_id ?? ''}}">
         <input type="hidden" class="form-control" name="rate" value="{{$utility->rate ?? ''}}" required>
         <input type="hidden" class="form-control" name="charge_type" value="{{$utility->utility_type}}" required readonly>

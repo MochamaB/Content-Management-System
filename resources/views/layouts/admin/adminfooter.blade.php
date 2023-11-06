@@ -28,6 +28,9 @@
                     $field.siblings('.invalid-feedback').hide();
                 }
             });
+            if ($('.invalid-feedback:visible').length > 0) {
+            isValid = false;
+        }
 
             if (!isValid) {
                 event.preventDefault(); // Prevent form submission if validation fails
@@ -122,7 +125,7 @@
 
     });
 </script>
-
+<!---- Fetch Last reading----->
 <script>
     $(document).ready(function() {
         $('#unitcharge_id').on('change', function() {

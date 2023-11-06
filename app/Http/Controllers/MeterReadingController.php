@@ -38,13 +38,15 @@ class MeterReadingController extends Controller
     public function getMeterReadingsData($meterReadings)
     {
         $tableData = [
-            'headers' => ['UNIT', 'CHARGE', 'PREVIOUS READING', 'CURRENT', 'USAGE', 'RATE', 'ACTIONS'],
+            'headers' => ['UNIT', 'CHARGE', 'PREVIOUS READING', 'CURRENT', 'USAGE', 'RATE','AMOUNT', 'ACTIONS'],
             'rows' => [],
         ];
 
         foreach ($meterReadings as $item) {
             $startFormatted = empty($item->startdate) ? 'Not set' : Carbon::parse($item->startdate)->format('Y-m-d');
             $enddateFormatted = empty($item->enddate) ? 'Not set' : Carbon::parse($item->enddate)->format('Y-m-d');
+            $usage =  $item->currentreading - $item->lastreading;
+            $amount = $usage *  $item->rate_at_reading;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->unit->unit_number,
@@ -53,8 +55,9 @@ class MeterReadingController extends Controller
                     $startFormatted . '</span>',
                 $item->currentreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     $enddateFormatted . '</span>',
-                $item->currentreading - $item->lastreading,
+                $usage,
                 $item->rate_at_reading,
+                $amount,
             ];
         }
 
@@ -121,6 +124,8 @@ class MeterReadingController extends Controller
         $meterReading = new MeterReading;
         $meterReading->fill($validatedData);
         $meterReading->rate_at_reading = $rateatreading->rate;
+        $meterReading->amount = ($request->currentreading - $request->lastreading) * $rateatreading->rate;
+     //   dd($meterReading->amountdue);
         $meterReading->recorded_by = $loggeduser->email;
         $meterReading->save();
 

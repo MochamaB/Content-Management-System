@@ -16,6 +16,7 @@ class MeterReading extends Model
         'lastreading',
         'currentreading',
         'rate_at_reading',
+        'amount',
         'startdate',
         'enddate',
         'recorded_by',

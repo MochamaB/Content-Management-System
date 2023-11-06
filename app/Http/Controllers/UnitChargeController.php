@@ -110,10 +110,10 @@ class UnitChargeController extends Controller
     public function edit(unitcharge $unitcharge)
     {
        
-    // Check if the parent_utility is not 0
-        if ($unitcharge->parent_utility !== 0) {
-            // If parent_utility is not 0, open the parent utility and pass it as the $unitcharge
-            $parentUtility = Unitcharge::find($unitcharge->parent_utility);
+    // Check if the parent_id is not 0
+        if ($unitcharge->parent_id !== 0) {
+            // If parent_id is not 0, open the parent utility and pass it as the $unitcharge
+            $parentUtility = Unitcharge::find($unitcharge->parent_id);
             // Pass the parent utility as the $unitcharge
             $unitcharge = $parentUtility;  
         }
@@ -127,7 +127,7 @@ class UnitChargeController extends Controller
 
         $lease = Lease::where('unit_id', $unitcharge->unit_id);
         $rentcharge = $unitcharge;
-        $splitRentcharges = Unitcharge::where('parent_utility', $rentcharge->id)->get();
+        $splitRentcharges = Unitcharge::where('parent_id', $rentcharge->id)->get();
         $account = Chartofaccount::all();
         $accounts = $account->groupBy('account_type');
 
@@ -150,12 +150,12 @@ class UnitChargeController extends Controller
         if (!empty($request->input('splitcharge_name'))) {
         foreach ($request->input('splitcharge_name') as $index => $chargeName) {
             Unitcharge::UpdateOrCreate(
-                // Conditions to find the record (in this case, using charge_name and parent_utility)
+                // Conditions to find the record (in this case, using charge_name and parent_id)
                 [
                     'property_id' => $unitcharge->property_id,
                     'unit_id' => $unitcharge->unit_id,
                     'charge_name' => $chargeName,
-                    'parent_utility' => $unitcharge->id,
+                    'parent_id' => $unitcharge->id,
                 ],
                 // Data to update or create
                 [
@@ -166,7 +166,7 @@ class UnitChargeController extends Controller
                     'charge_cycle' => $unitcharge->charge_cycle,
                     'charge_type' => $request->input('splitcharge_type'),
                     'rate' => $request->input('splitrate'),
-                    'parent_utility' => $unitcharge->id,
+                    'parent_id' => $unitcharge->id,
                     'recurring_charge' => $unitcharge->recurring_charge,
                     'startdate' => $unitcharge->startdate,
                     'nextdate' => $unitcharge->nextdate,
