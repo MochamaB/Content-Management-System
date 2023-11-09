@@ -166,16 +166,20 @@ class UserController extends Controller
     public function store(Request $request)
     {
        
-        $userRole = $request->session()->get('userRole');
+        // 1. GET USER INFO FROM WIZARD SESSION 
         $newuser = $request->session()->get('user')->toArray();
 
+        // 2. SAVE NEW USER
         $user = new User();
         $user->fill($newuser);
         $user->password = 'property123';
         $user->save();
-        //// assign role////
+
+        // 3. GET USER ROLE FROM SESSION AND ASSIGN NEW USER////
+        $userRole = $request->session()->get('userRole');
         $user->assignRole($userRole);
-        
+
+        //4. GET ASSIGNED UNITS FROM CHECKBOXES AND ASSIGN IN PIVOT UNIT_USER
         $unitIds = $request->input('unit_id', []);  
         foreach ($unitIds as $unitId => $selected) {
             if ($selected) {
@@ -186,8 +190,12 @@ class UserController extends Controller
                 $user->units()->attach($unitId, ['property_id' => $propertyId]);
             }
         }
+
+        //5. FORGET SESSION DATA
         $request->session()->forget('userRole');
         $request->session()->forget('user');
+
+        //6. SEND NEW USER A WELCOME EMAIL
         $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
 
 
@@ -202,11 +210,14 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        //1. GET PAGE HEADINGS FOR SHOW PAGE
         $pageheadings = collect([
             '0' => $user->email,
             '1' => $user->firstname,
             '2' => $user->lastname,
         ]);
+
+        //2. GET THE TITLES FOR THE TABS
         $tabTitles = collect([
             'Profile',
             'Invoices',
@@ -219,7 +230,7 @@ class UserController extends Controller
             // Add more tab titles as needed
         ]);
    
-
+        //3. LOAD THE PAGES FOR THE TABS
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Profile') {

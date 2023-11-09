@@ -96,6 +96,11 @@ class Unit extends Model
             ->withTimestamps();
     }
 
+    public function settings()
+    {
+        return $this->morphMany(Setting::class, 'settingable');
+    }
+
     public function unitSupervisors()
     {
         return $this->belongsToMany(User::class, 'unit_user', 'unit_id', 'user_id')

@@ -6,7 +6,8 @@
     <div class="col-md-3 left-side">
         <ul class="progress-bar">
             @foreach($steps as $index => $title)
-            <li class="{{ $index === 0 ? 'active' : '' }}">{{ $title }}</li>
+        
+            <li class="{{ $index < $activetab ? 'completed' : '' }} {{ $index === $activetab ? 'active' : '' }}">{{ $title }}</li>
             @endforeach
         </ul>
     </div>

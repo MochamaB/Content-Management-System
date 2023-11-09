@@ -207,7 +207,7 @@ class LeaseController extends Controller
             '2' => $lease->user->firstname . ' ' . $lease->user->lastname,
         ]);
         $unit = Unit::where('id', $lease->unit_id)->first();
-        $charges = $unit->unitcharges->parent; ///data for utilities page
+        $charges = $unit->unitcharges;///data for utilities page
         $unitChargeController = new UnitChargeController();
         $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
@@ -313,16 +313,19 @@ class LeaseController extends Controller
 
     public function checkchargename(Request $request)
     {
-        $utilityNameExists = Utility::where('property_id', $request->property_id)
-            ->where('utility_name', $request->charge_name)
-            ->exists();
-        $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
-            ->where('charge_name', $request->charge_name)
-            ->exists();
+        $splitchargeNames = $request->input('splitcharge_name',[]);
+        foreach ($splitchargeNames as $chargeName) {
+            $utilityNameExists = Utility::where('property_id', $request->property_id)
+                ->where('utility_name', $splitchargeNames)
+                ->exists();
+            $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
+                ->where('charge_name', $splitchargeNames)
+                ->exists();
 
          if ($utilityNameExists || $chargeNameExists) {
             return response()->json(['message' => 'The Charge already exists. Choose another name.'], 422);
         }
+    }
 
         // If the charge name does not exist, return a success response
       //  return response()->json(['message' => 'Success!'], 200);
@@ -393,16 +396,22 @@ class LeaseController extends Controller
             $rentcharge->update();
         }
         /////////// check if charge name exists
-        $utilityNameExists = Utility::where('property_id', $request->property_id)
-            ->where('utility_name', $request->charge_name)
-            ->exists();
-        $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
-            ->where('charge_name', $request->charge_name)
-            ->exists();
+        $splitchargeNames = $request->input('splitcharge_name',[]);
 
-     if ($utilityNameExists || $chargeNameExists) {
-        return redirect()->back()->with('statuserror', 'Charge Name already defined in system.');
-     }
+        if (!empty($splitchargeNames)) {
+            foreach ($splitchargeNames as $chargeName) {
+                $utilityNameExists = Utility::where('property_id', $request->property_id)
+                    ->where('utility_name', $chargeName)
+                    ->exists();
+                $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
+                    ->where('charge_name', $chargeName)
+                    ->exists();
+
+                if ($utilityNameExists || $chargeNameExists) {
+                    return redirect()->back()->with('statuserror', 'Charge Name '.$chargeName.' already defined in system.');
+                }
+            }
+         }
 
         $splitRentCharges = [];
 

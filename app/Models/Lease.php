@@ -94,6 +94,11 @@ class Lease extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
+    public function settings()
+    {
+        return $this->morphMany(Setting::class, 'settingable');
+    }
+
     public function scopeUserUnits($query)
 {
     // Get the authenticated user

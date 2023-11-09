@@ -20,7 +20,7 @@ class Property extends Model
     ////////// FIELDS FOR CREATE AND EDIT METHOD
     public static $fields = [
         'property_type' => ['label' => 'Property Type', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => true],
-        'property_name' => ['label' => 'Property Name', 'inputType' => 'text', 'required' => true, 'readonly' => true],
+        'property_name' => ['label' => 'Property Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_status' => ['label' => 'Property Status', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
@@ -85,6 +85,11 @@ class Property extends Model
     public function units()
     {
         return $this->hasMany(Unit::class);
+    }
+
+    public function settings()
+    {
+        return $this->morphMany(Setting::class, 'settingable');
     }
 
  /// scope showing properties with units

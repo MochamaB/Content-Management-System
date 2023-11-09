@@ -5,7 +5,7 @@
     <hr>
     <div id="accordion" class="propertyaccess">
     @if(stripos($savedRole, 'tenant') !== false)
-        @include('layouts.admin.nodata', ['message' => 'Create Lease to assign units to Tenants'])
+        @include('layouts.admin.nodata', ['message' => 'You have to create a Lease to assign units to Tenants'])
     @else
         @if ($propertyaccess->isEmpty())
         @include('layouts.admin.nodata', ['message' => 'No accessible units available. Contact Admin'])
