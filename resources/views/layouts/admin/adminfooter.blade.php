@@ -38,7 +38,7 @@
         });
     });
 </script>
-@if($routeParts[1] !== 'create')
+@if(($routeParts[1] === 'edit'))
 
 <script>
     $(document).ready(function() {

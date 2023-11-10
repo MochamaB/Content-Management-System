@@ -71,8 +71,8 @@ class LeaseController extends Controller
                 'id' => $item->id,
                 //  $item,
                 $item->property->property_name . ' - ' . $item->unit->unit_number . ' . ' . $item->user->firstname . ' ' . $item->user->lastname,
-                $item->lease_period . '     ' .  ($daysLeft !== null ? '<span class="badge badge-information" style="margin-left:20px">' . $daysLeft . ' days left</span>' : '').
-                '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
+                $item->lease_period . '     ' .  ($daysLeft !== null ? '<span class="badge badge-information" style="margin-left:20px">' . $daysLeft . ' days left</span>' : '') .
+                    '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     Carbon::parse($item->startdate)->format('Y-m-d') . ' - ' . $endDateFormatted . '</span>',
                 $statusBadge,
 
@@ -190,8 +190,8 @@ class LeaseController extends Controller
         $tenantdetails = Tenantdetails::where('user_id', $lease->user_id)->first();
 
         $rentcharge = Unitcharge::where('unit_id', $lease->unit_id)->where('charge_name', 'rent')->first();
-        if($rentcharge !== null) {
-            $splitRentcharges = Unitcharge::where('parent_id', $rentcharge->id)->get();  
+        if ($rentcharge !== null) {
+            $splitRentcharges = Unitcharge::where('parent_id', $rentcharge->id)->get();
         }
         $depositcharge = Unitcharge::where('unit_id', $lease->unit_id)->where('charge_name', 'security_deposit')->first();
         $account = Chartofaccount::all();
@@ -207,12 +207,12 @@ class LeaseController extends Controller
             '2' => $lease->user->firstname . ' ' . $lease->user->lastname,
         ]);
         $unit = Unit::where('id', $lease->unit_id)->first();
-        $charges = $unit->unitcharges;///data for utilities page
+        $charges = $unit->unitcharges; ///data for utilities page
         $unitChargeController = new UnitChargeController();
         $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
 
-        
+
         $meterReadings = $unit->meterReadings;
         $meterReaderController = new MeterReadingController();
         $MeterReadingsTableData = $meterReaderController->getMeterReadingsData($meterReadings);
@@ -235,9 +235,12 @@ class LeaseController extends Controller
             } elseif ($title === 'Deposits and Payments') {
                 $tabContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Meter Readings') {
-                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $MeterReadingsTableData,'controller' => 'meter-reading'], 
-                compact('parentmodel'))->render();
-            }elseif ($title === 'Maintenance Tasks') {
+                $tabContents[] = View(
+                    'admin.CRUD.show_index',
+                    ['tableData' => $MeterReadingsTableData, 'controller' => 'meter-reading'],
+                    compact('parentmodel')
+                )->render();
+            } elseif ($title === 'Maintenance Tasks') {
                 $tabContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities'))->render();
             } elseif ($title === 'Files') {
                 $tabContents[] = View('wizard.lease.leaseagreement')->render();
@@ -313,7 +316,7 @@ class LeaseController extends Controller
 
     public function checkchargename(Request $request)
     {
-        $splitchargeNames = $request->input('splitcharge_name',[]);
+        $splitchargeNames = $request->input('splitcharge_name', []);
         foreach ($splitchargeNames as $chargeName) {
             $utilityNameExists = Utility::where('property_id', $request->property_id)
                 ->where('utility_name', $splitchargeNames)
@@ -322,13 +325,13 @@ class LeaseController extends Controller
                 ->where('charge_name', $splitchargeNames)
                 ->exists();
 
-         if ($utilityNameExists || $chargeNameExists) {
-            return response()->json(['message' => 'The Charge already exists. Choose another name.'], 422);
+            if ($utilityNameExists || $chargeNameExists) {
+                return response()->json(['message' => 'The Charge already exists. Choose another name.'], 422);
+            }
         }
-    }
 
         // If the charge name does not exist, return a success response
-      //  return response()->json(['message' => 'Success!'], 200);
+        //  return response()->json(['message' => 'Success!'], 200);
     }
     /////////// lease wizard
     public function cosigner(Request $request)
@@ -359,7 +362,7 @@ class LeaseController extends Controller
     }
     public function rent(StoreUnitChargeRequest $request)
     {
-       
+
         $validatedData = $request->validated();
         $rules = [
             'splitcharge_name.*' => 'required|string|max:255',
@@ -396,7 +399,7 @@ class LeaseController extends Controller
             $rentcharge->update();
         }
         /////////// check if charge name exists
-        $splitchargeNames = $request->input('splitcharge_name',[]);
+        $splitchargeNames = $request->input('splitcharge_name', []);
 
         if (!empty($splitchargeNames)) {
             foreach ($splitchargeNames as $chargeName) {
@@ -408,10 +411,10 @@ class LeaseController extends Controller
                     ->exists();
 
                 if ($utilityNameExists || $chargeNameExists) {
-                    return redirect()->back()->with('statuserror', 'Charge Name '.$chargeName.' already defined in system.');
+                    return redirect()->back()->with('statuserror', 'Charge Name ' . $chargeName . ' already defined in system.');
                 }
             }
-         }
+        }
 
         $splitRentCharges = [];
 
@@ -429,6 +432,8 @@ class LeaseController extends Controller
                     'recurring_charge' => $rentcharge->recurring_charge,
                     'startdate' => $rentcharge->startdate,
                     'nextdate' => $rentcharge->nextdate,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                     // ... Other fields ...
                 ];
                 $splitRentCharges[] = $splitRentCharge;
@@ -506,6 +511,8 @@ class LeaseController extends Controller
                     'recurring_charge' => $request->input('recurring_charge'),
                     'startdate' => $request->input('startdate'),
                     'nextdate' => $nextDate,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                     // ... Other fields ...
                 ];
 

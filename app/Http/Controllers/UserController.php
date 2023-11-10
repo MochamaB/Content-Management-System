@@ -18,8 +18,10 @@ use App\Notifications\UserCreatedNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\UserDeletedNotification;
+use App\Actions\UserRoleAction;
+use App\Actions\AttachDetachUserFromUnitAction;
 
-class UserController extends Controller
+ class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,22 +31,28 @@ class UserController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    private $userRoleAction;
+    protected $attachDetachUserFromUnitAction;
 
-    public function __construct()
+    public function __construct(UserRoleAction $userRoleAction,AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction)
     {
         $this->model = User::class;
         $this->controller = collect([
             '0' => 'user', // Use a string for the controller name
-            '1' => 'New user',
+            '1' => 'User',
         ]);
+
+        $this->userRoleAction = $userRoleAction;
+        $this->attachDetachUserFromUnitAction = $attachDetachUserFromUnitAction;
     }
+
 
     public function index()
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
             $tablevalues = $this->model::all();
-        }else{
+        } else {
             $tablevalues = $user->filterUsers();
         }
         $mainfilter =  Role::pluck('name')->toArray();
@@ -59,7 +67,7 @@ class UserController extends Controller
         foreach ($tablevalues as $item) {
             $showLink = url($this->controller['0'] . 'show' . $item->id);
             $roleNames = $item->roles->pluck('name')->implode(', ');
-            
+
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->firstname . ' ' . $item->lastname,
@@ -82,28 +90,28 @@ class UserController extends Controller
     {
         $userRole = $request->session()->get('userRole');
         $user = $request->session()->get('user');
-        $savedRole = Role::where('id',$userRole)->first();
+        $savedRole = Role::where('id', $userRole)->first();
         $loggeduser = Auth::user();
         $loggeduserRoles = $loggeduser->roles;
         $loggedUserPermissions = $loggeduserRoles->flatMap(function ($role) {
-        return $role->permissions;
+            return $role->permissions;
         });
         // Retrieve all roles and their associated permissions
         $allRoles = Role::with('permissions')->get();
         // Filter roles with lesser permissions
         $filteredRoles = $allRoles->filter(function ($role) use ($loggedUserPermissions) {
             $rolePermissions = $role->permissions;
-            
+
             // Compare the number of permissions in the role with the logged-in user's permissions
             return $rolePermissions->count() < $loggedUserPermissions->count();
         });
         $propertyaccess = Property::with('units')->get();
         if (Gate::allows('view-all', $loggeduser)) {
             $roles = Role::all();
-        }else{
+        } else {
             $roles =  $filteredRoles->all();
         }
-        
+
         $steps = collect([
             'Roles',
             'Contact Information',
@@ -113,15 +121,15 @@ class UserController extends Controller
         $stepContents = [];
         foreach ($steps as $title) {
             if ($title === 'Roles') {
-                $stepContents[] = View('admin.user.user_roles', compact('roles','savedRole'))->render();
+                $stepContents[] = View('admin.user.user_roles', compact('roles', 'savedRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $stepContents[] = View('admin.user.user_contactinfo',compact('user'))->render();
+                $stepContents[] = View('admin.user.user_contactinfo', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $stepContents[] = View('admin.user.user_property',compact('propertyaccess','savedRole'))->render();
+                $stepContents[] = View('admin.user.user_property', compact('propertyaccess', 'savedRole'))->render();
             }
         }
 
-        return View('admin.user.user', compact('steps','stepContents','activetab'));
+        return View('admin.user.user', compact('steps', 'stepContents', 'activetab'));
     }
 
     public function roleuser(Request $request)
@@ -135,13 +143,12 @@ class UserController extends Controller
             $request->session()->put('userRole', $role);
         }
         return redirect()->route('user.create', ['active_tab' => '1'])
-        ->with('status', 'Role Picked Successfully. Enter user details');
-
+            ->with('status', 'Role Picked Successfully. Enter user details');
     }
 
     public function userinfo(StoreUserRequest $request)
     {
-    
+
         $validatedData = $request->validated();
 
         if (empty($request->session()->get('user'))) {
@@ -155,17 +162,16 @@ class UserController extends Controller
         }
 
         return redirect()->route('user.create', ['active_tab' => '2'])
-        ->with('status', 'User details added Successfully. Assign properties');
-
+            ->with('status', 'User details added Successfully. Assign properties');
     }
 
 
- 
+
 
 
     public function store(Request $request)
     {
-       
+
         // 1. GET USER INFO FROM WIZARD SESSION 
         $newuser = $request->session()->get('user')->toArray();
 
@@ -176,16 +182,16 @@ class UserController extends Controller
         $user->save();
 
         // 3. GET USER ROLE FROM SESSION AND ASSIGN NEW USER////
-        $userRole = $request->session()->get('userRole');
-        $user->assignRole($userRole);
+        $role = $request->session()->get('userRole');
+        $this->userRoleAction->assignRole($user, $role);
 
         //4. GET ASSIGNED UNITS FROM CHECKBOXES AND ASSIGN IN PIVOT UNIT_USER
-        $unitIds = $request->input('unit_id', []);  
+        $unitIds = $request->input('unit_id', []);
         foreach ($unitIds as $unitId => $selected) {
             if ($selected) {
                 // Retrieve the corresponding property_id from the hidden field
                 $propertyId = $request->input("property_id.{$unitId}");
-    
+
                 // Attach the unit to the user with the associated property_id
                 $user->units()->attach($unitId, ['property_id' => $propertyId]);
             }
@@ -199,7 +205,7 @@ class UserController extends Controller
         $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
 
 
-        return redirect('user')->with('status','User Added Successfully');
+        return redirect('user')->with('status', 'User Added Successfully');
     }
 
     /**
@@ -229,7 +235,7 @@ class UserController extends Controller
             //    'Payments'
             // Add more tab titles as needed
         ]);
-   
+
         //3. LOAD THE PAGES FOR THE TABS
         $tabContents = [];
         foreach ($tabTitles as $title) {
@@ -243,7 +249,6 @@ class UserController extends Controller
         }
 
         return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
-
     }
 
     /**
@@ -256,7 +261,7 @@ class UserController extends Controller
     {
         $loggeduser = Auth::user();
         $roles = Role::all();
-        $userRole =$user->roles->pluck('name');
+        $userRole = $user->roles->pluck('name');
         $assignedproperties = $user->units->pluck('id')->toArray();
         $pageheadings = collect([
             '0' => $user->email,
@@ -278,17 +283,17 @@ class UserController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Roles') {
-                $tabContents[] = View('admin.user.user_roles', compact('roles','user','userRole'))->render();
+                $tabContents[] = View('admin.user.user_roles', compact('roles', 'user', 'userRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $tabContents[] = View('admin.user.user_contactinfo',compact('user'))->render();
+                $tabContents[] = View('admin.user.user_contactinfo', compact('user'))->render();
             } elseif ($title === 'Login Access') {
-                $tabContents[] = View('admin.user.user_logins',compact('user'))->render();
+                $tabContents[] = View('admin.user.user_logins', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $tabContents[] = View('admin.user.user_property',compact('propertyaccess','assignedproperties'))->render();
+                $tabContents[] = View('admin.user.user_property', compact('propertyaccess', 'assignedproperties'))->render();
             }
         }
 
-        return View('admin.user.user', compact('pageheadings','tabTitles','tabContents','user'));
+        return View('admin.user.user', compact('pageheadings', 'tabTitles', 'tabContents', 'user'));
     }
 
     /**
@@ -300,39 +305,24 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $model = User::find($id);
+        $user = User::find($id);
         // Get the list of fillable fields from the model
-       if($request->file('profilepicture')){
-            $file= $request->file('profilepicture');
-            $filename= date('YmdHi').$file->getClientOriginalName();
-            $file-> move(base_path('resources/uploads/images'), $filename);
-            $model['profilepicture']= $filename;
-            $model->update();
+        if ($request->file('profilepicture')) {
+            $file = $request->file('profilepicture');
+            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $file->move(base_path('resources/uploads/images'), $filename);
+            $user['profilepicture'] = $filename;
+            $user->update();
         }
-            $model->syncRoles($request->get('role'));
-        
-      
-            $model->update($request->all());
-            $unitIds = $request->input('unit_id', []);
-            $model->units()->detach();  
-            foreach ($unitIds as $unitId => $selected) {
-                if ($selected) {
-                    // Retrieve the corresponding property_id from the hidden field
-                    $propertyId = $request->input("property_id.{$unitId}");
-        
-                    // Attach the unit to the user with the associated property_id
-                    $model->units()->attach($unitId, ['property_id' => $propertyId]);
-                }
-            }
-         
-                // Attach the relationship with pivot data
-              //  dd($propertyId);
-        //        $model->supervisedUnits()->sync($unitIds);
-        
-        
-        
-        
-      
+        $user->syncRoles($request->get('role'));
+
+        $user->update($request->all());
+
+        $unitIds = $request->input('unit_id', []);
+        $this->attachDetachUserFromUnitAction->assignFromView($user, $unitIds, $request);
+
+
+
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
@@ -345,34 +335,33 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $role = $user->getRoleNames()->first();
-        
-        if($user->id == 1 ){
-            return redirect()->back()->with('statuserror','Super Admin user cannot be deleted');
+
+        if ($user->id == 1) {
+            return redirect()->back()->with('statuserror', 'Super Admin user cannot be deleted');
         }
-        
-     
-        $user->supervisedUnits()->detach();   /////// Remove assigned units
-        $user->removeRole($role);  
+
+
+        $user->units()->detach();   /////// Remove assigned units
+        $user->removeRole($role);
         $user->delete();   //// Delete User          //////// Remove Role
         $user->notify(new UserDeletedNotification($user)); ////// Send Email for deletion.
 
-    return redirect()->back()->with('status','User deleted successfully.');
+        return redirect()->back()->with('status', 'User deleted successfully.');
     }
 
     public function profpic(Request $request, $id)
     {
         $user = User::find($id);
 
-        if($request->file('profilepicture')){
-            $file= $request->file('profilepicture');
-            $filename= date('YmdHi').$file->getClientOriginalName();
-            $file-> move(base_path('resources/uploads/images'), $filename);
-            $user['profilepicture']= $filename;
-              
+        if ($request->file('profilepicture')) {
+            $file = $request->file('profilepicture');
+            $filename = date('YmdHi') . $file->getClientOriginalName();
+            $file->move(base_path('resources/uploads/images'), $filename);
+            $user['profilepicture'] = $filename;
         }
         $user->update();
 
-        return back()->with('status','Profile picture updated successfully.');
+        return back()->with('status', 'Profile picture updated successfully.');
     }
 
 
@@ -381,12 +370,10 @@ class UserController extends Controller
     {
         if (empty($request->session()->get('role'))) {
             $role = $request->role;
-            $request->session()->put('rentcharge', $role);    
+            $request->session()->put('rentcharge', $role);
         } else {
             $role = $request->session()->get('role');
             $request->session()->put('role', $role);
         }
     }
-
-    
 }
