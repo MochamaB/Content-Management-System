@@ -19,6 +19,7 @@ use App\Http\Requests\StoreUnitChargeRequest;
 use App\Models\Utility;
 use App\Notifications\LeaseAgreementNotification;
 use Carbon\Carbon;
+use App\Actions\UpdateNextDateAction;
 
 class LeaseController extends Controller
 {
@@ -30,8 +31,10 @@ class LeaseController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    protected $updateNextDateAction;
 
-    public function __construct()
+
+    public function __construct(UpdateNextDateAction $updateNextDateAction)
     {
         $this->model = Lease::class;
 
@@ -39,6 +42,8 @@ class LeaseController extends Controller
             '0' => 'lease', // Use a string for the controller name
             '1' => 'New Lease',
         ]);
+
+        $this->updateNextDateAction = $updateNextDateAction;
     }
     public function index()
     {
@@ -362,29 +367,20 @@ class LeaseController extends Controller
     }
     public function rent(StoreUnitChargeRequest $request)
     {
-
+        ////1. VALIDATE FIELD
         $validatedData = $request->validated();
         $rules = [
             'splitcharge_name.*' => 'required|string|max:255',
             // Add other validation rules for the remaining fields
         ];
         $request->validate($rules);
-        /// value of nextdate/////////
+
+        ///2. GET VALUE OF NEXT DATE ON THE CHARGE/////////
         $chargeCycle = $request->input('charge_cycle');
         $startDate = Carbon::parse($request->input('startdate'));
-        $nextDate = null;
+        /// 2.1. Use the action to update the next date
+        $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
 
-        if ($chargeCycle === 'Monthly') {
-            $nextDate = $startDate->addMonth(); // Adds 1 month to the start date
-        } elseif ($chargeCycle === 'Twomonths') {
-            $nextDate = $startDate->addMonths(2); // Adds 2 months to the start date
-        } elseif ($chargeCycle === 'Quarterly') {
-            $nextDate = $startDate->addMonths(3); // Adds 3 months to the start date
-        } elseif ($chargeCycle === 'Halfyear') {
-            $nextDate = $startDate->addMonths(6); // Adds 6 months to the start date
-        } elseif ($chargeCycle === 'Year') {
-            $nextDate = $startDate->addYear(); // Adds 1 year to the start date
-        }
         if (empty($request->session()->get('rentcharge'))) {
             $rentcharge = new Unitcharge();
             $rentcharge->fill($validatedData);
@@ -398,7 +394,7 @@ class LeaseController extends Controller
             $request->session()->put('rentcharge', $rentcharge);
             $rentcharge->update();
         }
-        /////////// check if charge name exists
+        ///////////3. Check if charge name exists
         $splitchargeNames = $request->input('splitcharge_name', []);
 
         if (!empty($splitchargeNames)) {
@@ -425,7 +421,7 @@ class LeaseController extends Controller
                     'unit_id' => $rentcharge->unit_id,
                     'chartofaccounts_id' => $request->input('splitchartofaccounts_id'),
                     'charge_name' => $chargeName,
-                    'charge_cycle' => $rentcharge->charge_cycle,
+                    'charge_cycle' => $rentcharge->charge_cycle, ///Charge cycle is same to the rent cycle
                     'charge_type' => $request->input('splitcharge_type'),
                     'rate' => $request->input('splitrate'),
                     'parent_id' => $rentcharge->id,
@@ -484,19 +480,9 @@ class LeaseController extends Controller
         $utilityCharges = [];
         $chargeCycle = $request->input('charge_cycle');
         $startDate = Carbon::parse($request->input('startdate'));
-        $nextDate = null;
+         /// 2.1. Use the action to update the next date
+         $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
 
-        if ($chargeCycle === 'Monthly') {
-            $nextDate = $startDate->addMonth(); // Adds 1 month to the start date
-        } elseif ($chargeCycle === 'Twomonths') {
-            $nextDate = $startDate->addMonths(2); // Adds 2 months to the start date
-        } elseif ($chargeCycle === 'Quarterly') {
-            $nextDate = $startDate->addMonths(3); // Adds 3 months to the start date
-        } elseif ($chargeCycle === 'Halfyear') {
-            $nextDate = $startDate->addMonths(6); // Adds 6 months to the start date
-        } elseif ($chargeCycle === 'Year') {
-            $nextDate = $startDate->addYear(); // Adds 1 year to the start date
-        }
         if (!empty($request->input('charge_name'))) {
             foreach ($request->input('charge_name') as $index => $chargeName) {
                 $utilitycharge = [

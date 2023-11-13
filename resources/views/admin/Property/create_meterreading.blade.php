@@ -42,7 +42,8 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="label">Previous Reading<span class="requiredlabel">*</span></label>
-                    <input type="number" class="form-control" name="lastreading" id="lastreading" value="{{old('lastreading') ?? '0.00'}}"  required readonly>
+                    <input type="number" class="form-control" name="lastreading" id="lastreading" value="{{old('lastreading') ?? '0.00'}}"  required 
+                        {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
                 </div>
             </div>
             <div class="col-md-5">

@@ -64,11 +64,7 @@ class InvoiceController extends Controller
                     ->where('parent_id',null)    
                     ->get();
 
-              
-
         foreach ($unitcharges as $unitcharge) {
-            // Check if it's time to generate invoice
-
                 // Create invoice items from invoice service app/Services/InvoiceService
             $this->invoiceService->generateInvoice($unitcharge);
 
