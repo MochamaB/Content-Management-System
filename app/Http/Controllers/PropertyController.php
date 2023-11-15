@@ -125,6 +125,7 @@ class PropertyController extends Controller
             'Summary',
             'Units',
             'Utilities',
+            'Files'
             //    'Maintenance',
             //    'Financials',
             //    'Users',
@@ -156,6 +157,10 @@ class PropertyController extends Controller
                 $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $unitTableData,'controller' => 'unit'], 
                 compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Utilities') {
+                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $utilityTableData,'controller' => 'utility'], 
+                compact('amenities', 'allamenities'))->render();
+            }
+            elseif ($title === 'Files') {
                 $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $utilityTableData,'controller' => 'utility'], 
                 compact('amenities', 'allamenities'))->render();
             }
