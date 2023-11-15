@@ -12,9 +12,17 @@ use App\Models\MeterReading;
 use App\Models\InvoiceItems;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Actions\CalculateInvoiceTotalAmountAction;
 
 class InvoiceService
 {
+    private $calculateTotalAmountAction;
+
+    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction)
+    {
+        $this->calculateTotalAmountAction = $calculateTotalAmountAction;
+    }
+
     public function generateInvoice(Unitcharge $unitcharge)
     {
         $invoiceExists = $this->invoiceExists($unitcharge);
@@ -26,13 +34,19 @@ class InvoiceService
                
          //   if ($this->isTimeToGenerateInvoice($unitcharge)) {
                 $invoiceData = $this->getInvoiceHeaderData($unitcharge);
+
+                //1. Create Invoice Header Data
                 $invoice = $this->createInvoice($invoiceData);
 
-                // Create invoice items
+                //2. Create invoice items
                 $this->createInvoiceItems($invoice, $unitcharge);
 
-                // Update the nextdate based on charge_cycle logic
+                //3. Update Total Amount in Invoice Header
+                $this->calculateTotalAmountAction->handle($invoice);
+
+                // Update the nextdate in the unitcharge based on charge_cycle logic
           //      $this->updateNextDate($unitcharge);
+
           //  }
         
         return $invoice;

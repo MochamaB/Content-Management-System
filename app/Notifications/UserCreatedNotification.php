@@ -41,18 +41,18 @@ class UserCreatedNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $heading = 'Welcome! Your Account is ready';
         $linkmessage = 'To view and manage your units, you can login to our client area here:';
         $data = ([
-            "subject" => "Welcome! Your Account is ready",
             "line 1" => "Welcome to the property management system",
+            "line 2" => "Manage and view all property data from the comfort of your computer",
+            "line 3" => "The Default password is property123",
             "action" => "/dashboard",
-            "line 2" => "Manage and view all data from the comfort of your computer",
-            "line 3" => "",
             "line 4" => "",
         ]);
         return (new MailMessage)->view(
             'email.template',
-            ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage]
+            ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading]
         );
     }
 

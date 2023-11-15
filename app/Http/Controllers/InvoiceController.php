@@ -22,6 +22,29 @@ class InvoiceController extends Controller
         $this->invoiceService = $invoiceService;
     }
 
+    public function getInvoiceData($invoicedata)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['INVOICE DATE','TYPE', 'TENANT', 'STATUS', 'AMOUNT DUE', 'AMOUNT PAID'],
+            'rows' => [],
+        ];
+
+        foreach ($invoicedata as $item) {
+            $invoiceStatus = $item->lease ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $item->created_at,
+                $item->invoice_type.''.$item->referenceno,
+                $item->firstname.' - '.$item->lastname,
+                $item->firstname,
+                $item->totalamount,
+            ];
+        }
+
+        return $tableData;
+    }
+
     public function index()
     {
         $unitCharges = Unitcharge::where('recurring_charge', 'yes')

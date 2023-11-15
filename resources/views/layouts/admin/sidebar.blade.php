@@ -35,7 +35,7 @@
                 <li class="nav-item"> <a class="nav-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule) }}">{{ $submodule }}s</a></li>
                 @if($routeParts[0] === $submodule && $routeParts[1] === 'show')
                 <!-- Show link for the show method -->
-                <li class="nav-item"><a  class="nav-link reload-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule.'/'. $urlParts[5]) }}">Show</a></li>
+                <li class="nav-item"><a  class="nav-link reload-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule.'/'. $urlParts[4]) }}">Show</a></li>
                 @elseif($routeParts[0] === $submodule) <!-- Condition to show the Add Property menu -->
                 <li class="nav-item"><a class="nav-link reload-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule.'/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
                 @endif

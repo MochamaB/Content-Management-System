@@ -2,7 +2,7 @@
 <h4><b> New {{ $routeParts[0] }}</b></h4>
 <hr>
 
-<form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url('leasedetails') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
 
     <div class="col-md-8">
@@ -52,7 +52,7 @@
     <div class="col-md-8">
         <div class="form-group">
 
-            <input type="hidden" class="form-control" id="status" name="status" value="Draft" readonly>
+            <input type="hidden" class="form-control" id="status" name="status" value="Active" readonly>
         </div>
     </div>
     <div class=row>

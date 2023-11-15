@@ -6,7 +6,7 @@
     <div class="col-md-3 left-side">
         <ul class="progress-bar">
             @foreach($steps as $index => $title)
-        
+
             <li class="{{ $index < $activetab ? 'completed' : '' }} {{ $index === $activetab ? 'active' : '' }}">{{ $title }}</li>
             @endforeach
         </ul>
@@ -41,16 +41,13 @@
             $(".previousBtn").toggle(tabIndex > 0);
             // Change next button text to "Complete" when it's the last tab
             if (tabIndex >= $tabs.length - 1) {
-             //   alert($tabs.length);
+                //   alert($tabs.length);
                 $(".nextbutton").text("Complete & Save");
             } else {
                 $(".nextbutton").text("Next Step");
             }
         };
 
-
-
-     
 
         // Show the first tab on page load
         showTab(currentTab);
@@ -61,6 +58,10 @@
                 currentTab = 0;
             }
             showTab(currentTab);
+            // Update the URL with the new active tab
+            history.replaceState({}, document.title, "?active_tab=" + currentTab);
+            // Reload the page
+            window.location.reload();
         });
 
         // Show the first tab on page load

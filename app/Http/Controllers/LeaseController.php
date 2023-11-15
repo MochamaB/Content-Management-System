@@ -115,9 +115,9 @@ class LeaseController extends Controller
         $account = Chartofaccount::all();
         $accounts = $account->groupBy('account_type');
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
-        $utilityCharges = $request->session()->get('utilityCharges');
+        $sessioncharges = $request->session()->get('utilityCharges');
 
-        //  dd($splitcharges);
+        //  dd($utilityCharges);
 
         //   $viewData = $this->formData($this->model);
 
@@ -141,7 +141,7 @@ class LeaseController extends Controller
             } elseif ($title === 'Security Deposit') {
                 $stepContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Utilities') {
-                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'utilityCharges'))->render();
+                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges'))->render();
             } elseif ($title === 'Lease Agreement') {
                 $stepContents[] = View('wizard.lease.leaseagreement')->render();
             }
@@ -158,28 +158,80 @@ class LeaseController extends Controller
      */
     public function store(Request $request)
     {
-
-        $validationRules = Lease::$validation;
-        $validatedData = $request->validate($validationRules);
-
-        if (empty($request->session()->get('lease'))) {
+       
+        ///1. SAVE LEASE DETAILS
+        $leasedetails = $request->session()->get('lease');
+        if (!empty($leasedetails)) {
             $lease = new Lease();
-            $lease->fill($validatedData);
-            $request->session()->put('lease', $lease);
+            $lease->fill($leasedetails->toArray());
             $lease->save();
-        } else {
-            $lease = $request->session()->get('lease');
-            $lease->fill($validatedData);
-            $request->session()->put('lease', $lease);
-            $lease->update();
         }
 
+        ///2. SAVE TENANT DETAILS
+        $tenantdetails = $request->session()->get('tenantdetails');
+        if (!empty($tenantdetails)) {
+            $tenantdetailsModel = new Tenantdetails();
+            $tenantdetailsModel->fill($tenantdetails->toArray());
+            $tenantdetailsModel->save();
+        }
+
+        //3. SAVE RENT CHARGE
+        $rentcharge = $request->session()->get('rentcharge');
+        if (!empty($rentcharge)) {
+            $rentchargeModel = new Unitcharge();
+            $rentchargeModel->fill($rentcharge->toArray());
+            $rentchargeModel->save();
+        }
+
+        ///4. SAVE SPLITRENTCHARGE
+        // Get the ID of the newly created rent charge
+        $newRentChargeId = $rentchargeModel->id;
+        // Update the parent_id of split rent charges
+        $splitRentCharges = $request->session()->get('splitRentcharges');
+        if (!empty($splitRentCharges)) {
+            foreach ($splitRentCharges as &$splitRentCharge) {
+                $splitRentCharge['parent_id'] = $newRentChargeId;
+            }
+            // Save the updated split rent charges
+            Unitcharge::insert($splitRentCharges);
+        }
+
+        //5. SAVE SECURITY DEPOSIT
+        $depositcharge = $request->session()->get('depositcharge');
+        if (!empty($depositcharge)) {
+            $depositchargeModel = new Unitcharge();
+            $depositchargeModel->fill($depositcharge->toArray());
+            $depositchargeModel->save();
+            
+        }
+
+          //6. SAVE UTILITY CHARGES
+          $utilitycharges = $request->session()->get('utilityCharges');
+          if (!empty($utilitycharges)) {
+            Unitcharge::insert($utilitycharges);
+              
+          }
+
+        //7. ATTACH TENANT USER TO UNIT
+        $user = User::find($leasedetails->user_id);
+        $unit = Unit::find($leasedetails->unit_id);
+        $propertyId = $leasedetails->property_id;
+        $unit->users()->attach($user, ['property_id' => $propertyId]);
+       
+        //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
         $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
-        $lease->notify(new LeaseAgreementNotification($user, $lease)); ///// Send Lease Agreement
+        $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
 
-        return redirect()->route('lease.create', ['active_tab' => '1'])
-            ->with('status', 'Lease Created Successfully. Enter Tenant Details');
+        //9. FORGET SESSION DATA
+        $request->session()->forget('lease');
+        $request->session()->forget('tenantdetails');
+        $request->session()->forget('rentcharge');
+        $request->session()->forget('splitRentcharges');
+        $request->session()->forget('depositcharge');
+        $request->session()->forget('utilityCharges');
+
+        return redirect()->route('lease.index');
     }
 
     /**
@@ -338,7 +390,30 @@ class LeaseController extends Controller
         // If the charge name does not exist, return a success response
         //  return response()->json(['message' => 'Success!'], 200);
     }
-    /////////// lease wizard
+    /////////// lease wizard/////////////////
+    public function leasedetails(Request $request)
+    {
+
+        $validationRules = Lease::$validation;
+        $validatedData = $request->validate($validationRules);
+
+        if (empty($request->session()->get('lease'))) {
+            $lease = new Lease();
+            $lease->fill($validatedData);
+            $request->session()->put('lease', $lease);
+            //      $lease->save();
+        } else {
+            $lease = $request->session()->get('lease');
+            $lease->fill($validatedData);
+            $request->session()->put('lease', $lease);
+            //     $lease->update();
+        }
+
+
+        return redirect()->route('lease.create', ['active_tab' => '1'])
+            ->with('status', 'Lease Created Successfully. Enter Tenant Details');
+    }
+
     public function cosigner(Request $request)
     {
 
@@ -381,20 +456,20 @@ class LeaseController extends Controller
         /// 2.1. Use the action to update the next date
         $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
 
+
         if (empty($request->session()->get('rentcharge'))) {
             $rentcharge = new Unitcharge();
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
             $request->session()->put('rentcharge', $rentcharge);
-            $rentcharge->save();
+            //     $rentcharge->save();
         } else {
             $rentcharge = $request->session()->get('rentcharge');
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
             $request->session()->put('rentcharge', $rentcharge);
-            $rentcharge->update();
+            //      $rentcharge->update();
         }
-        ///////////3. Check if charge name exists
         $splitchargeNames = $request->input('splitcharge_name', []);
 
         if (!empty($splitchargeNames)) {
@@ -410,8 +485,23 @@ class LeaseController extends Controller
                     return redirect()->back()->with('statuserror', 'Charge Name ' . $chargeName . ' already defined in system.');
                 }
             }
-        }
+        } 
+        
+            // Call the splitRentcharges function 
+            $this->splitRentcharges($request);
+        
 
+        return redirect()->route('lease.create', ['active_tab' => '3'])
+            ->with('status', 'Rent Assigned Successfully. Enter Security Deposit Details');
+    }
+
+    public function splitRentcharges(Request $request)
+    {
+        //1. GET SESSION DATA
+        $rentcharge = $request->session()->get('rentcharge');
+        $rentchargeIdentifier = uniqid('rentcharge_', true);
+
+        ///2. ADD SPLITRENTCHARGES TO THE SESSION
         $splitRentCharges = [];
 
         if (!empty($request->input('splitcharge_name'))) {
@@ -419,12 +509,12 @@ class LeaseController extends Controller
                 $splitRentCharge = [
                     'property_id' => $rentcharge->property_id,
                     'unit_id' => $rentcharge->unit_id,
-                    'chartofaccounts_id' => $request->input('splitchartofaccounts_id'),
+                    'chartofaccounts_id' => $request->input("splitchartofaccounts_id.{$index}"),
                     'charge_name' => $chargeName,
                     'charge_cycle' => $rentcharge->charge_cycle, ///Charge cycle is same to the rent cycle
-                    'charge_type' => $request->input('splitcharge_type'),
-                    'rate' => $request->input('splitrate'),
-                    'parent_id' => $rentcharge->id,
+                    'charge_type' => $request->input("splitcharge_type.{$index}"),
+                    'rate' => $request->input("splitrate.{$index}"),
+                    'parent_id' => $rentchargeIdentifier, ///Add temporary uniqueid
                     'recurring_charge' => $rentcharge->recurring_charge,
                     'startdate' => $rentcharge->startdate,
                     'nextdate' => $rentcharge->nextdate,
@@ -439,17 +529,10 @@ class LeaseController extends Controller
         if (empty($request->session()->get('splitRentcharges'))) {
             $request->session()->put('splitRentcharges', $splitRentCharges);
         } else {
-            $splitRentcharges = $request->session()->get('splitRentcharges');
-            $request->session()->put('splitRentcharges', $splitRentcharges);
+            $request->session()->put('splitRentcharges', $splitRentCharges);
         }
-
-
-
-        //    Unitcharge::insert($splitCharges);
-        //    $request->session()->put('splitRentcharges', $splitRentCharges);
-        return redirect()->route('lease.create', ['active_tab' => '3'])
-            ->with('status', 'Rent Assigned Successfully. Enter Security Deposit Details');
     }
+
     public function deposit(StoreUnitChargeRequest $request)
     {
         $validatedData = $request->validated();
@@ -477,25 +560,27 @@ class LeaseController extends Controller
     public function assignUtilities(Request $request)
     {
 
-        $utilityCharges = [];
-        $chargeCycle = $request->input('charge_cycle');
-        $startDate = Carbon::parse($request->input('startdate'));
-         /// 2.1. Use the action to update the next date
-         $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
-
         if (!empty($request->input('charge_name'))) {
+            $utilityCharges = [];
+
             foreach ($request->input('charge_name') as $index => $chargeName) {
+
+                $chargeCycle = $request->input("charge_cycle.{$index}");
+                $startDate = Carbon::parse($request->input("startdate.{$index}"));
+                /// 2.1. Use the action to update the next date
+                $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
+
                 $utilitycharge = [
                     'property_id' => $request->input('property_id'),
                     'unit_id' => $request->input('unit_id'),
-                    'chartofaccounts_id' => $request->input('chartofaccounts_id'),
+                    'chartofaccounts_id' => $request->input("chartofaccounts_id.{$index}"),
                     'charge_name' => $chargeName,
-                    'charge_cycle' => $request->input('charge_cycle'),
-                    'charge_type' => $request->input('charge_type'),
-                    'rate' => $request->input('rate'),
+                    'charge_cycle' => $request->input("charge_cycle.{$index}"),
+                    'charge_type' => $request->input("charge_type.{$index}"),
+                    'rate' => $request->input("rate.{$index}"),
                     'parent_id' => $request->input('parent_id'),
                     'recurring_charge' => $request->input('recurring_charge'),
-                    'startdate' => $request->input('startdate'),
+                    'startdate' => $startDate,
                     'nextdate' => $nextDate,
                     'created_at' => now(),
                     'updated_at' => now(),
@@ -511,46 +596,5 @@ class LeaseController extends Controller
         return redirect()->route('lease.create', ['active_tab' => '5'])
             ->with('status', 'Utilities Assigned Successfully. Accept Terms and Conditions');
     }
-    public function saveLease(Request $request)
-    {
-        $leasedetails = $request->session()->get('lease');
-
-        ///Attach user to Unit
-        $user = User::find($leasedetails->user_id);
-        $unit = Unit::find($leasedetails->unit_id);
-        $propertyId = $leasedetails->property_id;
-
-        $unit->users()->attach($user, ['property_id' => $propertyId]);
-
-        //   event(new AssignUserToUnit($user, $unitId));
-
-
-        $tenantdetails = $request->session()->get('tenantdetails');
-        $tenantdetails->save();
-
-        $splitRentcharges = $request->session()->get('splitRentcharges');
-        if (!empty($splitRentcharges)) {
-            Unitcharge::insert($splitRentcharges);
-        }
-
-        $depositcharge = $request->session()->get('depositcharge');
-        if (!empty($depositcharge)) {
-            $depositcharge->save();
-        }
-
-        $utilitycharges = $request->session()->get('utilityCharges');
-        if (!empty($utilitycharges)) {
-            Unitcharge::insert($utilitycharges);
-        }
-
-
-        $request->session()->forget('lease');
-        $request->session()->forget('tenantdetails');
-        $request->session()->forget('rentcharge');
-        $request->session()->forget('splitRentcharges');
-        $request->session()->forget('depositcharge');
-        $request->session()->forget('utilityCharges');
-
-        return redirect()->route('lease.index');
-    }
+    
 }

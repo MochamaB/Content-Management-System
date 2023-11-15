@@ -89,7 +89,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Charge Name<span class=""></span></label>
-                    <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge->charge_name ?? '' }}">
+                    <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge['charge_name']?? '' }}">
                     <div class="invalid-feedback"></div>
                 </div>
             </div>
@@ -97,8 +97,8 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Account<span class=""></span></label>
-                    <select name="splitchartofaccounts_id" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
-                        <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">{{$splitCharge->chartofaccounts->account_name ?? 'Select Account'}}</option>
+                    <select name="splitchartofaccounts_id[]" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
+                        <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">{{$splitCharge['chartofaccounts_id']  ?? 'Select Account'}}</option>
                         @foreach($accounts as $accounttype => $account)
                         <optgroup label="{{ $accounttype }}">
                             @foreach($account as $item)
@@ -112,7 +112,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Charge Type<span class="requiredlabel">*</span></label>
-                    <select name="splitcharge_type" id="splitcharge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
+                    <select name="splitcharge_type[]" id="splitcharge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
                         <option value="{{$splitCharge['charge_type'] ?? ''}}">{{$splitCharge['charge_type'] ?? 'Select Account'}}</option>
                         <option value="fixed"> Fixed Amount</option>
                         <option value="units"> By Units</option>
@@ -122,7 +122,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label ratelabel">Amount<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control dynamic-field" name="splitrate" value="{{$splitCharge['rate'] ?? ''}}" required>
+                    <input type="text" class="form-control dynamic-field" name="splitrate[]" value="{{$splitCharge['rate'] ?? ''}}" required>
                 </div>
             </div>
         </div>
@@ -333,7 +333,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="label">Account<span class="requiredlabel">*</span></label>
-                            <select name="splitchartofaccounts_id" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
+                            <select name="splitchartofaccounts_id[]" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
                                 <option value="">Select Account</option>
                                 @foreach($accounts as $accounttype => $account)
                                 <optgroup label="{{ $accounttype }}">
@@ -348,7 +348,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="label">Charge Type<span class="requiredlabel">*</span></label>
-                            <select name="splitcharge_type" id="splitcharge_type" class="formcontrol2 splitcharge_type dynamic-field" placeholder="Select" required>
+                            <select name="splitcharge_type" id="splitcharge_type[]" class="formcontrol2 splitcharge_type dynamic-field" placeholder="Select" required>
                                 <option value="">Select Bill Type</option>
                                 <option value="fixed"> Fixed Amount</option>
                                 <option value="units"> By Units</option>
@@ -358,7 +358,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="label ratelabel">Amount<span class="requiredlabel">*</span></label>
-                            <input type="text" class="form-control dynamic-field" name="splitrate" value="" required>
+                            <input type="text" class="form-control dynamic-field" name="splitrate[]" value="" required>
                         </div>
                     </div>             
             `);

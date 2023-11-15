@@ -5,6 +5,7 @@
             <div class="col-md-5">
             </div>
             <div class="col-md-2">
+                <!---1.  LOGO OF THE COMPANY --->
                 <img src="{{ url('resources/uploads/images/'. ($sitesettings->company_logo ?? 'noimage.jpg')) }}" style="height: 120px; width: 200px; padding-bottom:20px ">
             </div>
             <div class="col-md-5">
@@ -18,17 +19,24 @@
             <div class="col-md-8">
                 <div class="box-for overflow">
                     <div class="col-md-12 col-xs-12 login-blocks">
-                        <h2> {{$data['subject'] ?? ''}} </h2>
+                    <!---2.  THE MAIN SUBJECT OF THE EMAIL --->
+                        <h2> {{$heading ?? ''}} </h2>
+                    
+                    <!---3.  USER INFORMATION --->
                         <p>Dear {{$user->firstname ?? ''}} {{$user->lastname ?? ''}}</p>
-                        <p>{{$data['message'] ?? ''}}</p>
+
+                    <!---4.  EMAIL BODY --->
                         @foreach ($data as $line => $content)
-                        @if (!empty($content))
-                        @if ($line === 'action')
-                        <p>{{ $linkmessage ?? ''}}: <a href="{{url($content) }}">{{ __('Click here') }}</a></p>
-                        @else
-                        <p>{{ $content ?? '' }}</p>
-                        @endif
-                        @endif
+                            @if (!empty($content))
+                                @if ($line === 'action')
+                                    <p>{{ $linkmessage ?? ''}}</p>
+                                    <div class="text-center">
+                                     <a href="{{url($content) }}" class="btn btn-default" >Go to Site</a>
+                                    </div>
+                                @else
+                                    <p>{{ $content ?? '' }}</p>
+                                @endif
+                            @endif
                         @endforeach
                         <p>Kind Regards</p>
                         <p>{{$sitesettings->company_name ?? ""}}</p>

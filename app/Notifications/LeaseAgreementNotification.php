@@ -18,9 +18,8 @@ class LeaseAgreementNotification extends Notification
      *
      * @return void
      */
-    public function __construct($lease,$user)
+    public function __construct($user)
     {
-        $this->lease = $lease;
         $this->user = $user;
     }
 
@@ -43,28 +42,21 @@ class LeaseAgreementNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $url = url('/lease/'.$this->lease->id);
-        $subject = 'New Lease Agreement';
-        $greetings = 'Welcome. A new lease agreement for you has been created on the';
-        $message = 'This means that all information concerning the unit you gave rented will be available
-        to you using the site/tenants portal ';
-        $linkmessage = 'To Activate the lease. Kindly login and Read through the lease agreement. Then Accept 
-        the Terms and Conditions to make the lease Active. Ignore this if you have already done this and the lease is active.';
-        $action = 'Go to site';
-        $footermessage = 'Go to site';
-        
-
+        $heading = 'Welcome! New Lease Created';
+        $linkmessage = 'To view and manage your lease details. Login here';
+        $data = ([
+            "line 1" => "'Welcome. A new lease agreement for you has been created for you",
+            "line 2" => "This means that all information concerning the unit you gave rented will be available
+                        to you using the Tenants portal",
+            "line 3" => "If its your first login,The Default password is property123",
+            "action" => "/lease",
+            "line 4" => "",
+        ]);
         return (new MailMessage)->view(
-            'email.emailtemplate',
-            ['user' => $this->user,
-            'url'=> $url,
-            'subject' => $subject,
-            'greetings' => $greetings,
-            'message' => $message,
-            'linkmessage' => $linkmessage,
-            'action' => $action,
-            'footermessage' => $footermessage, ]
+            'email.template',
+            ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading]
         );
+
     }
 
     /**

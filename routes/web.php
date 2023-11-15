@@ -24,6 +24,9 @@ use App\Http\Controllers\utilityController;
 use App\Http\Controllers\PropertyTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Models\MeterReading;
+use App\Models\User;
+use App\Notifications\LeaseAgreementNotification;
+use App\Notifications\UserCreatedNotification;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +61,7 @@ Route::group(['middleware' => ['auth','permission']], function () {
     Route::group(['groupName' => 'Leasing'], function () {
         Route::resource('lease', LeaseController::class);
         ///lease wizard///////
+        Route::post('leasedetails', [LeaseController::class, 'leasedetails']); 
         Route::post('cosigner', [LeaseController::class, 'cosigner']); 
         Route::post('rent', [LeaseController::class, 'rent']); 
         Route::post('deposit', [LeaseController::class, 'deposit']); 
@@ -129,5 +133,13 @@ Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
 Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
 
+//////View Your email notification
+
+Route::get('/notification', function () {
+    $user = User::find(1);
+ 
+    return (new LeaseAgreementNotification($user))
+                ->toMail($user->user);
+});
 
 require __DIR__.'/auth.php';
