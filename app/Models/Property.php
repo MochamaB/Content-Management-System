@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -94,18 +95,25 @@ class Property extends Model implements HasMedia
         return $this->morphMany(Setting::class, 'settingable');
     }
 
- /// scope showing properties with units
+    /// scope showing properties with units
     public function scopeWithUnitUser($query)
     {
         $user = auth()->user();
         if ($user->id !== 1) {
             $userUnits = $user->units;
             $propertyIds = $userUnits->pluck('pivot.property_id')->unique();
-            
+
             // Retrieve properties based on the extracted property_ids
             return $query->whereIn('id', $propertyIds);
-       
         }
-       
+    }
+
+    ///Spatie Media conversions
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(368)
+            ->height(232)
+            ->sharpen(10);
     }
 }

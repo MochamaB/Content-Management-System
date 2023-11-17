@@ -22,6 +22,8 @@
         @elseif(($routeParts[1] === 'show'))
 
         @include('admin.CRUD.show')
+<!--- Show-Index -->
+        @else
         @endif
 
 @endsection

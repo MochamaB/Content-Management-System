@@ -167,7 +167,7 @@ class LeaseController extends Controller
             $lease->save();
         }
 
-        ///2. SAVE TENANT DETAILS
+        ///2. SAVE TENANT COSIGNER DETAILS
         $tenantdetails = $request->session()->get('tenantdetails');
         if (!empty($tenantdetails)) {
             $tenantdetailsModel = new Tenantdetails();
@@ -217,13 +217,18 @@ class LeaseController extends Controller
         $unit = Unit::find($leasedetails->unit_id);
         $propertyId = $leasedetails->property_id;
         $unit->users()->attach($user, ['property_id' => $propertyId]);
+
+        //8. UPLOAD LEASE AGREEMENT
+        $unit
+            ->addMediaFromRequest('file')
+            ->toMediaCollection('files');
        
-        //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
+        //9. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
         $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
         $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
 
-        //9. FORGET SESSION DATA
+        //10. FORGET SESSION DATA
         $request->session()->forget('lease');
         $request->session()->forget('tenantdetails');
         $request->session()->forget('rentcharge');

@@ -133,17 +133,22 @@ class PropertyController extends Controller
             //    'Payments'
             // Add more tab titles as needed
         ]);
+        //1. AMENITIES
         $amenities = $property->amenities;
         $allamenities = Amenity::all();
-
+        //2. UNITS
         $units = $property->units;
         $unitController = new UnitController();
         $unitTableData = $unitController->getUnitData($units);
         $mainfilter = $unitController->index()->getData()['mainfilter'];
-
+        //3.UTILITIES
         $utilities = $property->utilities;
         $utilityController = new UtilityController();
         $utilityTableData = $utilityController->getUtilitiesData($utilities);
+        //4. FILES
+        $media = $property->getMedia('files');
+        $mediaController = new MediaController();
+        $mediaTableData = $mediaController->getMediaData($media);
 
 
         $viewData = $this->formData($this->model, $property);
@@ -159,9 +164,8 @@ class PropertyController extends Controller
             } elseif ($title === 'Utilities') {
                 $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $utilityTableData,'controller' => 'utility'], 
                 compact('amenities', 'allamenities'))->render();
-            }
-            elseif ($title === 'Files') {
-                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $utilityTableData,'controller' => 'utility'], 
+            }elseif ($title === 'Files') {
+                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $mediaTableData,'controller' => 'media'], 
                 compact('amenities', 'allamenities'))->render();
             }
         }

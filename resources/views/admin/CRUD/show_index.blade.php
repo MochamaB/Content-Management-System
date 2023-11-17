@@ -1,4 +1,6 @@
 
+
+
     @if( Auth::user()->can($controller.'.create') || Auth::user()->id === 1)
         @if($controller !== "unitcharge")
             <a href="{{ url($controller.'/create',['parentmodel' => $parentmodel ?? '']) }}" class="btn btn-primary btn-lg text-white mb-0 me-0 float-end" role="button" style="text-transform: capitalize;">
@@ -11,7 +13,7 @@
 <div class=" contwrapper">
     <div class="row">    
         <hr>
-        @include('admin.CRUD.show_table', ['data' => $tableData])
+        @include('admin.CRUD.table', ['data' => $tableData])
 
     </diV>
 </div>
@@ -52,3 +54,4 @@
 
     }
 </script>
+@include('layouts.admin.adminfooter')

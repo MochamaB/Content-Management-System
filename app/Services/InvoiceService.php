@@ -14,13 +14,16 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Actions\CalculateInvoiceTotalAmountAction;
 
+
 class InvoiceService
 {
     private $calculateTotalAmountAction;
+   
 
     public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction)
     {
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
+       
     }
 
     public function generateInvoice(Unitcharge $unitcharge)
@@ -44,10 +47,7 @@ class InvoiceService
                 //3. Update Total Amount in Invoice Header
                 $this->calculateTotalAmountAction->handle($invoice);
 
-                // Update the nextdate in the unitcharge based on charge_cycle logic
-          //      $this->updateNextDate($unitcharge);
-
-          //  }
+                //4. Update Due Date In the newly generated invoice.
         
         return $invoice;
     }

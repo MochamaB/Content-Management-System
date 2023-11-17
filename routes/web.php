@@ -23,6 +23,7 @@ use App\Http\Controllers\UnitChargeController;
 use App\Http\Controllers\utilityController;
 use App\Http\Controllers\PropertyTypeController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\MediaController;
 use App\Models\MeterReading;
 use App\Models\User;
 use App\Notifications\LeaseAgreementNotification;
@@ -87,6 +88,13 @@ Route::group(['middleware' => ['auth','permission']], function () {
         Route::resource('unit',UnitController::class);
         Route::resource('unitdetail',UnitDetailsController::class);
     });
+
+    Route::group(['groupName' => 'Files'], function () {
+      
+        Route::resource('media',MediaController::class);
+    });
+
+
     Route::group(['groupName' => 'Settings'], function () {
         Route::resource('propertytype',PropertyTypeController::class);
         Route::resource('amenity',AmenityController::class);

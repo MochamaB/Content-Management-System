@@ -7,6 +7,7 @@ use App\Models\Unitcharge;
 use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Actions\UpdateNextDateAction;
 
 class InvoiceController extends Controller
 {
@@ -16,10 +17,12 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     private $invoiceService;
+    private $updateNextDateAction;
 
-    public function __construct(InvoiceService $invoiceService)
+    public function __construct(InvoiceService $invoiceService, UpdateNextDateAction $updateNextDateAction)
     {
         $this->invoiceService = $invoiceService;
+        $this->updateNextDateAction = $updateNextDateAction;
     }
 
     public function getInvoiceData($invoicedata)
@@ -88,12 +91,14 @@ class InvoiceController extends Controller
                     ->get();
 
         foreach ($unitcharges as $unitcharge) {
-                // Create invoice items from invoice service app/Services/InvoiceService
-            $this->invoiceService->generateInvoice($unitcharge);
+                //1. Create invoice items from invoice service app/Services/InvoiceService
+                $this->invoiceService->generateInvoice($unitcharge);
 
-                // Update the nextdate based on charge_cycle logic
-          //      $this->updateNextDate($unitcharge);
-          //  }
+               //2. Update the nextdate in the unitcharge based on charge_cycle logic
+                $this->updateNextDateAction->invoicenextdate($unitcharge);
+
+                //3. Update Duedate in invoice 
+          
         }
         return redirect()->back()->with('status', 'Sucess Invoice generated.');
     }
