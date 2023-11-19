@@ -15,18 +15,20 @@
                 <td style="text-transform: capitalize;padding-left: 15px;">{!! $cell !!}</td>
                 @endforeach
                 <td>
+                    <!-- SHOW BUTTON -->
                     <a href="{{url($routeParts[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-clipboard-text mdi-24px text-dark"></i></a>
+                    <!-- EDIT BUTTON -->
                     @if( Auth::user()->can($controller[0].'.edit') || Auth::user()->id === 1)
                     <a href="{{url($routeParts[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
                     @endif
-
+                    <!-- DELETE BUTTON -->
                     @if( Auth::user()->can($controller[0].'.destroy') || Auth::user()->id === 1)
                     <form action="{{ url($routeParts[0].'/'.$row['id']) }}" method="POST" style="display: inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="button" class="" style="border:0px;" data-toggle="modal" data-target="#deleteConfirmationModal"><i class="mdi mdi-delete mdi-24px text-danger"></i></button>
+                        <button type="button" class="" style="border:0px;" data-toggle="modal" data-target="#deleteConfirmationModal{{$controller[0].$row['id'] }}"><i class="mdi mdi-delete mdi-24px text-danger"></i></button>
 
-                        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="deleteConfirmationModal{{$controller[0].$row['id'] }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header"  style="background-color:red;">

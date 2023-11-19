@@ -79,10 +79,10 @@ class MeterReadingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($parentmodel = null)
+    public function create($id = null)
     {
 
-        $unit = Unit::find($parentmodel);
+        $unit = Unit::find($id);
         // session(['unit' => $unit]);
         $property = Property::where('id', $unit->property->id)->first();
         $unitcharge = Unitcharge::where('unit_id', $unit->id)

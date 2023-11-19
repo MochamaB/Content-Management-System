@@ -13,16 +13,29 @@ use App\Models\InvoiceItems;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Actions\CalculateInvoiceTotalAmountAction;
+use App\Actions\UpdateDueDateAction;
+use App\Actions\UpdateNextDateAction;
+use App\Actions\RecordTransactionAction;
+
 
 
 class InvoiceService
 {
     private $calculateTotalAmountAction;
+    private $updateDueDateAction;
+    private $updateNextDateAction;
+    private $recordTransactionAction;
    
 
-    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction)
+    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
+        UpdateNextDateAction $updateNextDateAction,
+        UpdateDueDateAction $updateDueDateAction,
+        RecordTransactionAction $recordTransactionAction)
     {
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
+        $this->updateNextDateAction = $updateNextDateAction;
+        $this->updateDueDateAction = $updateDueDateAction;
+        $this->recordTransactionAction = $recordTransactionAction;
        
     }
 
@@ -34,8 +47,11 @@ class InvoiceService
             // Invoice already exists, skip and continue to the next Unitcharge record
             return $invoiceExists;
         }
-               
-         //   if ($this->isTimeToGenerateInvoice($unitcharge)) {
+        
+        ///Queries unitcharge-> next date to check if the charge needs to be invoiced that month.
+           if ($this->isTimeToGenerateInvoice($unitcharge)) {
+           // dd($unitcharge);
+
                 $invoiceData = $this->getInvoiceHeaderData($unitcharge);
 
                 //1. Create Invoice Header Data
@@ -47,16 +63,24 @@ class InvoiceService
                 //3. Update Total Amount in Invoice Header
                 $this->calculateTotalAmountAction->handle($invoice);
 
-                //4. Update Due Date In the newly generated invoice.
+                //4. Update Next Date in the Unitcharge
+                $this->updateNextDateAction->invoicenextdate($unitcharge);
+
+                //5. Update Due Date In the newly generated invoice.
+                $this->updateDueDateAction->handle($invoice);
+
+                //6. Create Transactions for ledger
+                $this->recordTransactionAction->invoiceCharges($invoice);
         
-        return $invoice;
+                return $invoice;
+           }
     }
 
     ///////2. CHECK IF ITS TIME TO GENERATE INVOICE
     private function isTimeToGenerateInvoice($unitcharge)
     {
         $nextDate = Carbon::parse($unitcharge->nextdate);
-        return Carbon::now()->isSameDay($nextDate);
+        return Carbon::now()->isSameMonth($nextDate);
     }
 
     ///3. CHECK IF INVOICE EXISTS

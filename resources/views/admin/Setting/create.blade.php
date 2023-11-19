@@ -12,8 +12,13 @@
             <div class="form-group">
                 <label class="label">Model Name</label>
                 <input type="text" class="form-control" name="settingable_type" id="settingable_type" value="{{$model}}" readonly required >
+                <input type="hidden" class="form-control" name="settingable_id" id="settingable_id" value="{{$id}}" readonly required >
             </div>
         </div>
+
+
+                
+          
        
 
             <div class="col-md-6">

@@ -1,13 +1,13 @@
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="label">{{ $routeParts[0] ?? '' }} filter</label>
+                            <label class="label">filter</label>
                             <select name="controller" id="controller" class="formcontrol2" onchange="applyFilters('controller')">
                                 <option>ALL </option>
-                               
-                                @foreach ($mainfilter as $item)
-                                <option value="{{ $item ?? '' }}" style="text-transform: capitalize;">{{ $item ?? '' }}</option>
-                                @endforeach
-                              
+                                @if(isset($mainfilter) && $mainfilter !== null)
+                                    @foreach ($mainfilter as $item)
+                                    <option value="{{ $item ?? '' }}" style="text-transform: capitalize;">{{ $item ?? '' }}</option>
+                                    @endforeach
+                                @endif
                             </select>
                         </div>
 

@@ -13,6 +13,26 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function getSettingData($setting)
+    {
+        $tableData = [
+            'headers' => ['MODEL', 'INSTANCE', 'NAME','VALUE','DESCRIPTION', 'ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($setting as $item) {
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $item->settingable_type,
+                $item->settingable_id,
+                $item->setting_name,
+                $item->setting_value,
+                $item->setting_description,
+            ];
+        }
+
+        return $tableData;
+    }
     public function index()
     {
         $modules = Permission::all();
@@ -36,10 +56,10 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($model)
+    public function create($id,$model)
     {
        
-        return View('admin.setting.create',compact('model'));
+        return View('admin.setting.create',compact('model','id'));
     }
 
     /**
@@ -52,7 +72,7 @@ class SettingController extends Controller
     {
         Setting::create([
             'settingable_type' => $request->settingable_type,
-            'settingable_id' => 0,
+            'settingable_id' =>$request->settingable_id,
             'setting_name' => $request->setting_name,
             'setting_value' => $request->setting_value,
             'setting_description' => $request->setting_description,

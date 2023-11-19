@@ -3,7 +3,7 @@
 
     @if( Auth::user()->can($controller.'.create') || Auth::user()->id === 1)
         @if($controller !== "unitcharge")
-            <a href="{{ url($controller.'/create',['parentmodel' => $parentmodel ?? '']) }}" class="btn btn-primary btn-lg text-white mb-0 me-0 float-end" role="button" style="text-transform: capitalize;">
+            <a href="{{ url($controller.'/create',['id' => $id ?? '']) }}" class="btn btn-primary btn-lg text-white mb-0 me-0 float-end" role="button" style="text-transform: capitalize;">
                 <i class="mdi mdi-plus-circle-outline"></i>
                 Add New {{$controller}}
             </a>

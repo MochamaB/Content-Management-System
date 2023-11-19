@@ -35,7 +35,7 @@ class UpdateNextDateAction
     public function invoicenextdate(Unitcharge $unitcharge)
     {
         $chargeCycle = $unitcharge->charge_cycle;
-        $startDate = Carbon::parse($unitcharge->startdate);
+        $startDate = Carbon::parse($unitcharge->nextdate);
         $nextDate = null;
 
         if ($chargeCycle === 'Monthly') {

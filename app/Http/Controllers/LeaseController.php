@@ -20,6 +20,8 @@ use App\Models\Utility;
 use App\Notifications\LeaseAgreementNotification;
 use Carbon\Carbon;
 use App\Actions\UpdateNextDateAction;
+use App\Actions\UpdateDueDateAction;
+use App\Actions\RecordTransactionAction;
 
 class LeaseController extends Controller
 {
@@ -32,9 +34,13 @@ class LeaseController extends Controller
     protected $controller;
     protected $model;
     protected $updateNextDateAction;
+    private $updateDueDateAction;
+    private $recordTransactionAction;
 
 
-    public function __construct(UpdateNextDateAction $updateNextDateAction)
+    public function __construct(UpdateNextDateAction $updateNextDateAction,
+                            UpdateDueDateAction $updateDueDateAction,
+                            RecordTransactionAction $recordTransactionAction)
     {
         $this->model = Lease::class;
 
@@ -44,6 +50,8 @@ class LeaseController extends Controller
         ]);
 
         $this->updateNextDateAction = $updateNextDateAction;
+        $this->updateDueDateAction = $updateDueDateAction;
+        $this->recordTransactionAction = $recordTransactionAction;
     }
     public function index()
     {
@@ -166,6 +174,7 @@ class LeaseController extends Controller
             $lease->fill($leasedetails->toArray());
             $lease->save();
         }
+       
 
         ///2. SAVE TENANT COSIGNER DETAILS
         $tenantdetails = $request->session()->get('tenantdetails');
@@ -196,12 +205,16 @@ class LeaseController extends Controller
             Unitcharge::insert($splitRentCharges);
         }
 
-        //5. SAVE SECURITY DEPOSIT
+        //5. SAVE SECURITY DEPOSIT AND GENERATE TRANSACTIONS
         $depositcharge = $request->session()->get('depositcharge');
         if (!empty($depositcharge)) {
             $depositchargeModel = new Unitcharge();
             $depositchargeModel->fill($depositcharge->toArray());
             $depositchargeModel->save();
+
+            $unitcharge = $depositchargeModel;
+            $modelname = 'Unitcharge';
+            $this->recordTransactionAction->securitydeposit($unitcharge,$modelname);
             
         }
 
@@ -228,7 +241,11 @@ class LeaseController extends Controller
         // Redirect to the lease.create route with a success message
         $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
 
-        //10. FORGET SESSION DATA
+        //10. CREATE SETTING FOR THE DUEDATE
+        $leaseId = $lease->id;
+        $this->updateDueDateAction->duedate($leaseId);
+
+        //11. FORGET SESSION DATA
         $request->session()->forget('lease');
         $request->session()->forget('tenantdetails');
         $request->session()->forget('rentcharge');
@@ -278,7 +295,7 @@ class LeaseController extends Controller
         $meterReadings = $unit->meterReadings;
         $meterReaderController = new MeterReadingController();
         $MeterReadingsTableData = $meterReaderController->getMeterReadingsData($meterReadings);
-        $parentmodel = $unit;
+        $id = $unit;
 
         $tabTitles = collect([
             'Summary',
@@ -293,14 +310,14 @@ class LeaseController extends Controller
             if ($title === 'Summary') {
                 $tabContents[] = View('wizard.lease.leasedetails', compact('properties', 'lease'))->render();
             } elseif ($title === 'Charges and Utilities') {
-                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $unitChargeTableData, 'controller' => 'unitcharge'])->render();
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']])->render();
             } elseif ($title === 'Deposits and Payments') {
                 $tabContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Meter Readings') {
                 $tabContents[] = View(
-                    'admin.CRUD.show_index',
-                    ['tableData' => $MeterReadingsTableData, 'controller' => 'meter-reading'],
-                    compact('parentmodel')
+                    'admin.CRUD.index',
+                    ['tableData' => $MeterReadingsTableData, 'controller' => ['meter-reading']],
+                    compact('id')
                 )->render();
             } elseif ($title === 'Maintenance Tasks') {
                 $tabContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities'))->render();

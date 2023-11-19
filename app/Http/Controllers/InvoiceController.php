@@ -7,7 +7,7 @@ use App\Models\Unitcharge;
 use App\Services\InvoiceService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Actions\UpdateNextDateAction;
+
 
 class InvoiceController extends Controller
 {
@@ -17,19 +17,19 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     private $invoiceService;
-    private $updateNextDateAction;
+   
 
-    public function __construct(InvoiceService $invoiceService, UpdateNextDateAction $updateNextDateAction)
+    public function __construct(InvoiceService $invoiceService)
     {
         $this->invoiceService = $invoiceService;
-        $this->updateNextDateAction = $updateNextDateAction;
+       
     }
 
     public function getInvoiceData($invoicedata)
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['INVOICE DATE','TYPE', 'TENANT', 'STATUS', 'AMOUNT DUE', 'AMOUNT PAID'],
+            'headers' => ['INVOICE DATE', 'TYPE', 'TENANT', 'STATUS', 'AMOUNT DUE', 'AMOUNT PAID'],
             'rows' => [],
         ];
 
@@ -38,8 +38,8 @@ class InvoiceController extends Controller
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->created_at,
-                $item->invoice_type.''.$item->referenceno,
-                $item->firstname.' - '.$item->lastname,
+                $item->invoice_type . '' . $item->referenceno,
+                $item->firstname . ' - ' . $item->lastname,
                 $item->firstname,
                 $item->totalamount,
             ];
@@ -80,25 +80,25 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-
-
     }
     public function generateInvoice(Request $request)
     {
         ///1. GET UNITS WITH RECURRING CHARGE
         $unitcharges = Unitcharge::where('recurring_charge', 'yes')
-                    ->where('parent_id',null)    
-                    ->get();
+            ->where('parent_id', null)
+            ->get();
 
         foreach ($unitcharges as $unitcharge) {
-                //1. Create invoice items from invoice service app/Services/InvoiceService
-                $this->invoiceService->generateInvoice($unitcharge);
+            //1. Create invoice items from invoice service app/Services/InvoiceService
+            $this->invoiceService->generateInvoice($unitcharge);
 
-               //2. Update the nextdate in the unitcharge based on charge_cycle logic
-                $this->updateNextDateAction->invoicenextdate($unitcharge);
+            //2. Update the nextdate in the unitcharge based on charge_cycle logic
+           
 
-                //3. Update Duedate in invoice 
-          
+            //3. Send Email/Notification to the Tenant containing the invoice.
+
+
+
         }
         return redirect()->back()->with('status', 'Sucess Invoice generated.');
     }

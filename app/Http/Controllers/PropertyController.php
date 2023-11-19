@@ -125,7 +125,8 @@ class PropertyController extends Controller
             'Summary',
             'Units',
             'Utilities',
-            'Files'
+            'Files',
+            'Settings'
             //    'Maintenance',
             //    'Financials',
             //    'Users',
@@ -149,6 +150,12 @@ class PropertyController extends Controller
         $media = $property->getMedia('files');
         $mediaController = new MediaController();
         $mediaTableData = $mediaController->getMediaData($media);
+         //4. SETTINGS
+         $setting = $property->settings;
+         $settingController = new SettingController();
+         $settingTableData = $settingController->getSettingData($setting);
+         $model = 'property';
+         $id = $property;
 
 
         $viewData = $this->formData($this->model, $property);
@@ -159,14 +166,17 @@ class PropertyController extends Controller
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Units') {
-                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $unitTableData,'controller' => 'unit'], 
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Utilities') {
-                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $utilityTableData,'controller' => 'utility'], 
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $utilityTableData,'controller' => ['utility']], 
                 compact('amenities', 'allamenities'))->render();
             }elseif ($title === 'Files') {
-                $tabContents[] = View('admin.CRUD.show_index', ['tableData' => $mediaTableData,'controller' => 'media'], 
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $mediaTableData,'controller' => ['media']], 
                 compact('amenities', 'allamenities'))->render();
+            }elseif ($title === 'Settings') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $settingTableData,'controller' => ['setting']], 
+                compact('amenities', 'allamenities','model','id'))->render();
             }
         }
 

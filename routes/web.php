@@ -98,13 +98,14 @@ Route::group(['middleware' => ['auth','permission']], function () {
     Route::group(['groupName' => 'Settings'], function () {
         Route::resource('propertytype',PropertyTypeController::class);
         Route::resource('amenity',AmenityController::class);
-        Route::resource('setting',SettingController::class, ['except' => 'show','create']); 
+        Route::get('setting/create/{id}/{model}', ['as' => 'setting.create',
+        'uses' => 'App\Http\Controllers\SettingController@create'
+    ]);
         Route::get('setting/{model}', ['as' => 'setting.show',
             'uses' => 'App\Http\Controllers\SettingController@show'
         ]);
-        Route::get('setting/create/{model}', ['as' => 'setting.create',
-            'uses' => 'App\Http\Controllers\SettingController@create'
-        ]);
+        
+        Route::resource('setting',SettingController::class, ['except' => 'show','create']); 
         Route::resource('websitesetting',WebsiteSettingController::class);
         Route::resource('slider',SliderController::class);
         Route::resource('testimonial',TestimonialController::class);
