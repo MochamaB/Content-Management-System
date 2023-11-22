@@ -4,9 +4,13 @@ php artisan permission:create-permission-routes
 php artisan db:seed
 
 Order TO fill Data
-1. Settings
+1. Settings - Website Settings
 2. Roles
-3. Users
+3. properties
+4. Units
+5. Users
+6. Utilities
+7. Leases
 
 Roles
 Super Admin is the only one who can create and edit roles, permissions, properties

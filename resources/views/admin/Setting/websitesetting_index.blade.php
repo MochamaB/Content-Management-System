@@ -148,14 +148,14 @@
 
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label class="label">Website Logo</label>
+                        <label class="label">Website Logos</label>
                         <input type="file" name="company_logo" value="{{ $sitesettings->company_logo }}" class="form-control" id="logo" required />
-                        <img id="logo-image-before-upload" src="{{ asset('resources/uploads/images/'.$sitesettings->company_logo) }}" style="height: 200px; width: 200px;">
+                        <img id="logo-image-before-upload" src="{{ $sitesettings->getFirstMediaUrl('logo') }}" style="height: 200px; width: 200px;">
                     </div>
                     <div class="form-group">
                         <label class="label">flavicon</label>
                         <input type="file" name="company_flavicon" value="{{ old('company_flavicon') }}" class="form-control" id="flavicon" />
-                        <img id="flavicon-image-before-upload" src="{{ url('resources/uploads/images/'.$sitesettings->company_flavicon) }}" style="height: 100px; width: 90px;">
+                        <img id="flavicon-image-before-upload" src="{{ $sitesettings->getFirstMediaUrl('flavicon') }}" style="height: 100px; width: 90px;">
                     </div>
                     <div class="col-md-4">
                         <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" id="submitBtn">Save Settings</button>

@@ -17,7 +17,7 @@ class RecordTransactionAction
 
     public function securitydeposit(Unitcharge $unitcharge, string $modelname)
     {
-        $description = Chartofaccount::where('id',$unitcharge->chartofaccounts_id)->first();
+        $description = Chartofaccount::where('id',$unitcharge->chartofaccount_id)->first();
         $debit = 1; ///Bank Account
         
         
@@ -25,12 +25,12 @@ class RecordTransactionAction
        Transaction::create([
                 'property_id' => $unitcharge->property_id,
                 'unit_id' => $unitcharge->unit_id,
-                'unitcharge_id' => $unitcharge->id,
+                'charge_name' => $unitcharge->charge_name,
                 'transactionable_id' => $unitcharge->id,
                 'transactionable_type' => $modelname,///Model Name Unitcharge
-                'description' => $description, ///Description of the charge
-                'debitaccount_id' => 1,
-                'creditaccount_id' => $unitcharge->chartofaccounts_id,
+                'description' => $description->account_name, ///Description of the charge
+                'debitaccount_id' => 1, ////Bank Account
+                'creditaccount_id' => $unitcharge->chartofaccount_id,
                 'amount' => $unitcharge->rate,
             ]);
     }
@@ -45,7 +45,7 @@ class RecordTransactionAction
         Transaction::create([
             'property_id' => $invoice->property_id,
             'unit_id' => $invoice->unit_id,
-            'unitcharge_id' => $item->unitcharge_id,
+            'charge_name' => $item->charge_name,
             'transactionable_id' => $item->unitcharge_id,
             'transactionable_type' => 'Unitcharges',///Model Name Unitcharge
             'description' => $description->account_name, ///Description of the charge

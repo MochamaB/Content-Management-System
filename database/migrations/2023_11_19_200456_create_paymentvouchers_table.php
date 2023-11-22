@@ -15,17 +15,16 @@ return new class extends Migration
     {
         Schema::create('paymentvouchers', function (Blueprint $table) {
             $table->id()->index();
-            $table->unsignedBigInteger('property_id')->nullable()->index();
+            $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->nullable()->index();
-            $table->string('contatct_type'); // E.g., "User", "Lease", "Property"
-            $table->unsignedBigInteger('scontact_id'); // ID of the specific model instance
+            $table->string('model_type'); // Who the voucher goes to E.g., "User", "Vendor"
+            $table->unsignedBigInteger('model_id'); // ID of the specific model instance
             $table->string('referenceno');
-            $table->string('voucher_type');
+            $table->string('voucher_type'); //Name of the charge E.g Rent,Utility,Maintenance
             $table->decimal('totalamount')->nullable();
             $table->string('status');
             $table->timestamp("duedate")->nullable();
             $table->timestamps();
-            
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
         });

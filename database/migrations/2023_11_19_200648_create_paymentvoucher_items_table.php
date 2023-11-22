@@ -18,11 +18,13 @@ return new class extends Migration
             $table->unsignedBigInteger('paymentvoucher_id')->index();
             $table->unsignedBigInteger('unitcharge_id')->nullable()->index();
             $table->unsignedBigInteger('chartofaccount_id')->index();
+            $table->string('charge_name')->nullable();
             $table->string('description')->nullable();
             $table->string('payment_method')->nullable();
             $table->decimal('amount');
             $table->timestamps();
             $table->foreign('paymentvoucher_id')->references('id')->on('paymentvouchers')->onDelete('cascade');
+            $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');
             $table->foreign('chartofaccount_id')->references('id')->on('chartofaccounts')->onDelete('cascade');
         });
     }

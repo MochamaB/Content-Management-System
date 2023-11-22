@@ -1,6 +1,6 @@
 <?php
 
-// app/Services/InvoiceService.php
+// app/Services/PaymentVoucherService.php
 
 namespace App\Services;
 
@@ -12,7 +12,6 @@ use App\Models\MeterReading;
 use App\Models\InvoiceItems;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Actions\CalculateInvoiceTotalAmountAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
@@ -27,19 +26,19 @@ class InvoiceService
     private $recordTransactionAction;
    
 
-    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
+    public function __construct(
         UpdateNextDateAction $updateNextDateAction,
         UpdateDueDateAction $updateDueDateAction,
         RecordTransactionAction $recordTransactionAction)
     {
-        $this->calculateTotalAmountAction = $calculateTotalAmountAction;
+       
         $this->updateNextDateAction = $updateNextDateAction;
         $this->updateDueDateAction = $updateDueDateAction;
         $this->recordTransactionAction = $recordTransactionAction;
        
     }
 
-    public function generateInvoice(Unitcharge $unitcharge)
+    public function generateVoucher(Unitcharge $unitcharge)
     {
         $invoiceExists = $this->invoiceExists($unitcharge);
         // Check if an invoice already exists for the given month, unit, and charge name
@@ -49,9 +48,7 @@ class InvoiceService
         }
         
         ///Queries unitcharge-> next date to check if the charge needs to be invoiced that month.
-           if ($this->isTimeToGenerateInvoice($unitcharge)) {
-           // dd($unitcharge);
-
+        
                 $invoiceData = $this->getInvoiceHeaderData($unitcharge);
 
                 //1. Create Invoice Header Data
@@ -73,18 +70,14 @@ class InvoiceService
                 $this->recordTransactionAction->invoiceCharges($invoice);
         
                 return $invoice;
-           }
+           
     }
 
     ///////2. CHECK IF ITS TIME TO GENERATE INVOICE
-    private function isTimeToGenerateInvoice($unitcharge)
-    {
-        $nextDate = Carbon::parse($unitcharge->nextdate);
-        return Carbon::now()->isSameMonth($nextDate);
-    }
+ 
 
     ///3. CHECK IF INVOICE EXISTS
-    private function invoiceExists(Unitcharge $unitcharge)
+    private function voucherExists(Unitcharge $unitcharge)
     {
         $today = Carbon::now();
         $invoicenodate = $today->format('ym');
@@ -107,8 +100,7 @@ class InvoiceService
         return [
             'property_id' => $unitcharge->property_id,
             'unit_id' => $unitcharge->unit_id,
-            'model_type'=>'user',
-            'model_id' => $user->user_id,
+            'user_id' => $user->user_id,
             'referenceno' => $invoicenodate . $unitnumber->unit_number,
             'invoice_type' => $unitcharge->charge_name,
             'totalamount' => null,
