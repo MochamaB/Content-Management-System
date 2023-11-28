@@ -20,7 +20,7 @@
     <h2>No site settings found.</h2>
 </div>
 @else
-<form method="POST" action="{{ url('websitesetting/1') }}" enctype="multipart/form-data">
+<form method="POST" action="{{ url('websitesetting/1') }}" class="myForm" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 
@@ -108,7 +108,7 @@
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label class="label">Currency</label>
+                        <label class="label">Currency <span class="requiredlabel">*</span></label>
                         <h5><small class="text-muted">
                                 {{ $sitesettings->site_currency }}
                             </small> </h5>

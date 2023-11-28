@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Traits\MediaUpload;
 
-class Lease extends Model
+class Lease extends Model implements HasMedia
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload;
     protected $table = 'leases';
     protected $fillable = [
         'property_id',
@@ -51,11 +55,11 @@ class Lease extends Model
         switch ($field) {
             case 'property_id':
                 // Retrieve the supervised units' properties
-                    $properties = $leases->pluck('property.property_name','property.id')->toArray();
+                $properties = $leases->pluck('property.property_name', 'property.id')->toArray();
                 return $properties;
             case 'unit_id':
                 // Retrieve the supervised units' properties
-                    $units = $leases->pluck('unit.unit_number', 'unit.id')->toArray();
+                $units = $leases->pluck('unit.unit_number', 'unit.id')->toArray();
                 return $units;
             case 'user_id':
                 $tenants = User::selectRaw('CONCAT(firstname, " ", lastname) as full_name, id')
@@ -65,13 +69,13 @@ class Lease extends Model
             case 'lease_period':
                 return [
                     'monthly' => 'Month to Month',
-                    'fixed'=>'fixed'
+                    'fixed' => 'fixed'
 
                 ];
             case 'status':
                 return [
                     'active' => 'Active',
-                    'suspended'=> 'Suspended'
+                    'suspended' => 'Suspended'
 
                 ];
                 // Add more cases for additional filter fields
@@ -91,7 +95,7 @@ class Lease extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class,'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function settings()
@@ -100,17 +104,31 @@ class Lease extends Model
     }
 
     public function scopeUserUnits($query)
-{
-    // Get the authenticated user
-    $user = auth()->user();
+    {
+        // Get the authenticated user
+        $user = auth()->user();
 
-    if ($user) {
-        // Get the IDs of units assigned to the user
-        $unitIds = $user->units->pluck('id')->toArray();
+        if ($user) {
+            // Get the IDs of units assigned to the user
+            $unitIds = $user->units->pluck('id')->toArray();
 
-        // Apply the filter to the query
-        $query->whereIn('unit_id', $unitIds);
+            // Apply the filter to the query
+            $query->whereIn('unit_id', $unitIds);
+        }
     }
-}
-    
+    ///Spatie Media conversions
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(150)
+            ->height(150)
+            ->sharpen(10);
+    }
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('Lease-Agreement');
+        //add options
+
+
+    }
 }

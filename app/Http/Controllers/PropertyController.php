@@ -54,7 +54,7 @@ class PropertyController extends Controller
                 $item->property_name . ' - ' . $item->property_streetname,
                 $item->property_location,
                 $item->property_manager,
-                $item->property_type,
+                $item->propertyType->property_type,
             ];
         }
 
@@ -99,6 +99,7 @@ class PropertyController extends Controller
             $validatedData = $request->validate($validationRules);
             $property = new Property;
             $property->fill($validatedData);
+            $property->property_status ='Active';
             $property->save();
 
             return redirect('property')->with('status', 'Property Added Successfully');
@@ -191,6 +192,7 @@ class PropertyController extends Controller
      */
     public function edit(Property $property)
     {
+        
         $viewData = $this->formData($this->model, $property);
         $pageheadings = collect([
             '0' => $property->property_name,

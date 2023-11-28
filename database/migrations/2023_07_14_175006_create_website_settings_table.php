@@ -21,8 +21,6 @@ class CreateWebsiteSettingsTable extends Migration
             $table->string('company_email')->nullable();
             $table->string('company_location')->nullable();
             $table->string('company_googlemaps')->nullable();
-            $table->string('company_logo')->nullable();
-            $table->string('company_flavicon')->nullable();
             $table->string('company_aboutus',200)->nullable();
             $table->string('site_currency')->nullable();
             $table->string('banner_desc',200)->nullable();

@@ -4,164 +4,94 @@
 
 namespace App\Services;
 
-use App\Models\Invoice;
-use App\Models\Unitcharge;
+
 use App\Models\Unit;
-use App\Models\Lease;
-use App\Models\MeterReading;
-use App\Models\InvoiceItems;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Actions\UpdateDueDateAction;
-use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
+use App\Models\Paymentvoucher;
+use App\Models\PaymentVoucherItems;
+use App\Actions\CalculateInvoiceTotalAmountAction;
 
-
-
-class InvoiceService
+class PaymentVoucherService
 {
     private $calculateTotalAmountAction;
-    private $updateDueDateAction;
-    private $updateNextDateAction;
     private $recordTransactionAction;
    
 
-    public function __construct(
-        UpdateNextDateAction $updateNextDateAction,
-        UpdateDueDateAction $updateDueDateAction,
+    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
         RecordTransactionAction $recordTransactionAction)
     {
-       
-        $this->updateNextDateAction = $updateNextDateAction;
-        $this->updateDueDateAction = $updateDueDateAction;
         $this->recordTransactionAction = $recordTransactionAction;
+        $this->calculateTotalAmountAction = $calculateTotalAmountAction;
        
     }
 
-    public function generateVoucher(Unitcharge $unitcharge)
+    public function generatePaymentVoucher(Model $model)
     {
-        $invoiceExists = $this->invoiceExists($unitcharge);
-        // Check if an invoice already exists for the given month, unit, and charge name
-        if ($invoiceExists) {
-            // Invoice already exists, skip and continue to the next Unitcharge record
-            return $invoiceExists;
-        }
+                $modelname = class_basename($model);
         
-        ///Queries unitcharge-> next date to check if the charge needs to be invoiced that month.
-        
-                $invoiceData = $this->getInvoiceHeaderData($unitcharge);
+                $paymentVoucherData = $this->getPaymentVoucherHeaderData($model,$modelname);
 
-                //1. Create Invoice Header Data
-                $invoice = $this->createInvoice($invoiceData);
+                //1. Create Payment Voucher Header Data
+                $paymentVoucher = $this->createPaymentVoucher($paymentVoucherData);
 
                 //2. Create invoice items
-                $this->createInvoiceItems($invoice, $unitcharge);
+                 $this->createPaymentVoucherItems($paymentVoucher, $model);
 
-                //3. Update Total Amount in Invoice Header
-                $this->calculateTotalAmountAction->handle($invoice);
+                //3. Update Total Amount in PaymentVoucher Header
+                $this->calculateTotalAmountAction->paymentVoucher($paymentVoucher);
+//
 
-                //4. Update Next Date in the Unitcharge
-                $this->updateNextDateAction->invoicenextdate($unitcharge);
-
-                //5. Update Due Date In the newly generated invoice.
-                $this->updateDueDateAction->handle($invoice);
-
-                //6. Create Transactions for ledger
-                $this->recordTransactionAction->invoiceCharges($invoice);
+                //4. Create Transactions for ledger
+                $this->recordTransactionAction->securitydeposit($paymentVoucher);
         
-                return $invoice;
+                return $paymentVoucher;
            
     }
 
-    ///////2. CHECK IF ITS TIME TO GENERATE INVOICE
+ 
  
 
-    ///3. CHECK IF INVOICE EXISTS
-    private function voucherExists(Unitcharge $unitcharge)
+    //////2. GET DATA FOR INVOICE HEADER DATA
+    private function getPaymentVoucherHeaderData($model,string $modelname)
     {
         $today = Carbon::now();
-        $invoicenodate = $today->format('ym');
-        $unitnumber = Unit::where('id', $unitcharge->unit_id)->value('unit_number');
-        $referenceno = $invoicenodate . $unitnumber;
-        
-        return Invoice::where('referenceno', $referenceno)
-        ->where('invoice_type', $unitcharge->charge_name)
-        ->first();
-    }
-
-    //////4. GET DATA FOR INVOICE HEADER DATA
-    private function getInvoiceHeaderData($unitcharge)
-    {
-        $today = Carbon::now();
-        $invoicenodate = $today->format('ym');
-        $unitnumber = Unit::where('id', $unitcharge->unit_id)->first();
-        $user = Lease::where('unit_id', $unitcharge->unit_id)->first();
+        $date = $today->format('ym');
+        $unitnumber = Unit::where('id', $model->unit_id)->first();
 
         return [
-            'property_id' => $unitcharge->property_id,
-            'unit_id' => $unitcharge->unit_id,
-            'user_id' => $user->user_id,
-            'referenceno' => $invoicenodate . $unitnumber->unit_number,
-            'invoice_type' => $unitcharge->charge_name,
+            'property_id' => $model->property_id,
+            'unit_id' => $model->unit_id,
+            'model_type' => $modelname,
+            'model_id' => $model->id,
+            'referenceno' => 'PV '. $date . $unitnumber->unit_number,
+            'voucher_type' => $model->charge_name, ///Generated from securitydeposit
             'totalamount' => null,
-            'status' => 'unpaid',
+            'status' => 'Payable',
             'duedate' => null,
         ];
     }
 
-    private function createInvoice($data)
+    private function createPaymentVoucher($data)
     {
-        return Invoice::create($data);
+        return Paymentvoucher::create($data);
     }
 
     
 
-    private function createInvoiceItems($invoice, $unitcharge)
+    private function createPaymentVoucherItems($paymentVoucher, $model)
     {
-        if ($unitcharge->charge_type === 'units') {
-            $nextdateFormatted = Carbon::parse($unitcharge->nextdate)->format('Y-m-d');
-            $updatedFormatted = Carbon::parse($unitcharge->updated_at ?? Carbon::now())->format('Y-m-d');
-          
-            $amount = 0.00; 
-            $meterReadings = MeterReading::where('unit_id', $unitcharge->unit_id)
-            ->where('unitcharge_id',$unitcharge->id)
-            ->where('startdate', '>=', $updatedFormatted) // Check readings after updated_at
-            ->where('startdate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
-            ->get();
-              
-            foreach ($meterReadings as $reading) {
-                // Calculate the amount based on meter readings and assign it to $amount
-                $amount = $reading->amount;
-                    }
-                } else {
-                    // If charge_type is not 'units', use the unitcharge rate as the amount
-                    $amount = $unitcharge->rate;
-                }
         // Create invoice items
-        InvoiceItems::create([
-            'invoice_id' => $invoice->id,
-            'unitcharge_id' => $unitcharge->id,
-            'chartofaccount_id' => $unitcharge->chartofaccounts_id,
-            'charge_name' => $unitcharge->charge_name,
-            'description' => '',
-            'amount' => $amount,
-        ]);
-
-       // Create invoice items for child charges
-            $childcharges = Unitcharge::where('parent_id', $unitcharge->id)->get();
-            if ($childcharges->count() > 0) {
-            
-            foreach ($childcharges as $childcharge) {
-                InvoiceItems::create([
-                    'invoice_id' => $invoice->id,
-                    'unitcharge_id' => $childcharge->id,
-                    'chartofaccount_id' => $childcharge->chartofaccounts_id,
-                    'charge_name' => $childcharge->charge_name,
-                    'description' => '',
-                    'amount' => $childcharge->rate,
-                ]);
-            }
-        }
+        PaymentVoucherItems::create([
+            'paymentvoucher_id' => $paymentVoucher->id,
+            'unitcharge_id' => $model->id,
+            'chartofaccount_id' => $model->chartofaccounts_id,
+            'charge_name' => $model->charge_name,
+            'description' => $model->description,
+            'amount' => $model->rate,
+        ]);  
         
     }
 }

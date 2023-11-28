@@ -24,6 +24,8 @@ use App\Http\Controllers\utilityController;
 use App\Http\Controllers\PropertyTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\PaymentVoucherController;
 use App\Models\MeterReading;
 use App\Models\User;
 use App\Notifications\LeaseAgreementNotification;
@@ -51,12 +53,22 @@ Route::get('/', [ App\Http\Controllers\client\HomeController::class, 'index']);
 
 Route::group(['middleware' => ['auth','permission']], function () {
 
+    Route::group(['groupName' => 'Website'], function () {
+        Route::resource('amenity',AmenityController::class);
+        Route::resource('propertytype',PropertyTypeController::class);
+        Route::resource('websitesetting',WebsiteSettingController::class);
+        Route::resource('slider',SliderController::class);
+        Route::resource('testimonial',TestimonialController::class);
+    });
+
     Route::group(['groupName' => 'Communication'], function () {
         Route::resource('notification', NotificationController::class); 
+        
     });
 
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class); 
+        Route::resource('transaction', TransactionController::class); 
     });
 
     Route::group(['groupName' => 'Leasing'], function () {
@@ -71,13 +83,15 @@ Route::group(['middleware' => ['auth','permission']], function () {
         Route::get('skiprent', [LeaseController::class, 'skiprent']);
         ///////////////
         Route::resource('unitcharge', UnitChargeController::class); 
-        Route::resource('utility', utilityController::class);
+        Route::resource('utility', UtilityController::class);
         Route::get('meter-reading/create/{id}', ['as' => 'meter-reading.create',
             'uses' => 'App\Http\Controllers\MeterReadingController@create'
         ]);
         Route::resource('meter-reading', MeterReadingController::class, ['except' => 'create']); 
         Route::resource('invoice', InvoiceController::class);
         Route::post('generateinvoice', [InvoiceController::class, 'generateInvoice']); 
+        Route::resource('paymentvoucher', PaymentVoucherController::class);
+        Route::post('generatepaymentvoucher', [PaymentVoucherController::class, 'generatePaymentVoucher']); 
         
     });
 
@@ -96,8 +110,8 @@ Route::group(['middleware' => ['auth','permission']], function () {
 
 
     Route::group(['groupName' => 'Settings'], function () {
-        Route::resource('propertytype',PropertyTypeController::class);
-        Route::resource('amenity',AmenityController::class);
+       
+       
         Route::get('setting/create/{id}/{model}', ['as' => 'setting.create',
         'uses' => 'App\Http\Controllers\SettingController@create'
     ]);
@@ -106,9 +120,6 @@ Route::group(['middleware' => ['auth','permission']], function () {
         ]);
         
         Route::resource('setting',SettingController::class, ['except' => 'show','create']); 
-        Route::resource('websitesetting',WebsiteSettingController::class);
-        Route::resource('slider',SliderController::class);
-        Route::resource('testimonial',TestimonialController::class);
         
     });
     Route::group(['groupName' => 'User'], function () {

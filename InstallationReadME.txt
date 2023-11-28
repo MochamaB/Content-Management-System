@@ -4,7 +4,7 @@ php artisan permission:create-permission-routes
 php artisan db:seed
 
 Order TO fill Data
-1. Settings - Website Settings
+1. Website - Website Settings
 2. Roles
 3. properties
 4. Units

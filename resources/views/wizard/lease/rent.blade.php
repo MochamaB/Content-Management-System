@@ -1,104 +1,64 @@
 @if(($routeParts[1] === 'create'))
 <h4><b> Add Rent Details</b></h4>
 <hr>
-
-<div class="d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center">
-        <i class="mdi mdi-information text-muted me-1"></i>
-        <h5><a href="{{ url('skiprent') }}" class="nextBtn" id="nextBtn">Click Next</a> if there is no Rent Charge</a></h5>
-
+<br />
+<div class="col-md-8">
+    <div class="form-group" id="rentselect">
+        <label class="">
+            <h4>Does this unit have rent and security deposit charge?<span class="requiredlabel">*</span></h4>
+        </label>
+        <select name="" id="rentstatus" class="formcontrol2" placeholder="Select" required>
+            <option value="">Select Answer</option>
+            <option value="Yes">Yes</option>
+            <option value="No"> No</option>
+        </select>    
     </div>
-</div><br />
-<form method="POST" action="{{ url('rent') }}" class="myForm" enctype="multipart/form-data" novalidate>
-    @csrf
-    <div class="col-md-6">
+</div>
+        <div class="col-md-4" id="skiprent" style="display: none;">
+            <a href="{{ url('skiprent') }}" class="btn btn-primary btn-lg text-white mb-0 me-0" id="">Next Step</a>
 
-        <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
-        <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
-        <div class="form-group">
-            <h4>Rent <span class="text-muted">(optional)</span></h4>
-            <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="rent" readonly>
         </div>
-    </div>
-    <div class="col-md-5">
-        <div class="form-group">
-            <label class="label">Rent Cycle<span class="requiredlabel">*</span></label>
-            <select name="charge_cycle" id="charge_cycle" class="formcontrol2" placeholder="Select" required>
-                <option value="{{$rentcharge->charge_cycle ?? ''}}">{{$rentcharge->charge_cycle ?? 'Select Rent Cycle'}}</option>
-                <option value="Monthly"> Monthly</option>
-                <option value="Twomonths">Two Months</option>
-                <option value="Quaterly">Quaterly</option>
-                <option value="Halfyear">6 Months</option>
-                <option value="Year">1 Year</option>
+<div class="" id="rentinfo"  style="display: none;">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <i class="mdi mdi-information text-muted me-1"></i>
+            <h5><a href="{{ url('skiprent') }}" class="nextBtn" id="nextBtn">Click Next</a> if there is no Rent Charge</a></h5>
 
-            </select>
         </div>
-    </div>
-    <!---------   ---->
-    <div class="row">
+    </div><br />
+
+    <form method="POST" action="{{ url('rent') }}" class="myForm" enctype="multipart/form-data" novalidate>
+        @csrf
         <div class="col-md-6">
+
+            <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
+            <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
             <div class="form-group">
-                <label class="label">Account<span class="requiredlabel">*</span></label>
-                <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
-                    <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account'}}</option>
-                    @foreach($accounts as $accounttype => $account)
-                    <optgroup label="{{ $accounttype }}">
-                        @foreach($account as $item)
-                        <option value="{{ $item->id }}">{{ $item->account_name  }}</option>
-                        @endforeach
-                    </optgroup>
-                    @endforeach
+                <h4>Rent <span class="text-muted">(optional)</span></h4>
+                <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="rent" readonly>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="label">Rent Cycle<span class="requiredlabel">*</span></label>
+                <select name="charge_cycle" id="charge_cycle" class="formcontrol2" placeholder="Select" required>
+                    <option value="{{$rentcharge->charge_cycle ?? ''}}">{{$rentcharge->charge_cycle ?? 'Select Rent Cycle'}}</option>
+                    <option value="Monthly"> Monthly</option>
+                    <option value="Twomonths">Two Months</option>
+                    <option value="Quaterly">Quaterly</option>
+                    <option value="Halfyear">6 Months</option>
+                    <option value="Year">1 Year</option>
+
                 </select>
             </div>
         </div>
-
-
-        <div class="col-md-6">
-            <div class="form-group">
-                <input type="hidden" class="form-control" name="charge_type" value="fixed" required readonly>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label">Amount<span class="requiredlabel">*</span></label>
-                <input type="text" class="form-control" name="rate" value="{{$lease->unit->rent ?? ''}}" required>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label">Next Due Date<span class="requiredlabel">*</span></label>
-                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$rentcharge->startdate ?? $lease->startdate ?? ''}}" required>
-                <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="yes">
-            </div>
-        </div>
-
-
-
-    </div><br />
-    <!--------- ----------- -->
-    <div class="addfields" style="margin-bottom:30px">
-        @if(!empty($splitRentcharges))
-        @foreach ($splitRentcharges as $splitCharge)
-        <div class="row dynamicadd">
-            <div class="col-md-12">
-                <button type="button" class="btn-danger text-white float-end cancel-field">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+        <!---------   ---->
+        <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    <label class="label">Charge Name<span class=""></span></label>
-                    <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge['charge_name']?? '' }}">
-                    <div class="invalid-feedback"></div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="label">Account<span class=""></span></label>
-                    <select name="splitchartofaccounts_id[]" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
-                        <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">{{$splitCharge['chartofaccounts_id']  ?? 'Select Account'}}</option>
+                    <label class="label">Account<span class="requiredlabel">*</span></label>
+                    <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
+                        <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account'}}</option>
                         @foreach($accounts as $accounttype => $account)
                         <optgroup label="{{ $accounttype }}">
                             @foreach($account as $item)
@@ -109,50 +69,109 @@
                     </select>
                 </div>
             </div>
+
+
             <div class="col-md-6">
                 <div class="form-group">
-                    <label class="label">Charge Type<span class="requiredlabel">*</span></label>
-                    <select name="splitcharge_type[]" id="splitcharge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
-                        <option value="{{$splitCharge['charge_type'] ?? ''}}">{{$splitCharge['charge_type'] ?? 'Select Account'}}</option>
-                        <option value="fixed"> Fixed Amount</option>
-                        <option value="units"> By Units</option>
-                    </select>
+                    <input type="hidden" class="form-control" name="charge_type" value="fixed" required readonly>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label class="label ratelabel">Amount<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control dynamic-field" name="splitrate[]" value="{{$splitCharge['rate'] ?? ''}}" required>
+                    <label class="label">Amount<span class="requiredlabel">*</span></label>
+                    <input type="text" class="form-control" name="rate" value="{{$lease->unit->rent ?? ''}}" required>
                 </div>
             </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="label">Next Due Date<span class="requiredlabel">*</span></label>
+                    <input type="date" class="form-control" id="startdate" name="startdate" value="{{$rentcharge->startdate ?? $lease->startdate ?? ''}}" required>
+                    <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="yes">
+                </div>
+            </div>
+
+
+
+        </div><br />
+        <!--------- ----------- -->
+        <div class="addfields" style="margin-bottom:30px">
+            @if(!empty($splitRentcharges))
+            @foreach ($splitRentcharges as $splitCharge)
+            <div class="row dynamicadd">
+                <div class="col-md-12">
+                    <button type="button" class="btn-danger text-white float-end cancel-field">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="label">Charge Name<span class=""></span></label>
+                        <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge['charge_name']?? '' }}">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="label">Account<span class="requiredlabel">*</span></label>
+                        <select name="splitchartofaccounts_id[]" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
+                            <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">{{$splitCharge['chartofaccounts_id'] ?? 'Select Account'}}</option>
+                            @foreach($accounts as $accounttype => $account)
+                            <optgroup label="{{ $accounttype }}">
+                                @foreach($account as $item)
+                                <option value="{{ $item->id }}">{{ $item->account_name  }}</option>
+                                @endforeach
+                            </optgroup>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="label">Charge Type<span class="requiredlabel">*</span></label>
+                        <select name="splitcharge_type[]" id="splitcharge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
+                            <option value="{{$splitCharge['charge_type'] ?? ''}}">{{$splitCharge['charge_type'] ?? 'Select Account'}}</option>
+                            <option value="fixed"> Fixed Amount</option>
+                            <option value="units"> By Units</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="label ratelabel">Amount<span class="requiredlabel">*</span></label>
+                        <input type="text" class="form-control dynamic-field" name="splitrate[]" value="{{$splitCharge['rate'] ?? ''}}" required>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+
+
+            @endif
         </div>
-        @endforeach
 
 
-        @endif
-    </div>
+        <div class="col-md-12" style="margin-bottom:30px">
+            <h5><a class=" split_rent"><i class="menu-icon mdi mdi-plus-circle"></i> Split the Rent Charge </a>
+                <span class="text-muted">(Will be included in Rent Invoices & Payments)</span>
+            </h5>
+        </div>
 
-
-    <div class="col-md-12" style="margin-bottom:30px">
-        <h5><a class=" split_rent"><i class="menu-icon mdi mdi-plus-circle"></i> Split the Rent Charge </a>
-            <span class="text-muted">(Will be included in Rent Invoices & Payments)</span>
-        </h5>
-    </div>
     @include('admin.CRUD.wizardbuttons')
-
+</div>
 </form>
 <!------------------------------                      --->
 @elseif(($routeParts[1] === 'edit'))
 <form method="POST" action="{{ url($routeParts[0].'/'.$unitcharge->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
-        @method('PUT')    
-        @csrf
+    @method('PUT')
+    @csrf
     <h4 style="text-transform: capitalize;"> Edit Rent Details &nbsp;
         @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
         <a href="" class="editLink">Edit</a>
         @endif
     </h4>
     <hr>
-    
+
     <div class="col-md-5">
         <div class="form-group">
             <label class="label">Rent Cycle<span class="requiredlabel">*</span></label>
@@ -207,8 +226,8 @@
             </div>
         </div>
     </div><br />
-     <!--------- ----------- -->
-     <div class="addfields" style="margin-bottom:30px">
+    <!--------- ----------- -->
+    <div class="addfields" style="margin-bottom:30px">
         @if(!empty($splitRentcharges))
         @foreach ($splitRentcharges as $splitCharge)
         <div class="row dynamicadd">
@@ -221,9 +240,9 @@
                 <div class="form-group">
                     <label class="label">Charge Name<span class=""></span></label>
                     <h5>
-                    <small class="text-muted">
-                        {{ $splitCharge->charge_name}}
-                    </small>
+                        <small class="text-muted">
+                            {{ $splitCharge->charge_name}}
+                        </small>
                     </h5>
                     <input type="text" class="form-control dynamic-field" id="splitcharge_name[]" name="splitcharge_name[]" value="{{ $splitCharge->charge_name ?? '' }}">
                     <div class="invalid-feedback"></div>
@@ -234,10 +253,10 @@
                 <div class="form-group">
                     <label class="label">Account<span class=""></span></label>
                     <h5>
-                    <small class="text-muted">
-                        {{ $splitCharge->chartofaccounts->account_name}}
-                    </small>
-                </h5>
+                        <small class="text-muted">
+                            {{ $splitCharge->chartofaccounts->account_name}}
+                        </small>
+                    </h5>
                     <select name="splitchartofaccounts_id" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
                         <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">{{$splitCharge->chartofaccounts->account_name ?? 'Select Account'}}</option>
                         @foreach($accounts as $accounttype => $account)
@@ -254,10 +273,10 @@
                 <div class="form-group">
                     <label class="label">Charge Type<span class="requiredlabel">*</span></label>
                     <h5>
-                    <small class="text-muted">
-                        {{ $splitCharge['charge_type']}}
-                    </small>
-                </h5>
+                        <small class="text-muted">
+                            {{ $splitCharge['charge_type']}}
+                        </small>
+                    </h5>
                     <select name="splitcharge_type" id="splitcharge_type" class="formcontrol2 dynamic-field" placeholder="Select" required>
                         <option value="{{$splitCharge['charge_type'] ?? ''}}">{{$splitCharge['charge_type'] ?? 'Select Account'}}</option>
                         <option value="fixed"> Fixed Amount</option>
@@ -269,10 +288,10 @@
                 <div class="form-group">
                     <label class="label ratelabel">Amount<span class="requiredlabel">*</span></label>
                     <h5>
-                    <small class="text-muted">
-                        {{ $splitCharge['rate']}}
-                    </small>
-                </h5>
+                        <small class="text-muted">
+                            {{ $splitCharge['rate']}}
+                        </small>
+                    </h5>
                     <input type="text" class="form-control dynamic-field" name="splitrate" value="{{$splitCharge['rate'] ?? ''}}" required>
                 </div>
             </div>
@@ -289,14 +308,33 @@
     </div>
     <hr>
     <div class="col-md-6">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit:Rent Details</button>
-        </div>
+        <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit:Rent Details</button>
+    </div>
 
 
 
 </form>
 
 @endif
+<script>
+    $(document).ready(function() {
+        $(document).ready(function() {
+            $('#rentstatus').change(function() {
+                var selectedValue = $(this).val();
+
+                if (selectedValue === 'Yes') {
+                    $('#rentinfo').show();
+                    $('#rentselect').hide();
+                    $('#skiprent').hide();
+                } else {
+                    $('#rentinfo').hide();
+                    $('#skiprent').show();
+                }
+            });
+        });
+    });
+</script>
+
 <script>
     $(document).ready(function() {
         // Define the container where dynamic fields will be added
@@ -348,7 +386,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="label">Charge Type<span class="requiredlabel">*</span></label>
-                            <select name="splitcharge_type" id="splitcharge_type[]" class="formcontrol2 splitcharge_type dynamic-field" placeholder="Select" required>
+                            <select name="splitcharge_type[]" id="splitcharge_type[]" class="formcontrol2 splitcharge_type dynamic-field" placeholder="Select" required>
                                 <option value="">Select Bill Type</option>
                                 <option value="fixed"> Fixed Amount</option>
                                 <option value="units"> By Units</option>
@@ -425,10 +463,10 @@
             },
             error: function(xhr, status, error) {
                 // Handle the error response here and show it to the user
-                var errorMessage = xhr.responseJSON.message; 
+                var errorMessage = xhr.responseJSON.message;
                 $inputField.addClass('is-invalid');
                 $inputField.siblings('.invalid-feedback').text(errorMessage).show();
-              //  alert(errorMessage); // You can show the error message in an alert or any other way you prefer
+                //  alert(errorMessage); // You can show the error message in an alert or any other way you prefer
             }
         });
     });

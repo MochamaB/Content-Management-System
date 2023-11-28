@@ -74,7 +74,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="label">Currency</label>
+                            <label class="label">Currency <span class="requiredlabel">*</span></label>
                             <input type="text" name="site_currency" id ="site_currency" class="form-control" value="{{ old('site_currency') }}" required/>
                         </div>
                     </div>

@@ -39,28 +39,20 @@ class WebsiteSettingController extends Controller
     {
        // dd($request->file('company_logo'));
         $settingSite = new WebsiteSetting();
-        $settingSite->site_name = $request->input('site_name');
-        $settingSite->company_name = $request->input('company_name');
-        $settingSite->company_telephone = $request->input('company_telephone');
-        $settingSite->company_email = $request->input('company_email');
-        $settingSite->company_location = $request->input('company_location');  
-        $settingSite->company_googlemaps = $request->input('company_googlemaps');
-        $settingSite->company_aboutus = $request->input('company_aboutus');  
-        $settingSite->site_currency = $request->input('site_currency');
-        $settingSite->banner_desc = $request->input('banner_desc');
-        $settingSite->save();
-
+        $settingSite->fill($request->all());
+       
         if($request->file('company_logo')){
-            $settingSite
-            ->addMediaFromRequest('company_logo')
-            ->toMediaCollection('logo');
+            $fieldName = 'company_logo';
+            $mediaCollection = 'logo';
+            $settingSite->UploadNewImage($settingSite, $fieldName, $mediaCollection,$request);
         }
         if($request->file('company_flavicon')){
-            $settingSite
-            ->addMediaFromRequest('company_flavicon')
-            ->toMediaCollection('flavicon');
+            $fieldName = 'company_flavicon';
+            $mediaCollection = 'flavicon';
+            $settingSite->UploadNewImage($settingSite, $fieldName, $mediaCollection,$request);
         }
 
+        $settingSite->save();
         return redirect('websitesetting')->with('status','Site Settings Added Successfully');
 
         

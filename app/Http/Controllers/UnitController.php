@@ -58,7 +58,7 @@ class UnitController extends Controller
     {
         
         $unitdata = $this->model::with('property','lease')->get();
-        $mainfilter =  $this->model::pluck('unit_type')->toArray();
+        $mainfilter =  $this->model::distinct()->pluck('unit_type')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         $tableData = $this->getUnitData($unitdata);

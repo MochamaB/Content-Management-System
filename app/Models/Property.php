@@ -26,7 +26,7 @@ class Property extends Model implements HasMedia
         'property_name' => ['label' => 'Property Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
-        'property_status' => ['label' => 'Property Status', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+       
 
 
         // Add more fields as needed
@@ -37,7 +37,6 @@ class Property extends Model implements HasMedia
         'property_name' => 'required',
         'property_location' => 'required',
         'property_streetname' => 'required',
-        'property_status' => 'required',
 
     ];
 
@@ -64,16 +63,16 @@ class Property extends Model implements HasMedia
                     $data[$category] = $propertytype->pluck('property_type', 'id')->toArray();
                 }
                 return $data;
-            case 'property_status':
-                return  ['Active', 'InActive'];
-                // Add more cases for additional filter fields
-            default:
-                return [];
+          
         }
     }
     /**
      * The amenities that belong to the property.
      */
+    public function propertyType()
+    {
+        return $this->belongsTo(PropertyType::class,'property_type');
+    }
 
     public function amenities()
     {

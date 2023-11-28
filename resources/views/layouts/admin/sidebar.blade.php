@@ -30,15 +30,15 @@
           
             <div class="collapse" id="{{$module}}">
               <ul class="nav flex-column sub-menu">
-                @foreach($moduleData['submodules'] as $submodule)
+                @foreach($moduleData['submodules'] as $submodule => $submoduleDisplay)
                 @if( Auth::user()->can($submodule.'.index') || Auth::user()->id === 1)
-                <li class="nav-item"> <a class="nav-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule) }}">{{ $submodule }}s</a></li>
-                @if($routeParts[0] === $submodule && $routeParts[1] === 'show')
-                <!-- Show link for the show method -->
-                <li class="nav-item"><a  class="nav-link reload-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule.'/'. $urlParts[4]) }}">Show</a></li>
-                @elseif($routeParts[0] === $submodule) <!-- Condition to show the Add Property menu -->
-                <li class="nav-item"><a class="nav-link reload-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule.'/'.$routeParts[1]) }}">{{$routeParts[1]}}</a></li>
-                @endif
+                <li class="nav-item"> 
+                  @if($routeParts[0] === $submodule)
+                    <a class="nav-link" style="text-transform: capitalize;" href="{{ url($currentUrl) }}"> {{ $submoduleDisplay['display'] ?? $submodule }}</a>
+                  @else
+                    <a class="nav-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule) }}"> {{ $submoduleDisplay['display'] ?? $submodule }}</a>
+                  @endif
+                </li>
                 @endif
                 @endforeach
 
@@ -64,4 +64,17 @@ $(document).ready(function() {
         location.reload(); // Reload the current page
     });
 });
+</script>
+<script>
+    $(document).ready(function() {
+        // Find the active tab and scroll to it
+        var activeTab = $('.nav-link.active');
+        
+        if (activeTab.length > 0) {
+            // Animate scrolling to the active tab
+            $('html, body').animate({
+                scrollTop: activeTab.offset().top - 500 // Adjust the offset as needed
+            }, 500); // You can adjust the animation speed (in milliseconds)
+        }
+    });
 </script>

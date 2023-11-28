@@ -13,6 +13,7 @@ use App\Models\Unit;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Spatie\Permission\Models\Permission;
 use App\Scopes\UnitAccessScope;
 use App\Scopes\PropertyAccessScope;
@@ -55,11 +56,13 @@ class AppServiceProvider extends ServiceProvider
             $routeName = Route::currentRouteName();
             $routeParts = explode('.', $routeName);
             $urlParts = explode('/', url()->current());
+            $currentUrl = url()->current();
     
             $view->with([
                 'routeName' => $routeName,
                 'routeParts' => $routeParts,
                 'urlParts' => $urlParts,
+                'currentUrl'=> $currentUrl,
             ]);
         });
 
@@ -116,15 +119,38 @@ class AppServiceProvider extends ServiceProvider
             $userRoles = auth()->user()->roles;
             $userPermissions = $userRoles->map->permissions->flatten();
             $sidebar = collect([
-                'Property' => ['icon' => 'bank', 'submodules' => ['property', 'unit', 'utility']],
-                'Leasing' => ['icon' => 'key','submodules' => ['lease']],
-                'Accounting' => ['icon' => 'cash-usd', 'submodules' => ['chartofaccount']],
+                'Website' => ['icon' => 'web', 'submodules' => [
+                                                        'websitesetting'=> ['display' => 'Site Information'],
+                                                        'slider'=> ['display' => 'Picture Sliders'],
+                                                        'testimonials'=> ['display' => 'Client Testimonials'],
+                                                        'amenity'=> ['display' => 'Property Amenities']
+                                                        ]],
+
+                'Property' => ['icon' => 'bank', 'submodules' => [
+                                                        'property'=> ['display' => 'Property / Company'], 
+                                                        'unit'=> ['display' => 'Units'],
+                                                        'utility'=> ['display' => 'Utilities']]],
+
+                'Leasing' => ['icon' => 'key','submodules' => [
+                                                        'lease'=> ['display' => 'View Leases'],]],
+
+                'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
+                                                        'chartofaccount'=> ['display' => 'Chart Of Accounts'],]],
+
                 'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
+
                 'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
+
                 'Tasks' => ['icon' => 'timetable', 'submodules' => ['',]],
+
                 'Files' => ['icon' => 'file-multiple', 'submodules' => ['',]],
-                'Settings' => ['icon' => 'settings', 'submodules' => ['setting','websitesetting']],
-                'User' => ['icon' => 'account-circle-outline', 'submodules' => ['user', 'role', 'permission']],
+
+                'Settings' => ['icon' => 'settings', 'submodules' => [
+                                                'setting'=> ['display' => 'Application Settings']]],
+                'User' => ['icon' => 'account-circle-outline', 'submodules' => [
+                                                            'user'=> ['display' => 'Manage Users'],
+                                                            'role'=> ['display' => 'User Roles'], 
+                                                            'permission'=> ['display' => 'System Permissions']]],
             ]);
           //  $notifications = $user->notifications;
             // Pass the authenticated user data to the 'layouts.admin' view

@@ -182,6 +182,8 @@
     });
 </script>
 
+<!---- SHOW PDF OR TXT WHEN FILE IS UPLOADED----->
+
 <!-- plugins:js -->
 <script src="{{ asset('resources/styles/admin/vendors/js/vendor.bundle.base.js') }}"></script>
 <!-- endinject -->

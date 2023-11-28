@@ -35,4 +35,8 @@ class PropertyType extends Model
             return [];
     }
     }
+
+    public function property(){
+        return $this->hasMany(Property::class,'property_type');
+    }
 }
