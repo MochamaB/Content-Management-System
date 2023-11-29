@@ -29,7 +29,7 @@ class InvoiceController extends Controller
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['INVOICE DATE', 'TYPE', 'TENANT', 'STATUS', 'AMOUNT DUE', 'AMOUNT PAID'],
+            'headers' => ['TENANT','INVOICE DATE', 'TYPE', 'STATUS', 'AMOUNT DUE', 'AMOUNT PAID','ACTIONS'],
             'rows' => [],
         ];
 
@@ -37,11 +37,14 @@ class InvoiceController extends Controller
             $invoiceStatus = $item->lease ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
             $tableData['rows'][] = [
                 'id' => $item->id,
-                $item->created_at,
-                $item->invoice_type . '' . $item->referenceno,
-                $item->firstname . ' - ' . $item->lastname,
-                $item->firstname,
-                $item->totalamount,
+                $item,
+                $item,
+                $item,
+                $item,
+                $item,
+                $item,
+                $item,
+
             ];
         }
 
@@ -50,16 +53,7 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $unitCharges = Unitcharge::where('recurring_charge', 'yes')
-            // $unitCharges = Unitcharge::where('charge_name', 'rent')
-            //  ->where('nextdate', '<=', now()) // Check nextdate for generating invoices
-            ->get();
-        foreach ($unitCharges as $item) {
-            $items = $item;
-        }
-        $children = $unitCharges->children;
-        //   $parent = $unitCharges->parent;
-        dd($children);
+       
     }
 
     /**
@@ -92,10 +86,7 @@ class InvoiceController extends Controller
             //1. Create invoice items from invoice service app/Services/InvoiceService
             $this->invoiceService->generateInvoice($unitcharge);
 
-            //2. Update the nextdate in the unitcharge based on charge_cycle logic
-           
-
-            //3. Send Email/Notification to the Tenant containing the invoice.
+            //2. Send Email/Notification to the Tenant containing the invoice.
 
 
 
@@ -112,7 +103,7 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
-        //
+        return View('admin.lease.invoice_view',compact('invoice'));
     }
 
     /**

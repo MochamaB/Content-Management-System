@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Events\AssignUserToUnit;
 use App\Http\Controllers\MeterReadingController;
+use App\Services\InvoiceService;
 
 class UnitController extends Controller
 {
@@ -21,14 +22,16 @@ class UnitController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    private $invoiceService;
 
-    public function __construct()
+    public function __construct(InvoiceService $invoiceService)
     {
         $this->model = Unit::class;
         $this->controller = collect([
             '0' => 'unit', // Use a string for the controller name
             '1' => 'New Unit',
         ]);
+        $this->invoiceService = $invoiceService;
     }
 
     public function getUnitData($unitdata)
@@ -131,6 +134,7 @@ class UnitController extends Controller
             'Summary',
             'Users',
             'Charges & Utilities',
+            'Invoices',
             'Meter Readings',
             //    'Maintenance',
             //    'Financials',
@@ -164,6 +168,10 @@ class UnitController extends Controller
         $unitChargeController = new UnitChargeController();
         $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
+        //DATA FOR INVOICES TAB
+        /// DATA FOR INVOICES TAB
+        $invoices = $unit->invoices;
+        $invoiceTableData = $this->invoiceService->getInvoiceData($invoices);
 
 
 
@@ -182,6 +190,8 @@ class UnitController extends Controller
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges & Utilities') {
                 $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges'))->render();
+            }elseif ($title === 'Invoices') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], 
                 compact('id'))->render();

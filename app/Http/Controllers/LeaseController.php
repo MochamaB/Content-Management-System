@@ -23,6 +23,7 @@ use App\Actions\UpdateNextDateAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\RecordTransactionAction;
 use App\Services\PaymentVoucherService;
+use App\Services\InvoiceService;
 
 class LeaseController extends Controller
 {
@@ -37,6 +38,7 @@ class LeaseController extends Controller
     protected $updateNextDateAction;
     private $updateDueDateAction;
     private $paymentVoucherService;
+    private $invoiceService;
     private $recordTransactionAction;
 
 
@@ -45,6 +47,7 @@ class LeaseController extends Controller
         UpdateNextDateAction $updateNextDateAction,
         UpdateDueDateAction $updateDueDateAction,
         PaymentVoucherService $paymentVoucherService,
+        InvoiceService $invoiceService,
         RecordTransactionAction $recordTransactionAction
     ) {
         $this->model = Lease::class;
@@ -57,6 +60,7 @@ class LeaseController extends Controller
         $this->updateNextDateAction = $updateNextDateAction;
         $this->updateDueDateAction = $updateDueDateAction;
         $this->paymentVoucherService = $paymentVoucherService;
+        $this->invoiceService = $invoiceService;
         $this->recordTransactionAction = $recordTransactionAction;
     }
     public function index()
@@ -297,6 +301,11 @@ class LeaseController extends Controller
         $unitChargeController = new UnitChargeController();
         $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
+        /// DATA FOR INVOICES TAB
+        $invoices = $unit->invoices;
+      //  dd($unit->invoices);
+        $invoiceTableData = $this->invoiceService->getInvoiceData($invoices);
+
 
 
         $meterReadings = $unit->meterReadings;
@@ -307,6 +316,7 @@ class LeaseController extends Controller
         $tabTitles = collect([
             'Summary',
             'Charges and Utilities',
+            'Invoices',
             'Deposits and Payments',
             'Meter Readings',
             'Maintenance Tasks',
@@ -318,6 +328,8 @@ class LeaseController extends Controller
                 $tabContents[] = View('wizard.lease.leasedetails', compact('properties', 'lease'))->render();
             } elseif ($title === 'Charges and Utilities') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']])->render();
+            } elseif ($title === 'Invoices') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
             } elseif ($title === 'Deposits and Payments') {
                 $tabContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Meter Readings') {
@@ -582,8 +594,12 @@ class LeaseController extends Controller
             ->with('status', 'Deposit Assigned Successfully. Enter Utility Details');
     }
 
-    public function skiprent()
+    public function skiprent(Request $request)
     {
+        /// FORGET THE RENT CHARGE SESSION IF THIS IS SKIPPED
+        $request->session()->forget('rentcharge');
+        $request->session()->forget('splitRentcharges');
+        $request->session()->forget('depositcharge');
         return redirect()->route('lease.create', ['active_tab' => '4'])
             ->with('status', 'Rent details skipped. Add Utilities');
     }

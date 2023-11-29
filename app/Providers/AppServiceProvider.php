@@ -132,7 +132,7 @@ class AppServiceProvider extends ServiceProvider
                                                         'utility'=> ['display' => 'Utilities']]],
 
                 'Leasing' => ['icon' => 'key','submodules' => [
-                                                        'lease'=> ['display' => 'View Leases'],]],
+                                                        'lease'=> ['display' => 'Leases'],]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
                                                         'chartofaccount'=> ['display' => 'Chart Of Accounts'],]],
@@ -168,6 +168,15 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('email.emailtemplate', function($view) {
             $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
+        });
+        view()->composer('admin.lease.invoice_view', function ($view) {
+            // Get the authenticated user, assuming you are using the default 'auth' guard
+            $user = auth()->user();
+            $sitesettings = WebsiteSetting::first();
+            // Pass the authenticated user data to the 'layouts.admin' view
+            $view->with([
+                'user' => $user
+                ,'sitesettings' => $sitesettings]);
         });
     }
 }

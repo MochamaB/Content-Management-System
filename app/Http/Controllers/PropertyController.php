@@ -10,6 +10,7 @@ use App\Models\Amenity;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UnitController;
+use App\Services\TableViewDataService;
 
 class PropertyController extends Controller
 {
@@ -21,8 +22,9 @@ class PropertyController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    private $tableViewDataService;
 
-    public function __construct()
+    public function __construct(TableViewDataService $tableViewDataService)
     {
         $this->model = Property::class;
 
@@ -30,6 +32,7 @@ class PropertyController extends Controller
             '0' => 'property', // Use a string for the controller name
             '1' => 'Property',
         ]);
+        $this->tableViewDataService = $tableViewDataService;
     }
 
 
@@ -140,9 +143,10 @@ class PropertyController extends Controller
         $allamenities = Amenity::all();
         //2. UNITS
         $units = $property->units;
-        $unitController = new UnitController();
-        $unitTableData = $unitController->getUnitData($units);
-        $mainfilter = $unitController->index()->getData()['mainfilter'];
+     //   $unitController = new UnitController();
+        $unitTableData = $this->tableViewDataService->getUnitData($units);
+     //   $unitTableData = $unitController->getUnitData($units);
+      //  $mainfilter = $unitController->index()->getData()['mainfilter'];
         //3.UTILITIES
         $utilities = $property->utilities;
         $utilityController = new UtilityController();

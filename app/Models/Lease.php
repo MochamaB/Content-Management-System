@@ -88,6 +88,7 @@ class Lease extends Model implements HasMedia
     {
         return $this->belongsTo(Property::class);
     }
+
     public function unit()
     {
         return $this->belongsTo(Unit::class);
@@ -101,6 +102,16 @@ class Lease extends Model implements HasMedia
     public function settings()
     {
         return $this->morphMany(Setting::class, 'settingable');
+    }
+
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class, 'unit_id');
+    }
+    
+    public function paymentvoucher()
+    {
+        return $this->hasMany(Paymentvoucher::class, 'unit_id');
     }
 
     public function scopeUserUnits($query)

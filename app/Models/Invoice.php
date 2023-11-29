@@ -12,7 +12,8 @@ class Invoice extends Model
     protected $fillable = [
         'property_id',
         'unit_id',
-        'user_id',
+        'model_type',
+        'model_id',
         'referenceno',
         'invoice_type',
         'totalamount',
@@ -20,6 +21,24 @@ class Invoice extends Model
         'duedate',
 
     ];
+
+      ////// POLYmorphism relationship
+      public function model()
+      {
+        return $this->morphTo('model_type');
+      }
+  
+
+    public function units()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
+    public function lease()
+    {
+        return $this->belongsTo(Lease::class, 'unit_id');
+    }
+  
 
     public function invoiceItems()
     {

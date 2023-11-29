@@ -38,6 +38,50 @@ class InvoiceService
         $this->recordTransactionAction = $recordTransactionAction;
        
     }
+    /////METHOD TO POPULATE INVOICE TABLE
+
+    public function getInvoiceData($invoicedata)
+    {
+         // Eager load the 'unit' relationship
+      //   $invoicedata->load('user');
+
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['REFERENCE NO','INVOICE DATE','TYPE','AMOUNT DUE', 'AMOUNT PAID','ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($invoicedata as $item) {
+            $statusClasses = [
+                'paid' => 'badge-active',
+                'unpaid' => 'badge-warning',
+                'Over Due' => 'badge-danger',
+                'partially_paid' => 'badge-secondary',
+            ];
+            //// GET INVOICE STATUS. IF STATUS UNPAID AND DUEDATE
+            $today = Carbon::now();
+            if ($item->duedate > $today) {
+                $status = $item->status;
+            } else {
+                $status = 'Over Due';
+            }
+            $statusClass = $statusClasses[$status] ?? 'badge-secondary';
+            $invoiceStatus = '<span class="badge ' . $statusClass . '">' . $status . '</span>';
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $invoiceStatus.'</br></br> INV- '.$item->referenceno,
+                '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>'.
+                Carbon::parse($item->created_at)->format('Y-m-d').' - '.Carbon::parse($item->duedate)->format('Y-m-d'),
+                $item->invoice_type,
+                $item->totalamount,
+                $item->payment,
+               
+
+            ];
+        }
+
+        return $tableData;
+    }
 
     public function generateInvoice(Unitcharge $unitcharge)
     {
@@ -107,9 +151,9 @@ class InvoiceService
         return [
             'property_id' => $unitcharge->property_id,
             'unit_id' => $unitcharge->unit_id,
-            'model_type'=>'user',
+            'model_type'=>'User', ///This has plymorphism because an invoice can also be sent to a vendor.
             'model_id' => $user->user_id,
-            'referenceno' => $invoicenodate . $unitnumber->unit_number,
+            'referenceno' => $invoicenodate .$unitnumber->unit_number,
             'invoice_type' => $unitcharge->charge_name,
             'totalamount' => null,
             'status' => 'unpaid',
