@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Invoice;
 use App\Models\Unitcharge;
 use App\Models\Unit;
+use App\Models\User;
 use App\Models\Lease;
 use App\Models\MeterReading;
 use App\Models\InvoiceItems;
@@ -146,13 +147,14 @@ class InvoiceService
         $today = Carbon::now();
         $invoicenodate = $today->format('ym');
         $unitnumber = Unit::where('id', $unitcharge->unit_id)->first();
-        $user = Lease::where('unit_id', $unitcharge->unit_id)->first();
+        $userId = Lease::where('unit_id', $unitcharge->unit_id)->first();
+        $user = User::class;
 
         return [
             'property_id' => $unitcharge->property_id,
             'unit_id' => $unitcharge->unit_id,
-            'model_type'=>'User', ///This has plymorphism because an invoice can also be sent to a vendor.
-            'model_id' => $user->user_id,
+            'model_type'=>$user, ///This has plymorphism because an invoice can also be sent to a vendor.
+            'model_id' => $userId->user_id,
             'referenceno' => $invoicenodate .$unitnumber->unit_number,
             'invoice_type' => $unitcharge->charge_name,
             'totalamount' => null,

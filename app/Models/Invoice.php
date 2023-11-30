@@ -25,13 +25,22 @@ class Invoice extends Model
       ////// POLYmorphism relationship
       public function model()
       {
-        return $this->morphTo('model_type');
+        return $this->morphTo();
       }
-  
 
-    public function units()
+      public function property()
+      {
+          return $this->belongsTo(Property::class,'property_id');
+      }
+
+    public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'model_id')->where('model_type', User::class);
     }
 
     public function lease()

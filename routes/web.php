@@ -47,10 +47,6 @@ Route::get('/', [ App\Http\Controllers\client\HomeController::class, 'index']);
 
 
 
-
-
-
-
 Route::group(['middleware' => ['auth','permission']], function () {
 
     Route::group(['groupName' => 'Website'], function () {
@@ -152,6 +148,9 @@ Route::post('api/fetch-leaserent', [LeaseController::class, 'fetchleaserent']);
 Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
 Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
+
+///generate PDF
+Route::get('/invoice/{invoice}/pdf', [InvoiceController::class, 'createPDF']);
 
 //////View Your email notification
 

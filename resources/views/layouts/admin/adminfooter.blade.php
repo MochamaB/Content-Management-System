@@ -38,7 +38,7 @@
         });
     });
 </script>
-@if(($routeParts[1] === 'edit'))
+@if((count($routeParts) > 1) && ($routeParts[1] === 'edit'))
 
 <script>
     $(document).ready(function() {

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Unitcharge;
+use App\Models\Unit;
 use App\Services\InvoiceService;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+
 
 
 class InvoiceController extends Controller
@@ -25,31 +28,7 @@ class InvoiceController extends Controller
        
     }
 
-    public function getInvoiceData($invoicedata)
-    {
-        /// TABLE DATA ///////////////////////////
-        $tableData = [
-            'headers' => ['TENANT','INVOICE DATE', 'TYPE', 'STATUS', 'AMOUNT DUE', 'AMOUNT PAID','ACTIONS'],
-            'rows' => [],
-        ];
 
-        foreach ($invoicedata as $item) {
-            $invoiceStatus = $item->lease ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
-            $tableData['rows'][] = [
-                'id' => $item->id,
-                $item,
-                $item,
-                $item,
-                $item,
-                $item,
-                $item,
-                $item,
-
-            ];
-        }
-
-        return $tableData;
-    }
 
     public function index()
     {
@@ -74,6 +53,7 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
+
     }
     public function generateInvoice(Request $request)
     {
@@ -103,8 +83,21 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
-        return View('admin.lease.invoice_view',compact('invoice'));
+       
+      //  dd($invoice->InvoiceItems);
+        return View('admin.lease.document_view',compact('invoice'));
     }
+
+    public function createPDF(Invoice $invoice) 
+    {
+      //  $invoice->load('property');
+    //    dd($invoice);
+  //  return View('email.invoice',compact('invoice'));
+      $pdf = PDF::loadView('email.invoice', compact('invoice'));
+      return $pdf->download('invoice1.pdf');
+   //   return $pdf->stream('invoice.pdf');
+       
+      }
 
     /**
      * Show the form for editing the specified resource.

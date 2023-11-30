@@ -51,18 +51,20 @@ class AppServiceProvider extends ServiceProvider
     //   User::addGlobalScope(new UnitAccessScope);
 
 
+    
         /////////// GLOBAL VIEW COMPOSERS
         view()->composer('*', function ($view) {
             $routeName = Route::currentRouteName();
             $routeParts = explode('.', $routeName);
             $urlParts = explode('/', url()->current());
             $currentUrl = url()->current();
-    
+            $sitesettings = WebsiteSetting::first();
             $view->with([
                 'routeName' => $routeName,
                 'routeParts' => $routeParts,
                 'urlParts' => $urlParts,
                 'currentUrl'=> $currentUrl,
+                'sitesettings'=> $sitesettings,
             ]);
         });
 
@@ -169,7 +171,7 @@ class AppServiceProvider extends ServiceProvider
             $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
-        view()->composer('admin.lease.invoice_view', function ($view) {
+        view()->composer('admin.lease.document_view', function ($view) {
             // Get the authenticated user, assuming you are using the default 'auth' guard
             $user = auth()->user();
             $sitesettings = WebsiteSetting::first();

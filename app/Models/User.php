@@ -220,4 +220,8 @@ class User extends Authenticatable
 
         return $filteredUsers;
     }
+    public function invoices()
+    {
+        return $this->morphMany(Invoice::class, 'model');
+    }
 }

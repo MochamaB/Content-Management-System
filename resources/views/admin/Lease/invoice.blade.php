@@ -1,6 +1,11 @@
 @extends('layouts.admin.admin')
 
 @section('content')
+@if(($routeParts[1] === 'create'))
+
+    @include('admin.CRUD.formwizard')
+
+@else
 
 <div class=" contwrapper">
 
@@ -13,7 +18,7 @@
 
 </div>
 
-       
+ @endif      
   
 
 

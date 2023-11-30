@@ -94,6 +94,12 @@ class Property extends Model implements HasMedia
         return $this->morphMany(Setting::class, 'settingable');
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+
     /// scope showing properties with units
     public function scopeWithUnitUser($query)
     {
