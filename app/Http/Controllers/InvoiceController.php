@@ -9,7 +9,7 @@ use App\Services\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
+use App\Notifications\InvoiceGeneratedNotification;
 
 
 class InvoiceController extends Controller
@@ -93,10 +93,19 @@ class InvoiceController extends Controller
       //  $invoice->load('property');
     //    dd($invoice);
   //  return View('email.invoice',compact('invoice'));
-      $pdf = PDF::loadView('email.invoice', compact('invoice'));
-      return $pdf->download('invoice1.pdf');
+   //   $pdf = PDF::loadView('email.invoice', compact('invoice'));
+    //  return $pdf->download('invoice12.pdf');
    //   return $pdf->stream('invoice.pdf');
+
+        $tenant = $invoice->model;
+        $tenant->notify(new InvoiceGeneratedNotification($invoice));
+        return redirect()->back()->with('status', 'Sucess Invoice generated.');
        
+      }
+
+      public function sendInvoice()
+      {
+
       }
 
     /**

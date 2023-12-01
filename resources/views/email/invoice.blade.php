@@ -1,79 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>{{$sitesettings->site_name ?? 'SITE NAME'}} </title>
-  <!-- plugins:css -->
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/feather/feather.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/mdi/css/materialdesignicons.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/ti-icons/css/themify-icons.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/typicons/typicons.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/simple-line-icons/css/simple-line-icons.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/css/vendor.bundle.base.css') }}">
-
+ 
   <!--- Plugins for bootstrap table--------->
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
-  <script src="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/style.css') }}">
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/mystyle.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/wizard.css') }}">
+
   <!-- endinject -->
-  <style>
-    #loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
- 
-
-    /* Safari */
-    @-webkit-keyframes spin {
-      0% {
-        -webkit-transform: rotate(0deg);
-      }
-
-      100% {
-        -webkit-transform: rotate(360deg);
-      }
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
 </head>
-<div class="row">
-    <div class="col-md-9">
-        <div class=" contwrapper">
-           
-            <hr>
-
-            <div class="col-md-12" style="text-align:center;">
-                <h6>Terms & Condition</h6>
-                <p>Refer to the terms and conditions on Lease agreement.</p>
-                <p><a href="www.bridgetech.co.ke">POWERED BY BRIDGE PROPERTIES</a></p>
-            </div>
-
-        </div>
-    </div>
-    
-
-</div>
+<body>
+<table class="table table-bordered">
+                <tbody>
+                    <!--- FIRST SECTION  HEADER------->
+                    <tr style="height:45px;">
+                        <td>
+                            @if ($sitesettings)
+                            <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 140px; width: 180px;">
+                            @else
+                            <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
+                            @endif
+                        </td>
+                        <td class="text-right">
+                            <ul class="ml-0 px-3 list-unstyled">
+                                <li><b>COMPANY: </b>{{$sitesettings->company_name }}</li>
+                                <li><b>LOCATION: </b>{{ $sitesettings->company_location}}</li>
+                                <li><b>EMAIL: </b>{{ $sitesettings->company_email }}</li>
+                                <li><b>TEL: </b>{{ $sitesettings->company_telephone }}</li>
+                            </ul>
+                        </td>
+                        <td class="text-left">
+                            <ul class="ml-4 px-3 list-unstyled">
+                                <li>
+                                    <h3 style="text-transform: uppercase;"> {{$invoice->invoice_type}} INVOICE</h3>
+                                </li>
+                                <li><b>INV#: {{$invoice->id}}-{{$invoice->referenceno}}</b></li>
+                                <li style="color:red; font-weight:700;font-size:14px">TOTAL DUE</li>
+                                <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} {{$invoice->totalamount}}</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <!------ SECOND SECTION DETAILS -->
+                    <tr>
+                        <td>
+                            <h4="text-muted"><b>BILL TO</b></h4>
+                                <ul class="ml-2 px-3 list-unstyled">
+                                    <li><b>PROPERTY:</b> {{$invoice->property->property_name}}</li>
+                                    <li><b>UNIT NUMBER:</b> {{$invoice->unit->unit_number}}</li>
+                                    <li><b>NAME:</b> {{$invoice->model->firstname}} {{$invoice->model->lastname}}</li>
+                                    <li><b>EMAIL:</b> {{$invoice->model->email}}</li>
+                                    <li><b>PHONE NO:</b> {{$invoice->model->phonenumber}}</li>
+                                </ul>
+                        </td>
+                        <td></td>
+                        <td class="text-right">
+                            <ul class="ml-2 px-3 list-unstyled">
+                                <li><b>INVOICE DATE:</b> {{\Carbon\Carbon::parse($invoice->created_at)->format('d M Y')}}</li>
+                                <li><b>DUE DATE:</b> {{\Carbon\Carbon::parse($invoice->duedate)->format('d M Y')}}</li>
+                                <li></br></li>
+                                    @if( $invoice->status == 'paid' )
+                                    <div style="background-color:green;font-size:17px" class="badge badge-opacity-warning"> PAID</div> <!------Status -->
+                                    @elseif( $invoice->status == 'overpaid' )
+                                    <div style="background-color:darkorange;font-size:17px" class="badge badge-opacity-warning"> OVER PAID</div>
+                                    @elseif ( $invoice->status == 'partiallypaid' )
+                                    <div style="background-color:blue;font-size:17px;font-weight:800" class="badge badge-opacity-sucess"> PARTIALLY PAID</div>
+                                    @elseif ( $invoice->status == 'unpaid' )
+                                    <div style="background-color:red;font-size:17px;font-weight:800" class="badge badge-opacity-warning;font-size:17px">UN-PAID </div>
+                                    @endif
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+</body>
