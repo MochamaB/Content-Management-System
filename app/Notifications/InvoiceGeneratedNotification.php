@@ -7,20 +7,24 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use App\Services\TableViewDataService;
+use Carbon\Carbon;
 
 class InvoiceGeneratedNotification extends Notification
 {
     use Queueable;
     protected $invoice;
+    protected $user;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($invoice)
+    public function __construct($invoice,$user)
     {
         $this->invoice = $invoice;
+        $this->user = $user;
     }
 
     /**
@@ -42,12 +46,28 @@ class InvoiceGeneratedNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $pdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
+        $invoicepdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
+       // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
+        // Create a filename using invoice values
+        $referenceno = $this->invoice->id."-".$this->invoice->referenceno;
+        $invoicefilename = $this->invoice->invoice_type.' - '.$referenceno.' '.$this->invoice->unit->unit_number.' invoice.pdf';
+        $duedate = Carbon::parse($this->invoice->duedate)->format('Y-m-d');
+
+        $heading = 'New '.$this->invoice->invoice_type.' Invoice';
+        $linkmessage = 'To view all your invoices. Login here';
+        $data = ([
+            "line 1" => "Please find attached Invoice Ref Number  ".$referenceno,
+            "line 2" => $this->invoice->invoice_type." Charge due on ".$duedate,
+            "line 3" => "Login to the portal to get your account statement",
+            "action" => "invoice/".$this->invoice->id,
+            "line 4" => "",
+        ]);
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!')
-                    ->attachData($pdf->output(), "invoice.pdf");
+            ->view(
+                'email.template',
+                ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading])
+                    ->subject($this->invoice->invoice_type.' Invoice')
+                    ->attachData($invoicepdf->output(), $invoicefilename);
     }
 
     /**
@@ -59,7 +79,10 @@ class InvoiceGeneratedNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'user_id' => $this->user->id,
+            'phonenumber' => $this->user->phonenumber,
+            'user_email' => $this->user->email,
+            
         ];
     }
 }

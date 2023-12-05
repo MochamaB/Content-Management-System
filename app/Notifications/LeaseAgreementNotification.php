@@ -57,7 +57,7 @@ class LeaseAgreementNotification extends Notification
             ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading]
         );
 
-    }
+    } 
 
     /**
      * Get the array representation of the notification.

@@ -17,7 +17,7 @@ class CreateTransactionsTable extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->index();
-            $table->string('charge_name'); ///charge Name,
+            $table->string('charge_id'); ///charge Id,
             $table->unsignedBigInteger('transactionable_id');   ////id value of the model
             $table->string('transactionable_type'); ///Name of the Model, Invoice,Voucher, Fees,
             $table->string('description');

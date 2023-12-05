@@ -43,6 +43,7 @@ class RecordTransactionAction
 
     public function invoiceCharges(Invoice $invoice)
     {
+        $className = get_class($invoice);
         $invoiceitems = InvoiceItems::where('invoice_id', $invoice->id)->get();
 
         foreach ($invoiceitems as $item) {
@@ -51,8 +52,8 @@ class RecordTransactionAction
                 'property_id' => $invoice->property_id,
                 'unit_id' => $invoice->unit_id,
                 'charge_name' => $item->charge_name,
-                'transactionable_id' => $item->unitcharge_id,
-                'transactionable_type' => 'Unitcharges', ///Model Name Unitcharge
+                'transactionable_id' => $invoice->id,
+                'transactionable_type' =>$className, ///Model Name Invoice
                 'description' => $description->account_name, ///Description of the charge
                 'debitaccount_id' => 2,///Accounts Payable
                 'creditaccount_id' => $item->chartofaccount_id,

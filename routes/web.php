@@ -26,10 +26,14 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PaymentVoucherController;
+
+////Test Email View////////////
 use App\Models\MeterReading;
 use App\Models\User;
+use App\Models\Invoice;
 use App\Notifications\LeaseAgreementNotification;
 use App\Notifications\UserCreatedNotification;
+use App\Notifications\InvoiceGeneratedNotification;
 
 /*
 |--------------------------------------------------------------------------
@@ -149,15 +153,18 @@ Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
 Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
 
-///generate PDF
-Route::get('/invoice/{invoice}/pdf', [InvoiceController::class, 'createPDF']);
+///Send Email
+Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoice']);
 
 //////View Your email notification
 
 Route::get('/notification', function () {
     $user = User::find(1);
+    $tenant = User::find(1);
+    $invoice = Invoice::find(1);
+    
  
-    return (new LeaseAgreementNotification($user))
+    return (new InvoiceGeneratedNotification($invoice,$tenant))
                 ->toMail($user->user);
 });
 

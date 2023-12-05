@@ -12,7 +12,7 @@ class Transaction extends Model
     protected $fillable = [
         'property_id',
         'unit_id',
-        'charge_name',
+        'charge_id',
         'transactionable_id',
         'transactionable_type',
         'description',

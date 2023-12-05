@@ -6,7 +6,11 @@
             </div>
             <div class="col-md-2">
                 <!---1.  LOGO OF THE COMPANY --->
-                <img src="{{ url('resources/uploads/images/'. ($sitesettings->company_logo ?? 'noimage.jpg')) }}" style="height: 120px; width: 200px; padding-bottom:20px ">
+                @if ($sitesettings)
+                              <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 140px; width: 180px;">
+                              @else
+                              <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
+                              @endif
             </div>
             <div class="col-md-5">
             </div>

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Events\AssignUserToUnit;
 use App\Http\Controllers\MeterReadingController;
 use App\Services\InvoiceService;
+use App\Services\TableViewDataService;
 
 class UnitController extends Controller
 {
@@ -23,8 +24,9 @@ class UnitController extends Controller
     protected $controller;
     protected $model;
     private $invoiceService;
+    private $tableViewDataService;
 
-    public function __construct(InvoiceService $invoiceService)
+    public function __construct(InvoiceService $invoiceService,TableViewDataService $tableViewDataService)
     {
         $this->model = Unit::class;
         $this->controller = collect([
@@ -32,6 +34,7 @@ class UnitController extends Controller
             '1' => 'New Unit',
         ]);
         $this->invoiceService = $invoiceService;
+        $this->tableViewDataService = $tableViewDataService;
     }
 
     public function getUnitData($unitdata)
@@ -171,8 +174,7 @@ class UnitController extends Controller
         //DATA FOR INVOICES TAB
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
-        $invoiceTableData = $this->invoiceService->getInvoiceData($invoices);
-
+        $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
 
 
         $meterReadings = $unit->meterReadings;

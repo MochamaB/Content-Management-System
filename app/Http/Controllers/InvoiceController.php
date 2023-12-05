@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Unitcharge;
 use App\Models\Unit;
+use App\Models\Transaction;
 use App\Services\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
@@ -20,19 +21,17 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     private $invoiceService;
-   
+
 
     public function __construct(InvoiceService $invoiceService)
     {
         $this->invoiceService = $invoiceService;
-       
     }
 
 
 
     public function index()
     {
-       
     }
 
     /**
@@ -53,7 +52,6 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-
     }
     public function generateInvoice(Request $request)
     {
@@ -83,30 +81,79 @@ class InvoiceController extends Controller
      */
     public function show(Invoice $invoice)
     {
-       
-      //  dd($invoice->InvoiceItems);
-        return View('admin.lease.document_view',compact('invoice'));
+        $pageheadings = collect([
+            '0' => $invoice->unit->unit_number,
+            '1' => $invoice->unit->property->property_name,
+            '2' => $invoice->unit->property->property_streetname,
+        ]);
+        $tabTitles = collect([
+            'Overview',
+            'Statement',
+        ]);
+
+        /// Data for the Account Statement
+        $sixMonths = now()->subMonths(6);
+        $transactions = Transaction::where('created_at', '>=', $sixMonths)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('charge_name', $invoice->invoice_type)
+            ->get();
+
+        ////Opening Balance
+        $openingBalance = $this->calculateOpeningBalance($invoice);
+
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
+            if ($title === 'Overview') {
+                $tabContents[] = View('admin.lease.invoice_view', compact('invoice'))->render();
+            } elseif ($title === 'Statement') {
+                $tabContents[] = View('admin.lease.statement_view', compact('invoice', 'transactions','openingBalance'))->render();
+            }
+        }
+
+       // dd($openingBalance);
+        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
-    public function createPDF(Invoice $invoice) 
+    public function calculateOpeningBalance(Invoice $invoice)
     {
-      //  $invoice->load('property');
-    //    dd($invoice);
-  //  return View('email.invoice',compact('invoice'));
-   //   $pdf = PDF::loadView('email.invoice', compact('invoice'));
-    //  return $pdf->download('invoice12.pdf');
-   //   return $pdf->stream('invoice.pdf');
+        // Get the date 6 months ago from today
+        $sixMonthsAgo = now()->subMonths(6);
 
-        $tenant = $invoice->model;
-        $tenant->notify(new InvoiceGeneratedNotification($invoice));
+        // Calculate the sum of invoice amounts
+        $invoiceAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('charge_name', $invoice->invoice_type)
+            ->where('transactionable_type', 'App\Models\Invoice')
+            ->sum('amount');
+
+        // Calculate the sum of payment amounts
+        $paymentAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('charge_name', $invoice->invoice_type)
+            ->where('transactionable_type', 'App\Models\Payment')
+            ->sum('amount');
+
+        // Calculate the opening balance
+        $openingBalance = $invoiceAmount - $paymentAmount;
+
+        return $openingBalance;
+    }
+    
+
+    public function sendInvoice(Invoice $invoice)
+    {
+        //  $invoice->load('property');
+        //    dd($invoice);
+        //  return View('email.invoice',compact('invoice'));
+        //   $pdf = PDF::loadView('email.invoice', compact('invoice'));
+        //  return $pdf->download('invoice12.pdf');
+        //   return $pdf->stream('invoice.pdf');
+
+        $user = $invoice->model;
+        $user->notify(new InvoiceGeneratedNotification($invoice,$user));
         return redirect()->back()->with('status', 'Sucess Invoice generated.');
-       
-      }
+    }
 
-      public function sendInvoice()
-      {
-
-      }
 
     /**
      * Show the form for editing the specified resource.

@@ -23,4 +23,12 @@ class InvoiceItems extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
+    public function unitcharge ()
+    {
+        return $this->belongsTo(Unitcharge::class);
+    }
+    public function meterReadings()
+{
+    return $this->hasMany('App\Models\MeterReading', 'unitcharge_id', 'unitcharge_id');
+}
 }

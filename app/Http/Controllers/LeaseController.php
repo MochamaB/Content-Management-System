@@ -24,6 +24,7 @@ use App\Actions\UpdateDueDateAction;
 use App\Actions\RecordTransactionAction;
 use App\Services\PaymentVoucherService;
 use App\Services\InvoiceService;
+use App\Services\TableViewDataService;
 
 class LeaseController extends Controller
 {
@@ -40,6 +41,7 @@ class LeaseController extends Controller
     private $paymentVoucherService;
     private $invoiceService;
     private $recordTransactionAction;
+    private $tableViewDataService;
 
 
 
@@ -48,7 +50,8 @@ class LeaseController extends Controller
         UpdateDueDateAction $updateDueDateAction,
         PaymentVoucherService $paymentVoucherService,
         InvoiceService $invoiceService,
-        RecordTransactionAction $recordTransactionAction
+        RecordTransactionAction $recordTransactionAction,
+        TableViewDataService $tableViewDataService
     ) {
         $this->model = Lease::class;
 
@@ -62,6 +65,7 @@ class LeaseController extends Controller
         $this->paymentVoucherService = $paymentVoucherService;
         $this->invoiceService = $invoiceService;
         $this->recordTransactionAction = $recordTransactionAction;
+        $this->tableViewDataService = $tableViewDataService;
     }
     public function index()
     {
@@ -304,7 +308,7 @@ class LeaseController extends Controller
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
       //  dd($unit->invoices);
-        $invoiceTableData = $this->invoiceService->getInvoiceData($invoices);
+        $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
 
 
 
