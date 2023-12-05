@@ -183,7 +183,7 @@ class LeaseController extends Controller
         $request->validate([
             'leaseagreement' => 'required|mimes:csv,txt,pdf|max:2048',
         ]);
-
+        
         ///1. SAVE LEASE DETAILS
         $leasedetails = $request->session()->get('lease');
         if (!empty($leasedetails)) {

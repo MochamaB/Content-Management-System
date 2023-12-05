@@ -37,7 +37,7 @@ class PaymentVoucherService
                 //1. Create Payment Voucher Header Data
                 $paymentVoucher = $this->createPaymentVoucher($paymentVoucherData);
 
-                //2. Create invoice items
+                //2. Create PaymentVoucher items
                  $this->createPaymentVoucherItems($paymentVoucher, $model);
 
                 //3. Update Total Amount in PaymentVoucher Header

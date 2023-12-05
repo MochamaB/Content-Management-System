@@ -23,16 +23,16 @@ class RecordTransactionAction
         //     Credit: Security Deposit Liability (Liability)
 
         $paymentvoucheritems = PaymentVoucherItems::where('paymentvoucher_id', $model->id)->get();
-        $modelname = class_basename($model);
+        $className = get_class($model);
 
         foreach ($paymentvoucheritems as $item) {
             $description = Chartofaccount::where('id', $item->chartofaccount_id)->first();
             Transaction::create([
                 'property_id' => $model->property_id,
                 'unit_id' => $model->unit_id,
-                'charge_name' => $model->voucher_type,
+                'charge_name' => $item->charge_name,
                 'transactionable_id' => $model->id,
-                'transactionable_type' => $modelname, ///Model Name Unitcharge
+                'transactionable_type' => $className, ///Model Name Unitcharge
                 'description' => $description->account_name, ///Description of the charge
                 'debitaccount_id' => 1, ////Bank Account
                 'creditaccount_id' => $item->chartofaccount_id,
