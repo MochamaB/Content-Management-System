@@ -16,7 +16,8 @@
         "lorisleiva/laravel-actions": "^2.5",
         "nesbot/carbon": "^2.70",
         "spatie/laravel-medialibrary": "10.2.*",
-        "spatie/laravel-permission": "^5.10"
+        "spatie/laravel-permission": "^5.10",
+        "spatie/laravel-schedule-monitor": "^3.4"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.7",

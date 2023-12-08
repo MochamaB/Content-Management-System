@@ -10,9 +10,9 @@ class Unitcharge extends Model
     use HasFactory;
     protected $table = 'unitcharges';
     protected $fillable = [
-        'property_id', 
-        'unit_id', 
-        'chartofaccounts_id', 
+        'property_id',
+        'unit_id',
+        'chartofaccounts_id',
         'charge_name',
         'charge_cycle',
         'charge_type',
@@ -20,25 +20,25 @@ class Unitcharge extends Model
         'parent_id',
         'recurring_charge',
         'startdate',
-        'nextdate',     
-            
+        'nextdate',
+
     ];
     public static $fields = [
-        'property_id' => ['label' => 'Unit Number', 'inputType' => 'select','required' =>true,'readonly' => true],
-        'unit_id' => ['label' => 'Unit Property', 'inputType' => 'select','required' =>true, 'readonly' => ''],
-        'chartofaccounts_id' => ['label' => 'Slug', 'inputType' => 'text', 'required' =>false,'readonly' => ''],
-        'charge_name' => ['label' => 'Description', 'inputType' => 'text', 'required' =>false,'readonly' => ''],
-      
+        'property_id' => ['label' => 'Unit Number', 'inputType' => 'select', 'required' => true, 'readonly' => true],
+        'unit_id' => ['label' => 'Unit Property', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'chartofaccounts_id' => ['label' => 'Slug', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
+        'charge_name' => ['label' => 'Description', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
+
         // Add more fields as needed
     ];
 
     public static function getFieldData($field)
     {
-    switch ($field) {
-        case 'unit_id':
-            // Retrieve the supervised units' properties
-    
-          //  return Property::pluck('property_name','id')->toArray();
+        switch ($field) {
+            case 'unit_id':
+                // Retrieve the supervised units' properties
+
+                //  return Property::pluck('property_name','id')->toArray();
             case 'unit_property':
                 return [
                     'mainphoto' => 'Main Photo',
@@ -46,10 +46,10 @@ class Unitcharge extends Model
                     'video' => 'Video',
                     'feature', 'Feature'
                 ];
-        // Add more cases for additional filter fields
-        default:
-            return [];
-    }
+                // Add more cases for additional filter fields
+            default:
+                return [];
+        }
     }
     public function property()
     {
@@ -64,11 +64,15 @@ class Unitcharge extends Model
         return $this->belongsTo(Chartofaccount::class);
     }
 
-      // Accessor to get the chartofaccounts name
-      public function getChartOfAccountsNameAttribute()
-      {
-          return $this->chartofaccounts->account_name;
-      }
+    public function lease()
+    {
+        return $this->belongsTo(Lease::class, 'unit_id');
+    }
+    // Accessor to get the chartofaccounts name
+    public function getChartOfAccountsNameAttribute()
+    {
+        return $this->chartofaccounts->account_name;
+    }
 
     public function parent()
     {
@@ -79,6 +83,4 @@ class Unitcharge extends Model
     {
         return $this->hasMany(Unitcharge::class, 'parent_id');
     }
-
-    
 }

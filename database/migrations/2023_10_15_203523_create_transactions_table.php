@@ -17,7 +17,8 @@ class CreateTransactionsTable extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->index();
-            $table->string('charge_id'); ///charge Id,
+            $table->unsignedBigInteger('unitcharge_id')->index(); ///unitcharge_id,
+            $table->string('charge_name');
             $table->unsignedBigInteger('transactionable_id');   ////id value of the model
             $table->string('transactionable_type'); ///Name of the Model, Invoice,Voucher, Fees,
             $table->string('description');
@@ -27,6 +28,7 @@ class CreateTransactionsTable extends Migration
             $table->timestamps();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
+            $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');
             $table->foreign('debitaccount_id')->references('id')->on('chartofaccounts');
             $table->foreign('creditaccount_id')->references('id')->on('chartofaccounts');
         });

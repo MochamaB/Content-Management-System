@@ -78,27 +78,27 @@
 
                     </tr>
                     @php
-                         $balance = $openingBalance;
-                         $totalInvoices = 0;
-                         $totalPayments = 0;
+                    $balance = $openingBalance;
+                    $totalInvoices = 0;
+                    $totalPayments = 0;
                     @endphp
                     @foreach($transactions as $key => $item)
                     <tr style="height:35px;">
                          <td class="text-center">{{$key +1}}</td>
                          <td class="text-center">{{\Carbon\Carbon::parse($item->created_at)->format('d M Y')}}</td>
-                         <td class="text-center">{{$item->charge_name}}</td>
+                         <td class="text-center" style="text-transform: capitalize;">{{$item->charge_name}}</td>
 
                          @if($item->transactionable_type ==='App\Models\Invoice')
                          @php
-                              $balance += $item->amount;
-                              $totalInvoices += $item->amount;
+                         $balance += $item->amount;
+                         $totalInvoices += $item->amount;
                          @endphp
                          <td class="text-center">{{ $sitesettings->site_currency }}.{{ $item->amount}}</td>
                          <td class="text-center"> - </td>
                          @elseif($item->transactionable_type ==='App\Models\Payment')
                          @php
-                              $balance -= $item->amount;
-                              $totalPayments += $item->amount;
+                         $balance -= $item->amount;
+                         $totalPayments += $item->amount;
                          @endphp
                          <td class="text-center"> - </td>
                          <td class="text-center">{{ $sitesettings->site_currency }}.{{ $item->amount}}</td>
@@ -106,9 +106,10 @@
                          <td class="text-center">{{ $sitesettings->site_currency }}. {{ $balance }}</td>
                     </tr>
                     @endforeach
-
+               </tbody>
+               <tfooter>
                     <tr style="height:35px;">
-                         <td class="text-center"> - </td>
+                         <td class="text-center">  </td>
                          <td class="text-center"> - </td>
                          <td class="text-center"> <b>TOTALS</b></td>
                          <td class="text-center"><b>{{ $sitesettings->site_currency }}. {{ $totalInvoices }}</b></td>
@@ -116,7 +117,7 @@
                          <td class="text-center"><b>{{ $sitesettings->site_currency }}. {{ $balance }}</b></td>
 
                     </tr>
-               </tbody>
+               </tfooter>
           </table></br>
           <!------- FOURTH LEVEL PAYMENT DETAILS AND TOTALS-->
           <!------- FOOTER-->

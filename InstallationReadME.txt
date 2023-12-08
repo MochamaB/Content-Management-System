@@ -1,7 +1,13 @@
 Composer install
+Change DB Name in .env file
+change sync to QUEUE_CONNECTION=database in .env file
+Run php artisan queue:table
 php artisan migrate
 php artisan permission:create-permission-routes
 php artisan db:seed
+php artisan schedule-monitor:sync
+
+
 
 Order TO fill Data
 1. Website - Website Settings
@@ -39,5 +45,27 @@ Has access to tasks only
 
 Tenant
 Has access to their information
+
+
+Added Packages
+
+  barryvdh/laravel-debugbar 
+  barryvdh/laravel-dompdf 
+  fruitcake/laravel-cors  
+  intervention/image 
+  laravel-arcanist/arcanist 
+  laravel/breeze 
+  laravel/sail 
+  laravel/sanctum 
+  laravel/tinker 
+  lorisleiva/laravel-actions 
+  lorisleiva/lody 
+  nesbot/carbon 
+  nunomaduro/collision 
+  nunomaduro/termwind 
+  spatie/laravel-ignition 
+  spatie/laravel-medialibrary 
+  spatie/laravel-permission 
+  spatie/laravel-schedule-monitor .
 
 

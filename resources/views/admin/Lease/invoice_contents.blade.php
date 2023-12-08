@@ -77,7 +77,8 @@
             @foreach($invoice->invoiceItems as $key=> $item)
             <tr style="height:35px;">
                 <td class="text-center">{{$key+1}}</td>
-                <td class="text-center">{{$item->charge_name}} Charge
+                <td class="text-center" style="text-transform: capitalize;">
+                    {{$item->charge_name}} Charge
                     <!--- METER READINGS -->
                     @if($item->unitcharge->charge_type == 'units')
                         @php
