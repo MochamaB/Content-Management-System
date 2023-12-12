@@ -131,6 +131,11 @@ class Unit extends Model implements HasMedia
         return $this->hasMany(Invoice::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function unitcharges()
     {
         return $this->hasMany(Unitcharge::class);

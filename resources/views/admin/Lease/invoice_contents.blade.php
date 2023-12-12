@@ -1,6 +1,6 @@
-<div class=" contwrapper" id="printMe">
+<div class=" contwrapper table-responsive table-responsive-sm" id="printMe">
 
-    <table class="table">
+<table class="table ">
         <tbody>
             <!--- FIRST SECTION  HEADER------->
             <tr>

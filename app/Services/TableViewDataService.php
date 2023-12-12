@@ -90,4 +90,31 @@ class TableViewDataService
 
         return $tableData;
     }
+
+    ///////////////////
+    public function getPaymentData($paymentdata)
+    {
+        // Eager load the 'unit' relationship
+        //   $invoicedata->load('user');
+
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['REFERENCE NO', 'PAYMENT DATE', 'TYPE', 'PAYMENT TYPE', 'AMOUNT PAID', 'ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($paymentdata as $item) {
+          $tableData['rows'][] = [
+                'id' => $item->id,
+                'RCPT#: ' .$item->id.'-'. $item->referenceno,
+                '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
+                    Carbon::parse($item->created_at)->format('Y-m-d'),
+                $item->payment_code,
+                $item->totalamount,
+                $item->totalamount,
+            ];
+        }
+
+        return $tableData;
+    }
 }

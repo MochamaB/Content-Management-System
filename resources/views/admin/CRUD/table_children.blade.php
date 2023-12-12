@@ -12,11 +12,19 @@
             <tr>
                 <td style="padding-left: 15px;"><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
                 @foreach(array_slice($row, 2) as $cell)
-                <td style="text-transform: capitalize;padding-left: 15px;">{!! $cell !!}</td>
+                <td style="text-transform: capitalize;padding-left: 15px;">
+                    @if(is_array($cell))
+                    @foreach($cell as $subcell)
+                    {!! $subcell !!}
+                    @endforeach
+                    @else
+                    {!! $cell !!}
+                    @endif
+                </td>
                 @endforeach
                 <td>
                     <!-- SHOW BUTTON -->
-                    <a href="{{url($controller[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-eye mdi-24px text-dark"></i></a>
+                    <a href="{{url($controller[0].'/'.$row['id'])}}" class="" data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-eye mdi-24px text-dark"></i></a>
                     <!-- EDIT BUTTON -->
                     @if( Auth::user()->can($controller[0].'.edit') || Auth::user()->id === 1)
                     <a href="{{url($controller[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
@@ -31,8 +39,8 @@
                         <div class="modal fade" id="deleteConfirmationModal{{$controller[0].$row['id'] }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
-                                    <div class="modal-header"  style="background-color:red;">
-                                        <h5 class="modal-title" id="deleteConfirmationModalLabel"  style="color:white;">Confirm Deletion</h5>
+                                    <div class="modal-header" style="background-color:red;">
+                                        <h5 class="modal-title" id="deleteConfirmationModalLabel" style="color:white;">Confirm Deletion</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>

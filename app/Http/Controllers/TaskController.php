@@ -36,15 +36,15 @@ class TaskController extends Controller
          ];
  
          foreach ($taskdata as $item) {
-             $leaseStatus = $item->lease ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
+            $status = $item->status ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">Inactive</span>';
              $tableData['rows'][] = [
                  'id' => $item->id,
                  $item->name,
                  $item->command,
                  $item->frequency,
-                 $item->variable_one.' - '.$item->variable_two,
+                 'Day of the month: '.$item->variable_one.' </br> Day of the month: '.$item->variable_two,
                  $item->time,
-                 $item->status,
+                 $status,
              ];
          }
  
@@ -107,9 +107,11 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Task $task)
     {
-        //
+        $viewData = $this->formData($this->model,$task);
+
+        return View('admin.CRUD.form', $viewData);
     }
 
     /**

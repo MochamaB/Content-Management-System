@@ -137,13 +137,15 @@ class AppServiceProvider extends ServiceProvider
                                                         'lease'=> ['display' => 'Leases'],]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
-                                                        'chartofaccount'=> ['display' => 'Chart Of Accounts'],]],
+                                                        'chartofaccount'=> ['display' => 'Chart Of Accounts'],
+                                                        'paymenttype'=> ['display' => 'Payment Types'],]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
 
                 'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
 
-                'Tasks' => ['icon' => 'timetable', 'submodules' => ['',]],
+                'Tasks' => ['icon' => 'timetable', 'submodules' => [
+                                                                    'task'=> ['display' => 'System Tasks'],]],
 
                 'Files' => ['icon' => 'file-multiple', 'submodules' => ['',]],
 

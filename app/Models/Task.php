@@ -24,7 +24,7 @@ class Task extends Model
         'command' => ['label' => 'Command', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'frequency' => ['label' => 'Frequency', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'variable_one' => ['label' => 'Day of Month', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
-        'variable_two' => ['label' => 'Day of the Month', 'inputType' => 'text', 'required' => false, 'readonly' => true],
+        'variable_two' => ['label' => 'Day of the Month', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
         'time' => ['label' => 'Time', 'inputType' => 'time', 'required' => false, 'readonly' => ''],
         'status' => ['label' => 'Status', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         // Add more fields as needed

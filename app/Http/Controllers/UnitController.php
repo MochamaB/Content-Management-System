@@ -138,6 +138,7 @@ class UnitController extends Controller
             'Users',
             'Charges & Utilities',
             'Invoices',
+            'Payments',
             'Meter Readings',
             //    'Maintenance',
             //    'Financials',
@@ -167,7 +168,7 @@ class UnitController extends Controller
         
         $viewData = $this->formData($this->model, $unit);
         $unitdetails = $unit->unitdetails;
-        $charges = $unit->unitcharges; ///data for utilities page
+        $charges = $unit->unitcharges()->whereNull('parent_id')->get(); ///data for utilities page
         $unitChargeController = new UnitChargeController();
         $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
@@ -175,6 +176,10 @@ class UnitController extends Controller
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
+
+         /// DATA FOR PAYMENTS TAB
+         $payments = $unit->payments;
+         $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
 
         $meterReadings = $unit->meterReadings;
@@ -194,6 +199,8 @@ class UnitController extends Controller
                 $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges'))->render();
             }elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
+            }elseif ($title === 'Payments') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], 
                 compact('id'))->render();

@@ -52,8 +52,7 @@
 
                
                 </textarea>
-                <br />
-
+                
                 <!---- EMAIL INPUT ------------->
                 @elseif($attributes['inputType'] === 'number')
                 <input type="{{ $attributes['inputType'] }}" class="form-control @error($field) is-invalid  @enderror" id="{{ $field }}" name="{{ $field }}" value="{{ old($field) }}" @if($attributes['required']) required @endif>

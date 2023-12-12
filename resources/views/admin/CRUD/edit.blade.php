@@ -12,7 +12,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 @foreach($fields as $field => $attributes)
-                <!--- LABEL -->
+                <!--- LABEL --><br/>
                 <label class="label">{{ $attributes['label'] }}
                     @if ($attributes['required'])
                     <span class="requiredlabel">*</span>
@@ -64,7 +64,6 @@
 
                 {{$actualvalues->$field}}
                 </textarea>
-                <br/>
                  <!---- NUMBER INPUT ------------->
                 @elseif($attributes['inputType'] === 'number')
                     <input type="{{ $attributes['inputType'] }}" class="form-control" id="{{ $field }}" value="{{ $actualvalues->$field }}" name="{{ $field }}" @if($attributes['required']) required @endif >
