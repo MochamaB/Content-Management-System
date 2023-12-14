@@ -17,4 +17,9 @@ class PaymentItems extends Model
         'description',
         'amount',
     ];
+
+    public function payments()
+    {
+        return $this->belongsTo(Payment::class);
+    }
 }

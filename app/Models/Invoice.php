@@ -22,7 +22,7 @@ class Invoice extends Model
 
     ];
 
-      ////// POLYmorphism relationship
+      ////// PoLymorphism relationship (Can be Either User, Vendor or Supplier)
       public function model()
       {
         return $this->morphTo();
@@ -57,5 +57,11 @@ class Invoice extends Model
     public function transactions()
     {
         return $this->morphMany(Transaction::class, 'transactionable');
+    }
+
+    //// Polymorphic Relationship with Payments Model.
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'model');
     }
 }

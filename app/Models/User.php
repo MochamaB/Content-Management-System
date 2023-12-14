@@ -220,6 +220,7 @@ class User extends Authenticatable
 
         return $filteredUsers;
     }
+    //// Polymorphism with Invoices Model
     public function invoices()
     {
         return $this->morphMany(Invoice::class, 'model');

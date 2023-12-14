@@ -179,6 +179,7 @@ class UnitController extends Controller
 
          /// DATA FOR PAYMENTS TAB
          $payments = $unit->payments;
+        // dd($payments);
          $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
 
