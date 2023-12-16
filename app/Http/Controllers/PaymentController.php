@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Unit;
+use App\Models\Payment;
 use App\Models\Property;
 use App\Models\Invoice;
 use App\Models\PaymentType;
+use App\Traits\FormDataTrait;
+use App\Services\PaymentService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
 class PaymentController extends Controller
@@ -16,6 +21,23 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     use FormDataTrait;
+     protected $controller;
+     protected $model;
+     private $paymentService;
+
+     public function __construct(PaymentService $paymentService)
+     {
+         $this->model = Payment::class;
+         $this->controller = collect([
+             '0' => 'payment', // Use a string for the controller name
+             '1' => 'New Payment',
+         ]);
+
+         $this->paymentService = $paymentService;
+     }
+
     public function index()
     {
         //
@@ -29,19 +51,18 @@ class PaymentController extends Controller
     public function create($id = null)
     {
         $invoice = Invoice::find($id);
-        $unit = Unit::find($invoice->unit_id);
-        // session(['unit' => $unit]);
-        $property = Property::where('id', $invoice->unit_id)->first();  
         $paymenttype = PaymentType::all();
         $className = get_class($invoice);
 
-        ////REFNO
+        ////REFRENCE NO
         $today = Carbon::now();
         $invoicenodate = $today->format('ym');
-        $unitnumber = $unit->unit_number;
+        $unitnumber = $invoice->unit->unit_number;
         $referenceno = 'RCT-'.$invoice->id.'-'.$invoicenodate . $unitnumber;
       //  dd($referenceno);
-        return View('admin.lease.payment',compact('unit','property','paymenttype','invoice','className','referenceno'));
+
+      Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+        return View('admin.lease.payment',compact('paymenttype','invoice','className','referenceno'));
     }
 
     /**
@@ -52,7 +73,19 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $invoiceId = $request->input('invoice');
+        $model = Invoice::find($invoiceId);
+
+        $items = $model->getItems;
+     //   dd($items);
+        $validationRules = Payment::$validation;
+        $validatedData = $request->validate($validationRules);
+        
+     //   dd($validatedData);
+        $this->paymentService->generatePayment($model,$validatedData);
+
+        $previousUrl = Session::get('previousUrl');
+        return redirect($previousUrl)->with('status', 'Payment Added Successfully');
     }
 
     /**

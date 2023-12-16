@@ -71,7 +71,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
         Route::resource('transaction', TransactionController::class);
-        Route::resource('paymenttype', PaymentTypeController::class);
+        Route::resource('payment-type', PaymentTypeController::class);
     });
 
     Route::group(['groupName' => 'Leasing'], function () {

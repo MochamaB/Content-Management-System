@@ -65,7 +65,7 @@
     <!------- THIRD LEVEL INVOICE ITEMS -->
     <table class="table table-hover table-bordered" style="font-size:12px;border:1px solid black;">
         <thead>
-            <tr class="tableheading">
+            <tr class="tableheading" style="height:35px;">
 
                 <th>No.</th>
                 <th class="text-center">Description </th>

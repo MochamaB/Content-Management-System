@@ -54,6 +54,11 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItems::class);
     }
 
+    public function getItems()
+    {
+        return $this->hasMany(InvoiceItems::class);
+    }
+
     public function transactions()
     {
         return $this->morphMany(Transaction::class, 'transactionable');

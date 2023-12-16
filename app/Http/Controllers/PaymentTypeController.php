@@ -23,7 +23,7 @@ class PaymentTypeController extends Controller
     {
         $this->model = PaymentType::class;
         $this->controller = collect([
-            '0' => 'paymenttype', // Use a string for the controller name
+            '0' => 'payment-type', // Use a string for the controller name
             '1' => 'New Payment Type',
         ]);
     }

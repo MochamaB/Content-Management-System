@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     use HasFactory;
-    protected $table = 'paymentvouchers';
+    protected $table = 'payments';
     protected $fillable = [
         'property_id',
         'unit_id',
@@ -23,6 +23,12 @@ class Payment extends Model
 
     ];
 
+    public static $validation = [
+        'payment_type_id' => 'required',
+        'payment_code' => 'nullable',
+        'amount' => 'required',
+    ];
+
     /////Polymorphic Relationship (Payment can belong to an Invoice or Voucher or Charge)
     public function model()
     {
@@ -30,9 +36,9 @@ class Payment extends Model
     }
 
     public function property()
-      {
-          return $this->belongsTo(Property::class,'property_id');
-      }
+    {
+        return $this->belongsTo(Property::class, 'property_id');
+    }
 
     public function unit()
     {
@@ -44,7 +50,11 @@ class Payment extends Model
     {
         return $this->belongsTo(Lease::class, 'unit_id');
     }
-  
+
+    public function paymentType()
+    {
+        return $this->belongsTo(PaymentType::class);
+    }
 
     public function paymentItems()
     {

@@ -310,7 +310,9 @@ class LeaseController extends Controller
       //  dd($unit->invoices);
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
 
-
+        $payments = $unit->payments;
+        // dd($payments);
+         $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
         $meterReadings = $unit->meterReadings;
         $meterReaderController = new MeterReadingController();
@@ -321,7 +323,7 @@ class LeaseController extends Controller
             'Summary',
             'Charges and Utilities',
             'Invoices',
-            'Deposits and Payments',
+            'Payments',
             'Meter Readings',
             'Maintenance Tasks',
             'Files',
@@ -334,8 +336,8 @@ class LeaseController extends Controller
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']])->render();
             } elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
-            } elseif ($title === 'Deposits and Payments') {
-                $tabContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
+            } elseif ($title === 'Payments') {
+                $tabContents[] = View('admin.CRUD.index',['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             } elseif ($title === 'Meter Readings') {
                 $tabContents[] = View(
                     'admin.CRUD.index',

@@ -57,41 +57,41 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'AMOUNT PAID', 'ACTIONS'],
+            'headers' => ['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID','BALANCE', 'ACTIONS'],
             'rows' => [],
         ];
 
         foreach ($invoicedata as $item) {
             //// Status Classes for the Invoices////////
             $statusClasses = [
-                'paid' => 'badge-active',
-                'unpaid' => 'badge-warning',
-                'Over Due' => 'badge-danger',
-                'partially_paid' => 'badge-secondary',
+                'paid' => 'active',
+                'unpaid' => 'warning',
+                'Over Due' => 'danger',
+                'partially_paid' => 'secondary',
             ];
             //// GET INVOICE STATUS. IF STATUS UNPAID AND DUEDATE
             $today = Carbon::now();
             $totalPaid = $item->payments->sum('totalamount');
+            $balance = $item->totalamount - $totalPaid;
+            $payLink = ''; // Initialize $payLink
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
-                $payment = '0';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-active"> Pay</a>';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
             } elseif ($totalPaid < $item->totalamount) {
                 $status = 'partially_paid';
-                $payment = $item->payments->totalamount;
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
             } elseif ($totalPaid == $item->totalamount) {
                 $status = 'paid';
             }
 
             if ($item->duedate < $today && $status == 'unpaid') {
                 $status = 'Over Due';
-    
             }
 
-            $statusClass = $statusClasses[$status] ?? 'badge-secondary';
-            $invoiceStatus = '<span class="badge ' . $statusClass . '">' . $status . '</span>';
-
+            $statusClass = $statusClasses[$status] ?? 'secondary';
+            $invoiceStatus = '<span class="badge badge-' .$statusClass . '">' . $status . '</span>';
+            $balanceStatus = '<span style ="font-weight:700" class="text-' .$statusClass . '">' . $sitesettings->site_currency.'. '.$balance . '</span>';
 
                 $tableData['rows'][] = [
                     'id' => $item->id,
@@ -100,8 +100,9 @@ class TableViewDataService
                         Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
                     $item->invoice_type,
                     $sitesettings->site_currency.'. '.$item->totalamount,
-                    $sitesettings->site_currency.'. '.$totalPaid.' - ' .$payLink,
-
+                    $sitesettings->site_currency.'. '.$totalPaid,
+                    $balanceStatus.'  ' .$payLink,
+                   
 
                 ];
         }
@@ -122,13 +123,16 @@ class TableViewDataService
         ];
 
         foreach ($paymentdata as $item) {
+            $paymenttype = $item->paymentType;
+            $type =$item->model;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 'RCPT#: ' . $item->id . '-' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
-                $item,
-                $item->totalamount,
+                $type->invoice_type,
+                $paymenttype->name.
+                ' </br><span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> '.$item->payment_code,
                 $item->totalamount,
             ];
         }

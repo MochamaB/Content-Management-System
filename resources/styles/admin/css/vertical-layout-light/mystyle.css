@@ -255,6 +255,20 @@
 
 }
 
+.table-formcontrol2 {
+  padding: .4375rem .75rem;
+  border: none;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 0px;
+  height: 2rem;
+  color: #777;
+  padding-right: 120px;
+  width: 100%;
+
+
+}
+
 .formcontrol2.is-invalid {
   border-color: #dc3545;
   /* Red border color for invalid inputs */
@@ -631,6 +645,9 @@ select:focus {
   text-transform: uppercase;
 }
 
+a .badge:hover {
+  transform: scale(1.2);
+}
 .badge-active {
   color: #038d21 !important;
   border: 1px solid #038d21 !important;
@@ -661,3 +678,26 @@ select:focus {
   border: 2px solid #3302a5c4 !important;
 }
 
+.text-active{
+  color: #038d21 !important;
+}
+
+
+
+@media screen and (max-width: 991px) {
+  .sidebar-offcanvas {
+    position: fixed;
+    max-height: calc(100vh - 97px);
+    top: 97px;
+    bottom: 0;
+    overflow: auto;
+    right: -255px; /* Adjust the sidebar width accordingly */
+    -webkit-transition: all 0.25s ease-out;
+    -o-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+  }
+
+  .sidebar-offcanvas.active {
+    right: 0;
+  }
+}

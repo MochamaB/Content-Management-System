@@ -7,6 +7,8 @@ use App\Models\Chartofaccount;
 use App\Models\InvoiceItems;
 use App\Models\PaymentVoucherItems;
 use App\Models\Invoice;
+use App\Models\Payment;
+use App\Models\PaymentItems;
 use App\Models\Transaction;
 use App\Models\Unitcharge;
 use Carbon\Carbon;
@@ -60,6 +62,29 @@ class RecordTransactionAction
                 'description' => $description->account_name, ///Description of the charge
                 'debitaccount_id' => 2,///Accounts Payable
                 'creditaccount_id' => $item->chartofaccount_id,
+                'amount' => $item->amount,
+            ]);
+        }
+    }
+
+    public function payments(Payment $payment)
+    {
+        $className = get_class($payment);
+        $paymentitems = PaymentItems::where('payment_id', $payment->id)->get();
+        $chargeid = PaymentItems::where('payment_id', $payment->id)->first();
+
+        foreach ($paymentitems as $item) {
+            $description = Chartofaccount::where('id', $item->chartofaccount_id)->first();
+            Transaction::create([
+                'property_id' => $payment->property_id,
+                'unit_id' => $payment->unit_id,
+                'unitcharge_id' => $chargeid->unitcharge_id,
+                'charge_name' => $item->charge_name,
+                'transactionable_id' => $payment->id,
+                'transactionable_type' =>$className, ///Model Name Invoice
+                'description' => $description->account_name, ///Description of the charge
+                'debitaccount_id' => $item->chartofaccount_id,///Accounts Payable
+                'creditaccount_id' => 2,
                 'amount' => $item->amount,
             ]);
         }
