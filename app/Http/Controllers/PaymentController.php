@@ -13,6 +13,7 @@ use App\Services\PaymentService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use App\Notifications\PaymentNotification;
 
 class PaymentController extends Controller
 {
@@ -94,9 +95,24 @@ class PaymentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Payment $payment)
     {
-        //
+        $pageheadings = collect([
+            '0' => $payment->unit->unit_number,
+            '1' => $payment->unit->property->property_name,
+            '2' => $payment->unit->property->property_streetname,
+        ]);
+        $tabTitles = collect([
+            'Overview',
+        ]);
+
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
+            if ($title === 'Overview') {
+                $tabContents[] = View('admin.lease.payment_view', compact('payment'))->render();
+            } 
+        }
+        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**
@@ -108,6 +124,23 @@ class PaymentController extends Controller
     public function edit($id)
     {
         //
+    }
+
+    public function sendemail(){
+
+        $invoiceId = '1';
+        $model = Invoice::find($invoiceId);
+
+        $items = $model->getItems;
+     //   dd($items);
+        $validationRules = Payment::$validation;
+        $validatedData = $request->validate($validationRules);
+        
+     //   dd($validatedData);
+        $this->paymentService->generatePayment($model,$validatedData);
+
+        $previousUrl = Session::get('previousUrl');
+        return redirect($previousUrl)->with('status', 'Payment Added Successfully');
     }
 
     /**

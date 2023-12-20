@@ -1,11 +1,13 @@
 Composer install
 Change DB Name in .env file
 change sync to QUEUE_CONNECTION=database in .env file
-Run php artisan queue:table
+Run php artisan queue:table  --Generate the jobs table for the message queue.
 php artisan migrate
 php artisan permission:create-permission-routes
 php artisan db:seed
 php artisan schedule-monitor:sync
+
+php artisan queue:work ---Keep running all the time
 
 
 

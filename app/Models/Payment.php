@@ -25,7 +25,7 @@ class Payment extends Model
 
     public static $validation = [
         'payment_type_id' => 'required',
-        'payment_code' => 'nullable',
+        'payment_code' => 'nullable|unique:payments',
         'amount' => 'required',
     ];
 

@@ -2,6 +2,8 @@
 
 namespace App\Notifications;
 
+use App\Scopes\PropertyAccessScope;
+use App\Scopes\UnitAccessScope;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -10,9 +12,10 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Services\TableViewDataService;
 use Carbon\Carbon;
 
-class InvoiceGeneratedNotification extends Notification implements ShouldQueue
+class InvoiceGeneratedNotification extends Notification 
+//implements ShouldQueue
 {
-    use Queueable;
+ //   use Queueable;
     protected $invoice;
     protected $user;
 
@@ -21,10 +24,12 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($invoice,$user)
+    public function __construct($invoice, $user)
     {
+
         $this->invoice = $invoice;
         $this->user = $user;
+
     }
 
     /**
@@ -35,7 +40,7 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail','database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -46,28 +51,31 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+
+        
         $invoicepdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
-       // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
+        // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
         // Create a filename using invoice values
-        $referenceno = $this->invoice->id."-".$this->invoice->referenceno;
-        $invoicefilename = $this->invoice->invoice_type.' - '.$referenceno.' '.$this->invoice->unit->unit_number.' invoice.pdf';
+        $referenceno = $this->invoice->id . "-" . $this->invoice->referenceno;
+        $invoicefilename = $this->invoice->invoice_type . ' - ' . $referenceno . ' ' . $this->invoice->unit->unit_number . ' invoice.pdf';
         $duedate = Carbon::parse($this->invoice->duedate)->format('Y-m-d');
 
-        $heading = 'New '.$this->invoice->invoice_type.' Invoice';
+        $heading = 'New ' . $this->invoice->invoice_type . ' Invoice';
         $linkmessage = 'To view all your invoices. Login here';
         $data = ([
-            "line 1" => "Please find attached Invoice Ref Number  ".$referenceno,
-            "line 2" => $this->invoice->invoice_type." Charge due on ".$duedate,
+            "line 1" => "Please find attached Invoice Ref Number  " . $referenceno,
+            "line 2" => $this->invoice->invoice_type . " Charge due on " . $duedate,
             "line 3" => "Login to the portal to get your account statement",
-            "action" => "invoice/".$this->invoice->id,
+            "action" => "invoice/" . $this->invoice->id,
             "line 4" => "",
         ]);
         return (new MailMessage)
             ->view(
                 'email.template',
-                ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading])
-                    ->subject($this->invoice->invoice_type.' Invoice')
-                    ->attachData($invoicepdf->output(), $invoicefilename);
+                ['user' => $this->user, 'data' => $data, 'linkmessage' => $linkmessage, 'heading' => $heading]
+            )
+            ->subject($this->invoice->invoice_type . ' Invoice')
+            ->attachData($invoicepdf->output(), $invoicefilename);
     }
 
     /**
@@ -79,10 +87,10 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'user_id' => $this->user->id,
-            'phonenumber' => $this->user->phonenumber,
-            'user_email' => $this->user->email,
-            
+     //       'user_id' => $this->user->id,
+      //      'phonenumber' => $this->user->phonenumber,
+       //     'user_email' => $this->user->email,
+
         ];
     }
 }

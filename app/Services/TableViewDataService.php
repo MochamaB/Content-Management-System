@@ -132,11 +132,16 @@ class TableViewDataService
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 $type->invoice_type,
                 $paymenttype->name.
-                ' </br><span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> '.$item->payment_code,
+                ' </br>
+                <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> '.$item->payment_code,
                 $item->totalamount,
             ];
         }
 
         return $tableData;
     }
+
+
+
+
 }

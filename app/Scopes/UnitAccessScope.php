@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Scope;
   
 class UnitAccessScope implements Scope
 {
+    protected static $scopeDisabled = false;
     public function apply(Builder $builder, Model $model)
     {
         // Get the authenticated user
@@ -20,5 +21,14 @@ class UnitAccessScope implements Scope
             });
        
         }
+    }
+    public static function disableScope()
+    {
+        static::$scopeDisabled = true;
+    }
+
+    public static function enableScope()
+    {
+        static::$scopeDisabled = false;
     }
 }

@@ -57,6 +57,7 @@
   font-family: "Manrope", sans-serif;
   font-weight: 500;
   border-right: 2px solid #c8c8c9;
+  border-left: 2px solid #c8c8c9;
   width: 255px;
   padding: 0px;
   z-index: 11;
@@ -682,9 +683,16 @@ a .badge:hover {
   color: #038d21 !important;
 }
 
+.bootstrap-table .fixed-table-container .fixed-table-body {
+  overflow-x: auto;
+  overflow-y: auto;
+  /* height: 100%; */
+}
 
+/* Responsiveness  */
 
 @media screen and (max-width: 991px) {
+
   .sidebar-offcanvas {
     position: fixed;
     max-height: calc(100vh - 97px);
@@ -700,4 +708,18 @@ a .badge:hover {
   .sidebar-offcanvas.active {
     right: 0;
   }
+
+  .navbar .navbar-brand-wrapper {
+    background: #F4F5F7;
+    transition: width 0.25s ease, background 0.25s ease;
+    -webkit-transition: width 0.25s ease, background 0.25s ease;
+    -moz-transition: width 0.25s ease, background 0.25s ease;
+    -ms-transition: width 0.25s ease, background 0.25s ease;
+    width: 248px;
+    height: 97px;
+    padding: 20px 30px;
+}
+
+
+
 }

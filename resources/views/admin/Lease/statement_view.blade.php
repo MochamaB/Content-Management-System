@@ -1,5 +1,5 @@
 <div class="col-md-10">
-     <div class=" contwrapper" id="printMe">
+     <div class=" contwrapper table-responsive table-responsive-sm" id="printMe">
 
           <table class="table">
                <tbody>

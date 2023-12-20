@@ -34,9 +34,11 @@ use App\Http\Controllers\PaymentController;
 use App\Models\MeterReading;
 use App\Models\User;
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Notifications\LeaseAgreementNotification;
 use App\Notifications\UserCreatedNotification;
 use App\Notifications\InvoiceGeneratedNotification;
+use App\Notifications\PaymentNotification;
 
 /*
 |--------------------------------------------------------------------------
@@ -172,10 +174,10 @@ Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoic
 Route::get('/notification', function () {
     $user = User::find(1);
     $tenant = User::find(1);
-    $invoice = Invoice::find(1);
+    $payment = Payment::find(1);
 
 
-    return (new InvoiceGeneratedNotification($invoice, $tenant))
+    return (new PaymentNotification($payment, $tenant))
         ->toMail($user->user);
 });
 

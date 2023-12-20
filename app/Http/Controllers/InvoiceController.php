@@ -159,7 +159,7 @@ class InvoiceController extends Controller
 
         $user = $invoice->model;
         $user->notify(new InvoiceGeneratedNotification($invoice, $user));
-        return redirect()->back()->with('status', 'Sucess Invoice generated.');
+        return redirect()->back()->with('status', 'Sucess Invoice Reminder Sent to the tenant.');
     }
 
 

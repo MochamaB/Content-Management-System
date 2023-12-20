@@ -12,6 +12,7 @@ use App\Actions\RecordTransactionAction;
 use App\Models\Payment;
 use App\Models\PaymentItems;
 use App\Notifications\InvoiceGeneratedNotification;
+use App\Notifications\PaymentNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,9 +57,9 @@ class PaymentService
         //4. Create Transactions for ledger
         $this->recordTransactionAction->payments($payment);
 
-        //7. Send Email/Notification to the Tenant containing the invoice.
-        //       $user = $invoice->model;
-        //     $user->notify(new InvoiceGeneratedNotification($invoice, $user));
+        //5. Send Email/Notification to the Tenant containing the receipt.
+             $user = $payment->model->model;
+             $user->notify(new PaymentNotification($payment, $user));
 
 
         return $payment;

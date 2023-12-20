@@ -196,7 +196,7 @@
 .bootstrap-table .fixed-table-container .fixed-table-body {
   overflow-x: auto;
   overflow-y: auto;
-  height: 100%
+/*  height: 100% */
 }
 
 .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading {

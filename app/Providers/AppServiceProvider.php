@@ -41,12 +41,12 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
           // Apply the UserAccessScope to specific models
-        Lease::addGlobalScope(new UserAccessScope);
+     //   Lease::addGlobalScope(new UserAccessScope);
 
         Property::addGlobalScope(new PropertyAccessScope);
         Utility::addGlobalScope(new UtilityAccessScope);
         
-      Unit::addGlobalScope(new UnitAccessScope);
+        Unit::addGlobalScope(new UnitAccessScope);
     // Invoice::addGlobalScope(new UnitAccessScope);
     //   User::addGlobalScope(new UnitAccessScope);
 
