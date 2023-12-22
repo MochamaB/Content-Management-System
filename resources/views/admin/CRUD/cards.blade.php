@@ -44,7 +44,7 @@
                         @endif
                     </p>
                 </div>
-                <div class="progress progress-md">
+                <div class="progress progress-md" style="height:10px">
                     <div class="progress-bar bg-warning" role="progressbar" style="width: {{ is_array($cardData['data'][$card]) ? $cardData['data'][$card]['percentage'] : $cardData['data'][$card] }}%" aria-valuenow="{{ is_array($cardData['data'][$card]) ? $cardData['data'][$card]['percentage'] : $cardData['data'][$card] }}" aria-valuemin="0" aria-valuemax="100">
                     </div>
                 </div>

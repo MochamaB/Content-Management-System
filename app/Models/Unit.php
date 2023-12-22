@@ -88,16 +88,17 @@ class Unit extends Model implements HasMedia
         // Add more cards as needed
     ];
 
-    public static function getCardData($card)
+    public static function getCardData($card, $modeldata = null)
     {
         switch ($card) {
 
             case 'units':
-                $unitCount = Unit::count();
+              //  $modelCount =  $modeldata ? $modeldata->count() : Unit::count();
+                $unitCount =  $modeldata ? $modeldata->count() : Unit::count();
                 return $unitCount;
             case 'Units Leased':
                 $data = [];
-                $unitCount = Unit::count();
+                $unitCount = $modeldata ? $modeldata->count() : Unit::count();
                 $leaseCount = Lease::count();
                 $percentage = ($unitCount > 0) ? round(($leaseCount / $unitCount) * 100) : 0;
                 // Define the data structure for 'lease' card
@@ -168,6 +169,11 @@ class Unit extends Model implements HasMedia
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function paymentvouchers()
+    {
+        return $this->hasMany(Paymentvoucher::class);
     }
 
     public function payments()

@@ -31,12 +31,12 @@ trait FormDataTrait
     {
         
         $cards = $modelClass::$card;
-        $data = ($model) ? [] : null;
+        $data = [];
 
         // For create and edit
         foreach ($cards as $card => $cardtype) {
                 // If default data is not provided, set the value from getFieldData
-                $data[$card] = $modelClass::getCardData($card);    
+                $data[$card] = $modelClass::getCardData($card, $model);   
         }
 
         return compact('cards', 'data',);

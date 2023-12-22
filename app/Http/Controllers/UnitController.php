@@ -66,7 +66,7 @@ class UnitController extends Controller
         $unitdata = $this->model::with('property','lease')->get();
         $mainfilter =  $this->model::distinct()->pluck('unit_type')->toArray();
         $viewData = $this->formData($this->model);
-        $cardData = $this->cardData($this->model);
+        $cardData = $this->cardData($this->model,$unitdata);
        // dd($cardData);
         $controller = $this->controller;
         $tableData = $this->getUnitData($unitdata);
@@ -143,6 +143,7 @@ class UnitController extends Controller
             'Users',
             'Charges & Utilities',
             'Invoices',
+            'Vouchers & Payments',
             'Payments',
             'Meter Readings',
             //    'Maintenance',
@@ -182,6 +183,11 @@ class UnitController extends Controller
         $invoices = $unit->invoices;
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
 
+          /// DATA FOR PAYMENTVOUCHER TAB
+          $paymentvoucher = $unit->paymentvouchers;
+          // dd($payments);
+           $paymentvoucherTableData = $this->tableViewDataService->getPaymentVoucherData($paymentvoucher);
+
          /// DATA FOR PAYMENTS TAB
          $payments = $unit->payments;
         // dd($payments);
@@ -205,6 +211,8 @@ class UnitController extends Controller
                 $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges'))->render();
             }elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
+            }elseif ($title === 'Vouchers & Payments') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']])->render();
             }elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {

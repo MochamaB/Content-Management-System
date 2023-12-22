@@ -111,6 +111,34 @@ class TableViewDataService
     }
 
     ///////////////////
+    public function getPaymentVoucherData($paymentvoucherdata)
+    {
+        // Eager load the 'unit' relationship
+        //   $invoicedata->load('user');
+
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED','STATUS', 'ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($paymentvoucherdata as $item) {
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $item->referenceno,
+                Carbon::parse($item->created_at)->format('Y-m-d'),
+                $item->voucher_type,
+                $item->totalamount,
+                $item->status,
+            ];
+        }
+
+        return $tableData;
+    }
+
+
+
+    ///////////////
     public function getPaymentData($paymentdata)
     {
         // Eager load the 'unit' relationship
