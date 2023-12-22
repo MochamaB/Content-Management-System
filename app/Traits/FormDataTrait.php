@@ -27,5 +27,20 @@ trait FormDataTrait
         return compact('fields', 'data', 'actualvalues','specialvalue','defaultData');
     }
 
+    public function cardData($modelClass, $model = null)
+    {
+        
+        $cards = $modelClass::$card;
+        $data = ($model) ? [] : null;
+
+        // For create and edit
+        foreach ($cards as $card => $cardtype) {
+                // If default data is not provided, set the value from getFieldData
+                $data[$card] = $modelClass::getCardData($card);    
+        }
+
+        return compact('cards', 'data',);
+    }
+
     
 }

@@ -26,7 +26,7 @@ class Property extends Model implements HasMedia
         'property_name' => ['label' => 'Property Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
-       
+
 
 
         // Add more fields as needed
@@ -48,6 +48,8 @@ class Property extends Model implements HasMedia
         // Add more filter fields as needed
     ];
 
+
+
     public static $headingAfterField = 'property_name';
     public static $additionalHeading = 'New Property';
 
@@ -63,7 +65,31 @@ class Property extends Model implements HasMedia
                     $data[$category] = $propertytype->pluck('property_type', 'id')->toArray();
                 }
                 return $data;
-          
+        }
+    }
+
+    ///// Data for populating cards
+        /////Card options
+        public static $card = [
+            'Properties' => 'information',
+            'Units' => 'information',
+            'Utilities' => 'information',
+            // Add more cards as needed
+        ];
+
+    public static function getCardData($card)
+    {
+        switch ($card) {
+
+            case 'Properties':
+                $propertyCount = Property::count();
+                return $propertyCount;
+            case 'Units':
+                $unitCount = Unit::count();
+                return $unitCount;
+            case 'Utilities':
+                    $utilityCount = Utility::count();
+                    return $utilityCount;
         }
     }
     /**
@@ -71,7 +97,7 @@ class Property extends Model implements HasMedia
      */
     public function propertyType()
     {
-        return $this->belongsTo(PropertyType::class,'property_type');
+        return $this->belongsTo(PropertyType::class, 'property_type');
     }
 
     public function amenities()

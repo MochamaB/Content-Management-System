@@ -66,10 +66,15 @@ class UnitController extends Controller
         $unitdata = $this->model::with('property','lease')->get();
         $mainfilter =  $this->model::distinct()->pluck('unit_type')->toArray();
         $viewData = $this->formData($this->model);
+        $cardData = $this->cardData($this->model);
+       // dd($cardData);
         $controller = $this->controller;
         $tableData = $this->getUnitData($unitdata);
         
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+        [
+            'cardData' => $cardData,
+        ]);
     }
 
     /**

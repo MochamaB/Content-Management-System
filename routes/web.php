@@ -158,6 +158,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
     Route::group(['groupName' => 'Other'], function () {
         Route::resource('dashboard', DashboardController::class);
+
+        Route::get('cards', [DashboardController::class, 'cards']);
     });
 });
 

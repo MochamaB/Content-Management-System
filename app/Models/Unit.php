@@ -79,6 +79,45 @@ class Unit extends Model implements HasMedia
         }
     }
 
+    ///// Data for populating cards
+    /////Card options
+    public static $card = [
+        'units' => 'information',
+        'Units Leased' => 'progress',
+        'No of Tenants' => 'information',
+        // Add more cards as needed
+    ];
+
+    public static function getCardData($card)
+    {
+        switch ($card) {
+
+            case 'units':
+                $unitCount = Unit::count();
+                return $unitCount;
+            case 'Units Leased':
+                $data = [];
+                $unitCount = Unit::count();
+                $leaseCount = Lease::count();
+                $percentage = ($unitCount > 0) ? round(($leaseCount / $unitCount) * 100) : 0;
+                // Define the data structure for 'lease' card
+                $data = [
+                    'modelCount' => $unitCount,
+                    'modeltwoCount' => $leaseCount,
+                    'percentage' => $percentage,
+                ];
+             //   $data = compact('unitCount', 'leaseCount', 'percentage');
+                return $data;
+            case 'No of Tenants':
+                $users = User::with('roles')->get();
+                $tenantUsers = $users->filter(function ($user) {
+                    return $user->hasRole('Tenant');
+                });
+                $tenantCount = $tenantUsers->count();
+                return $tenantCount;
+        }
+    }
+
 
     public function property()
     {

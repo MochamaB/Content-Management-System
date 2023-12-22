@@ -106,6 +106,8 @@ use App\Actions\AttachDetachUserFromUnitAction;
             return $rolePermissions->count() < $loggedUserPermissions->count();
         });
         $propertyaccess = Property::with('units')->get();
+        $assignedUnits = User::role($userRole)->with('units')->get()->pluck('units')->flatten()->pluck('id')->toArray();
+
         if (Gate::allows('view-all', $loggeduser)) {
             $roles = Role::all();
         } else {
@@ -125,7 +127,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
             } elseif ($title === 'Contact Information') {
                 $stepContents[] = View('admin.user.user_contactinfo', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $stepContents[] = View('admin.user.user_property', compact('propertyaccess', 'savedRole'))->render();
+                $stepContents[] = View('admin.user.user_property', compact('propertyaccess', 'savedRole','assignedUnits'))->render();
             }
         }
 
@@ -263,12 +265,18 @@ use App\Actions\AttachDetachUserFromUnitAction;
         $roles = Role::all();
         $userRole = $user->roles->pluck('name');
         $assignedproperties = $user->units->pluck('id')->toArray();
+
+        //// Role of user being edited
+     //   $savedRole = Role::where('id', $userRole)->first();
+
         $pageheadings = collect([
             '0' => $user->email,
             '1' => $user->firstname,
             '2' => $user->lastname,
         ]);
         $propertyaccess = Property::with('units')->get();
+        $assignedUnits = User::role($userRole)->with('units')->get()->pluck('units')->flatten()->pluck('id')->toArray();
+       // dd($assignedUnits);
         $tabTitles = collect([
             'Contact Information',
             'Roles',
@@ -289,7 +297,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
             } elseif ($title === 'Login Access') {
                 $tabContents[] = View('admin.user.user_logins', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $tabContents[] = View('admin.user.user_property', compact('propertyaccess', 'assignedproperties'))->render();
+                $tabContents[] = View('admin.user.user_property', compact('userRole','propertyaccess', 'assignedproperties','assignedUnits'))->render();
             }
         }
 

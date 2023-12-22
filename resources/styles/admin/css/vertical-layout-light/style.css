@@ -10991,6 +10991,8 @@ textarea.form-control-lg {
   pointer-events: none;
   filter: none;
   opacity: 0.5;
+  background-color: #ffaf00;
+  border-color: #ffaf00;
 }
 
 .form-check-input[disabled] ~ .form-check-label, .form-check-input:disabled ~ .form-check-label {

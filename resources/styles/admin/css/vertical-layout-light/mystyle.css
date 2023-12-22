@@ -340,13 +340,38 @@
   border: 1px solid #e3e3e3;
   border-radius: 0px;
 }
-
+.card .card-title {
+  color: #010101;
+  margin-bottom: 0.6rem;
+  text-transform: capitalize;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.card-dashboard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid #e3e3e3;
+  border-radius: 0px;
+}
 .modalheader {
   background-color: darkblue;
 }
 
 .modaltitle {
   color: white;
+}
+
+a.table:link {
+  color: #1F3BB3;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: capitalize;
 }
 
 a.table:link {

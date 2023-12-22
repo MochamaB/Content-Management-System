@@ -44,6 +44,8 @@ class PropertyController extends Controller
 
         $mainfilter =  $this->model::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
+        $cardData = $this->cardData($this->model);
+      //  dd($cardData);
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
@@ -61,12 +63,13 @@ class PropertyController extends Controller
             ];
         }
 
-        return View(
-            'admin.CRUD.form',
-            compact('mainfilter', 'tableData', 'controller'),
-            $viewData,
-            ['controller' => $this->controller]
-        );
+        return view('admin.CRUD.form', [
+            'mainfilter' => $mainfilter,
+            'tableData' => $tableData,
+            'controller' => $this->controller,
+            'viewData' => $viewData,
+            'cardData' => $cardData,
+        ]);
     }
 
     /**
