@@ -122,6 +122,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::group(['groupName' => 'Tasks'], function () {
 
         Route::resource('task', TaskController::class);
+        Route::post('linkmonitor/{task}', [TaskController::class, 'linkmonitor']);
     });
 
 

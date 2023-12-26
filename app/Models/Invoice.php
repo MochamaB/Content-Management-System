@@ -22,6 +22,54 @@ class Invoice extends Model
 
     ];
 
+    ////////// FIELDS FOR CREATE AND EDIT METHOD
+    public static $fields = [
+        'property_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => true],
+        'unit_id' => ['label' => 'Unit', 'inputType' => 'select', 'required' => true, 'readonly' => true],
+        'model_id' => ['label' => 'Tenant Name', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'invoice_type' => ['label' => 'Invoice Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'status' => ['label' => 'Status', 'inputType' => 'select', 'required' => false, 'readonly' => ''],
+        'startdate' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
+        'enddate' => ['label' => 'End Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
+
+
+        // Add more fields as needed
+    ];
+    public static function getFieldData($field)
+    {
+        $invoice = Invoice::with('property', 'unit', 'model')->get();
+        switch ($field) {
+            case 'property_id':
+                // Retrieve the supervised units' properties
+                $properties = $invoice->pluck('property.property_name', 'property.id')->toArray();
+                return $properties;
+            case 'unit_id':
+                // Retrieve the supervised units' properties
+                $units = $invoice->pluck('unit.unit_number', 'unit.id')->toArray();
+                return $units;
+            case 'model_id':
+              //  $modelClass = get_class($invoice->model);
+                $tenants = User::selectRaw('CONCAT(firstname, " ", lastname) as full_name, id')
+                    ->pluck('full_name', 'id')
+                    ->toArray();
+                return  $tenants;
+            case 'invoice_type':
+                $distinctInvoiceTypes = Invoice::distinct('invoice_type')->pluck('invoice_type');
+            return  $distinctInvoiceTypes;
+            case 'status':
+                return [
+                    'paid' => 'Paid',
+                    'unpaid' => 'Unpaid',
+                    'Over Due' => 'Over Due',
+                    'partially_paid' => 'Partially Paid',
+
+                ];
+                // Add more cases for additional filter fields
+            default:
+                return [];
+        }
+    }
+
       ////// PoLymorphism relationship (Can be Either User, Vendor or Supplier)
       public function model()
       {

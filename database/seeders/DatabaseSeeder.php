@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             PropertyTypeSeeder::class,
             ChartOfAccountsSeeder::class,
             PaymentTypeSeeder::class,
+            RolesTableSeeder::class,
+            InvoiceTaskSeeder::class,
         ]);
     }
 }

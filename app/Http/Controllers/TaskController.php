@@ -34,12 +34,24 @@ class TaskController extends Controller
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['NAME', 'COMMAND', 'FREQUENCY', 'DATES', 'TIMES', 'STATUS', 'ACTIONS'],
+            'headers' => ['NAME', 'COMMAND', 'FREQUENCY', 'DATES', 'TIMES', 'STATUS', 'MONITOR', 'ACTIONS'],
             'rows' => [],
         ];
 
         foreach ($taskdata as $item) {
             $status = $item->status ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">Inactive</span>';
+            $monitoredTasks = $item->monitoredTasks;
+            if ($monitoredTasks->isEmpty()) {
+                $monitorLink = '<form method="POST" action="' . url('linkmonitor', ['task' => $item]) . '" style="display:inline;">'
+                                    . csrf_field() .
+                                    '<button type="submit" class="badge badge-warning" style="float: right; margin-right:10px">Link Monitor</button>
+                                </form>';
+                $monitorLink = '<a href="' . url('linkmonitor', ['task' => $item]) . '" class="badge badge-warning" style="float: right; margin-right:10px">Add Monitor</a>';
+            } else {
+                $monitorLink = '<span class="badge badge-success" style="float: right; margin-right:10px">Monitoring</a>';
+            }
+
+            //  dd($monitoredTasks);
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->name,
@@ -48,6 +60,7 @@ class TaskController extends Controller
                 'Day of the month: ' . $item->variable_one . ' </br> Day of the month: ' . $item->variable_two,
                 $item->time,
                 $status,
+                $monitorLink,
             ];
         }
 
@@ -58,12 +71,12 @@ class TaskController extends Controller
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['','NAME', 'TYPE','STARTED AT', 'FINISHED AT','FAILED AT','SKIPPED AT','CREATED_AT'],
+            'headers' => ['', 'NAME', 'TYPE', 'STARTED AT', 'FINISHED AT', 'FAILED AT', 'SKIPPED AT', 'CREATED_AT'],
             'rows' => [],
         ];
 
         foreach ($taskMonitorData as $item) {
-           
+
             $tableData['rows'][] = [
                 'id' => $item->id,
                 'name' => $item->name,  // Replace 'name' with the actual property you want to display
@@ -71,7 +84,7 @@ class TaskController extends Controller
                 $item->last_started_at,
                 $item->last_finished_at,
                 $item->last_failed_at,
-                $item->last_skipped_at, 
+                $item->last_skipped_at,
                 $item->created_at, // Replace 'type' with the actual property you want to display
                 // Add other properties as needed
             ];
@@ -102,6 +115,16 @@ class TaskController extends Controller
         return View('admin.CRUD.form', $viewData);
     }
 
+    public function linkmonitor(Task $task)
+    {
+       // dd($task);
+        DB::table('monitored_scheduled_tasks')
+            ->where('name', $task->command)
+            ->update(['task_id' => $task->id]);
+
+        return redirect($this->controller['0'])->with('status', 'Monitor for this Task Added Successfully');
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -118,8 +141,8 @@ class TaskController extends Controller
 
         // After saving the task, find matching records in monitored_scheduled_tasks and update them
         DB::table('monitored_scheduled_tasks')
-        ->where('name', $task->command)
-        ->update(['task_id' => $task->id]);
+            ->where('name', $task->command)
+            ->update(['task_id' => $task->id]);
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
     }
@@ -138,27 +161,30 @@ class TaskController extends Controller
             '2' => '',
         ]);
 
-         /// DATA FOR PAYMENTS TAB
-         $taskMonitorData = DB::table('monitored_scheduled_tasks')
-                        ->where('name', $task->command)
-                        ->get();
-        // dd($payments);
-         $taskMonitorTableData = $this->getTaskMonitorData($taskMonitorData);
+        //   $monitoredTasks = $task->monitoredTasks;
+        //   dd($monitoredTasks);
 
-      //s   dd($taskMonitorTableData);
+        /// DATA FOR MONITORED TAB
+        $taskMonitorData = DB::table('monitored_scheduled_tasks')
+            ->where('name', $task->command)
+            ->get();
+        // dd($payments);
+        $taskMonitorTableData = $this->getTaskMonitorData($taskMonitorData);
+
+        //s   dd($taskMonitorTableData);
 
 
         $tabTitles = collect([
             'Monitor Task',
         ]);
 
-        
+
 
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Monitor Task') {
-                $tabContents[] = View('admin.task.task_monitor',['data' => $taskMonitorTableData], compact('taskMonitorData'))->render();
-            } 
+                $tabContents[] = View('admin.task.task_monitor', ['data' => $taskMonitorTableData], compact('taskMonitorData'))->render();
+            }
         }
         return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }

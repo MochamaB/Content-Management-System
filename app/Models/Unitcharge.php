@@ -63,11 +63,13 @@ class Unitcharge extends Model
     {
         return $this->belongsTo(Chartofaccount::class);
     }
+//
+ //   public function lease()
+  //  {
+    //    return $this->belongsTo(Lease::class, 'unit_id');
+ //   }
 
-    public function lease()
-    {
-        return $this->belongsTo(Lease::class, 'unit_id');
-    }
+
     // Accessor to get the chartofaccounts name
     public function getChartOfAccountsNameAttribute()
     {

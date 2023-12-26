@@ -134,7 +134,8 @@ class AppServiceProvider extends ServiceProvider
                                                         'utility'=> ['display' => 'Utilities']]],
 
                 'Leasing' => ['icon' => 'key','submodules' => [
-                                                        'lease'=> ['display' => 'Leases'],]],
+                                                        'lease'=> ['display' => 'Leases'],
+                                                        'invoice'=> ['display' => 'Invoices'],]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
                                                         'chartofaccount'=> ['display' => 'Chart Of Accounts'],

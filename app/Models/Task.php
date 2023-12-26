@@ -62,6 +62,10 @@ class Task extends Model
         }
     }
     
+    public function monitoredTasks()
+    {
+        return $this->hasMany(MonitoredScheduledTask::class, 'task_id', 'id');
+    }
 
 
 

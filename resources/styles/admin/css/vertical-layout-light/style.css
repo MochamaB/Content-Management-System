@@ -28884,6 +28884,7 @@ div.tagsinput span.tag a {
   transition: width 0.25s ease, margin 0.25s ease;
   width: calc(100% - 220px);
   min-height: calc(100vh - 97px);
+  overflow: hidden;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;

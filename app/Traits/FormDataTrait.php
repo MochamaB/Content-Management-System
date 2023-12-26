@@ -42,5 +42,20 @@ trait FormDataTrait
         return compact('cards', 'data',);
     }
 
+    public function filterData($modelClass, $model = null)
+    {
+        
+        $filters = $modelClass::$filters;
+        $data = [];
+
+        // For create and edit
+        foreach ($filters as $filter => $filtername) {
+                // If default data is not provided, set the value from getFieldData
+                $data[$filter] = $modelClass::getFilterData($filter, $model);   
+        }
+
+        return compact('filters', 'data',);
+    }
+
     
 }

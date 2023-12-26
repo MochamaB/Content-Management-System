@@ -5,7 +5,7 @@ Run php artisan queue:table  --Generate the jobs table for the message queue.
 php artisan migrate
 php artisan permission:create-permission-routes
 php artisan db:seed
-php artisan schedule-monitor:sync
+php artisan schedule-monitor:sync  ---Add all tasks to spatie monitor 
 
 php artisan queue:work ---Keep running all the time
 

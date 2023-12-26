@@ -57,7 +57,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID','BALANCE', 'ACTIONS'],
+            'headers' => ['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'],
             'rows' => [],
         ];
 
@@ -67,7 +67,7 @@ class TableViewDataService
                 'paid' => 'active',
                 'unpaid' => 'warning',
                 'Over Due' => 'danger',
-                'partially_paid' => 'secondary',
+                'partially_paid' => 'information',
             ];
             //// GET INVOICE STATUS. IF STATUS UNPAID AND DUEDATE
             $today = Carbon::now();
@@ -90,21 +90,21 @@ class TableViewDataService
             }
 
             $statusClass = $statusClasses[$status] ?? 'secondary';
-            $invoiceStatus = '<span class="badge badge-' .$statusClass . '">' . $status . '</span>';
-            $balanceStatus = '<span style ="font-weight:700" class="text-' .$statusClass . '">' . $sitesettings->site_currency.'. '.$balance . '</span>';
+            $invoiceStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
+            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . $balance . '</span>';
 
-                $tableData['rows'][] = [
-                    'id' => $item->id,
-                    $invoiceStatus . '</br></br> INV#: ' . $item->id . '-' . $item->referenceno,
-                    '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
-                        Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
-                    $item->invoice_type,
-                    $sitesettings->site_currency.'. '.$item->totalamount,
-                    $sitesettings->site_currency.'. '.$totalPaid,
-                    $balanceStatus.'  ' .$payLink,
-                   
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $invoiceStatus . '</br></br> INV#: ' . $item->id . '-' . $item->referenceno,
+                '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
+                    Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
+                $item->invoice_type,
+                $sitesettings->site_currency . '. ' . $item->totalamount,
+                $sitesettings->site_currency . '. ' . $totalPaid,
+                $balanceStatus . '  ' . $payLink,
 
-                ];
+
+            ];
         }
 
         return $tableData;
@@ -118,7 +118,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED','STATUS', 'ACTIONS'],
+            'headers' => ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS', 'ACTIONS'],
             'rows' => [],
         ];
 
@@ -152,16 +152,16 @@ class TableViewDataService
 
         foreach ($paymentdata as $item) {
             $paymenttype = $item->paymentType;
-            $type =$item->model;
+            $type = $item->model;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 'RCPT#: ' . $item->id . '-' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 $type->invoice_type,
-                $paymenttype->name.
-                ' </br>
-                <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> '.$item->payment_code,
+                $paymenttype->name .
+                    ' </br>
+                <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> ' . $item->payment_code,
                 $item->totalamount,
             ];
         }
@@ -170,6 +170,97 @@ class TableViewDataService
     }
 
 
+    ////////////////
 
+    public function getUnitChargeData($unitchargedata)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'],
+            'rows' => [],
+        ];
 
+        foreach ($unitchargedata as $item) {
+            $nextDateFormatted = empty($item->nextdate) ? 'Charged Once' : Carbon::parse($item->nextdate)->format('Y-m-d');
+            $charge_name = $item->charge_name;
+            $charge_cycle = $item->charge_cycle;
+            $charge_type = $item->charge_type;
+            $rate = $item->rate;
+            $recurring_charge = $item->recurring_charge;
+            $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
+            $unit = $item->unit->unit_number;
+            $property = $item->property->property_name;
+
+            // If the current charge has child charges, add them to the charge name
+            if ($item->childrencharge->isNotEmpty()) {
+                foreach ($item->childrencharge as $child) {
+                    $charge_name .= ' <br><i class=" mdi mdi-subdirectory-arrow-right mdi-24px text-primary">' . $child->charge_name . '</li>';
+                    $charge_cycle .= ' <br></br><li class="text-primary">' . $child->charge_cycle . '</li>';
+                    $charge_type .= ' <br></br><li class="text-primary">' . $child->charge_type . '</li>';
+                    $rate .= ' <br></br><li class="text-primary">' . $child->rate . '</li>';
+                }
+            }
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $charge_name,
+                $charge_cycle,
+                $charge_type,
+                $rate,
+                $item->recurring_charge,
+                \Carbon\Carbon::parse($item->updated_at)->format('d M Y'),
+                $nextDateFormatted,
+
+            ];
+            // If the current charge has child charges, add them to the table
+        }
+
+        return $tableData;
+    }
+
+    ////////////
+    public function getIndexUnitChargeData($unitchargedata)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['UNIT', 'CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($unitchargedata as $item) {
+            $nextDateFormatted = empty($item->nextdate) ? 'Charged Once' : Carbon::parse($item->nextdate)->format('Y-m-d');
+            $charge_name = $item->charge_name;
+            $charge_cycle = $item->charge_cycle;
+            $charge_type = $item->charge_type;
+            $rate = $item->rate;
+            $recurring_charge = $item->recurring_charge;
+            $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
+            $unit = $item->unit->unit_number;
+            $property = $item->property->property_name;
+
+            // If the current charge has child charges, add them to the charge name
+            if ($item->childrencharge->isNotEmpty()) {
+                foreach ($item->childrencharge as $child) {
+                    $charge_name .= ' <br><i class=" mdi mdi-subdirectory-arrow-right mdi-24px text-primary">' . $child->charge_name . '</li>';
+                    $charge_cycle .= ' <br></br><li class="text-primary">' . $child->charge_cycle . '</li>';
+                    $charge_type .= ' <br></br><li class="text-primary">' . $child->charge_type . '</li>';
+                    $rate .= ' <br></br><li class="text-primary">' . $child->rate . '</li>';
+                }
+            }
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $unit . ' - ' . $property,
+                $charge_name,
+                $charge_cycle,
+                $charge_type,
+                $rate,
+                $item->recurring_charge,
+                \Carbon\Carbon::parse($item->updated_at)->format('d M Y'),
+                $nextDateFormatted,
+
+            ];
+            // If the current charge has child charges, add them to the table
+        }
+
+        return $tableData;
+    }
 }

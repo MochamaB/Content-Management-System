@@ -174,11 +174,11 @@ class UnitController extends Controller
         
         $viewData = $this->formData($this->model, $unit);
         $unitdetails = $unit->unitdetails;
-        $charges = $unit->unitcharges()->whereNull('parent_id')->get(); ///data for utilities page
-        $unitChargeController = new UnitChargeController();
-        $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
-        //DATA FOR INVOICES TAB
+        ///Data for utilities page
+        $charges = $unit->unitcharges()->whereNull('parent_id')->get(); 
+        $unitChargeTableData = $this->tableViewDataService->getUnitChargeData($charges);
+
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
