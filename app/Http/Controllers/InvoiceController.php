@@ -107,16 +107,16 @@ class InvoiceController extends Controller
 
     public function index()
     {
-        $invoicedata = $this->model::with('property','lease')->get();
+        $invoicedata = $this->model::all();
         $mainfilter =  $this->model::distinct()->pluck('invoice_type')->toArray();
-        $viewData = $this->formData($this->model);
+     //   $viewData = $this->formData($this->model);
      //   $cardData = $this->cardData($this->model,$invoicedata);
        // dd($cardData);
         $controller = $this->controller;
-        $tableData = $this->getInvoiceData($invoicedata);
+        $tableData = $this->tableViewDataService->getInvoiceData($invoicedata,true);
         
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
-        $viewData,
+      //  $viewData,
         [
          //   'cardData' => $cardData,
         ]);
@@ -144,7 +144,7 @@ class InvoiceController extends Controller
                               })
                     ->get();
 
-        $tableData = $this->tableViewDataService->getIndexUnitChargeData($unitchargedata);
+        $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata,true);
         return View('admin.lease.invoice',['tableData' => $tableData,'controller' => ['unitcharge']]);
     }
 

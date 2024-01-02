@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Notifications\PaymentNotification;
+use App\Services\TableViewDataService;
 
 class PaymentController extends Controller
 {
@@ -27,8 +28,9 @@ class PaymentController extends Controller
      protected $controller;
      protected $model;
      private $paymentService;
+     private $tableViewDataService;
 
-     public function __construct(PaymentService $paymentService)
+     public function __construct(PaymentService $paymentService,TableViewDataService $tableViewDataService)
      {
          $this->model = Payment::class;
          $this->controller = collect([
@@ -37,11 +39,24 @@ class PaymentController extends Controller
          ]);
 
          $this->paymentService = $paymentService;
+         $this->tableViewDataService = $tableViewDataService;
      }
 
     public function index()
     {
-        //
+        $paymentdata = $this->model::with('property','lease','unit')->get();
+        $mainfilter =  $this->model::distinct()->pluck('payment_code')->toArray();
+     //   $viewData = $this->formData($this->model);
+     //   $cardData = $this->cardData($this->model,$invoicedata);
+       // dd($cardData);
+        $controller = $this->controller;
+        $tableData = $this->tableViewDataService->getPaymentData($paymentdata,true);
+        
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+      //  $viewData,
+        [
+         //   'cardData' => $cardData,
+        ]);
     }
 
     /**

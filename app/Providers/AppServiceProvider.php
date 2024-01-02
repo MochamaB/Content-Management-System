@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Invoice;
 use App\Models\WebsiteSetting;
 use App\Models\Slider;
 use App\Models\Testimonial;
@@ -47,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
         Utility::addGlobalScope(new UtilityAccessScope);
         
         Unit::addGlobalScope(new UnitAccessScope);
-    // Invoice::addGlobalScope(new UnitAccessScope);
+        Invoice::addGlobalScope(new UserAccessScope);
     //   User::addGlobalScope(new UnitAccessScope);
 
 
@@ -135,7 +136,9 @@ class AppServiceProvider extends ServiceProvider
 
                 'Leasing' => ['icon' => 'key','submodules' => [
                                                         'lease'=> ['display' => 'Leases'],
-                                                        'invoice'=> ['display' => 'Invoices'],]],
+                                                        'invoice'=> ['display' => 'Invoices'],
+                                                        'paymentvoucher'=> ['display' => 'Payment Vouchers'],
+                                                        'payment'=> ['display' => 'Payments'],]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
                                                         'chartofaccount'=> ['display' => 'Chart Of Accounts'],

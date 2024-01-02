@@ -82,9 +82,9 @@ class Unit extends Model implements HasMedia
     ///// Data for populating cards
     /////Card options
     public static $card = [
-        'units' => 'information',
+        'All units' => 'information',
         'Units Leased' => 'progress',
-        'No of Tenants' => 'information',
+        'No of Tenants' => 'detail',
         // Add more cards as needed
     ];
 
@@ -92,7 +92,7 @@ class Unit extends Model implements HasMedia
     {
         switch ($card) {
 
-            case 'units':
+            case 'All units':
               //  $modelCount =  $modeldata ? $modeldata->count() : Unit::count();
                 $unitCount =  $modeldata ? $modeldata->count() : Unit::count();
                 return $unitCount;

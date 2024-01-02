@@ -69,27 +69,35 @@ class Property extends Model implements HasMedia
     }
 
     ///// Data for populating cards
-        /////Card options
-        public static $card = [
-            'Properties' => 'information',
-            'Units' => 'information',
-            'Utilities' => 'information',
-            // Add more cards as needed
-        ];
+    /////Card options
+    public static $card = [
+        'All Properties' => 'information',
+        'Total Units' => 'detail',
+        'All Utilities' => 'information',
+        'No of Tenants' => 'detail',
+        // Add more cards as needed
+    ];
 
     public static function getCardData($card)
     {
         switch ($card) {
 
-            case 'Properties':
+            case 'All Properties':
                 $propertyCount = Property::count();
                 return $propertyCount;
-            case 'Units':
+            case 'Total Units':
                 $unitCount = Unit::count();
                 return $unitCount;
-            case 'Utilities':
-                    $utilityCount = Utility::count();
-                    return $utilityCount;
+            case 'All Utilities':
+                $utilityCount = Utility::count();
+                return $utilityCount;
+            case 'No of Tenants':
+                $users = User::with('roles')->get();
+                $tenantUsers = $users->filter(function ($user) {
+                    return $user->hasRole('Tenant');
+                });
+                $tenantCount = $tenantUsers->count();
+                return $tenantCount;
         }
     }
     /**

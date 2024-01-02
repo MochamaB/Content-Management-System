@@ -12,6 +12,7 @@ use App\Models\WebsiteSetting;
 use App\Models\MeterReading;
 use App\Models\InvoiceItems;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 
@@ -49,17 +50,25 @@ class TableViewDataService
 
     /////METHOD TO POPULATE INVOICE TABLE
 
-    public function getInvoiceData($invoicedata)
+    public function getInvoiceData($invoicedata, $extraColumns = false)
     {
         // Eager load the 'unit' relationship
         //   $invoicedata->load('user');
         $sitesettings = WebsiteSetting::first();
 
         /// TABLE DATA ///////////////////////////
+       
+        $headers =['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
+          // If $Extra columns is true, insert 'Unit Details' at position 3
+          if ($extraColumns) {
+            array_splice($headers, 2, 0, ['UNIT DETAILS']);
+        }
+    
         $tableData = [
-            'headers' => ['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'],
+            'headers' => $headers,
             'rows' => [],
         ];
+        
 
         foreach ($invoicedata as $item) {
             //// Status Classes for the Invoices////////
@@ -74,6 +83,7 @@ class TableViewDataService
             $totalPaid = $item->payments->sum('totalamount');
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
+            $profpic = url('resources/uploads/images/'.Auth::user()->profilepicture ?? 'avatar.png');
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
@@ -93,7 +103,7 @@ class TableViewDataService
             $invoiceStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . $balance . '</span>';
 
-            $tableData['rows'][] = [
+            $row = [
                 'id' => $item->id,
                 $invoiceStatus . '</br></br> INV#: ' . $item->id . '-' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
@@ -105,25 +115,46 @@ class TableViewDataService
 
 
             ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, 
+                '<div class="d-flex "> <img src="'.$profpic.'" alt="">
+                <div>
+                  <h6>'.$item->unit->unit_number.' - '.$item->property->property_name.'</h6>
+                <p>'.$item->model->firstname.' '.$item->model->lastname.
+                '</p>
+                </div>
+              </div>'); // Replace with how you get unit details
+            }
+    
+            $tableData['rows'][] = $row;
         }
 
         return $tableData;
     }
 
     ///////////////////
-    public function getPaymentVoucherData($paymentvoucherdata)
+    public function getPaymentVoucherData($paymentvoucherdata, $extraColumns = false)
     {
         // Eager load the 'unit' relationship
         //   $invoicedata->load('user');
 
         /// TABLE DATA ///////////////////////////
+       
+            $headers = ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS', 'ACTIONS'];
+      
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 2, 0, ['UNIT DETAILS']);
+        }
+    
         $tableData = [
-            'headers' => ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS', 'ACTIONS'],
+            'headers' => $headers,
             'rows' => [],
         ];
 
         foreach ($paymentvoucherdata as $item) {
-            $tableData['rows'][] = [
+          $row = [
                 'id' => $item->id,
                 $item->referenceno,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
@@ -131,6 +162,12 @@ class TableViewDataService
                 $item->totalamount,
                 $item->status,
             ];
+             // If $Extra Columns is true, insert unit details at position 3
+             if ($extraColumns) {
+                array_splice($row, 3, 0, $item->unit->unit_number.' - '.$item->property->property_name); // Replace with how you get unit details
+            }
+    
+            $tableData['rows'][] = $row;
         }
 
         return $tableData;
@@ -139,21 +176,29 @@ class TableViewDataService
 
 
     ///////////////
-    public function getPaymentData($paymentdata)
+    public function getPaymentData($paymentdata, $extraColumns = false)
     {
         // Eager load the 'unit' relationship
-        //   $invoicedata->load('user');
-
-        /// TABLE DATA ///////////////////////////
+        // $invoicedata->load('user');
+    
+        // TABLE DATA
+        $headers = ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS','ACTIONS'];
+        
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 2, 0, ['UNIT DETAILS']);
+        }
+    
         $tableData = [
-            'headers' => ['REFERENCE NO', 'PAYMENT DATE', 'TYPE', 'PAYMENT TYPE', 'AMOUNT PAID', 'ACTIONS'],
+            'headers' => $headers,
             'rows' => [],
         ];
-
+    
         foreach ($paymentdata as $item) {
             $paymenttype = $item->paymentType;
             $type = $item->model;
-            $tableData['rows'][] = [
+    
+            $row = [
                 'id' => $item->id,
                 'RCPT#: ' . $item->id . '-' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
@@ -164,19 +209,35 @@ class TableViewDataService
                 <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> ' . $item->payment_code,
                 $item->totalamount,
             ];
+    
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->unit->unit_number.' - '.$item->property->property_name); // Replace with how you get unit details
+            }
+    
+            $tableData['rows'][] = $row;
         }
-
+    
         return $tableData;
     }
+    
+    
 
 
     ////////////////
 
-    public function getUnitChargeData($unitchargedata)
+    public function getUnitChargeData($unitchargedata, $extraColumns = false)
     {
-        /// TABLE DATA ///////////////////////////
+      
+        $headers = ['CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'];
+         
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 0, 0, ['UNIT DETAILS']);
+        }
+    
         $tableData = [
-            'headers' => ['CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'],
+            'headers' => $headers,
             'rows' => [],
         ];
 
@@ -200,7 +261,7 @@ class TableViewDataService
                     $rate .= ' <br></br><li class="text-primary">' . $child->rate . '</li>';
                 }
             }
-            $tableData['rows'][] = [
+            $row = [
                 'id' => $item->id,
                 $charge_name,
                 $charge_cycle,
@@ -211,7 +272,13 @@ class TableViewDataService
                 $nextDateFormatted,
 
             ];
-            // If the current charge has child charges, add them to the table
+            
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 1, 0, $item->unit->unit_number.' - '.$item->property->property_name); // Replace with how you get unit details
+            }
+    
+            $tableData['rows'][] = $row;
         }
 
         return $tableData;
