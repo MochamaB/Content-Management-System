@@ -114,6 +114,11 @@ class Lease extends Model implements HasMedia
         return $this->hasMany(Paymentvoucher::class, 'unit_id');
     }
 
+    public function unitcharges()
+{
+    return $this->hasMany(Unitcharge::class, 'unit_id');
+}
+
     public function scopeUserUnits($query)
     {
         // Get the authenticated user

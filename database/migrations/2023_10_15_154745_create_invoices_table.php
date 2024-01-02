@@ -17,6 +17,7 @@ class CreateInvoicesTable extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->index();
+            $table->unsignedBigInteger('unitcharge_id')->index();
             $table->string('model_type'); // Who the voucher goes to E.g., "User", "Vendor"
             $table->unsignedBigInteger('model_id'); // ID of the specific model instance
             $table->string('referenceno');
@@ -27,6 +28,7 @@ class CreateInvoicesTable extends Migration
             $table->timestamps();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
+            $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');
         });
     }
 

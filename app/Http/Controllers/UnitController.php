@@ -66,10 +66,15 @@ class UnitController extends Controller
         $unitdata = $this->model::with('property','lease')->get();
         $mainfilter =  $this->model::distinct()->pluck('unit_type')->toArray();
         $viewData = $this->formData($this->model);
+        $cardData = $this->cardData($this->model,$unitdata);
+       // dd($cardData);
         $controller = $this->controller;
         $tableData = $this->getUnitData($unitdata);
         
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+        [
+            'cardData' => $cardData,
+        ]);
     }
 
     /**
@@ -138,6 +143,8 @@ class UnitController extends Controller
             'Users',
             'Charges & Utilities',
             'Invoices',
+            'Vouchers & Payments',
+            'Payments',
             'Meter Readings',
             //    'Maintenance',
             //    'Financials',
@@ -167,14 +174,24 @@ class UnitController extends Controller
         
         $viewData = $this->formData($this->model, $unit);
         $unitdetails = $unit->unitdetails;
-        $charges = $unit->unitcharges; ///data for utilities page
-        $unitChargeController = new UnitChargeController();
-        $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
 
-        //DATA FOR INVOICES TAB
+        ///Data for utilities page
+        $charges = $unit->unitcharges()->whereNull('parent_id')->get(); 
+        $unitChargeTableData = $this->tableViewDataService->getUnitChargeData($charges);
+
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
+
+          /// DATA FOR PAYMENTVOUCHER TAB
+          $paymentvoucher = $unit->paymentvouchers;
+          // dd($payments);
+           $paymentvoucherTableData = $this->tableViewDataService->getPaymentVoucherData($paymentvoucher);
+
+         /// DATA FOR PAYMENTS TAB
+         $payments = $unit->payments;
+        // dd($payments);
+         $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
 
         $meterReadings = $unit->meterReadings;
@@ -194,6 +211,10 @@ class UnitController extends Controller
                 $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges'))->render();
             }elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
+            }elseif ($title === 'Vouchers & Payments') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']])->render();
+            }elseif ($title === 'Payments') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], 
                 compact('id'))->render();

@@ -1,6 +1,6 @@
-<div class=" contwrapper" id="printMe">
+<div class=" contwrapper table-responsive table-responsive-sm" id="printMe">
 
-    <table class="table">
+<table class="table ">
         <tbody>
             <!--- FIRST SECTION  HEADER------->
             <tr>
@@ -65,7 +65,7 @@
     <!------- THIRD LEVEL INVOICE ITEMS -->
     <table class="table table-hover table-bordered" style="font-size:12px;border:1px solid black;">
         <thead>
-            <tr class="tableheading">
+            <tr class="tableheading" style="height:35px;">
 
                 <th>No.</th>
                 <th class="text-center">Description </th>
@@ -77,7 +77,8 @@
             @foreach($invoice->invoiceItems as $key=> $item)
             <tr style="height:35px;">
                 <td class="text-center">{{$key+1}}</td>
-                <td class="text-center">{{$item->charge_name}} Charge
+                <td class="text-center" style="text-transform: capitalize;">
+                    {{$item->charge_name}} Charge
                     <!--- METER READINGS -->
                     @if($item->unitcharge->charge_type == 'units')
                         @php

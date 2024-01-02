@@ -5,6 +5,7 @@
 namespace App\Actions;
 
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Paymentvoucher;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -34,6 +35,17 @@ class CalculateInvoiceTotalAmountAction
 
         // Update the totalamount field in the invoice header
         $paymentVoucher->update(['totalamount' => $totalAmount]);
+
+    }
+    public function payment(Payment $payment)
+    {
+        // Calculate the total amount for the given invoice
+        $totalAmount = DB::table('payment_items')
+            ->where('payment_id', $payment->id)
+            ->sum('amount');
+
+        // Update the totalamount field in the invoice header
+        $payment->update(['totalamount' => $totalAmount]);
 
     }
 }

@@ -53,7 +53,8 @@ class UserCreatedNotification extends Notification
         return (new MailMessage)->view(
             'email.template',
             ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading]
-        );
+        )
+        ->subject('New User Created');
     }
 
     /**

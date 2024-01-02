@@ -79,6 +79,46 @@ class Unit extends Model implements HasMedia
         }
     }
 
+    ///// Data for populating cards
+    /////Card options
+    public static $card = [
+        'All units' => 'information',
+        'Units Leased' => 'progress',
+        'No of Tenants' => 'detail',
+        // Add more cards as needed
+    ];
+
+    public static function getCardData($card, $modeldata = null)
+    {
+        switch ($card) {
+
+            case 'All units':
+              //  $modelCount =  $modeldata ? $modeldata->count() : Unit::count();
+                $unitCount =  $modeldata ? $modeldata->count() : Unit::count();
+                return $unitCount;
+            case 'Units Leased':
+                $data = [];
+                $unitCount = $modeldata ? $modeldata->count() : Unit::count();
+                $leaseCount = Lease::count();
+                $percentage = ($unitCount > 0) ? round(($leaseCount / $unitCount) * 100) : 0;
+                // Define the data structure for 'lease' card
+                $data = [
+                    'modelCount' => $unitCount,
+                    'modeltwoCount' => $leaseCount,
+                    'percentage' => $percentage,
+                ];
+             //   $data = compact('unitCount', 'leaseCount', 'percentage');
+                return $data;
+            case 'No of Tenants':
+                $users = User::with('roles')->get();
+                $tenantUsers = $users->filter(function ($user) {
+                    return $user->hasRole('Tenant');
+                });
+                $tenantCount = $tenantUsers->count();
+                return $tenantCount;
+        }
+    }
+
 
     public function property()
     {
@@ -129,6 +169,16 @@ class Unit extends Model implements HasMedia
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function paymentvouchers()
+    {
+        return $this->hasMany(Paymentvoucher::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function unitcharges()

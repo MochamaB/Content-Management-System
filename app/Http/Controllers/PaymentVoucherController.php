@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Paymentvoucher;
 use Illuminate\Http\Request;
 use App\Models\Unitcharge;
 use App\Services\PaymentVoucherService;
+use App\Services\TableViewDataService;
+use App\Traits\FormDataTrait;
 
 class PaymentVoucherController extends Controller
 {
@@ -13,17 +16,39 @@ class PaymentVoucherController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    use FormDataTrait;
+    protected $controller;
+    protected $model;
     private $paymentVoucherService;
+    private $tableViewDataService;
    
 
-    public function __construct(PaymentVoucherService $paymentVoucherService)
+    public function __construct(PaymentVoucherService $paymentVoucherService,TableViewDataService $tableViewDataService)
     {
+        $this->model = Paymentvoucher::class;
+        $this->controller = collect([
+            '0' => 'paymentvoucher', // Use a string for the controller name
+            '1' => 'New Paymentvoucher',
+        ]);
         $this->paymentVoucherService = $paymentVoucherService;
+        $this->tableViewDataService = $tableViewDataService;
        
     }
     public function index()
     {
-        //
+        $paymentvoucherdata = $this->model::with('property','unit')->get();
+        $mainfilter =  $this->model::distinct()->pluck('voucher_type')->toArray();
+     //   $viewData = $this->formData($this->model);
+     //   $cardData = $this->cardData($this->model,$invoicedata);
+       // dd($cardData);
+        $controller = $this->controller;
+        $tableData = $this->tableViewDataService->getPaymentVoucherData($paymentvoucherdata,true);
+        
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+      //  $viewData,
+        [
+         //   'cardData' => $cardData,
+        ]);
     }
 
     /**

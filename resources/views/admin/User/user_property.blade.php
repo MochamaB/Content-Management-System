@@ -4,9 +4,9 @@
     <h4>Property Access</h4>
     <hr>
     <div id="accordion" class="propertyaccess">
-    @if(stripos($savedRole, 'tenant') !== false)
+        @if(stripos($savedRole, 'tenant') !== false)
         @include('layouts.admin.nodata', ['message' => 'You have to create a Lease to assign units to Tenants'])
-    @else
+        @else
         @if ($propertyaccess->isEmpty())
         @include('layouts.admin.nodata', ['message' => 'No accessible units available. Contact Admin'])
         @endif
@@ -32,7 +32,9 @@
                     <div style="padding:7px 5px 7px 40px; border-bottom:2px solid #ced4da" class="col-md-4">
 
                         <div class="form-check form-check-inline align-items-center">
-                            <input class="form-check-input p-0 body-checkbox" type="checkbox" name="unit_id[{{ $unit->id }}]" value="{{ $unit->id }}" id="">
+                            <input class="form-check-input p-0 body-checkbox" type="checkbox" name="unit_id[{{ $unit->id }}]" value="{{ $unit->id }}" id="" {{ in_array($unit->id, $assignedUnits) 
+                                                    ? 'disabled'
+                                                    : '' }}>
                             <input type="hidden" name="property_id[{{ $unit->id }}]" value="{{ $unit->property_id }}">
                             <label class="checkboxlabelbody pt-0 m-0" for="">
                                 {{ $unit->unit_number }}
@@ -50,6 +52,7 @@
     @endif
     @include('admin.CRUD.wizardbuttons')
 </form>
+
 @elseif(($routeParts[1] === 'edit'))
 <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Property Acess &nbsp;
     @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
@@ -57,6 +60,7 @@
 </h4>
 @endif
 <hr>
+
 <div id="accordion" class="propertyacess">
 
     @if ($propertyaccess->isEmpty())
@@ -86,9 +90,8 @@
                 <div style="padding:7px 5px 7px 40px; border-bottom:2px solid #ced4da" class="col-md-4">
 
                     <div class="form-check form-check-inline align-items-center">
-                        <input class="form-check-input p-0 body-checkbox" type="checkbox" name="unit_id[{{ $unit->id }}]" value="{{ $unit->id }}" id="" {{ in_array($unit->id, $assignedproperties) 
-                                                    ? 'checked'
-                                                    : '' }}>
+                        <input class="form-check-input p-0 body-checkbox" type="checkbox" name="unit_id[{{ $unit->id }}]" value="{{ $unit->id }}" id="" {{ in_array($unit->id, $assignedproperties) ? 
+                            'checked' : (in_array($unit->id, $assignedUnits) ? 'disabled' : '') }}>
                         <input type="hidden" name="property_id[{{ $unit->id }}]" value="{{ $unit->property_id }}">
                         <label class="checkboxlabelbody pt-0 m-0" for="">
                             {{ $unit->unit_number }}
@@ -103,6 +106,7 @@
     </div>
     @endforeach
 </div><br /><br />
+
 
 
 <div class="col-md-6">

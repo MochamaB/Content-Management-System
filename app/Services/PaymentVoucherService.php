@@ -45,7 +45,7 @@ class PaymentVoucherService
 //
 
                 //4. Create Transactions for ledger
-                $this->recordTransactionAction->securitydeposit($paymentVoucher);
+                $this->recordTransactionAction->securitydeposit($paymentVoucher, $model);
         
                 return $paymentVoucher;
            

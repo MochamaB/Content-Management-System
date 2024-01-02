@@ -26,7 +26,7 @@ class Property extends Model implements HasMedia
         'property_name' => ['label' => 'Property Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
-       
+
 
 
         // Add more fields as needed
@@ -48,6 +48,8 @@ class Property extends Model implements HasMedia
         // Add more filter fields as needed
     ];
 
+
+
     public static $headingAfterField = 'property_name';
     public static $additionalHeading = 'New Property';
 
@@ -63,7 +65,39 @@ class Property extends Model implements HasMedia
                     $data[$category] = $propertytype->pluck('property_type', 'id')->toArray();
                 }
                 return $data;
-          
+        }
+    }
+
+    ///// Data for populating cards
+    /////Card options
+    public static $card = [
+        'All Properties' => 'information',
+        'Total Units' => 'detail',
+        'All Utilities' => 'information',
+        'No of Tenants' => 'detail',
+        // Add more cards as needed
+    ];
+
+    public static function getCardData($card)
+    {
+        switch ($card) {
+
+            case 'All Properties':
+                $propertyCount = Property::count();
+                return $propertyCount;
+            case 'Total Units':
+                $unitCount = Unit::count();
+                return $unitCount;
+            case 'All Utilities':
+                $utilityCount = Utility::count();
+                return $utilityCount;
+            case 'No of Tenants':
+                $users = User::with('roles')->get();
+                $tenantUsers = $users->filter(function ($user) {
+                    return $user->hasRole('Tenant');
+                });
+                $tenantCount = $tenantUsers->count();
+                return $tenantCount;
         }
     }
     /**
@@ -71,7 +105,7 @@ class Property extends Model implements HasMedia
      */
     public function propertyType()
     {
-        return $this->belongsTo(PropertyType::class,'property_type');
+        return $this->belongsTo(PropertyType::class, 'property_type');
     }
 
     public function amenities()

@@ -39,6 +39,12 @@ class DashboardController extends Controller
         //
     }
 
+    public function cards()
+    {
+        return View('admin.CRUD.cards_template');
+        
+    }
+
     /**
      * Store a newly created resource in storage.
      *

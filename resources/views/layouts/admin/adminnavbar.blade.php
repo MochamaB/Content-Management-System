@@ -14,7 +14,11 @@
         @endif
       </a>
       <a class="navbar-brand brand-logo-mini" href="index.html">
-        <img src="{{ url('resources/uploads/images/'. ($sitesettings->company_flavicon ?? 'noimage.jpg')) }}" style="height: 60px; width: 150px;">
+      @if ($sitesettings)
+        <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
+        @else
+        <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
+        @endif
       </a>
     </div>
   </div>

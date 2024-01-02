@@ -1,6 +1,8 @@
 <div class="row" style="padding-bottom: 40px;">
     <h2 style="text-transform: capitalize;"><b> Over view</b></h2>
     <hr>
+
+    <!---- normal Card ----->
     <div class="col-md-3">
         <div class="card">
             <div class="card-header">
@@ -12,6 +14,7 @@
             </div>
         </div>
     </div>
+    <!------ ---->
     <div class="col-md-3">
         <div class="card">
             <div class="card-header">

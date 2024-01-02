@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Invoice;
 use App\Models\WebsiteSetting;
 use App\Models\Slider;
 use App\Models\Testimonial;
@@ -46,8 +47,8 @@ class AppServiceProvider extends ServiceProvider
         Property::addGlobalScope(new PropertyAccessScope);
         Utility::addGlobalScope(new UtilityAccessScope);
         
-      Unit::addGlobalScope(new UnitAccessScope);
-    // Invoice::addGlobalScope(new UnitAccessScope);
+        Unit::addGlobalScope(new UnitAccessScope);
+        Invoice::addGlobalScope(new UserAccessScope);
     //   User::addGlobalScope(new UnitAccessScope);
 
 
@@ -134,16 +135,21 @@ class AppServiceProvider extends ServiceProvider
                                                         'utility'=> ['display' => 'Utilities']]],
 
                 'Leasing' => ['icon' => 'key','submodules' => [
-                                                        'lease'=> ['display' => 'Leases'],]],
+                                                        'lease'=> ['display' => 'Leases'],
+                                                        'invoice'=> ['display' => 'Invoices'],
+                                                        'paymentvoucher'=> ['display' => 'Payment Vouchers'],
+                                                        'payment'=> ['display' => 'Payments'],]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
-                                                        'chartofaccount'=> ['display' => 'Chart Of Accounts'],]],
+                                                        'chartofaccount'=> ['display' => 'Chart Of Accounts'],
+                                                        'payment-type'=> ['display' => 'Payment Types'],]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
 
                 'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
 
-                'Tasks' => ['icon' => 'timetable', 'submodules' => ['',]],
+                'Tasks' => ['icon' => 'timetable', 'submodules' => [
+                                                                    'task'=> ['display' => 'System Tasks'],]],
 
                 'Files' => ['icon' => 'file-multiple', 'submodules' => ['',]],
 

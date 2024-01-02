@@ -26,6 +26,16 @@ class Paymentvoucher extends Model
     {
         return $this->morphTo();
     }
+    public function property()
+      {
+          return $this->belongsTo(Property::class,'property_id');
+      }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+
 
     public function paymentvoucherItems()
     {

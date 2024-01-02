@@ -35,7 +35,7 @@
             <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
             <div class="form-group">
                 <h4>Rent <span class="text-muted">(optional)</span></h4>
-                <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="rent" readonly>
+                <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="Rent" readonly>
             </div>
         </div>
         <div class="col-md-5">

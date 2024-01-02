@@ -3,7 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Services\InvoiceService;
+use App\Models\Task;
 
+    
 class GenerateInvoiceCommand extends Command
 {
     /**
@@ -12,6 +15,10 @@ class GenerateInvoiceCommand extends Command
      * @var string
      */
     protected $signature = 'generate:invoice';
+    private $invoiceService;
+
+
+
 
     /**
      * The console command description.
@@ -25,8 +32,22 @@ class GenerateInvoiceCommand extends Command
      *
      * @return int
      */
+
+     public function __construct(InvoiceService $invoiceService)
+    {
+        parent::__construct();
+        $this->invoiceService = $invoiceService;
+    }
     public function handle()
     {
-        return Command::SUCCESS;
+        $task = Task::where('type', 'invoice')->first();
+
+        if ($task->status == 1) {
+            $this->invoiceService->chargesForInvoiceGeneration();
+            $this->info('Invoice Generated Successfully.');
+
+        } else {
+            $this->info('Task is Inactive.');
+        }
     }
 }

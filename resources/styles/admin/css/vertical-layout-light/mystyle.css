@@ -57,6 +57,7 @@
   font-family: "Manrope", sans-serif;
   font-weight: 500;
   border-right: 2px solid #c8c8c9;
+  border-left: 2px solid #c8c8c9;
   width: 255px;
   padding: 0px;
   z-index: 11;
@@ -255,6 +256,20 @@
 
 }
 
+.table-formcontrol2 {
+  padding: .4375rem .75rem;
+  border: none;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 0px;
+  height: 2rem;
+  color: #777;
+  padding-right: 120px;
+  width: 100%;
+
+
+}
+
 .formcontrol2.is-invalid {
   border-color: #dc3545;
   /* Red border color for invalid inputs */
@@ -325,13 +340,38 @@
   border: 1px solid #e3e3e3;
   border-radius: 0px;
 }
-
+.card .card-title {
+  color: #010101;
+  margin-bottom: 0.6rem;
+  text-transform: capitalize;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+.card-dashboard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid #e3e3e3;
+  border-radius: 0px;
+}
 .modalheader {
   background-color: darkblue;
 }
 
 .modaltitle {
   color: white;
+}
+
+a.table:link {
+  color: #1F3BB3;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: capitalize;
 }
 
 a.table:link {
@@ -631,6 +671,9 @@ select:focus {
   text-transform: uppercase;
 }
 
+a .badge:hover {
+  transform: scale(1.2);
+}
 .badge-active {
   color: #038d21 !important;
   border: 1px solid #038d21 !important;
@@ -661,3 +704,42 @@ select:focus {
   border: 2px solid #3302a5c4 !important;
 }
 
+.text-active{
+  color: #038d21 !important;
+}
+
+
+/* Responsiveness  */
+
+@media screen and (max-width: 991px) {
+
+  .sidebar-offcanvas {
+    position: fixed;
+    max-height: calc(100vh - 97px);
+    top: 97px;
+    bottom: 0;
+    overflow: auto;
+    right: -255px; /* Adjust the sidebar width accordingly */
+    -webkit-transition: all 0.25s ease-out;
+    -o-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+  }
+
+  .sidebar-offcanvas.active {
+    right: 0;
+  }
+
+  .navbar .navbar-brand-wrapper {
+    background: #F4F5F7;
+    transition: width 0.25s ease, background 0.25s ease;
+    -webkit-transition: width 0.25s ease, background 0.25s ease;
+    -moz-transition: width 0.25s ease, background 0.25s ease;
+    -ms-transition: width 0.25s ease, background 0.25s ease;
+    width: 248px;
+    height: 97px;
+    padding: 20px 30px;
+}
+
+
+
+}

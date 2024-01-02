@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Scope;
   
 class UnitAccessScope implements Scope
 {
+   
     public function apply(Builder $builder, Model $model)
     {
         // Get the authenticated user
@@ -21,4 +22,5 @@ class UnitAccessScope implements Scope
        
         }
     }
+   
 }

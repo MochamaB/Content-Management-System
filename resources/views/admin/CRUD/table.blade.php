@@ -10,13 +10,13 @@
         <tbody>
             @foreach($data['rows'] as $key => $row)
             <tr>
-                <td style="padding-left: 15px;"><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
+                <td style="padding-left: 15px;padding-right:15px;"><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
                 @foreach(array_slice($row, 2) as $cell)
-                <td style="text-transform: capitalize;padding-left: 15px;">{!! $cell !!}</td>
+                <td style="text-transform: capitalize;padding-left: 15px; padding-right:15px;">{!! $cell !!}</td>
                 @endforeach
                 <td>
                     <!-- SHOW BUTTON -->
-                    <a href="{{url($controller[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-clipboard-text mdi-24px text-dark"></i></a>
+                    <a href="{{url($controller[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-eye mdi-24px text-dark"></i></a>
                     <!-- EDIT BUTTON -->
                     @if( Auth::user()->can($controller[0].'.edit') || Auth::user()->id === 1)
                     <a href="{{url($controller[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
