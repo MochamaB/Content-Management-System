@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Unit;
 use App\Models\Property;
+use App\Models\Lease;
 
 class DashboardController extends Controller
 {
@@ -18,15 +19,38 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
-        if (Gate::allows('view-all', $user)) {
-          
-            $units = Unit::all(); 
-        } else {
-            $units = $user->units;
-        }
-        $properties = Property::all();
+        $cardData = [];
+      
+        if ($user->hasRole('admin') || Gate::allows('view-all', $user)) 
+        {
+            $propertyCount = Property::count();// Logic to get property count for admin;
+            
+            $unitCount = Unit::count();
+            $leaseCount = Lease::count();
+            $percentage = ($unitCount > 0) ? round(($leaseCount / $unitCount) * 100) : 0;// Logic to get maintenance request count for admin;
 
-        return View('admin.Report.dashboard',compact('units','properties'));
+            // Add other data retrieval logic for admin role.
+
+            // Structure the data with card type information.
+            $cardData['cards'] = [
+                'All Properties' => 'information',
+                'Units' => 'progress',
+                // Add other card types for admin role.
+            ];
+
+            $cardData['data'] = [
+                'All Properties' => $propertyCount,
+                'Units' => [
+                    'modelCount' => $unitCount,
+                    'modeltwoCount' => $leaseCount,
+                    'percentage' => $percentage,
+                    // Add other data points related to maintenanceCount card.
+                ],
+                // Add other card data for admin role.
+            ];
+        }
+
+        return View('admin.Report.dashboard',compact('cardData'));
     }
 
     /**
