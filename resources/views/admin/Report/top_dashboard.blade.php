@@ -21,7 +21,11 @@
             </div>
             <div class="card-body" style="padding-top:7px;padding-bottom: 0.1em;">
                 <h2 class="rate-percentage text-primary d-flex justify-content-between">
+                @if(is_array($cardData['data'][$card]))
+                    {{ $cardData['data'][$card]['modelCount'] }}
+                    @else
                     {{ $cardData['data'][$card] }}
+                    @endif
                     <span class="text-success text-small d-flex align-items-center">
                         <i class="mdi mdi-trending-up me-2 icon-md"></i>+20%</span>
                 </h2>
@@ -29,7 +33,8 @@
             </div>
             <div class="card-footer" style="background-color:#fff ;">
             <p class="text-muted">
-            Visit Module for More Information
+                Total Units
+                <span class="text-success text-small"></span>
                     </p>
             </div>
         </div>

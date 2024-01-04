@@ -25,6 +25,16 @@ class TableViewDataService
     {
     }
 
+    public function applyDateRangeFilter($query, $month, $year)
+    {
+        if ($month !== 'ALL') {
+            // Get the first and last day of the specified month
+            $firstDayOfMonth = Carbon::create($year, $month, 1)->startOfMonth();
+            $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth();
+            $query->whereBetween('created_at', [$firstDayOfMonth, $lastDayOfMonth]);
+        }
+    }
+
     public function getUnitData($unitdata)
     {
         /// TABLE DATA ///////////////////////////
@@ -57,18 +67,18 @@ class TableViewDataService
         $sitesettings = WebsiteSetting::first();
 
         /// TABLE DATA ///////////////////////////
-       
-        $headers =['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
-          // If $Extra columns is true, insert 'Unit Details' at position 3
-          if ($extraColumns) {
+
+        $headers = ['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
             array_splice($headers, 2, 0, ['UNIT DETAILS']);
         }
-    
+
         $tableData = [
             'headers' => $headers,
             'rows' => [],
         ];
-        
+
 
         foreach ($invoicedata as $item) {
             //// Status Classes for the Invoices////////
@@ -83,7 +93,7 @@ class TableViewDataService
             $totalPaid = $item->payments->sum('totalamount');
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
-            $profpic = url('resources/uploads/images/'.Auth::user()->profilepicture ?? 'avatar.png');
+            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
@@ -117,16 +127,20 @@ class TableViewDataService
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 3, 0, 
-                '<div class="d-flex "> <img src="'.$profpic.'" alt="">
+                array_splice(
+                    $row,
+                    3,
+                    0,
+                    '<div class="d-flex "> <img src="' . $profpic . '" alt="">
                 <div>
-                  <h6>'.$item->unit->unit_number.' - '.$item->property->property_name.'</h6>
-                <p>'.$item->model->firstname.' '.$item->model->lastname.
-                '</p>
+                  <h6>' . $item->unit->unit_number . ' - ' . $item->property->property_name . '</h6>
+                <p>' . $item->model->firstname . ' ' . $item->model->lastname .
+                        '</p>
                 </div>
-              </div>'); // Replace with how you get unit details
+              </div>'
+                ); // Replace with how you get unit details
             }
-    
+
             $tableData['rows'][] = $row;
         }
 
@@ -140,21 +154,21 @@ class TableViewDataService
         //   $invoicedata->load('user');
 
         /// TABLE DATA ///////////////////////////
-       
-            $headers = ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS', 'ACTIONS'];
-      
+
+        $headers = ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS', 'ACTIONS'];
+
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
             array_splice($headers, 2, 0, ['UNIT DETAILS']);
         }
-    
+
         $tableData = [
             'headers' => $headers,
             'rows' => [],
         ];
 
         foreach ($paymentvoucherdata as $item) {
-          $row = [
+            $row = [
                 'id' => $item->id,
                 $item->referenceno,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
@@ -162,11 +176,11 @@ class TableViewDataService
                 $item->totalamount,
                 $item->status,
             ];
-             // If $Extra Columns is true, insert unit details at position 3
-             if ($extraColumns) {
-                array_splice($row, 3, 0, $item->unit->unit_number.' - '.$item->property->property_name); // Replace with how you get unit details
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
             }
-    
+
             $tableData['rows'][] = $row;
         }
 
@@ -180,62 +194,63 @@ class TableViewDataService
     {
         // Eager load the 'unit' relationship
         // $invoicedata->load('user');
-    
+
         // TABLE DATA
-        $headers = ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS','ACTIONS'];
-        
+        $headers = ['REFERENCE NO', 'PAYMENT DATE', 'TYPE', 'AMOUNT', 'PAY METHOD', 'ACTIONS'];
+
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
             array_splice($headers, 2, 0, ['UNIT DETAILS']);
         }
-    
+
         $tableData = [
             'headers' => $headers,
             'rows' => [],
         ];
-    
+
         foreach ($paymentdata as $item) {
             $paymenttype = $item->paymentType;
             $type = $item->model;
-    
+            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $row = [
                 'id' => $item->id,
                 'RCPT#: ' . $item->id . '-' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 $type->invoice_type,
+                $item->totalamount,
                 $paymenttype->name .
                     ' </br>
                 <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> ' . $item->payment_code,
-                $item->totalamount,
+
             ];
-    
+
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 3, 0, $item->unit->unit_number.' - '.$item->property->property_name); // Replace with how you get unit details
+                array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
             }
-    
+
             $tableData['rows'][] = $row;
         }
-    
+
         return $tableData;
     }
-    
-    
+
+
 
 
     ////////////////
 
     public function getUnitChargeData($unitchargedata, $extraColumns = false)
     {
-      
+
         $headers = ['CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'];
-         
+
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
             array_splice($headers, 0, 0, ['UNIT DETAILS']);
         }
-    
+
         $tableData = [
             'headers' => $headers,
             'rows' => [],
@@ -272,12 +287,12 @@ class TableViewDataService
                 $nextDateFormatted,
 
             ];
-            
+
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 1, 0, $item->unit->unit_number.' - '.$item->property->property_name); // Replace with how you get unit details
+                array_splice($row, 1, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
             }
-    
+
             $tableData['rows'][] = $row;
         }
 
@@ -285,48 +300,47 @@ class TableViewDataService
     }
 
     ////////////
-    public function getIndexUnitChargeData($unitchargedata)
+    public function getMeterReadingsData($meterReadings, $extraColumns = false)
     {
-        /// TABLE DATA ///////////////////////////
+
+        $headers = ['UNIT', 'CHARGE', 'PREVIOUS READING', 'CURRENT', 'USAGE', 'RATE', 'AMOUNT', 'ACTIONS'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 0, 0, ['UNIT DETAILS']);
+        }
+
         $tableData = [
-            'headers' => ['UNIT', 'CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'],
+            'headers' => $headers,
             'rows' => [],
         ];
 
-        foreach ($unitchargedata as $item) {
-            $nextDateFormatted = empty($item->nextdate) ? 'Charged Once' : Carbon::parse($item->nextdate)->format('Y-m-d');
-            $charge_name = $item->charge_name;
-            $charge_cycle = $item->charge_cycle;
-            $charge_type = $item->charge_type;
-            $rate = $item->rate;
-            $recurring_charge = $item->recurring_charge;
-            $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
-            $unit = $item->unit->unit_number;
-            $property = $item->property->property_name;
+        foreach ($meterReadings as $item) {
+            $startFormatted = empty($item->startdate) ? 'Not set' : Carbon::parse($item->startdate)->format('Y-m-d');
+            $enddateFormatted = empty($item->enddate) ? 'Not set' : Carbon::parse($item->enddate)->format('Y-m-d');
+            $usage =  $item->currentreading - $item->lastreading;
+            $amount = $usage *  $item->rate_at_reading;
 
-            // If the current charge has child charges, add them to the charge name
-            if ($item->childrencharge->isNotEmpty()) {
-                foreach ($item->childrencharge as $child) {
-                    $charge_name .= ' <br><i class=" mdi mdi-subdirectory-arrow-right mdi-24px text-primary">' . $child->charge_name . '</li>';
-                    $charge_cycle .= ' <br></br><li class="text-primary">' . $child->charge_cycle . '</li>';
-                    $charge_type .= ' <br></br><li class="text-primary">' . $child->charge_type . '</li>';
-                    $rate .= ' <br></br><li class="text-primary">' . $child->rate . '</li>';
-                }
-            }
-            $tableData['rows'][] = [
+            $row = [
                 'id' => $item->id,
-                $unit . ' - ' . $property,
-                $charge_name,
-                $charge_cycle,
-                $charge_type,
-                $rate,
-                $item->recurring_charge,
-                \Carbon\Carbon::parse($item->updated_at)->format('d M Y'),
-                $nextDateFormatted,
-
+                $item->unit->unit_number,
+                $item->unitcharge->charge_name,
+                $item->lastreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
+                    $startFormatted . '</span>',
+                $item->currentreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
+                    $enddateFormatted . '</span>',
+                $usage,
+                $item->rate_at_reading,
+                $amount,
             ];
-            // If the current charge has child charges, add them to the table
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
+            }
+
+            $tableData['rows'][] = $row;
         }
+
 
         return $tableData;
     }

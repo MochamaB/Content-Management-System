@@ -85,6 +85,7 @@ class Unit extends Model implements HasMedia
         'All units' => 'information',
         'Units Leased' => 'progress',
         'No of Tenants' => 'detail',
+        'Vacant Units' => 'information',
         // Add more cards as needed
     ];
 
@@ -116,6 +117,9 @@ class Unit extends Model implements HasMedia
                 });
                 $tenantCount = $tenantUsers->count();
                 return $tenantCount;
+            case 'Vacant Units':
+                $unitsWithoutLeasesCount = Unit::doesntHave('lease')->count();
+                return $unitsWithoutLeasesCount;
         }
     }
 

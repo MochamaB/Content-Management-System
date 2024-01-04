@@ -7,6 +7,8 @@ use App\Models\WebsiteSetting;
 use App\Models\Slider;
 use App\Models\Testimonial;
 use App\Models\Lease;
+use App\Models\Payment;
+use App\Models\Paymentvoucher;
 use App\Models\Utility;
 use App\Models\User;
 use App\Models\Property;
@@ -49,6 +51,8 @@ class AppServiceProvider extends ServiceProvider
         
         Unit::addGlobalScope(new UnitAccessScope);
         Invoice::addGlobalScope(new UserAccessScope);
+        Paymentvoucher::addGlobalScope(new UserAccessScope);
+        Payment::addGlobalScope(new UserAccessScope);
     //   User::addGlobalScope(new UnitAccessScope);
 
 
@@ -138,7 +142,8 @@ class AppServiceProvider extends ServiceProvider
                                                         'lease'=> ['display' => 'Leases'],
                                                         'invoice'=> ['display' => 'Invoices'],
                                                         'paymentvoucher'=> ['display' => 'Payment Vouchers'],
-                                                        'payment'=> ['display' => 'Payments'],]],
+                                                        'payment'=> ['display' => 'Payments'],
+                                                        'meter-reading'=> ['display' => 'Meter Readings'],]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
                                                         'chartofaccount'=> ['display' => 'Chart Of Accounts'],

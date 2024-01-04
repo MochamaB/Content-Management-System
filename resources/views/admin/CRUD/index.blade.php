@@ -1,5 +1,8 @@
 
-   
+@if(($routeParts[0] === 'dashboard' || $routeParts[0] === 'invoice' || $routeParts[0] === 'payments' || $routeParts[0] === 'meter-reading' ))
+@include('admin.CRUD.date_filter')
+@endif
+
    @if (isset($cardData))
     @include('admin.CRUD.cards')
     @endif

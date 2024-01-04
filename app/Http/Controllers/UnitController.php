@@ -195,8 +195,7 @@ class UnitController extends Controller
 
 
         $meterReadings = $unit->meterReadings;
-        $meterReaderController = new MeterReadingController();
-        $MeterReadingsTableData = $meterReaderController->getMeterReadingsData($meterReadings);
+        $MeterReadingsTableData = $this->tableViewDataService->getMeterReadingsData($meterReadings);
         $id = $unit;
 
         

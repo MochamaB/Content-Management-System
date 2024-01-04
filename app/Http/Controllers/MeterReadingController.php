@@ -10,6 +10,7 @@ use App\Traits\FormDataTrait;
 use App\Models\Unit;
 use App\Models\Property;
 use App\Models\Unitcharge;
+use App\Services\TableViewDataService;
 use Carbon\Carbon;
 
 
@@ -24,8 +25,9 @@ class MeterReadingController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    private $tableViewDataService;
 
-    public function __construct()
+    public function __construct(TableViewDataService $tableViewDataService)
     {
         $this->model = MeterReading::class;
 
@@ -33,46 +35,34 @@ class MeterReadingController extends Controller
             '0' => 'meter-reading', // Use a string for the controller name
             '1' => 'New Reading',
         ]);
+
+        $this->tableViewDataService = $tableViewDataService;
     }
 
-    public function getMeterReadingsData($meterReadings)
+    public function index(Request $request)
     {
-        $tableData = [
-            'headers' => ['UNIT', 'CHARGE', 'PREVIOUS READING', 'CURRENT', 'USAGE', 'RATE','AMOUNT', 'ACTIONS'],
-            'rows' => [],
-        ];
-
-        foreach ($meterReadings as $item) {
-            $startFormatted = empty($item->startdate) ? 'Not set' : Carbon::parse($item->startdate)->format('Y-m-d');
-            $enddateFormatted = empty($item->enddate) ? 'Not set' : Carbon::parse($item->enddate)->format('Y-m-d');
-            $usage =  $item->currentreading - $item->lastreading;
-            $amount = $usage *  $item->rate_at_reading;
-            $tableData['rows'][] = [
-                'id' => $item->id,
-                $item->unit->unit_number,
-                $item->unitcharge->charge_name,
-                $item->lastreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
-                    $startFormatted . '</span>',
-                $item->currentreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
-                    $enddateFormatted . '</span>',
-                $usage,
-                $item->rate_at_reading,
-                $amount,
-            ];
-        }
-
-        return $tableData;
-    }
-
-    public function index()
-    {
-        $meterReadings = MeterReading::all();
+        $meterReadingQuery = MeterReading::query();
+        $meterReadings = [];
         $mainfilter =  $this->model::pluck('unit_id')->toArray();
-        $controller = $this->controller;
-        $tableData = $this->getMeterReadingsData($meterReadings);
 
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
+        $month = $request->get('month', Carbon::now()->month);
+        $year = $request->get('year', Carbon::now()->year);
+
+        $this->tableViewDataService->applyDateRangeFilter($meterReadingQuery,$month,$year);
+        $meterReadings = $meterReadingQuery->get();
+       
+        $controller = $this->controller;
+        $tableData = $this->tableViewDataService->getMeterReadingsData($meterReadings, true);
+     return View(
+        'admin.CRUD.form',
+        compact('mainfilter', 'tableData', 'controller'),
+        //  $viewData,
+        [
+          //     'cardData' => $cardData,
+        ]
+    );
     }
+
 
     /**
      * Show the form for creating a new resource.

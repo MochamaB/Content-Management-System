@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Unitcharge;
 use App\Models\Unit;
 use App\Models\Transaction;
@@ -30,7 +31,7 @@ class InvoiceController extends Controller
     private $tableViewDataService;
 
 
-    public function __construct(InvoiceService $invoiceService,TableViewDataService $tableViewDataService)
+    public function __construct(InvoiceService $invoiceService, TableViewDataService $tableViewDataService)
     {
         $this->model = Invoice::class;
         $this->controller = collect([
@@ -41,85 +42,90 @@ class InvoiceController extends Controller
         $this->tableViewDataService = $tableViewDataService;
     }
 
-    public function getInvoiceData($invoicedata)
+
+    public function index(Request $request)
     {
-        $sitesettings = WebsiteSetting::first();
+        $invoiceQuery = Invoice::query();
+        $invoicedata = [];
+        $mainfilter =  $this->model::distinct()->pluck('invoice_type')->toArray();
+        ///CARD DATA
+        $cardData = [];
 
-        /// TABLE DATA ///////////////////////////
-        $tableData = [
-            'headers' => ['REFERENCE NO', 'INVOICE DATE','UNIT DETAILS', 'TYPE', 'TENANT', 'AMOUNT DUE', 'PAID','BALANCE', 'ACTIONS'],
-            'rows' => [],
-        ];
+        $month = $request->get('month', Carbon::now()->month);
+        $year = $request->get('year', Carbon::now()->year);
 
-        foreach ($invoicedata as $item) {
-            //// Status Classes for the Invoices////////
-            $statusClasses = [
-                'paid' => 'active',
-                'unpaid' => 'warning',
-                'Over Due' => 'danger',
-                'partially_paid' => 'information',
-            ];
-            //// GET INVOICE STATUS. IF STATUS UNPAID AND DUEDATE
-            $today = Carbon::now();
-            $totalPaid = $item->payments->sum('totalamount');
-            $balance = $item->totalamount - $totalPaid;
-            $payLink = ''; // Initialize $payLink
+        $this->tableViewDataService->applyDateRangeFilter($invoiceQuery,$month,$year);
+        $invoicedata = $invoiceQuery->get();
 
-            if ($item->payments->isEmpty()) {
-                $status = 'unpaid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
-            } elseif ($totalPaid < $item->totalamount) {
-                $status = 'partially_paid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
-            } elseif ($totalPaid == $item->totalamount) {
-                $status = 'paid';
-            }
+        $cardData = $this->getCardData($month, $year);
+        //   $viewData = $this->formData($this->model);
+        $controller = $this->controller;
+        $tableData = $this->tableViewDataService->getInvoiceData($invoicedata, true);
 
-            if ($item->duedate < $today && $status == 'unpaid') {
-                $status = 'Over Due';
-            }
-
-            $statusClass = $statusClasses[$status] ?? 'secondary';
-            $invoiceStatus = '<span class="badge badge-' .$statusClass . '">' . $status . '</span>';
-            $balanceStatus = '<span style ="font-weight:700" class="text-' .$statusClass . '">' . $sitesettings->site_currency.'. '.$balance . '</span>';
-
-                $tableData['rows'][] = [
-                    'id' => $item->id,
-                    $invoiceStatus . '</br></br> INV#: ' . $item->id . '-' . $item->referenceno,
-                    '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
-                        Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
-                    $item->property->property_name.' - '.$item->unit->unit_number,
-                    $item->invoice_type,
-                    $item->model->firstname.' '.$item->model->lastname,
-                    $sitesettings->site_currency.'. '.$item->totalamount,
-                    $sitesettings->site_currency.'. '.$totalPaid,
-                    $balanceStatus.'  ' .$payLink,
-                   
-
-                ];
-        }
-
-        return $tableData;
+        return View(
+            'admin.CRUD.form',
+            compact('mainfilter', 'tableData', 'controller'),
+            //  $viewData,
+            [
+                   'cardData' => $cardData,
+            ]
+        );
     }
 
 
-
-
-    public function index()
+    private function getCardData($month, $year)
     {
-        $invoicedata = $this->model::all();
-        $mainfilter =  $this->model::distinct()->pluck('invoice_type')->toArray();
-     //   $viewData = $this->formData($this->model);
-     //   $cardData = $this->cardData($this->model,$invoicedata);
-       // dd($cardData);
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getInvoiceData($invoicedata,true);
-        
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
-      //  $viewData,
-        [
-         //   'cardData' => $cardData,
-        ]);
+        $invoiceQuery = Invoice::query();
+        $paymentQuery = Payment::query();
+        $this->tableViewDataService->applyDateRangeFilter($invoiceQuery, $month, $year);
+        $this->tableViewDataService->applyDateRangeFilter($paymentQuery, $month, $year);
+        // Count the invoices for the current month
+        $invoiceCount = $invoiceQuery->count();
+        $paymentCount = $paymentQuery->count();
+        $invoicesWithoutPaymentsCount = $invoiceQuery->whereDoesntHave('payments')->count();
+
+        $paymentSum = $paymentQuery->sum('totalamount');
+        $invoiceSum = $invoiceQuery->sum('totalamount');
+        $unpaidSum = $invoiceSum - $paymentSum;
+        $totalCardInfo1 = 'Generated';
+        $totalCardInfo2 = 'Paid';
+        $totalCardInfo3 = 'Unpaid';
+        //   dd($invoiceSum);
+        // Structure the data with card type information.
+        $cards = [
+            'Total Invoices' => 'total',
+            'Invoiced Amount' => 'cash',
+            'Paid Amount' => 'cash',
+            'Unpaid Amount' => 'cash'
+            // Add other card types for admin role.
+        ];
+
+        $data = [
+            'Total Invoices' => [     ///TOTAL CARD
+                'modelCount' => $invoiceCount,
+                'modeltwoCount' => $paymentCount,
+                'modelthreeCount' => $invoicesWithoutPaymentsCount,
+                'totalCardInfo1' => $totalCardInfo1,
+                'totalCardInfo2' => $totalCardInfo2,
+                'totalCardInfo3' => $totalCardInfo3,
+            ],
+            'Invoiced Amount' => [ ////CASH CARD
+                'modelCount' => $invoiceSum,
+               
+                // Add other data points related to maintenanceCount card.
+            ],
+            'Paid Amount' => [
+                'modelCount' => $paymentSum,
+                // Add other data points related to maintenanceCount card.
+            ],
+            'Unpaid Amount' => [
+                'modelCount' => $unpaidSum,
+                // Add other data points related to maintenanceCount card.
+            ],
+            // Add other card data for admin role.
+        ];
+
+        return ['cards' => $cards, 'data' => $data];
     }
 
     /**
@@ -130,22 +136,22 @@ class InvoiceController extends Controller
     public function create()
     {
         ///1. GET CHARGES WITH RECURRING CHARGE
-     //   $unitchargedata = Unitcharge::where('recurring_charge', 'no')
-     //       ->where('parent_id', null)
-      //      ->whereHas('lease', function ($query) {
-      //          $query->where('status', 'Active');
-      //      })
-       //     ->get();
-          //  dd($unitchargedata);
-    $unitchargedata = Unitcharge::where('recurring_charge', 'Yes')
-                     ->where('parent_id', null)
-                     ->whereHas('unit.lease', function ($query) {
-                                  $query->where('status', 'Active');
-                              })
-                    ->get();
+        //   $unitchargedata = Unitcharge::where('recurring_charge', 'no')
+        //       ->where('parent_id', null)
+        //      ->whereHas('lease', function ($query) {
+        //          $query->where('status', 'Active');
+        //      })
+        //     ->get();
+        //  dd($unitchargedata);
+        $unitchargedata = Unitcharge::where('recurring_charge', 'Yes')
+            ->where('parent_id', null)
+            ->whereHas('unit.lease', function ($query) {
+                $query->where('status', 'Active');
+            })
+            ->get();
 
-        $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata,true);
-        return View('admin.lease.invoice',['tableData' => $tableData,'controller' => ['unitcharge']]);
+        $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata, true);
+        return View('admin.lease.invoice', ['tableData' => $tableData, 'controller' => ['unitcharge']]);
     }
 
     /**

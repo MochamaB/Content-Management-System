@@ -89,6 +89,7 @@ class LeaseController extends Controller
                 'Draft' => 'badge-warning',
                 'Expired' => 'badge-danger',
                 'Terminated' => 'badge-secondary',
+                'Suspended' => 'badge-danger',
             ];
             // Get the CSS class for the current status, default to 'badge-secondary' if not found
             $statusClass = $statusClasses[$item->status] ?? 'badge-secondary';
