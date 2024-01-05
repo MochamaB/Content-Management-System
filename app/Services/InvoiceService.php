@@ -17,6 +17,7 @@ use App\Actions\CalculateInvoiceTotalAmountAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
+use App\Jobs\SendInvoiceEmailJob;
 use App\Notifications\InvoiceGeneratedNotification;
 
 
@@ -96,9 +97,10 @@ class InvoiceService
             //6. Create Transactions for ledger
             $this->recordTransactionAction->invoiceCharges($invoice, $unitcharge);
 
-            //7. Send Email/Notification to the Tenant containing the invoice.
-            $user = $invoice->model;
-            $user->notify(new InvoiceGeneratedNotification($invoice, $user));
+            //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
+             $tenant = $invoice->model;
+             $tenant->notify(new InvoiceGeneratedNotification($invoice, $tenant));
+           // SendInvoiceEmailJob::dispatch($invoice, $user);
 
 
             return $invoice;

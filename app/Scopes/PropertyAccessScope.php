@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Scope;
 
 class PropertyAccessScope implements Scope
 {
-    protected static $scopeDisabled = false;
+
     public function apply(Builder $builder, Model $model)
     {
         $user = auth()->user();
-        $userRole = $user->roles->pluck('name');
-        if ($user->id !== 1 && stripos($userRole, 'admin') === false) {
+     //   $userRole = $user->roles->pluck('name');
+        if ($user && $user->id !== 1 /*&& stripos($userRole, 'admin') === false*/) {
             /// returns all units loggedinuser should access
             $userUnits = $user->units;
             //// returns all the property ids in pivot table that loggedinuser has
@@ -23,13 +23,5 @@ class PropertyAccessScope implements Scope
             $builder->whereIn('id', $propertyIds);
         }
     }
-    public static function disableScope()
-    {
-        static::$scopeDisabled = true;
-    }
 
-    public static function enableScope()
-    {
-        static::$scopeDisabled = false;
-    }
 }

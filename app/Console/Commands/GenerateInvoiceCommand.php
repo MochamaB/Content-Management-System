@@ -40,7 +40,7 @@ class GenerateInvoiceCommand extends Command
     }
     public function handle()
     {
-        $task = Task::where('type', 'invoice')->first();
+        $task = Task::where('command', 'generate:invoice')->first();
 
         if ($task->status == 1) {
             $this->invoiceService->chargesForInvoiceGeneration();

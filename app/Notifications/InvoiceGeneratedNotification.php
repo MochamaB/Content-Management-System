@@ -17,18 +17,18 @@ class InvoiceGeneratedNotification extends Notification
 {
  //   use Queueable;
     protected $invoice;
-    protected $user;
+    protected $tenant;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($invoice, $user)
+    public function __construct($invoice, $tenant)
     {
 
         $this->invoice = $invoice;
-        $this->user = $user;
+        $this->tenant = $tenant;
 
     }
 
@@ -72,7 +72,7 @@ class InvoiceGeneratedNotification extends Notification
         return (new MailMessage)
             ->view(
                 'email.template',
-                ['user' => $this->user, 'data' => $data, 'linkmessage' => $linkmessage, 'heading' => $heading]
+                ['user' => $this->tenant, 'data' => $data, 'linkmessage' => $linkmessage, 'heading' => $heading]
             )
             ->subject($this->invoice->invoice_type . ' Invoice')
             ->attachData($invoicepdf->output(), $invoicefilename);

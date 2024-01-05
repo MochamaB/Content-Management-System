@@ -86,7 +86,8 @@ class TableViewDataService
                 'paid' => 'active',
                 'unpaid' => 'warning',
                 'Over Due' => 'danger',
-                'partially_paid' => 'information',
+                'partially_paid' => 'dark',
+                'over_paid' => 'light',
             ];
             //// GET INVOICE STATUS. IF STATUS UNPAID AND DUEDATE
             $today = Carbon::now();
@@ -101,7 +102,9 @@ class TableViewDataService
             } elseif ($totalPaid < $item->totalamount) {
                 $status = 'partially_paid';
                 $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
-            } elseif ($totalPaid == $item->totalamount) {
+            }  elseif ($totalPaid > $item->totalamount) {
+                $status = 'over_paid';
+            }   elseif ($totalPaid == $item->totalamount) {
                 $status = 'paid';
             }
 

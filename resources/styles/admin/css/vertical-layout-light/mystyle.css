@@ -704,6 +704,19 @@ a .badge:hover {
   border: 2px solid #3302a5c4 !important;
 }
 
+.badge-dark {
+  color: #1E283D !important;
+  background-color: #dae3fa;
+  border: 2px solid #1E283D !important;
+}
+
+.badge-light {
+  color: #52CDFF !important;
+  background-color: #dae3fa;
+  border: 2px solid #52CDFF !important;
+}
+
+
 .text-active{
   color: #038d21 !important;
 }

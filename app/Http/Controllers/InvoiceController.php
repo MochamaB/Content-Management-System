@@ -36,7 +36,7 @@ class InvoiceController extends Controller
         $this->model = Invoice::class;
         $this->controller = collect([
             '0' => 'invoice', // Use a string for the controller name
-            '1' => 'New Invoice',
+            '1' => 'Due Invoices',
         ]);
         $this->invoiceService = $invoiceService;
         $this->tableViewDataService = $tableViewDataService;
@@ -166,9 +166,9 @@ class InvoiceController extends Controller
     public function generateInvoice(Request $request)
     {
         ///1. GET UNITS WITH RECURRING CHARGE
-        $unitcharges = Unitcharge::where('recurring_charge', 'yes')
+        $unitcharges = Unitcharge::where('recurring_charge', 'Yes')
             ->where('parent_id', null)
-            ->whereHas('lease', function ($query) {
+            ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
             })
             ->get();
@@ -182,7 +182,7 @@ class InvoiceController extends Controller
 
 
         }
-        return redirect()->back()->with('status', 'Sucess Invoice generated.');
+        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
     }
 
 

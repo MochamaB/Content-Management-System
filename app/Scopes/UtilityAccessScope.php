@@ -11,7 +11,7 @@ class UtilityAccessScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $user = auth()->user();
-        if ($user->id !== 1) {
+        if ($user && $user->id !== 1) {
             $userUnits = $user->units;
             $propertyIds = $userUnits->pluck('pivot.property_id')->unique();
     
