@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Property;
-use App\Models\Media;
+use App\Models\MyMedia;
+use App\Models\Unit;
 use Illuminate\Support\Facades\Session;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Model;
 
 class MediaController extends Controller
 {
@@ -24,7 +27,7 @@ class MediaController extends Controller
 
         $this->controller = collect([
             '0' => 'media', // Use a string for the controller name
-            '1' => 'New Media',
+            '1' => ' Media',
         ]);
     }
     public function getMediaData($media)
@@ -56,10 +59,20 @@ class MediaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id = null,$model = null)
     {
+
+        $unit = null;
+        
+
+        if ($id !== null) {
+            $unit = Unit::find($id);
+            $property = Property::where('id', $unit->property->id)->first();
+            $model = $model;
+        }
+    
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.media.create_media');
+        return View('admin.media.create_media', compact('unit','model','property','id'));
     }
 
     /**
@@ -70,16 +83,28 @@ class MediaController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file',
-        ]);
-        $model = Property::find(1);
-        $model
-            ->addMediaFromRequest('file')
-            ->toMediaCollection('files');
+    
+        $className = 'App\\Models\\' . $request->model; // replace with your models namespace
+        $id = $request->id;
+       // dd($className);
+       if (class_exists($className)) {
+            $model = $className::find($id);
+                    if ($request->file('media')) {
+                        $fieldName = 'media';
+                        $mediaCollection = $request->collection_name; // Get the $request->media_type'
+                //     dd($mediaCollection);
+                    
+                        $unit_id = $request->unit_id; // Get unit_id from request
+                        $property_id = $request->property_id; // Get property_id from request
+                    
+                        $model->addMedia($request->file($fieldName))
+                            ->withProperties(['unit_id' => $unit_id, 'property_id' => $property_id])
+                            ->toMediaCollection($mediaCollection);
+                    }
+        }
 
-            $previousUrl = Session::get('previousUrl');
-            return redirect($previousUrl)->with('status', 'Media uploaded Successfully');
+        $previousUrl = Session::get('previousUrl');
+        return redirect($previousUrl)->with('status', 'Media uploaded Successfully');
     }
 
     /**

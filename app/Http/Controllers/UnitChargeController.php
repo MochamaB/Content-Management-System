@@ -28,7 +28,7 @@ class UnitChargeController extends Controller
         $this->model = unitcharge::class;
         $this->controller = collect([
             '0' => 'unitcharge', // Use a string for the controller name
-            '1' => 'New Unit Charge',
+            '1' => ' Unit Charge',
         ]);
     }
 

@@ -21,7 +21,9 @@ class CreateInvoiceItemsTable extends Migration
             $table->string('charge_name')->nullable();
             $table->string('description')->nullable();
             $table->decimal('amount');
+
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');
             $table->foreign('chartofaccount_id')->references('id')->on('chartofaccounts')->onDelete('cascade');

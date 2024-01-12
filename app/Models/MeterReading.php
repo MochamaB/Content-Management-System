@@ -83,7 +83,10 @@ class MeterReading extends Model
         }
     }
 
-
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
+    }
     public function unit()
     {
         return $this->belongsTo(Unit::class);

@@ -20,7 +20,9 @@ class CreateUtilitiesTable extends Migration
             $table->string('utility_name');
             $table->string('utility_type');
             $table->decimal('rate');
+
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('chartofaccounts_id')->references('id')->on('chartofaccounts')->onDelete('cascade');
         });

@@ -22,7 +22,7 @@ class PermissionController extends Controller
      {
          $this->controller = collect([
              '0' => 'permission', // Use a string for the controller name
-             '1' => 'New Permission',
+             '1' => ' Permission',
          ]);
      }
     public function index()

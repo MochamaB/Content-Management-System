@@ -25,7 +25,7 @@ class ChartOfAccountController extends Controller
         
         $this->controller = collect([
             '0' => 'chartofaccount', // Use a string for the controller name
-            '1' => 'New Chart of accounts',
+            '1' => ' Account',
         ]);
     }
 

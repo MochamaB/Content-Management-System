@@ -20,8 +20,11 @@ class CreateTenantdetailsTable extends Migration
             $table->string('emergency_name',100)->nullable();
             $table->string('emergency_number',100)->nullable();
             $table->string('emergency_email',100)->nullable();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
             $table->timestamps();
+            $table->softDeletes();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            
         });
     }
 

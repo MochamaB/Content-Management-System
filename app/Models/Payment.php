@@ -15,7 +15,7 @@ class Payment extends Model
         'model_type',
         'model_id',
         'referenceno',
-        'payment_type_id',
+        'payment_method_id',
         'payment_code',
         'totalamount',
         'received_by',
@@ -24,7 +24,7 @@ class Payment extends Model
     ];
 
     public static $validation = [
-        'payment_type_id' => 'required',
+        'payment_method_id' => 'required',
         'payment_code' => 'nullable|unique:payments',
         'amount' => 'required',
     ];
@@ -51,9 +51,9 @@ class Payment extends Model
         return $this->belongsTo(Lease::class, 'unit_id');
     }
 
-    public function paymentType()
+    public function PaymentMethod()
     {
-        return $this->belongsTo(PaymentType::class);
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     public function paymentItems()

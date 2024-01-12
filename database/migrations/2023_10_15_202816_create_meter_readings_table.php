@@ -25,7 +25,9 @@ class CreateMeterReadingsTable extends Migration
             $table->date('startdate');
             $table->date('enddate');
             $table->string('recorded_by')->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');

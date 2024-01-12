@@ -20,6 +20,7 @@ class CreateChartofaccountsTable extends Migration
             $table->string('account_name');
             $table->string('account_level');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -24,7 +24,7 @@ class SliderController extends Controller
         $this->model = Slider::class; 
         $this->controller = collect([
             '0' => 'slider', // Use a string for the controller name
-            '1' => 'New Slider',
+            '1' => ' Slider',
         ]);
     }
 
@@ -60,7 +60,7 @@ class SliderController extends Controller
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->id,
-                '<img src="'.url('resources/uploads/images/'.$item->slider_picture ?? 'noimage.jpg').'" style="width:350px;height:200px">',
+                '<img src="'.$item->getFirstMediaUrl('slider', 'thumb').'" style="width:350px;height:200px">',
                 '<div class="col-sm-3" style=" width: 300px;
                 overflow: hidden;
                 white-space: wrap;
@@ -97,29 +97,29 @@ class SliderController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'slider_picture' => 'required|image|mimes:jpg,png,jpeg,gif,svg|dimensions:min_width=3500,min_height=2500,max:2048',
+            'slider_title' => 'required',
+            'slider_picture' => 'required|image|mimes:jpg,png,jpeg,gif,svg,jfif|dimensions:min_width=1500,min_height=700,max:2048',
+            'slider_desc' => 'nullable',
+            'slider_info' => 'nullable',
         ], [
             'slider_picture.required' => 'Please upload an image.',
             'slider_picture.image' => 'Invalid image format. Only JPG, PNG, JPEG, GIF, or SVG allowed.',
             'slider_picture.dimensions' => 'Slider Image dimensions should be at least 3500x2500 pixels.',
             'slider_picture.max' => 'Image size should not exceed 2MB.',
         ]);
-        
-        $slider = new Slider();
-        $slider->slider_title = $request->input('slider_title');
 
-        if($request->file('slider_picture')){
-            $file= $request->file('slider_picture');
-            $filename= date('YmdHi').$file->getClientOriginalName();
-            $file-> move(base_path('resources/uploads/images'), $filename);
-            $slider['slider_picture']= $filename;
+        $slider = new Slider();
+        $slider->fill($validatedData);
+
+        if ($request->file('slider_picture')) {
+            $fieldName = 'slider_picture';
+            $mediaCollection = 'slider';
+            $slider->UploadNewImage($slider, $fieldName, $mediaCollection, $request);
         }
-        $slider->slider_desc = $request->input('slider_desc');
-        $slider->slider_info = $request->input('slider_info');
-        $slider->save();
         
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
-    
+        $slider->save();
+        return redirect('slider')->with('status', 'Slider Added Successfully');
+        
     }
 
     /**
@@ -141,7 +141,9 @@ class SliderController extends Controller
      */
     public function edit(Slider $slider)
     {
+        $mediaCollection = 'slider'; 
         $viewData = $this->formData($this->model,$slider);
+        $viewData['mediaCollection'] = $mediaCollection;
 
         return View('admin.CRUD.form',$viewData);
     }
@@ -155,19 +157,16 @@ class SliderController extends Controller
      */
     public function update(Request $request, $id)
     {
-       
-        $model = Slider::find($id);
-        // Get the list of fillable fields from the model
-        if($request->file('slider_picture')){
-            $file= $request->file('slider_picture');
-            $filename= date('YmdHi').$file->getClientOriginalName();
-            $file-> move(base_path('resources/uploads/images'), $filename);
-            $slider['slider_picture']= $filename;
-        }else{
-        $model->update($request->all());
+        $slider = Slider::find($id);
+        $slider->fill($request->all());
+
+        if ($request->file('slider_picture')) {
+            $slider->clearMediaCollection('slider_picture');
+            $slider->addMedia($request->file('slider_picture'))->toMediaCollection('slider');
         }
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
-    
+
+        $slider->save();
+        return redirect('slider')->with('status', 'Slider Updated Successfully');
     }
 
     /**
@@ -178,6 +177,9 @@ class SliderController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $slider = Slider::find($id);
+        $slider->delete();
+
+        return redirect()->back()->with('status', 'Slider deleted successfully.');
     }
 }

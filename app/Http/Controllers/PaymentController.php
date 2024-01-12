@@ -7,7 +7,7 @@ use App\Models\Unit;
 use App\Models\Payment;
 use App\Models\Property;
 use App\Models\Invoice;
-use App\Models\PaymentType;
+use App\Models\PaymentMethod;
 use App\Traits\FormDataTrait;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +35,7 @@ class PaymentController extends Controller
          $this->model = Payment::class;
          $this->controller = collect([
              '0' => 'payment', // Use a string for the controller name
-             '1' => 'New Payment',
+             '1' => ' Payment',
          ]);
 
          $this->paymentService = $paymentService;
@@ -67,7 +67,7 @@ class PaymentController extends Controller
     public function create($id = null)
     {
         $invoice = Invoice::find($id);
-        $paymenttype = PaymentType::all();
+        $PaymentMethod = PaymentMethod::all();
         $className = get_class($invoice);
 
         ////REFRENCE NO
@@ -78,7 +78,7 @@ class PaymentController extends Controller
       //  dd($referenceno);
 
       Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.lease.payment',compact('paymenttype','invoice','className','referenceno'));
+        return View('admin.lease.payment',compact('PaymentMethod','invoice','className','referenceno'));
     }
 
     /**

@@ -20,7 +20,9 @@ class CreateTestimonialsTable extends Migration
             $table->string('client_company')->nullable();
             $table->string('client_picture')->nullable();
             $table->string('testimonial',300);
+            
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

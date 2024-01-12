@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('payment_method')->nullable();
             $table->decimal('amount');
+
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('paymentvoucher_id')->references('id')->on('paymentvouchers')->onDelete('cascade');
             $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');
             $table->foreign('chartofaccount_id')->references('id')->on('chartofaccounts')->onDelete('cascade');

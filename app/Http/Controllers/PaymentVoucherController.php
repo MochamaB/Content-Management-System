@@ -28,7 +28,7 @@ class PaymentVoucherController extends Controller
         $this->model = Paymentvoucher::class;
         $this->controller = collect([
             '0' => 'paymentvoucher', // Use a string for the controller name
-            '1' => 'New Paymentvoucher',
+            '1' => ' Payment Voucher',
         ]);
         $this->paymentVoucherService = $paymentVoucherService;
         $this->tableViewDataService = $tableViewDataService;

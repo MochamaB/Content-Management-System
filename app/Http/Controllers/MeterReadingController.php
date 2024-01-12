@@ -33,7 +33,7 @@ class MeterReadingController extends Controller
 
         $this->controller = collect([
             '0' => 'meter-reading', // Use a string for the controller name
-            '1' => 'New Reading',
+            '1' => ' Reading',
         ]);
 
         $this->tableViewDataService = $tableViewDataService;
@@ -72,22 +72,32 @@ class MeterReadingController extends Controller
     public function create($id = null)
     {
 
+    if($id){
         $unit = Unit::find($id);
-        // session(['unit' => $unit]);
         $property = Property::where('id', $unit->property->id)->first();
         $unitcharge = Unitcharge::where('unit_id', $unit->id)
             ->where('charge_type', 'units')
             ->get();
-        if ($unitcharge->isEmpty()) {
-            return redirect()->back()->with('statuserror', ' Cannot Add Meter reading. No Charge of type units is not attached to this unit.');
+            if ($unitcharge->isEmpty()) {
+                return redirect()->back()->with('statuserror', ' Cannot Add Meter reading. No Charge of type units is not attached to this unit.');
+            }
+        if ($unit) {
+        $meterReading = MeterReading::where('unit_id',$unit->id)->latest()->first();
         }
-        
+    }else{
+        $id = null;
+        $property = Property::pluck('property_name', 'id')->toArray();
+        $unit = null;
+        $unitcharge = null;
+        $meterReading = null;
+    }
+   
 
         //   dd($latestReading);
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.property.create_meterreading', compact('property', 'unit', 'unitcharge'));
+        return View('admin.property.create_meterreading', compact('id','property', 'unit', 'unitcharge','meterReading'));
     }
 
 

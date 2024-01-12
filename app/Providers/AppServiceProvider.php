@@ -129,7 +129,7 @@ class AppServiceProvider extends ServiceProvider
                 'Website' => ['icon' => 'web', 'submodules' => [
                                                         'websitesetting'=> ['display' => 'Site Information'],
                                                         'slider'=> ['display' => 'Picture Sliders'],
-                                                        'testimonials'=> ['display' => 'Client Testimonials'],
+                                                        'testimonial'=> ['display' => 'Client Testimonials'],
                                                         'amenity'=> ['display' => 'Property Amenities']
                                                         ]],
 
@@ -147,7 +147,7 @@ class AppServiceProvider extends ServiceProvider
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
                                                         'chartofaccount'=> ['display' => 'Chart Of Accounts'],
-                                                        'payment-type'=> ['display' => 'Payment Types'],]],
+                                                        'pay-method'=> ['display' => 'Payment methods'],]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
 

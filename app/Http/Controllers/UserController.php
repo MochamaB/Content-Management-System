@@ -21,7 +21,7 @@ use App\Notifications\UserDeletedNotification;
 use App\Actions\UserRoleAction;
 use App\Actions\AttachDetachUserFromUnitAction;
 
- class UserController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
     private $userRoleAction;
     protected $attachDetachUserFromUnitAction;
 
-    public function __construct(UserRoleAction $userRoleAction,AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction)
+    public function __construct(UserRoleAction $userRoleAction, AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction)
     {
         $this->model = User::class;
         $this->controller = collect([
@@ -118,6 +118,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
             'Roles',
             'Contact Information',
             'Property Access',
+            'Review Details',
         ]);
         $activetab = $request->query('active_tab', '0');
         $stepContents = [];
@@ -127,7 +128,9 @@ use App\Actions\AttachDetachUserFromUnitAction;
             } elseif ($title === 'Contact Information') {
                 $stepContents[] = View('admin.user.user_contactinfo', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $stepContents[] = View('admin.user.user_property', compact('propertyaccess', 'savedRole','assignedUnits'))->render();
+                $stepContents[] = View('admin.user.user_property', compact('propertyaccess', 'savedRole', 'assignedUnits'))->render();
+            } elseif ($title === 'Review Details') {
+                $stepContents[] = View('admin.user.user_reviewdetails', compact('propertyaccess', 'savedRole', 'assignedUnits'))->render();
             }
         }
 
@@ -162,12 +165,39 @@ use App\Actions\AttachDetachUserFromUnitAction;
             $user->fill($validatedData);
             $request->session()->put('user', $user);
         }
+        $role = $request->session()->get('userRole');
+        $rolename = Role::find($role);
+        if ($rolename->name === 'Tenant') {
+            return redirect()->route('user.create', ['active_tab' => '3'])
+                ->with('status', 'Properties assigned Successfully. Review and confirm');
+        } else {
 
-        return redirect()->route('user.create', ['active_tab' => '2'])
-            ->with('status', 'User details added Successfully. Assign properties');
+            return redirect()->route('user.create', ['active_tab' => '2'])
+                ->with('status', 'User details added Successfully. Assign properties');
+        }
     }
 
+    public function assignProperties(Request $request)
+    {
 
+        $unitIds = $request->input('unit_id', []);
+        $properties = [];
+
+        foreach ($unitIds as $unitId => $selected) {
+            if ($selected) {
+                // Retrieve the corresponding property_id from the hidden field
+                $propertyId = $request->input("property_id.{$unitId}");
+
+                // Store the unit and property IDs
+                $properties[] = ['unit_id' => $unitId, 'property_id' => $propertyId];
+            }
+        }
+
+        $request->session()->put('properties', $properties);
+
+        return redirect()->route('user.create', ['active_tab' => '3'])
+            ->with('status', 'Properties assigned Successfully. Review and confirm');
+    }
 
 
 
@@ -187,21 +217,17 @@ use App\Actions\AttachDetachUserFromUnitAction;
         $role = $request->session()->get('userRole');
         $this->userRoleAction->assignRole($user, $role);
 
-        //4. GET ASSIGNED UNITS FROM CHECKBOXES AND ASSIGN IN PIVOT UNIT_USER
-        $unitIds = $request->input('unit_id', []);
-        foreach ($unitIds as $unitId => $selected) {
-            if ($selected) {
-                // Retrieve the corresponding property_id from the hidden field
-                $propertyId = $request->input("property_id.{$unitId}");
-
-                // Attach the unit to the user with the associated property_id
-                $user->units()->attach($unitId, ['property_id' => $propertyId]);
+        //4. GET ASSIGNED UNITS FROM SESSION AND ASSIGN IN PIVOT UNIT_USER
+        $properties = $request->session()->get('properties');
+        if ($properties) {
+            foreach ($properties as $property) {
+                $user->units()->attach($property['unit_id'], ['property_id' => $property['property_id']]);
             }
         }
-
         //5. FORGET SESSION DATA
         $request->session()->forget('userRole');
         $request->session()->forget('user');
+        $request->session()->forget('properties');
 
         //6. SEND NEW USER A WELCOME EMAIL
         $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
@@ -267,7 +293,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
         $assignedproperties = $user->units->pluck('id')->toArray();
 
         //// Role of user being edited
-     //   $savedRole = Role::where('id', $userRole)->first();
+        //   $savedRole = Role::where('id', $userRole)->first();
 
         $pageheadings = collect([
             '0' => $user->email,
@@ -276,7 +302,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
         ]);
         $propertyaccess = Property::with('units')->get();
         $assignedUnits = User::role($userRole)->with('units')->get()->pluck('units')->flatten()->pluck('id')->toArray();
-       // dd($assignedUnits);
+        // dd($assignedUnits);
         $tabTitles = collect([
             'Contact Information',
             'Roles',
@@ -297,7 +323,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
             } elseif ($title === 'Login Access') {
                 $tabContents[] = View('admin.user.user_logins', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $tabContents[] = View('admin.user.user_property', compact('userRole','propertyaccess', 'assignedproperties','assignedUnits'))->render();
+                $tabContents[] = View('admin.user.user_property', compact('userRole', 'propertyaccess', 'assignedproperties', 'assignedUnits'))->render();
             }
         }
 

@@ -31,7 +31,7 @@ class UnitController extends Controller
         $this->model = Unit::class;
         $this->controller = collect([
             '0' => 'unit', // Use a string for the controller name
-            '1' => 'New Unit',
+            '1' => ' Unit',
         ]);
         $this->invoiceService = $invoiceService;
         $this->tableViewDataService = $tableViewDataService;
@@ -141,11 +141,12 @@ class UnitController extends Controller
         $tabTitles = collect([
             'Summary',
             'Users',
-            'Charges & Utilities',
+            'Charges',
             'Invoices',
-            'Vouchers & Payments',
+            'Vouchers',
             'Payments',
             'Meter Readings',
+            'Files'
             //    'Maintenance',
             //    'Financials',
             //    'Users',
@@ -198,6 +199,14 @@ class UnitController extends Controller
         $MeterReadingsTableData = $this->tableViewDataService->getMeterReadingsData($meterReadings);
         $id = $unit;
 
+        ///DATA FOR FILES //////
+        $collections = ['picture', 'pdf', 'collection3'];
+        $files = $unit->getMedia('*');
+     //   dd($files);
+        $mediaTableData = $this->tableViewDataService->getMediaData($files);
+        $id = $unit;
+        $model = class_basename($this->model);
+
         
         // Render the Blade views for each tab content
         $tabContents = [];
@@ -206,17 +215,18 @@ class UnitController extends Controller
                 $tabContents[] = View('admin.property.unit_' . $title, $unitEditData, compact('unit', 'unitdetails'))->render();
             }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
-            }elseif ($title === 'Charges & Utilities') {
+            }elseif ($title === 'Charges') {
                 $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges'))->render();
             }elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
-            }elseif ($title === 'Vouchers & Payments') {
+            }elseif ($title === 'Vouchers') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']])->render();
             }elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], 
-                compact('id'))->render();
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], compact('id'))->render();
+            }elseif ($title === 'Files') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $mediaTableData,'controller' => ['media']], compact('id','model'))->render();
             }
         }
 
@@ -234,7 +244,7 @@ class UnitController extends Controller
         $unit->load('property');
         $specialvalue = collect([
             'property_id' => $unit->property->property_name, // Use a string for the controller name
-            '1' => 'New Unit',
+            '1' => ' Unit',
         ]);
         $viewData = $this->formData($this->model, $unit, $specialvalue);
         $unitEditData = compact('specialvalue');

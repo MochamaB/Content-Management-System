@@ -17,6 +17,7 @@ class CreateAmenitiesTable extends Migration
             $table->id()->index();
             $table->string('amenity_name');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

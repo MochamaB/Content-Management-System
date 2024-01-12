@@ -25,7 +25,9 @@ class CreateTransactionsTable extends Migration
             $table->unsignedBigInteger('debitaccount_id');
             $table->unsignedBigInteger('creditaccount_id');
             $table->decimal('amount');
+
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');

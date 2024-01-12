@@ -25,7 +25,7 @@ class PropertyTypeController extends Controller
 
         $this->controller = collect([
             '0' => 'propertytype', // Use a string for the controller name
-            '1' => 'New Property Type',
+            '1' => ' Property Type',
         ]);
     }
     public function index()

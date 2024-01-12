@@ -212,7 +212,7 @@ class TableViewDataService
         ];
 
         foreach ($paymentdata as $item) {
-            $paymenttype = $item->paymentType;
+            $PaymentMethod = $item->PaymentMethod;
             $type = $item->model;
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $row = [
@@ -222,7 +222,7 @@ class TableViewDataService
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 $type->invoice_type,
                 $item->totalamount,
-                $paymenttype->name .
+                $PaymentMethod->name .
                     ' </br>
                 <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> ' . $item->payment_code,
 
@@ -310,7 +310,7 @@ class TableViewDataService
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
-            array_splice($headers, 0, 0, ['UNIT DETAILS']);
+            array_splice($headers, 2, 0, ['UNIT DETAILS']);
         }
 
         $tableData = [
@@ -347,4 +347,44 @@ class TableViewDataService
 
         return $tableData;
     }
+
+        ///////////////////
+        public function getMediaData($mediadata, $extraColumns = false)
+        {
+            // Eager load the 'unit' relationship
+            //   $invoicedata->load('user');
+    
+            /// TABLE DATA ///////////////////////////
+    
+            $headers = ['NO','THUMBNAIL', 'NAME', 'COLLECTION', 'SIZE','ACTIONS'];
+    
+            // If $Extra columns is true, insert 'Unit Details' at position 3
+            if ($extraColumns) {
+                array_splice($headers, 3, 0, ['DETAILS']);
+            }
+    
+            $tableData = [
+                'headers' => $headers,
+                'rows' => [],
+            ];
+            $allMedia = collect();
+    
+            foreach ($mediadata as $item) {
+                
+                $row = [
+                    'id' => $item->id,
+                    $item,
+                    $item->collection_name,
+                   
+                ];
+                // If $Extra Columns is true, insert unit details at position 3
+                if ($extraColumns) {
+                    array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
+                }
+    
+                $tableData['rows'][] = $row;
+            }
+    
+            return $tableData;
+        }
 }

@@ -171,7 +171,7 @@
                     {{ $cardData['data'][$card]['modelCount'] }}
                     @endif
                     <span class="text-muted font-weight-medium text-small d-flex align-items-center">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $sitesettings->site_currency }}</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $sitesettings->site_currency ?? '' }}</span>
                 </h2>
             </div>
             <div class="card-footer" style="background-color:#fff ;">

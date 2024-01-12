@@ -26,7 +26,7 @@ class AmenityController extends Controller
         $this->model = Amenity::class; 
         $this->controller = collect([
             '0' => 'amenity', // Use a string for the controller name
-            '1' => 'New Amenity',
+            '1' => ' Amenity',
         ]);
         $this->user = Auth::user();
     }

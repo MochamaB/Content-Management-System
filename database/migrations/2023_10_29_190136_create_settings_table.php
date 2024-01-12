@@ -20,7 +20,9 @@ class CreateSettingsTable extends Migration
             $table->string('setting_name');
             $table->string('setting_value');
             $table->text('setting_description');
+
             $table->timestamps();
+            $table->softDeletes();
 
             // Indexes for faster lookups
             $table->index(['settingable_type', 'settingable_id']);

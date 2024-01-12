@@ -23,7 +23,7 @@ class unitDetailsController extends Controller
         $this->model = UnitDetail::class; 
         $this->controller = collect([
             '0' => 'unitdetail', // Use a string for the controller name
-            '1' => 'New Unit Detail',
+            '1' => ' Unit Detail',
         ]);
     }
 

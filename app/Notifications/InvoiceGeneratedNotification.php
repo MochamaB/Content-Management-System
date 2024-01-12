@@ -12,10 +12,10 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Services\TableViewDataService;
 use Carbon\Carbon;
 
-class InvoiceGeneratedNotification extends Notification 
+class InvoiceGeneratedNotification extends Notification implements ShouldQueue
 //implements ShouldQueue
 {
- //   use Queueable;
+    use Queueable;
     protected $invoice;
     protected $tenant;
 

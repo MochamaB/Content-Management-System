@@ -17,9 +17,10 @@ class DatabaseSeeder extends Seeder
             CreateSuperUserSeeder::class,
             PropertyTypeSeeder::class,
             ChartOfAccountsSeeder::class,
-            PaymentTypeSeeder::class,
+            PaymentMethodSeeder::class,
             RolesTableSeeder::class,
             InvoiceTaskSeeder::class,
+            AmenitySeeder::class,
         ]);
     }
 }

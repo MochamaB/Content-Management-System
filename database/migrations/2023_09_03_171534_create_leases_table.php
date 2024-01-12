@@ -22,7 +22,9 @@ class CreateLeasesTable extends Migration
             $table->string('status');
             $table->timestamp("startdate");
             $table->timestamp("enddate")->nullable();
+   
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

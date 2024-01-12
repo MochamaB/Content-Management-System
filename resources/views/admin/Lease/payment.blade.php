@@ -32,10 +32,10 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label">Payment Type<span class="requiredlabel">*</span></label>
-                <select name="payment_type_id" id="payment_type_id" class="formcontrol2" placeholder="Select" required>
+                <label class="label">Payment Method<span class="requiredlabel">*</span></label>
+                <select name="payment_method_id" id="payment_method_id" class="formcontrol2" placeholder="Select" required>
                     <option value="">Select Payment Method</option>
-                    @foreach($paymenttype as $item)
+                    @foreach($PaymentMethod as $item)
                     <option value="{{$item->id}}">{{$item->name}}</option>
                     @endforeach
                 </select>

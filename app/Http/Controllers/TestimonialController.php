@@ -25,7 +25,7 @@ class TestimonialController extends Controller
         $this->model = Testimonial::class; 
         $this->controller = collect([
             '0' => 'testimonial', // Use a string for the controller name
-            '1' => 'New Testimonial',
+            '1' => ' Testimonial',
         ]);
     }
 

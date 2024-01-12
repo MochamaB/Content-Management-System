@@ -1,16 +1,18 @@
 @if(($routeParts[1] === 'create'))
-<form method="POST" action="{{ url('user') }}" class="myForm" enctype="multipart/form-data" novalidate>
+<form method="POST" action="{{ url('assignProperties') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
     <h4>Property Access</h4>
     <hr>
     <div id="accordion" class="propertyaccess">
-        @if(stripos($savedRole, 'tenant') !== false)
-        @include('layouts.admin.nodata', ['message' => 'You have to create a Lease to assign units to Tenants'])
+        @if(stripos($savedRole, 'Tenant') !== false)
+            @include('layouts.admin.nodata', ['message' => 'You have to create a Lease to assign units to Tenants'])
         @else
-        @if ($propertyaccess->isEmpty())
-        @include('layouts.admin.nodata', ['message' => 'No accessible units available. Contact Admin'])
-        @endif
-        @foreach ($propertyaccess as $property)
+
+            @if ($propertyaccess->isEmpty())
+            @include('layouts.admin.nodata', ['message' => 'No accessible units available. Contact Admin'])
+            @endif
+
+            @foreach ($propertyaccess as $property)
 
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center" id="{{ $property->id}}">
@@ -48,8 +50,9 @@
             </div>
         </div>
         @endforeach
+        @endif
     </div><br /><br />
-    @endif
+  
     @include('admin.CRUD.wizardbuttons')
 </form>
 

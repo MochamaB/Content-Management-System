@@ -20,6 +20,7 @@ class CreateUnitDetailsTable extends Migration
             $table->string('slug')->nullable();
             $table->string('desc')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
         });

@@ -721,6 +721,11 @@ a .badge:hover {
   color: #038d21 !important;
 }
 
+.svgimage{
+  width: 350px;
+  height:400px;
+}
+
 
 /* Responsiveness  */
 

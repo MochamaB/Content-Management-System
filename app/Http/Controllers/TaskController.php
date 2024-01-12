@@ -25,7 +25,7 @@ class TaskController extends Controller
         $this->model = Task::class;
         $this->controller = collect([
             '0' => 'task', // Use a string for the controller name
-            '1' => 'New Task',
+            '1' => ' Task',
         ]);
         $this->tableViewDataService = $tableViewDataService;
     }

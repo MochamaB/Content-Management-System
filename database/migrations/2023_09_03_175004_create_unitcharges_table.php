@@ -26,7 +26,9 @@ class CreateUnitchargesTable extends Migration
             $table->string('recurring_charge');
             $table->timestamp("startdate")->nullable();
             $table->timestamp("nextdate")->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('parent_id')->references('id')->on('unitcharges')->onDelete('cascade');
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');

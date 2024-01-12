@@ -25,7 +25,9 @@ class CreateInvoicesTable extends Migration
             $table->decimal('totalamount')->nullable();
             $table->string('status');
             $table->timestamp("duedate")->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('unitcharge_id')->references('id')->on('unitcharges')->onDelete('cascade');

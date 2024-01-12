@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('variable_two')->nullable(); // add this to store the second day of the month to run the task for 'twiceMonthly'
             $table->time('time')->nullable(); // you can use this to store the time to run the task
             $table->boolean('status')->nullable()->default(0);
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

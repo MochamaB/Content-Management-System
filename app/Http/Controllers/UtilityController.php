@@ -26,14 +26,14 @@ class UtilityController extends Controller
 
         $this->controller = collect([
             '0' => 'utility', // Use a string for the controller name
-            '1' => 'New Utility',
+            '1' => ' Utility',
         ]);
     }
 
     public function getUtilitiesData($utilitiesdata)
     {
-         /// TABLE DATA ///////////////////////////
-         $tableData = [
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
             'headers' => ['UTILITY', 'PROPERTY', 'TYPE', 'RATE', 'ACTIONS'],
             'rows' => [],
         ];
@@ -54,14 +54,14 @@ class UtilityController extends Controller
 
     public function index()
     {
-      
+
         $utilitiesdata = Utility::with('property')->get();
         $mainfilter =  Property::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         $tableData = $this->getUtilitiesData($utilitiesdata);
-      
-        return View('admin.CRUD.form',compact('mainfilter', 'tableData', 'controller'));
+
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
     }
 
     /**
@@ -84,8 +84,10 @@ class UtilityController extends Controller
      */
     public function store(Request $request)
     {
-        if (Utility::where('utility_name', $request->get('utility_name'))->exists()) {
-            return redirect()->back()->with('statuserror', ' The Utility is already attached to the property');
+        if (Utility::where('utility_name', $request->get('utility_name'))
+            ->where('property_id', $request->get('property_id'))->exists()
+        ) {
+            return redirect()->back()->with('statuserror', 'The Utility is already attached to the property');
         }
 
         $validatedData = $request->validate([
@@ -110,11 +112,11 @@ class UtilityController extends Controller
      */
     public function show(Utility $utility)
     {
-       // $utility = utility::find($utility->id);
+        // $utility = utility::find($utility->id);
         dd($utility);
         // $viewData = $this->formData($this->model,$amenity);
 
-        return View('admin.CRUD.edit',compact('utility'));
+        return View('admin.CRUD.edit', compact('utility'));
     }
 
     /**
@@ -125,9 +127,9 @@ class UtilityController extends Controller
      */
     public function edit(Utility $utility)
     {
-       // dd($utility);
-       
-        $viewData = $this->formData($this->model,$utility);
+        // dd($utility);
+
+        $viewData = $this->formData($this->model, $utility);
 
         return View('admin.CRUD.form', $viewData);
     }

@@ -57,7 +57,7 @@ class LeaseController extends Controller
 
         $this->controller = collect([
             '0' => 'lease', // Use a string for the controller name
-            '1' => 'New Lease',
+            '1' => ' Lease',
         ]);
 
         $this->updateNextDateAction = $updateNextDateAction;
@@ -250,7 +250,10 @@ class LeaseController extends Controller
         //8. UPLOAD LEASE AGREEMENT
         $unit
             ->addMediaFromRequest('leaseagreement')
+            ->withProperties(['unit_id' => $unit->id, 'property_id' => $propertyId])
             ->toMediaCollection('Lease-Agreement');
+
+        
 
         //9. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
         $user = User::find($lease->user_id);
@@ -316,8 +319,7 @@ class LeaseController extends Controller
          $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
         $meterReadings = $unit->meterReadings;
-        $meterReaderController = new MeterReadingController();
-        $MeterReadingsTableData = $meterReaderController->getMeterReadingsData($meterReadings);
+        $MeterReadingsTableData = $this->tableViewDataService->getMeterReadingsData($meterReadings);
         $id = $unit;
 
         $tabTitles = collect([

@@ -26,6 +26,7 @@ class CreateUnitsTable extends Migration
             $table->string('description')->nullable();;
             $table->string('selling_price')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
         });
     }

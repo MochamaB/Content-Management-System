@@ -8,6 +8,7 @@
     <hr>
     <form method="POST" action="{{ url('meter-reading') }}" class="myForm" novalidate>
         @csrf
+        @if($id)
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Property Name</label>
@@ -24,7 +25,7 @@
                 </select>
             </div>
         </div>
-
+       
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Charge</label>
@@ -42,7 +43,7 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="label">Previous Reading<span class="requiredlabel">*</span></label>
-                    <input type="number" class="form-control" name="lastreading" id="lastreading" value="{{old('lastreading') ?? '0.00'}}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
+                    <input type="number" class="form-control" name="lastreading" id="lastreading" value="{{$meterReading->currentreading ?? old('lastreading') ?? '0.00'}}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
                 </div>
             </div>
             <div class="col-md-5">
@@ -57,7 +58,7 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="label">Date of Last Reading<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control" name="startdate" id="startdate" value="{{old('startdate') ?? now()->toDateString()}}" required readonly>
+                    <input type="text" class="form-control" name="startdate" id="startdate" value="{{ $meterReading->enddate ?? old('startdate') ?? now()->toDateString()}}" required readonly>
                 </div>
             </div>
             <div class="col-md-5">
@@ -67,6 +68,7 @@
                 </div>
             </div>
         </div>
+        @endif
         <hr>
         <div class="col-md-6">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Record Meter Reading</button>

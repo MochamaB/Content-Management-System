@@ -27,7 +27,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PaymentVoucherController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\PaymentTypeController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
 
 ////Test Email View////////////
@@ -73,7 +73,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
         Route::resource('transaction', TransactionController::class);
-        Route::resource('payment-type', PaymentTypeController::class);
+        Route::resource('pay-method', PaymentMethodController::class);
     });
 
     Route::group(['groupName' => 'Leasing'], function () {
@@ -89,7 +89,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         ///////////////
         Route::resource('unitcharge', UnitChargeController::class);
         Route::resource('utility', UtilityController::class);
-        Route::get('meter-reading/create/{id}', [
+        Route::get('meter-reading/create/{id?}', [
             'as' => 'meter-reading.create',
             'uses' => 'App\Http\Controllers\MeterReadingController@create'
         ]);
@@ -115,7 +115,10 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     });
 
     Route::group(['groupName' => 'Files'], function () {
-
+        Route::get('media/create/{id}/{model}', [
+            'as' => 'media.create',
+            'uses' => 'App\Http\Controllers\MediaController@create'
+        ]);
         Route::resource('media', MediaController::class);
     });
 
@@ -150,7 +153,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         //// user wizard
         Route::post('roleuser', [UserController::class, 'roleuser']);
         Route::post('userinfo', [UserController::class, 'userinfo']);
-        Route::post('propertyaccess', [UserController::class, 'propertyaccess']);
+        Route::post('assignProperties', [UserController::class, 'assignProperties']);
 
         /////role wizard
         Route::post('assignpermission', [RoleController::class, 'assignpermission']);

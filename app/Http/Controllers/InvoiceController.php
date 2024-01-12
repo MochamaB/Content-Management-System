@@ -136,19 +136,16 @@ class InvoiceController extends Controller
     public function create()
     {
         ///1. GET CHARGES WITH RECURRING CHARGE
-        //   $unitchargedata = Unitcharge::where('recurring_charge', 'no')
-        //       ->where('parent_id', null)
-        //      ->whereHas('lease', function ($query) {
-        //          $query->where('status', 'Active');
-        //      })
-        //     ->get();
-        //  dd($unitchargedata);
-        $unitchargedata = Unitcharge::where('recurring_charge', 'Yes')
-            ->where('parent_id', null)
-            ->whereHas('unit.lease', function ($query) {
-                $query->where('status', 'Active');
-            })
-            ->get();
+       
+    //    $unitchargedata = Unitcharge::where('recurring_charge', 'Yes')
+       //     ->where('parent_id', null)
+        //    ->whereMonth('nextdate', now()->month)
+       //     ->whereHas('unit.lease', function ($query) {
+        //        $query->where('status', 'Active');
+        //    })
+        //    ->get();
+        $unitchargedata = $this->invoiceService->getUnitCharges();
+
 
         $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata, true);
         return View('admin.lease.invoice', ['tableData' => $tableData, 'controller' => ['unitcharge']]);
@@ -166,12 +163,8 @@ class InvoiceController extends Controller
     public function generateInvoice(Request $request)
     {
         ///1. GET UNITS WITH RECURRING CHARGE
-        $unitcharges = Unitcharge::where('recurring_charge', 'Yes')
-            ->where('parent_id', null)
-            ->whereHas('unit.lease', function ($query) {
-                $query->where('status', 'Active');
-            })
-            ->get();
+        $unitcharges = $this->invoiceService->getUnitCharges();
+
 
         foreach ($unitcharges as $unitcharge) {
             //1. Create invoice items from invoice service app/Services/InvoiceService

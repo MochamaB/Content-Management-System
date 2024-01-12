@@ -24,7 +24,6 @@ class CreateWebsiteSettingsTable extends Migration
             $table->string('company_aboutus',200)->nullable();
             $table->string('site_currency')->nullable();
             $table->string('banner_desc',200)->nullable();
-          
             $table->timestamps();
         });
     }

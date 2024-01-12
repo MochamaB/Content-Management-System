@@ -41,15 +41,29 @@ class InvoiceService
         $this->updateDueDateAction = $updateDueDateAction;
         $this->recordTransactionAction = $recordTransactionAction;
     }
-    public function chargesForInvoiceGeneration()
+    public function getUnitCharges()
     {
-        ///1. GET UNITS WITH RECURRING CHARGE
-        $unitcharges = Unitcharge::where('recurring_charge', 'Yes')
+        return Unitcharge::where('recurring_charge', 'Yes')
             ->where('parent_id', null)
+       //     ->whereMonth('nextdate', now()->month)
             ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
             })
             ->get();
+    }
+    public function chargesForInvoiceGeneration()
+    {
+        ///1. GET UNITS WITH RECURRING CHARGE
+      //  $unitcharges = Unitcharge::where('recurring_charge', 'Yes')
+       //     ->where('parent_id', null)
+       //     ->whereMonth('nextdate', now()->month)
+       //     ->whereHas('unit.lease', function ($query) {
+       //         $query->where('status', 'Active');
+       //     })
+       //     ->get();
+
+            $unitcharges = $this->getUnitCharges();
+
 
         foreach ($unitcharges as $unitcharge) {
             //1. Create invoice items from invoice service app/Services/InvoiceService
@@ -67,44 +81,44 @@ class InvoiceService
         }
 
         ///Queries unitcharge-> next date to check if the charge needs to be invoiced that month.
-        if ($this->isTimeToGenerateInvoice($unitcharge)) {
-            // dd($unitcharge);
+        //    if ($this->isTimeToGenerateInvoice($unitcharge)) {
+        // dd($unitcharge);
 
-            $invoiceData = $this->getInvoiceHeaderData($unitcharge);
+        $invoiceData = $this->getInvoiceHeaderData($unitcharge);
 
-            //1. Create Invoice Header Data
-            $invoice = $this->createInvoice($invoiceData);
+        //1. Create Invoice Header Data
+        $invoice = $this->createInvoice($invoiceData);
 
-            //2. Create invoice items
-            $this->createInvoiceItems($invoice, $unitcharge);
+        //2. Create invoice items
+        $this->createInvoiceItems($invoice, $unitcharge);
 
-            //3. Update Total Amount in Invoice Header
-            $this->calculateTotalAmountAction->handle($invoice);
+        //3. Update Total Amount in Invoice Header
+        $this->calculateTotalAmountAction->handle($invoice);
 
-            //4. Update Next Date in the Unitcharge
-            $this->updateNextDateAction->invoicenextdate($unitcharge);
-            //// Child Charges
-            $childcharges = Unitcharge::where('parent_id', $unitcharge->id)->get();
-            if ($childcharges) {
-                foreach ($childcharges as $childcharge) {
-                    $this->updateNextDateAction->invoicenextdate($childcharge);
-                }
+        //4. Update Next Date in the Unitcharge
+        $this->updateNextDateAction->invoicenextdate($unitcharge);
+        //// Child Charges
+        $childcharges = Unitcharge::where('parent_id', $unitcharge->id)->get();
+        if ($childcharges) {
+            foreach ($childcharges as $childcharge) {
+                $this->updateNextDateAction->invoicenextdate($childcharge);
             }
-
-            //5. Update Due Date In the newly generated invoice.
-            $this->updateDueDateAction->handle($invoice);
-
-            //6. Create Transactions for ledger
-            $this->recordTransactionAction->invoiceCharges($invoice, $unitcharge);
-
-            //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
-             $tenant = $invoice->model;
-             $tenant->notify(new InvoiceGeneratedNotification($invoice, $tenant));
-           // SendInvoiceEmailJob::dispatch($invoice, $user);
-
-
-            return $invoice;
         }
+
+        //5. Update Due Date In the newly generated invoice.
+        $this->updateDueDateAction->handle($invoice);
+
+        //6. Create Transactions for ledger
+        $this->recordTransactionAction->invoiceCharges($invoice, $unitcharge);
+
+        //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
+        $tenant = $invoice->model;
+        $tenant->notify(new InvoiceGeneratedNotification($invoice, $tenant));
+        // SendInvoiceEmailJob::dispatch($invoice, $user);
+
+
+        return $invoice;
+        //   }
     }
 
     ///////2. CHECK IF ITS TIME TO GENERATE INVOICE
@@ -118,7 +132,7 @@ class InvoiceService
     private function invoiceExists(Unitcharge $unitcharge)
     {
         $today = Carbon::now();
-        $invoicenodate = $today->format('ym');
+        $invoicenodate =  Carbon::parse($unitcharge->nextdate)->format('ym');
         $unitnumber = Unit::where('id', $unitcharge->unit_id)->value('unit_number');
         $referenceno = $invoicenodate . $unitnumber;
 
@@ -130,8 +144,8 @@ class InvoiceService
     //////4. GET DATA FOR INVOICE HEADER DATA
     private function getInvoiceHeaderData($unitcharge)
     {
-        $today = Carbon::now();
-        $invoicenodate = $today->format('ym');
+        //$today = Carbon::now();
+        $invoicenodate =  Carbon::parse($unitcharge->nextdate)->format('ym');
         $unitnumber = Unit::where('id', $unitcharge->unit_id)->first();
         $userId = Lease::where('unit_id', $unitcharge->unit_id)->first();
         $user = User::class;
@@ -139,6 +153,7 @@ class InvoiceService
         return [
             'property_id' => $unitcharge->property_id,
             'unit_id' => $unitcharge->unit_id,
+            'unitcharge_id' => $unitcharge->id,
             'model_type' => $user, ///This has plymorphism because an invoice can also be sent to a vendor.
             'model_id' => $userId->user_id,
             'referenceno' => $invoicenodate . $unitnumber->unit_number,

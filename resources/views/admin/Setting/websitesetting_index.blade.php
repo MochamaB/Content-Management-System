@@ -17,7 +17,16 @@
     Add Site Information</button>
 <br /><br /><br />
 <div class=" contwrapper">
-    <h2>No site settings found.</h2>
+    <h3>Website settings have not been found.</h3>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+        <img class="svgimage float-center" src="{{ asset('resources/uploads/svg/settings.svg') }}">
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+   
+
 </div>
 @else
 <form method="POST" action="{{ url('websitesetting/1') }}" class="myForm" enctype="multipart/form-data">

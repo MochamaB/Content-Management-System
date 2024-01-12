@@ -18,6 +18,7 @@ class CreatePropertyTypesTable extends Migration
             $table->string('property_category');
             $table->string('property_type');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

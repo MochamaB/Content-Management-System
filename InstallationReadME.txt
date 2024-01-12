@@ -4,7 +4,7 @@ change sync to QUEUE_CONNECTION=database in .env file
 Run php artisan queue:table  --Generate the jobs table for the message queue.
 php artisan migrate
 php artisan permission:create-permission-routes
-php artisan db:seed
+php artisan db:seed  --individual php artisan db:seed --class=UserSeeder
 php artisan schedule-monitor:sync  ---Add all tasks to spatie monitor 
 
 php artisan queue:work ---Keep running all the time

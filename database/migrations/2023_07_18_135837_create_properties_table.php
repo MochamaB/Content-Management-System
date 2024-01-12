@@ -21,6 +21,7 @@ class CreatePropertiesTable extends Migration
             $table->string('property_streetname');
             $table->string('property_status');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
