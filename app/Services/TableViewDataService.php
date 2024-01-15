@@ -102,9 +102,9 @@ class TableViewDataService
             } elseif ($totalPaid < $item->totalamount) {
                 $status = 'partially_paid';
                 $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
-            }  elseif ($totalPaid > $item->totalamount) {
+            } elseif ($totalPaid > $item->totalamount) {
                 $status = 'over_paid';
-            }   elseif ($totalPaid == $item->totalamount) {
+            } elseif ($totalPaid == $item->totalamount) {
                 $status = 'paid';
             }
 
@@ -348,43 +348,89 @@ class TableViewDataService
         return $tableData;
     }
 
-        ///////////////////
-        public function getMediaData($mediadata, $extraColumns = false)
-        {
-            // Eager load the 'unit' relationship
-            //   $invoicedata->load('user');
-    
-            /// TABLE DATA ///////////////////////////
-    
-            $headers = ['NO','THUMBNAIL', 'NAME', 'COLLECTION', 'SIZE','ACTIONS'];
-    
-            // If $Extra columns is true, insert 'Unit Details' at position 3
-            if ($extraColumns) {
-                array_splice($headers, 3, 0, ['DETAILS']);
-            }
-    
-            $tableData = [
-                'headers' => $headers,
-                'rows' => [],
-            ];
-            $allMedia = collect();
-    
-            foreach ($mediadata as $item) {
-                
-                $row = [
-                    'id' => $item->id,
-                    $item,
-                    $item->collection_name,
-                   
-                ];
-                // If $Extra Columns is true, insert unit details at position 3
-                if ($extraColumns) {
-                    array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
-                }
-    
-                $tableData['rows'][] = $row;
-            }
-    
-            return $tableData;
+    ///////////////////
+    public function getMediaData($mediadata, $extraColumns = false)
+    {
+        // Eager load the 'unit' relationship
+        //   $invoicedata->load('user');
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['NO', 'THUMBNAIL', 'NAME', 'COLLECTION', 'SIZE', 'ACTIONS'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 3, 0, ['DETAILS']);
         }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+        $allMedia = collect();
+
+        foreach ($mediadata as $item) {
+
+            $row = [
+                'id' => $item->id,
+                $item,
+                $item->collection_name,
+
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
+            }
+
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
+
+
+    public function getUserData($userdata, $extraColumns = false)
+    {
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['NAME', 'ROLE', 'EMAIL', 'ACCOUNT STATUS', 'ACTIONS'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 3, 0, ['DETAILS']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($userdata as $item) {
+            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
+            <div>
+            <h6>' . $item->firstname . ' ' . $item->lastname .
+                '</h6>
+            </div>
+          </div>';
+
+            $row = [
+                'id' => $item->id,
+                $name,
+                $roleNames ?? 'Super Admin',
+                $item->email,
+                $item->status,
+
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            //     if ($extraColumns) {
+            //        array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
+            //    }
+
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
 }

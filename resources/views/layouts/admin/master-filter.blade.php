@@ -2,17 +2,17 @@
                         <div class="form-group">
                             <label class="label">filter</label>
                             <select name="controller" id="controller" class="formcontrol2" onchange="applyFilters('controller')">
-                                <option>ALL </option>
+                                <option value="All">ALL </option>
                                 @if(isset($mainfilter) && $mainfilter !== null)
-                                    @foreach ($mainfilter as $item)
-                                    <option value="{{ $item ?? '' }}" style="text-transform: capitalize;">{{ $item ?? '' }}</option>
-                                    @endforeach
+                                @foreach ($mainfilter as $item)
+                                <option value="{{ $item ?? '' }}" style="text-transform: capitalize;">{{ $item ?? '' }}</option>
+                                @endforeach
                                 @endif
                             </select>
                         </div>
 
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2  d-flex align-items-center" >
 
                         <button class="btn btn-warning btn-lg text-white" id="filter" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                             <i class="fas fa-plus" id="collapseIcon"></i> Advanced Filter <i class="fas fa-times" id="expandIcon" style="display: none;"></i>
@@ -31,42 +31,42 @@
 
                             <div class="row">
                                 <div class="row">
-                                    @if (isset($fields))
-                                    @foreach ($fields as $field => $options)
-                                    @if ($options['inputType'] === 'selectgroup')
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="label">{{ $options['label'] }}</label>
-                                            <select class="formcontrol2" id="{{ $field }}" onchange="applyFilters('{{ $field }}')">
-                                                @foreach ($data[$field] as $groupLabel => $options)
-                                                <optgroup label="{{ $groupLabel }}">
-                                                    @foreach ($options as $option)
-                                                    <option value="{{ $option }}">{{ $option }}</option>
-                                                    @endforeach
-                                                </optgroup>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    @elseif ($options['inputType'] === 'select')
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="label">{{ $options['label'] }}</label>
-                                            <select class="formcontrol2" id="{{ $field }}Filter" onchange="applyFilters('{{ $field }}')">
-                                                <option value="All">All</option>
-                                                @foreach ($data[$field] as $option)
-                                                <option value="{{ $option }}">{{ $option }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    @endif
+                                @if (isset($filters))
+                                    @foreach ($filters as $filter => $items)
+                                        @if ($items['inputType'] === 'selectgroup')
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="label">{{ $items['label'] }}</label>
+                                                    <select class="formcontrol2" id="{{ $filter }}" onchange="applyFilters('{{ $filter }}')">
+                                                        @foreach ($data[$filter] as $groupLabel => $items)
+                                                        <optgroup label="{{ $groupLabel }}">
+                                                            @foreach ($items as $item)
+                                                            <option value="{{ $item }}">{{ $item }}</option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @elseif ($items['inputType'] === 'select')
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="label">{{ $items['label'] }}</label>
+                                                    <select name="{{ $filter }}" class="formcontrol2" id="{{ $filter }}" onchange="applyFilters('{{ $filter }}')">
+                                                        <option value="All">All</option>
+                                                        @foreach ($data[$filter] as $item)
+                                                        <option value="{{ $item }}">{{ $item }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        @endif
                                     @endforeach
-                                    @else
+                                @else
                                     <div class="col-md-12">
                                         <h4>Filter not available.</h4>
                                     </div>
-                                    @endif
+                                @endif
                                 </div>
                             </div>
 

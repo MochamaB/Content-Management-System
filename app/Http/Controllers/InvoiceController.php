@@ -58,18 +58,15 @@ class InvoiceController extends Controller
         $invoicedata = $invoiceQuery->get();
 
         $cardData = $this->getCardData($month, $year);
-        //   $viewData = $this->formData($this->model);
+        $filterData = $this->filterData($this->model);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getInvoiceData($invoicedata, true);
-
-        return View(
-            'admin.CRUD.form',
+      //  dd($filterData);
+        return view('admin.CRUD.form', array_merge(
             compact('mainfilter', 'tableData', 'controller'),
-            //  $viewData,
-            [
-                   'cardData' => $cardData,
-            ]
-        );
+            $filterData,
+            ['cardData' => $cardData]
+        ));
     }
 
 

@@ -136,7 +136,8 @@ class AppServiceProvider extends ServiceProvider
                 'Property' => ['icon' => 'bank', 'submodules' => [
                                                         'property'=> ['display' => 'Property / Company'], 
                                                         'unit'=> ['display' => 'Units'],
-                                                        'utility'=> ['display' => 'Utilities']]],
+                                                        'utility'=> ['display' => 'Utilities'],
+                                                        'tenant'=> ['display' => 'Tenants']]],
 
                 'Leasing' => ['icon' => 'key','submodules' => [
                                                         'lease'=> ['display' => 'Leases'],

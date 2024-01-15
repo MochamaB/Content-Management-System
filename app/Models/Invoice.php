@@ -36,27 +36,67 @@ class Invoice extends Model
 
         // Add more fields as needed
     ];
+    public static $filters = [
+        'property' => ['label' => 'Property', 'inputType' => 'select'],
+        'Unit' => ['label' => 'Unit', 'inputType' => 'select'],
+        'tenant' => ['label' => 'Tenant Name', 'inputType' => 'select'],
+        'invoice_type' => ['label' => 'Invoice Type', 'inputType' => 'select'],
+        'status' => ['label' => 'Status', 'inputType' => 'select'],
+
+
+        // Add more fields as needed
+    ];
+    public static function getFilterData($filter)
+    {
+        $invoice = Invoice::with('property', 'unit', 'model')->get();
+        switch ($filter) {
+            case 'property':
+                $properties = Invoice::with('property')->get()->pluck('property.property_name')->unique()->values()->toArray();
+                //    $properties = Property::pluck('property_name')->toArray();
+                return $properties;
+            case 'Unit':
+                $units = Invoice::with('unit')->get()->pluck('unit.unit_number')->unique()->values()->toArray();
+                return $units;
+            case 'tenant':
+                $tenants = Invoice::with('model')->get()->map(function ($invoice) {
+                    return $invoice->model->firstname . ' ' . $invoice->model->lastname;
+                })->unique()->values()->toArray();
+                return  $tenants;
+            case 'invoice_type':
+                $distinctInvoiceTypes = Invoice::distinct('invoice_type')->pluck('invoice_type');
+                return  $distinctInvoiceTypes;
+            case 'status':
+                return [
+                    'paid' => 'Paid',
+                    'Unpaid' => 'unpaid',
+                    'Over Due' => 'Over Due',
+                    'partially_paid' => 'partially_paid',
+
+                ];
+        }
+    }
     public static function getFieldData($field)
     {
         $invoice = Invoice::with('property', 'unit', 'model')->get();
         switch ($field) {
             case 'property_id':
                 // Retrieve the supervised units' properties
-                $properties = $invoice->pluck('property.property_name', 'property.id')->toArray();
+                $properties = Property::pluck('property_name')->toArray();
+                //  $properties = Property::pluck('property_name')->toArray();
                 return $properties;
             case 'unit_id':
                 // Retrieve the supervised units' properties
                 $units = $invoice->pluck('unit.unit_number', 'unit.id')->toArray();
                 return $units;
             case 'model_id':
-              //  $modelClass = get_class($invoice->model);
+                //  $modelClass = get_class($invoice->model);
                 $tenants = User::selectRaw('CONCAT(firstname, " ", lastname) as full_name, id')
                     ->pluck('full_name', 'id')
                     ->toArray();
                 return  $tenants;
             case 'invoice_type':
                 $distinctInvoiceTypes = Invoice::distinct('invoice_type')->pluck('invoice_type');
-            return  $distinctInvoiceTypes;
+                return  $distinctInvoiceTypes;
             case 'status':
                 return [
                     'paid' => 'Paid',
@@ -71,16 +111,16 @@ class Invoice extends Model
         }
     }
 
-      ////// PoLymorphism relationship (Can be Either User, Vendor or Supplier)
-      public function model()
-      {
+    ////// PoLymorphism relationship (Can be Either User, Vendor or Supplier)
+    public function model()
+    {
         return $this->morphTo();
-      }
+    }
 
-      public function property()
-      {
-          return $this->belongsTo(Property::class,'property_id');
-      }
+    public function property()
+    {
+        return $this->belongsTo(Property::class, 'property_id');
+    }
 
     public function unit()
     {
@@ -96,7 +136,7 @@ class Invoice extends Model
     {
         return $this->belongsTo(Lease::class, 'unit_id');
     }
-  
+
 
     public function invoiceItems()
     {

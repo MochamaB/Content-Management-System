@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -72,9 +73,9 @@ class User extends Authenticatable
         'remember_token',
     ];
 
- //   protected $attributes = [
- //       'password' => 'property123', // Replace 'default_password_value' with your desired default password
-  //  ];
+    //   protected $attributes = [
+    //       'password' => 'property123', // Replace 'default_password_value' with your desired default password
+    //  ];
 
     /**
      * The attributes that should be cast.
@@ -103,7 +104,7 @@ class User extends Authenticatable
      */
 
 
-
+    //// Relationship between user and Unit through pivot
     public function units()
     {
         return $this->belongsToMany(Unit::class, 'unit_user')
@@ -204,7 +205,7 @@ class User extends Authenticatable
             ->with('roles.permissions')
             ->where('id', '!=', 1) // Exclude users with id 1
             ->get();
-      //  dd($allUsers);
+        //  dd($allUsers);
 
 
         $filteredUsers = $allUsers->filter(function ($user) use ($loggedInUserPermissions) {
@@ -219,6 +220,14 @@ class User extends Authenticatable
         });
 
         return $filteredUsers;
+    }
+
+    public function scopeTenants(Builder $query, User $user)
+    {
+        return $query->role('Tenant')
+        ->whereHas('units', function (Builder $query) use ($user) {
+            $query->whereIn('units.id', $user->units->pluck('id'));
+        });
     }
     //// Polymorphism with Invoices Model
     public function invoices()

@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\UserDeletedNotification;
 use App\Actions\UserRoleAction;
 use App\Actions\AttachDetachUserFromUnitAction;
+use App\Services\TableViewDataService;
 
 class UserController extends Controller
 {
@@ -33,8 +34,10 @@ class UserController extends Controller
     protected $model;
     private $userRoleAction;
     protected $attachDetachUserFromUnitAction;
+    private $tableViewDataService;
 
-    public function __construct(UserRoleAction $userRoleAction, AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction)
+    public function __construct(UserRoleAction $userRoleAction, AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction,
+    TableViewDataService $tableViewDataService)
     {
         $this->model = User::class;
         $this->controller = collect([
@@ -44,6 +47,7 @@ class UserController extends Controller
 
         $this->userRoleAction = $userRoleAction;
         $this->attachDetachUserFromUnitAction = $attachDetachUserFromUnitAction;
+        $this->tableViewDataService = $tableViewDataService;
     }
 
 
@@ -79,6 +83,27 @@ class UserController extends Controller
         $userviewData = compact('tableData', 'mainfilter', 'viewData', 'controller');
 
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'), $viewData, $userviewData);
+    }
+
+
+    public function tenant()
+    {
+        $user = Auth::user();
+        if (Gate::allows('view-all', $user)) {
+            $tablevalues = $this->model::all();
+        } else {
+            $tablevalues = $user->filterUsers();
+        }
+        $mainfilter =  User::pluck('email')->toArray();
+        $viewData = $this->formData($this->model);
+        $controller = $this->controller;
+        $tableData = $this->tableViewDataService->getUserData($tablevalues,false);
+        
+        return View('admin.User.tenant', compact('mainfilter', 'tableData', 'controller'),
+      //  $viewData,
+        [
+         //   'cardData' => $cardData,
+        ]);
     }
 
     /**

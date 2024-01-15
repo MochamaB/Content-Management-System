@@ -29,7 +29,7 @@ use App\Http\Controllers\PaymentVoucherController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\TenantController;
 ////Test Email View////////////
 use App\Models\MeterReading;
 use App\Models\User;
@@ -158,6 +158,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         /////role wizard
         Route::post('assignpermission', [RoleController::class, 'assignpermission']);
         Route::post('assignreports', [RoleController::class, 'assignreports']);
+
+        ////Tenant
+        Route::resource('tenant', TenantController::class);
     });
 
     Route::group(['groupName' => 'Other'], function () {

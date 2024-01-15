@@ -22,10 +22,13 @@
         @elseif(($routeParts[1] === 'show'))
 
         @include('admin.CRUD.show')
+
+<!---- Tenants ------------------>
+        @elseif(($routeParts[0] === 'tenant'))
+        @include('admin.CRUD.index')
+
 <!--- Show-Index -->
         @else
         @endif
 
 @endsection
-
-@include('layouts.admin.scripts')
