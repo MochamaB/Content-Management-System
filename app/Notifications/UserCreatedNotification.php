@@ -11,6 +11,10 @@ class UserCreatedNotification extends Notification
 {
     use Queueable;
     protected $user;
+    protected $subject;
+    protected $heading;
+    protected $linkmessage;
+    protected $data;
 
     /**
      * Create a new notification instance.
@@ -41,20 +45,22 @@ class UserCreatedNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $heading = 'Welcome! Your Account is ready';
-        $linkmessage = 'To view and manage your units, you can login to our client area here:';
-        $data = ([
+        $this->subject = 'New User Created';
+        $this->heading = 'Welcome! Your Account is ready';
+        $this->linkmessage = 'To view and manage your units, you can login to our client area here:';
+        $this->data = ([
             "line 1" => "Welcome to the property management system",
             "line 2" => "Manage and view all property data from the comfort of your computer",
             "line 3" => "The Default password is property123",
             "action" => "/dashboard",
             "line 4" => "",
         ]);
+
         return (new MailMessage)->view(
             'email.template',
-            ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading]
+            ['user' => $this->user,'data'=> $this->data,'linkmessage' => $this->linkmessage,'heading' =>$this->heading]
         )
-        ->subject('New User Created');
+        ->subject($this->subject);
     }
 
     /**
@@ -69,6 +75,11 @@ class UserCreatedNotification extends Notification
             'user_id' => $this->user->id,
             'phonenumber' => $this->user->phonenumber,
             'user_email' => $this->user->email,
+            'subject' => $this->subject ?? null,
+            'heading' => $this->heading ?? null,
+            'linkmessage' => $this->linkmessage ?? null,
+            'data' => $this->data ?? null,
+            'channels' => $this->via($notifiable),
         ];
     }
 }

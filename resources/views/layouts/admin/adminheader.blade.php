@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/style.css') }}">
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/mystyle.css') }}">
   <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/wizard.css') }}">
+  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/notification.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />
   <style>

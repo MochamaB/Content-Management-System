@@ -182,6 +182,51 @@
     });
 </script>
 
+
+<!--- filter function -->
+<script>
+    
+function applyFilters(filterField) {
+    console.log('Filter Field:', filterField);
+    var selectedValues = {}; // Object to store the selected values
+
+    // Iterate over each filter input
+    $('.formcontrol2').each(function() {
+        var filterField = $(this).attr('id').replace('Filter', ''); // Extract the filter field name
+        var selectedValue = $(this).val(); // Get the selected value
+
+
+
+        selectedValues[filterField] = selectedValue; // Store the selected value in the object
+    });
+
+    // Show all table rows
+    $('#dataTable tbody tr').show();
+
+    // Iterate over each selected filter
+    $.each(selectedValues, function(filterField, selectedValue) {
+        if (selectedValue !== 'All') {
+            // Special handling for date filter field
+           
+            // Iterate over each table row
+            $('#dataTable tbody tr').each(function() {
+                var row = $(this);
+                var columnValue = row.find('td:contains(' + selectedValue + ')');
+                    
+                // Hide the row if it does not match the selected filter value
+                if (columnValue.length === 0) {
+                    row.hide();
+                }
+            });
+        }
+    });
+    // Display the selected value in an alert
+ 
+
+}
+
+</script>
+
 <!---- SHOW PDF OR TXT WHEN FILE IS UPLOADED----->
 
 <!-- plugins:js -->

@@ -398,7 +398,7 @@ class TableViewDataService
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
-            array_splice($headers, 3, 0, ['DETAILS']);
+            array_splice($headers, 2, 0, ['DETAILS']);
         }
 
         $tableData = [
@@ -407,6 +407,10 @@ class TableViewDataService
         ];
 
         foreach ($userdata as $item) {
+            $unit = $item->units->first();
+            $property = $item->properties->first();
+            $roleNames = $item->roles->first();
+            $addlease = '<a href="' . route('lease.create') . '" class="badge badge-warning"  style="float: left; margin-right:10px">Add Lease</a>';
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
             <div>
@@ -418,16 +422,20 @@ class TableViewDataService
             $row = [
                 'id' => $item->id,
                 $name,
-                $roleNames ?? 'Super Admin',
+                $roleNames->name ?? 'Super Admin',
                 $item->email,
                 $item->status,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
-            //     if ($extraColumns) {
-            //        array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
-            //    }
-
+                 if ($extraColumns) {
+                    if($unit){
+                   array_splice($row, 3, 0, $property->property_name. ' - ' . $unit->unit_number);
+                     } else {
+                        // Add default value when the condition is not met
+                        array_splice($row, 3, 0, $addlease); // Replace 'Default Value' with your desired default
+                    }    
+                } 
             $tableData['rows'][] = $row;
         }
 

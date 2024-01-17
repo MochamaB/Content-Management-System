@@ -67,7 +67,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     });
 
     Route::group(['groupName' => 'Communication'], function () {
-        Route::resource('notification', NotificationController::class);
+      //  Route::resource('notification', NotificationController::class);
+      Route::get('/email', [NotificationController::class, 'email'])->name('notification.email');
+      Route::get('/notification/{notification}', [NotificationController::class, 'show'])->name('notification.show');
     });
 
     Route::group(['groupName' => 'Accounting'], function () {
@@ -180,14 +182,14 @@ Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoic
 
 //////View Your email notification
 
-Route::get('/notification', function () {
-    $user = User::find(1);
-    $tenant = User::find(1);
-    $payment = Payment::find(1);
+//Route::get('/notification', function () {
+//    $user = User::find(1);
+ //   $tenant = User::find(1);
+ //   $payment = Payment::find(1);
 
 
-    return (new PaymentNotification($payment, $tenant))
-        ->toMail($user->user);
-});
+//    return (new PaymentNotification($payment, $tenant))
+ //       ->toMail($user->user);
+//});
 
 require __DIR__ . '/auth.php';

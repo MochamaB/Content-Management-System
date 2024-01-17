@@ -753,9 +753,23 @@ a .badge:hover {
     -webkit-transition: width 0.25s ease, background 0.25s ease;
     -moz-transition: width 0.25s ease, background 0.25s ease;
     -ms-transition: width 0.25s ease, background 0.25s ease;
-    width: 248px;
+    width: 180px;
     height: 97px;
-    padding: 20px 30px;
+    padding: 20px 5px;
+}
+.navbar .navbar-menu-wrapper {
+  background: #F4F5F7;
+  transition: width 0.25s ease;
+  -webkit-transition: width 0.25s ease;
+  -moz-transition: width 0.25s ease;
+  -ms-transition: width 0.25s ease;
+  color: #6C7383;
+  padding-left: 0.5rem;
+  padding-right: 0.187rem;
+  padding-top: 30px;
+  padding-bottom: 25px;
+  width: calc(100% - 180px);
+  height: 97px;
 }
 
 

@@ -3,18 +3,18 @@
 
         <div class=" contwrapper">
 
-            <h4><b> Unit Properties</b>
+            <h4><b> Unit Details</b>
                 @if( Auth::user()->can('unitdetail.create') || Auth::user()->id === 1)
                 <a href="" class="btn btn-primary btn-lg text-white mb-0 me-0 float-end" role="button" data-toggle="modal" data-target="#myModal">
                     <i class="mdi mdi-plus-circle-outline"></i>
-                    Add Unit Property
+                    Add Unit Detail
                 </a>
                 @endif
             </h4></br>
             <hr>
             @if( $unitdetails->isempty())
             <div class="col-md-10" style="border-left: 10px solid red;padding:30px;background-color:#FBCEB1">
-                <h5>Unit properties have not been added!.
+                <h5>Unit Details have not been added!.
                 </h5>
             </div>
             @else
@@ -61,35 +61,13 @@
     </div>
 
 
-    <div class="col-md-5" style="padding-top: 55px;">
-        <h4><b> Unit Details</b> &nbsp;
-            @if( Auth::user()->can('unit.edit') || Auth::user()->id === 1)
-            <a href="{{url('unit/'.$unit->id.'/edit')}}" class="link">Edit</a>
-            @endif
+    <div class="col-md-5" style="padding-top: 55px;background-color: #dfebf3;border: 1px solid #7fafd0;">
+        <h4><b> Unit Information </b> &nbsp;
+            
         </h4>
         <hr>
 
-        <div class="col-md-4">
-            <div class="form-group">
-                @foreach($fields as $field => $attributes)
-                <!--- LABEL -->
-                <label class="label">{{ $attributes['label'] }}
-                    @if ($attributes['required'])
-                    <span class="requiredlabel">*</span>
-                    @endif
-                </label>
-                <h5>
-                    <small class="text-muted">
-                        @if($specialvalue !== null && $specialvalue->has($field))
-                        {{ $specialvalue[$field] }}
-                        @else
-                        {{ $actualvalues->$field }}
-                        @endif
-                    </small>
-                </h5>
-                @endforeach
-            </div>
-        </div>
+        
 
     </div>
 </div>

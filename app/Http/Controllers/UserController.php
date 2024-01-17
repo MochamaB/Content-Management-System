@@ -55,56 +55,20 @@ class UserController extends Controller
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            $tablevalues = $this->model::all();
+            $users = $this->model::all();
         } else {
-            $tablevalues = $user->filterUsers();
+            $users = $user->filterUsers();
         }
         $mainfilter =  Role::pluck('name')->toArray();
-        $viewData = $this->formData($this->model);
+        $filterData = $this->filterData($this->model);
         $controller = $this->controller;
-        /// TABLE DATA ///////////////////////////
-        $tableData = [
-            'headers' => ['NAME', 'ROLE', 'EMAIL', 'ACCOUNT STATUS', 'ACTIONS'],
-            'rows' => [],
-        ];
+        $tableData = $this->tableViewDataService->getUserData($users,false);
+       // $userviewData = compact('tableData', 'mainfilter', 'controller');
 
-        foreach ($tablevalues as $item) {
-            $showLink = url($this->controller['0'] . 'show' . $item->id);
-            $roleNames = $item->roles->pluck('name')->implode(', ');
-
-            $tableData['rows'][] = [
-                'id' => $item->id,
-                $item->firstname . ' ' . $item->lastname,
-                $roleNames ?? 'Super Admin',
-                $item->email,
-                $item->status,
-            ];
-        }
-        $userviewData = compact('tableData', 'mainfilter', 'viewData', 'controller');
-
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'), $viewData, $userviewData);
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'), $filterData);
     }
 
 
-    public function tenant()
-    {
-        $user = Auth::user();
-        if (Gate::allows('view-all', $user)) {
-            $tablevalues = $this->model::all();
-        } else {
-            $tablevalues = $user->filterUsers();
-        }
-        $mainfilter =  User::pluck('email')->toArray();
-        $viewData = $this->formData($this->model);
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getUserData($tablevalues,false);
-        
-        return View('admin.User.tenant', compact('mainfilter', 'tableData', 'controller'),
-      //  $viewData,
-        [
-         //   'cardData' => $cardData,
-        ]);
-    }
 
     /**
      * Show the form for creating a new resource.

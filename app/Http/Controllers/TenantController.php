@@ -39,12 +39,12 @@ class TenantController extends Controller
           //  $tablevalues = $user->filterUsers();
         }
         $mainfilter =  User::pluck('email')->toArray();
-        $viewData = $this->formData($this->model);
+        $filterData = $this->filterData($this->model);
         $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getUserData($tenants,false);
+        $tableData = $this->tableViewDataService->getUserData($tenants,true);
         
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
-      //  $viewData,
+        $filterData,
         [
          //   'cardData' => $cardData,
         ]);

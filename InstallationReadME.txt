@@ -2,6 +2,7 @@ Composer install
 Change DB Name in .env file
 change sync to QUEUE_CONNECTION=database in .env file
 Run php artisan queue:table  --Generate the jobs table for the message queue.
+php artisan notifications:table -- Notifictions table ---if not generated
 php artisan migrate
 php artisan permission:create-permission-routes
 php artisan db:seed  --individual php artisan db:seed --class=UserSeeder

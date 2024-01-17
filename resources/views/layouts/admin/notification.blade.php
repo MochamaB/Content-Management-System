@@ -1,24 +1,30 @@
-
-
 <li class="nav-item dropdown">
-            <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-              <i class="icon-mail icon-lg"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
-              <a class="dropdown-item py-3 border-bottom">
-                <p class="mb-0 font-weight-medium float-left">You have 4 new notifications </p>
-                <span class="badge badge-pill badge-primary float-right">View all</span>
-              </a>
-              @foreach ($notifications as $item)
-              <a class="dropdown-item preview-item py-3">
-                <div class="preview-thumbnail">
-                  <i class="mdi mdi-alert m-auto text-primary"></i>
-                </div>
-                <div class="preview-item-content">
-                  <h6 class="preview-subject fw-normal text-dark mb-1">{{$item->type}}</h6>
-                  <p class="fw-light small-text mb-0">{{ $item->created_at->diffForHumans() }}</p>
-                </div>
-              </a>
-              @endforeach
-            </div>
-          </li>
+  
+      @if($unreadNotifications->count() > 0)
+      <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="icon-bell"></i>
+        <span class="badge badge-information">{{ $unreadNotifications->count() }}</span>
+      </a>
+      @else
+      <!-- Display something when there are no unread notifications -->
+      <a class="nav-link" href="#">
+        <i class="icon-bell"></i>
+        <span class="badge badge-information">0</span>
+      </a>
+      @endif
+      <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
+        <a class="dropdown-item py-3">
+          <p class="mb-0 font-weight-medium float-left">You have {{ $unreadNotifications->count() }} unread mails </p>
+          <span class="badge badge-pill badge-primary float-right">View all</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item preview-item">
+          <div class="preview-item-content flex-grow py-2">
+            <p class="preview-subject ellipsis font-weight-medium text-dark">Subject </p>
+            <p class="fw-light small-text mb-0"> Heading </p>
+          </div>
+        </a>
+
+
+      </div>
+</li>

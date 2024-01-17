@@ -11,6 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Contracts\Role;
+use Spatie\Permission\Models\Role as Roles;
 
 class User extends Authenticatable
 {
@@ -63,6 +65,37 @@ class User extends Authenticatable
         }
     }
 
+    public static $filters = [
+        'property' => ['label' => 'Property', 'inputType' => 'select'],
+        'Unit' => ['label' => 'Unit', 'inputType' => 'select'],
+        'role' => ['label' => 'Role', 'inputType' => 'select'],
+        'status' => ['label' => 'Status', 'inputType' => 'select'],
+
+
+        // Add more fields as needed
+    ];
+    public static function getFilterData($filter)
+    {
+        $invoice = Invoice::with('property', 'unit', 'model')->get();
+        switch ($filter) {
+            case 'property':
+                $properties = Invoice::with('property')->get()->pluck('property.property_name')->unique()->values()->toArray();
+                //    $properties = Property::pluck('property_name')->toArray();
+                return $properties;
+            case 'Unit':
+                $units = Invoice::with('unit')->get()->pluck('unit.unit_number')->unique()->values()->toArray();
+                return $units;
+            case 'role':
+                $roles = Roles::pluck('name')->toArray();
+                return  $roles;
+            case 'status':
+                return [
+                    'Active',
+                    'Suspended',       
+                ];
+        }
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -103,7 +136,12 @@ class User extends Authenticatable
      * The units that belong to the user.
      */
 
-
+     public function properties()
+     {
+         return $this->belongsToMany(Property::class, 'unit_user')
+             ->withPivot('property_id')
+             ->withTimestamps();
+     }
     //// Relationship between user and Unit through pivot
     public function units()
     {

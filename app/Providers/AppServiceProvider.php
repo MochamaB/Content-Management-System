@@ -7,6 +7,7 @@ use App\Models\WebsiteSetting;
 use App\Models\Slider;
 use App\Models\Testimonial;
 use App\Models\Lease;
+use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Paymentvoucher;
 use App\Models\Utility;
@@ -22,6 +23,7 @@ use App\Scopes\UnitAccessScope;
 use App\Scopes\PropertyAccessScope;
 use App\Scopes\UtilityAccessScope;
 use App\Scopes\UserAccessScope;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -43,20 +45,20 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
-          // Apply the UserAccessScope to specific models
+        // Apply the UserAccessScope to specific models
         Lease::addGlobalScope(new UserAccessScope);
 
         Property::addGlobalScope(new PropertyAccessScope);
         Utility::addGlobalScope(new UtilityAccessScope);
-        
+
         Unit::addGlobalScope(new UnitAccessScope);
         Invoice::addGlobalScope(new UserAccessScope);
         Paymentvoucher::addGlobalScope(new UserAccessScope);
         Payment::addGlobalScope(new UserAccessScope);
-    //   User::addGlobalScope(new UnitAccessScope);
+        //   User::addGlobalScope(new UnitAccessScope);
 
 
-    
+
         /////////// GLOBAL VIEW COMPOSERS
         view()->composer('*', function ($view) {
             $routeName = Route::currentRouteName();
@@ -68,33 +70,33 @@ class AppServiceProvider extends ServiceProvider
                 'routeName' => $routeName,
                 'routeParts' => $routeParts,
                 'urlParts' => $urlParts,
-                'currentUrl'=> $currentUrl,
-                'sitesettings'=> $sitesettings,
+                'currentUrl' => $currentUrl,
+                'sitesettings' => $sitesettings,
             ]);
         });
 
         //////////////  FRONT END/////////////
-        view()->composer('layouts.client.navbar', function($view) {
+        view()->composer('layouts.client.navbar', function ($view) {
             $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
-        view()->composer('layouts.client.footer', function($view) {
+        view()->composer('layouts.client.footer', function ($view) {
             $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
 
-        view()->composer('client.slider', function($view) {
+        view()->composer('client.slider', function ($view) {
             $slider = Slider::all();
             $view->with(['slider' => $slider]);
         });
 
-        
-        view()->composer('client.testimonial', function($view) {
+
+        view()->composer('client.testimonial', function ($view) {
             $testimonial = Testimonial::all();
             $view->with(['testimonial' => $testimonial]);
         });
 
-        
+
 
         /////////ADMIN//////////////////////////////
 
@@ -104,20 +106,26 @@ class AppServiceProvider extends ServiceProvider
             $sitesettings = WebsiteSetting::first();
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
-                'user' => $user
-                ,'sitesettings' => $sitesettings]);
+                'user' => $user, 'sitesettings' => $sitesettings
+            ]);
         });
 
         view()->composer('layouts.admin.adminnavbar', function ($view) {
             // Get the authenticated user, assuming you are using the default 'auth' guard
             $user = auth()->user();
             $sitesettings = WebsiteSetting::first();
-            $notifications = $user->notifications;
+
+            if (Gate::allows('view-all', $user)) {
+                $notifications = Notification::all();
+                $unreadNotifications = $notifications->where('read_at', null);
+            } else {
+                $unreadNotifications = $user->unreadNotifications;
+            }
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
-                'user' => $user
-                ,'sitesettings' => $sitesettings,
-                'notifications' =>$notifications]);
+                'user' => $user, 'sitesettings' => $sitesettings,
+                'unreadNotifications' => $unreadNotifications
+            ]);
         });
 
         view()->composer('layouts.admin.sidebar', function ($view) {
@@ -127,59 +135,66 @@ class AppServiceProvider extends ServiceProvider
             $userPermissions = $userRoles->map->permissions->flatten();
             $sidebar = collect([
                 'Website' => ['icon' => 'web', 'submodules' => [
-                                                        'websitesetting'=> ['display' => 'Site Information'],
-                                                        'slider'=> ['display' => 'Picture Sliders'],
-                                                        'testimonial'=> ['display' => 'Client Testimonials'],
-                                                        'amenity'=> ['display' => 'Property Amenities']
-                                                        ]],
+                    'websitesetting' => ['display' => 'Site Information'],
+                    'slider' => ['display' => 'Picture Sliders'],
+                    'testimonial' => ['display' => 'Client Testimonials'],
+                    'amenity' => ['display' => 'Property Amenities']
+                ]],
 
                 'Property' => ['icon' => 'bank', 'submodules' => [
-                                                        'property'=> ['display' => 'Property / Company'], 
-                                                        'unit'=> ['display' => 'Units'],
-                                                        'utility'=> ['display' => 'Utilities'],
-                                                        'tenant'=> ['display' => 'Tenants']]],
+                    'property' => ['display' => 'Property / Company'],
+                    'unit' => ['display' => 'Units'],
+                    'utility' => ['display' => 'Utilities'],
+                    'tenant' => ['display' => 'Tenants']
+                ]],
 
-                'Leasing' => ['icon' => 'key','submodules' => [
-                                                        'lease'=> ['display' => 'Leases'],
-                                                        'invoice'=> ['display' => 'Invoices'],
-                                                        'paymentvoucher'=> ['display' => 'Payment Vouchers'],
-                                                        'payment'=> ['display' => 'Payments'],
-                                                        'meter-reading'=> ['display' => 'Meter Readings'],]],
+                'Leasing' => ['icon' => 'key', 'submodules' => [
+                    'lease' => ['display' => 'Leases'],
+                    'invoice' => ['display' => 'Invoices'],
+                    'paymentvoucher' => ['display' => 'Payment Vouchers'],
+                    'payment' => ['display' => 'Payments'],
+                    'meter-reading' => ['display' => 'Meter Readings'],
+                ]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
-                                                        'chartofaccount'=> ['display' => 'Chart Of Accounts'],
-                                                        'pay-method'=> ['display' => 'Payment methods'],]],
+                    'chartofaccount' => ['display' => 'Chart Of Accounts'],
+                    'pay-method' => ['display' => 'Payment methods'],
+                ]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
 
                 'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
 
                 'Tasks' => ['icon' => 'timetable', 'submodules' => [
-                                                                    'task'=> ['display' => 'System Tasks'],]],
+                    'task' => ['display' => 'System Tasks'],
+                ]],
 
                 'Files' => ['icon' => 'file-multiple', 'submodules' => ['',]],
 
                 'Settings' => ['icon' => 'settings', 'submodules' => [
-                                                'setting'=> ['display' => 'Application Settings']]],
+                    'setting' => ['display' => 'Application Settings']
+                ]],
                 'User' => ['icon' => 'account-circle-outline', 'submodules' => [
-                                                            'user'=> ['display' => 'Manage Users'],
-                                                            'role'=> ['display' => 'User Roles'], 
-                                                            'permission'=> ['display' => 'System Permissions']]],
+                    'user' => ['display' => 'Manage Users'],
+                    'role' => ['display' => 'User Roles'],
+                    'permission' => ['display' => 'System Permissions']
+                ]],
             ]);
-          //  $notifications = $user->notifications;
+            //  $notifications = $user->notifications;
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
                 'user' => $user,
                 'sidebar' => $sidebar,
-                'userPermissions' =>$userPermissions]);
+                'userPermissions' => $userPermissions
+            ]);
         });
 
         ////////////////// EMAIL //////////////////////////
-        view()->composer('email.template', function($view) {
+        view()->composer('email.template', function ($view) {
             $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
-        view()->composer('email.emailtemplate', function($view) {
+        view()->composer('email.emailtemplate', function ($view) {
             $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
         });
@@ -189,8 +204,8 @@ class AppServiceProvider extends ServiceProvider
             $sitesettings = WebsiteSetting::first();
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
-                'user' => $user
-                ,'sitesettings' => $sitesettings]);
+                'user' => $user, 'sitesettings' => $sitesettings
+            ]);
         });
     }
 }
