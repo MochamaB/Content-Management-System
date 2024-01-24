@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paymentvoucher;
+use App\Models\Property;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Models\Unitcharge;
 use App\Services\PaymentVoucherService;
 use App\Services\TableViewDataService;
 use App\Traits\FormDataTrait;
+use Illuminate\Support\Facades\Session;
 
 class PaymentVoucherController extends Controller
 {
@@ -56,9 +59,20 @@ class PaymentVoucherController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id = null)
     {
-        return View('admin.lease.paymentvoucher');
+
+        $unit = Unit::find($id);
+        $property = Property::where('id', $unit->property->id)->first();
+       
+ 
+        //   dd($latestReading);
+
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+
+        return View('admin.lease.create_paymentvoucher', compact('id','property', 'unit'));
+    
+
     }
 
     public function generatePaymentVoucher(Request $request)

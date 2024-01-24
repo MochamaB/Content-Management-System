@@ -10,6 +10,7 @@
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel-arcanist/arcanist": "^0.8.0",
+        "laravel-notification-channels/africastalking": "^5.1",
         "laravel/framework": "^9.0",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",

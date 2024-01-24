@@ -532,7 +532,7 @@ class LeaseController extends Controller
                     ->exists();
 
                 if ($utilityNameExists || $chargeNameExists) {
-                    return redirect()->back()->with('statuserror', 'Charge Name ' . $chargeName . ' already defined in system.');
+                    return redirect()->back()->with('statuserror', 'Charge Name ' . $chargeName . ' already in the list of Utilities for the property/unit.');
                 }
             }
         }
@@ -609,8 +609,17 @@ class LeaseController extends Controller
         $request->session()->forget('rentcharge');
         $request->session()->forget('splitRentcharges');
         $request->session()->forget('depositcharge');
+        return redirect()->route('lease.create', ['active_tab' => '3'])
+            ->with('status', 'Rent details skipped. Add Security Deposit');
+    }
+    public function skipdeposit(Request $request)
+    {
+        /// FORGET THE RENT CHARGE SESSION IF THIS IS SKIPPED
+        $request->session()->forget('rentcharge');
+        $request->session()->forget('splitRentcharges');
+        $request->session()->forget('depositcharge');
         return redirect()->route('lease.create', ['active_tab' => '4'])
-            ->with('status', 'Rent details skipped. Add Utilities');
+            ->with('status', 'Deposit details skipped. Add Utilities');
     }
 
     public function assignUtilities(Request $request)

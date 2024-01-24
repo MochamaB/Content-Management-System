@@ -5,24 +5,29 @@
 <div class="col-md-8">
     <div class="form-group" id="rentselect">
         <label class="">
-            <h4>Does this unit have rent and security deposit charge?<span class="requiredlabel">*</span></h4>
+            <h4>Does this unit have Rent charge?<span class="requiredlabel">*</span></h4>
         </label>
         <select name="" id="rentstatus" class="formcontrol2" placeholder="Select" required>
             <option value="">Select Answer</option>
             <option value="Yes">Yes</option>
             <option value="No"> No</option>
-        </select>    
+        </select>
     </div>
 </div>
-        <div class="col-md-4" id="skiprent" style="display: none;">
-            <a href="{{ url('skiprent') }}" class="btn btn-primary btn-lg text-white mb-0 me-0" id="">Next Step</a>
+<div class="row" id="skiprent" style="display: none;">
+    <div class="col-md-3 previousBtn">
+        <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 wizardpreviousBtn">Previous Step</button>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ url('skiprent') }}" class="btn btn-primary btn-lg text-white mb-0 me-0" id="">Next Step</a>
+    </div>
+</div>
 
-        </div>
-<div class="" id="rentinfo"  style="display: none;">
+<div class="" id="rentinfo" style="display: none;">
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <i class="mdi mdi-information text-muted me-1"></i>
-            <h5><a href="{{ url('skiprent') }}" class="nextBtn" id="nextBtn">Click Next</a> if there is no Rent Charge</a></h5>
+            <h5><a href="{{ url('skiprent') }}" class="nextBtn" id="nextBtn">Click Here</a> if there is no Rent Charge</a></h5>
 
         </div>
     </div><br />
@@ -58,7 +63,7 @@
                 <div class="form-group">
                     <label class="label">Account<span class="requiredlabel">*</span></label>
                     <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
-                        <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account'}}</option>
+                        <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account/Rent Income Account'}}</option>
                         @foreach($accounts as $accounttype => $account)
                         <optgroup label="{{ $accounttype }}">
                             @foreach($account as $item)
@@ -157,7 +162,7 @@
             </h5>
         </div>
 
-    @include('admin.CRUD.wizardbuttons')
+        @include('admin.CRUD.wizardbuttons')
 </div>
 </form>
 <!------------------------------                      --->
@@ -318,19 +323,28 @@
 @endif
 <script>
     $(document).ready(function() {
-        $(document).ready(function() {
-            $('#rentstatus').change(function() {
-                var selectedValue = $(this).val();
+        // Check if $rentcharge is not null
+        // Check the initial value of $rentcharge
+        let rentcharge = '{{ $rentcharge ?? 0 }}';
 
-                if (selectedValue === 'Yes') {
-                    $('#rentinfo').show();
-                    $('#rentselect').hide();
-                    $('#skiprent').hide();
-                } else {
-                    $('#rentinfo').hide();
-                    $('#skiprent').show();
-                }
-            });
+        //    alert(rentcharge);
+
+        if (rentcharge != 0) {
+            $('#rentinfo').show();
+            $('#skiprent').hide();
+            $('#rentselect').hide();
+        }
+        $('#rentstatus').change(function() {
+            var selectedValue = $(this).val();
+
+            if (selectedValue === 'Yes') {
+                $('#rentinfo').show();
+                $('#rentselect').hide();
+                $('#skiprent').hide();
+            } else {
+                $('#rentinfo').hide();
+                $('#skiprent').show();
+            }
         });
     });
 </script>

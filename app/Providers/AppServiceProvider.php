@@ -161,7 +161,11 @@ class AppServiceProvider extends ServiceProvider
                     'pay-method' => ['display' => 'Payment methods'],
                 ]],
 
-                'Communication' => ['icon' => 'email-open', 'submodules' => ['',]],
+                'Communication' => ['icon' => 'email-open', 'submodules' => [
+                    'notification' => ['display' => 'Notification Center'],
+                    'email' => ['display' => 'Emails'],
+                    'text' => ['display' => 'Text Messages'],
+                    ]],
 
                 'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
 

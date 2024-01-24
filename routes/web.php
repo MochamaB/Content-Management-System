@@ -68,8 +68,12 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
     Route::group(['groupName' => 'Communication'], function () {
       //  Route::resource('notification', NotificationController::class);
+      Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
       Route::get('/email', [NotificationController::class, 'email'])->name('notification.email');
-      Route::get('/notification/{notification}', [NotificationController::class, 'show'])->name('notification.show');
+      Route::get('/text', [NotificationController::class, 'text'])->name('notification.texts');
+      Route::get('/email/{id}', [NotificationController::class, 'show'])
+    ->where('id', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
+    ->name('notification.show');
     });
 
     Route::group(['groupName' => 'Accounting'], function () {
@@ -88,16 +92,23 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('assignutilities', [LeaseController::class, 'assignUtilities']);
         Route::post('savelease', [LeaseController::class, 'saveLease']);
         Route::get('skiprent', [LeaseController::class, 'skiprent']);
+        Route::get('skipdeposit', [LeaseController::class, 'skipdeposit']);
         ///////////////
         Route::resource('unitcharge', UnitChargeController::class);
         Route::resource('utility', UtilityController::class);
         Route::get('meter-reading/create/{id?}', [
             'as' => 'meter-reading.create',
             'uses' => 'App\Http\Controllers\MeterReadingController@create'
-        ]);
+        ])->middleware('check.create.variables');
+
         Route::resource('meter-reading', MeterReadingController::class, ['except' => 'create']);
         Route::resource('invoice', InvoiceController::class);
         Route::post('generateinvoice', [InvoiceController::class, 'generateInvoice']);
+
+        Route::get('paymentvoucher/create/{id?}', [
+            'as' => 'paymentvoucher.create',
+            'uses' => 'App\Http\Controllers\PaymentVoucherController@create'
+        ])->middleware('check.create.variables');
         Route::resource('paymentvoucher', PaymentVoucherController::class);
         Route::post('generatepaymentvoucher', [PaymentVoucherController::class, 'generatePaymentVoucher']);
 
@@ -174,8 +185,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
 Route::post('api/fetch-leaserent', [LeaseController::class, 'fetchleaserent']);
 Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
+
 Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
+Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits']);
+
 
 ///Send Email
 Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoice']);

@@ -72,7 +72,6 @@ class MeterReadingController extends Controller
     public function create($id = null)
     {
 
-    if($id){
         $unit = Unit::find($id);
         $property = Property::where('id', $unit->property->id)->first();
         $unitcharge = Unitcharge::where('unit_id', $unit->id)
@@ -81,18 +80,8 @@ class MeterReadingController extends Controller
             if ($unitcharge->isEmpty()) {
                 return redirect()->back()->with('statuserror', ' Cannot Add Meter reading. No Charge of type units is not attached to this unit.');
             }
-        if ($unit) {
         $meterReading = MeterReading::where('unit_id',$unit->id)->latest()->first();
-        }
-    }else{
-        $id = null;
-        $property = Property::pluck('property_name', 'id')->toArray();
-        $unit = null;
-        $unitcharge = null;
-        $meterReading = null;
-    }
-   
-
+        
         //   dd($latestReading);
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
@@ -194,5 +183,15 @@ class MeterReadingController extends Controller
             return response()->json(['message' => 'No data found']);
         }
 
+    }
+
+    public function fetchAllUnits(Request $request)
+    {
+
+        $data = Unit::where('property_id', $request->property_id)
+            ->pluck('unit_number', 'id')->toArray();
+
+
+        return response()->json($data);
     }
 }

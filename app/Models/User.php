@@ -272,4 +272,9 @@ class User extends Authenticatable
     {
         return $this->morphMany(Invoice::class, 'model');
     }
+
+    public function routeNotificationForAfricasTalking($notification)
+    {
+        return $this->phonenumber;
+    }
 }

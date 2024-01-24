@@ -24,6 +24,16 @@ class UserCreatedNotification extends Notification
     public function __construct($user)
     {
         $this->user = $user;
+        $this->subject = 'New User Created';
+        $this->heading = 'Welcome! Your Account is ready';
+        $this->linkmessage = 'To view and manage your units, you can login to our client area here:';
+        $this->data = ([
+            "line 1" => "Welcome to the property management system",
+            "line 2" => "Manage and view all property data from the comfort of your computer",
+            "line 3" => "The Default password is property123",
+            "action" => "/dashboard",
+            "line 4" => "",
+        ]);
     }
 
     /**
@@ -45,17 +55,6 @@ class UserCreatedNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $this->subject = 'New User Created';
-        $this->heading = 'Welcome! Your Account is ready';
-        $this->linkmessage = 'To view and manage your units, you can login to our client area here:';
-        $this->data = ([
-            "line 1" => "Welcome to the property management system",
-            "line 2" => "Manage and view all property data from the comfort of your computer",
-            "line 3" => "The Default password is property123",
-            "action" => "/dashboard",
-            "line 4" => "",
-        ]);
-
         return (new MailMessage)->view(
             'email.template',
             ['user' => $this->user,'data'=> $this->data,'linkmessage' => $this->linkmessage,'heading' =>$this->heading]

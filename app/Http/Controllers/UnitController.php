@@ -220,7 +220,7 @@ class UnitController extends Controller
             }elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
             }elseif ($title === 'Vouchers') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']])->render();
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']], compact('id'))->render();
             }elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {

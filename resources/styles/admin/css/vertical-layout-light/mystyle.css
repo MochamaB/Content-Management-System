@@ -250,7 +250,7 @@
   border-radius: 0px;
   height: 2rem;
   color: #777;
-  padding-right: 120px;
+  padding-right: 10px;
   width: 100%;
 
 
@@ -389,6 +389,21 @@ a.table:visited {
 a.table:hover {
   color: #ffaf00;
   font-size: 17px;
+}
+
+a.email:link {
+  color: #04050e;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: capitalize;
+}
+a.reademail:visited {
+  color: #1d1d1f;
+  font-size: 15px;
+  font-weight: 400;
+  text-decoration: none;
+  text-transform: capitalize;
 }
 
 * {
