@@ -19,7 +19,7 @@ class RecordTransactionAction
 {
     use AsAction;
 
-    public function securitydeposit(Model $model, Unitcharge $unitcharge)
+    public function voucherCharges(Model $model, Unitcharge $unitcharge)
     {
         //     Debit: Bank Account (Asset)
         //     Credit: Security Deposit Liability (Liability)
@@ -38,8 +38,8 @@ class RecordTransactionAction
                 'transactionable_id' => $model->id,
                 'transactionable_type' => $className, ///Model Name Unitcharge
                 'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => 1, ////Bank Account
-                'creditaccount_id' => $item->chartofaccount_id,
+                'debitaccount_id' => 1, //// decsrease the Bank Account amount
+                'creditaccount_id' => $item->chartofaccount_id, //Increase the Liability account
                 'amount' => $item->amount,
             ]);
         }
@@ -60,8 +60,8 @@ class RecordTransactionAction
                 'transactionable_id' => $invoice->id,
                 'transactionable_type' =>$className, ///Model Name Invoice
                 'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => 2,///Accounts Payable
-                'creditaccount_id' => $item->chartofaccount_id,
+                'debitaccount_id' => 2,/// increase the Accounts Payable
+                'creditaccount_id' => $item->chartofaccount_id, ///Decrease the income accounts
                 'amount' => $item->amount,
             ]);
         }
@@ -83,8 +83,32 @@ class RecordTransactionAction
                 'transactionable_id' => $payment->id,
                 'transactionable_type' =>$className, ///Model Name Invoice
                 'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => $item->chartofaccount_id,///Accounts Payable
-                'creditaccount_id' => 2,
+                'debitaccount_id' => $item->chartofaccount_id, ///Increase the Income Accounts
+                'creditaccount_id' => 2,/// Decrease the Accounts Payable that was increased wehn invoices
+                'amount' => $item->amount,
+            ]);
+        }
+    }
+
+    public function voucherChargesIncome(Model $model, Unitcharge $unitcharge)
+    {
+       
+        $paymentvoucheritems = PaymentVoucherItems::where('paymentvoucher_id', $model->id)->get();
+        $className = get_class($model);
+        ///Instead of VoucherItems recordtransaction on Invoice
+                    ///Model ////////
+        foreach ($paymentvoucheritems as $item) {
+            $description = Chartofaccount::where('id', $item->chartofaccount_id)->first();
+            Transaction::create([
+                'property_id' => $model->property_id,
+                'unit_id' => $model->unit_id,
+                'unitcharge_id' => $unitcharge->id,
+                'charge_name' => $item->charge_name,
+                'transactionable_id' => $model->id,
+                'transactionable_type' => $className, ///Model Name Unitcharge
+                'description' => $description->account_name, ///Description of the charge
+                'debitaccount_id' => 2,/// increase the Accounts Payable
+                'creditaccount_id' => $item->chartofaccount_id, ///All the income accounts
                 'amount' => $item->amount,
             ]);
         }

@@ -14,7 +14,8 @@
             Generate All Invoices Due</button>
     </form>
     @endif
-    <br /><br /><br />
+    <br /><br />
+    <hr>
     @include('admin.CRUD.table', ['data' => $tableData])
 
 

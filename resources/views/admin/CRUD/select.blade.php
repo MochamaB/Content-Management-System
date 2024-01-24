@@ -2,7 +2,7 @@
 
 @section('content')
 <div class=" contwrapper">
-    <h4 style="text-transform: capitalize;"><b> Select Below</b></h4>
+    <h4 style="text-transform: capitalize;"><b> </b></h4>
     <hr>
 
         <div class="col-md-6">

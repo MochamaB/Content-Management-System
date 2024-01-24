@@ -32,6 +32,21 @@ class Unitcharge extends Model
         // Add more fields as needed
     ];
 
+    public static $validation = [
+        'property_id' => 'required',
+        'unit_id' => 'required',
+        'chartofaccounts_id' => 'required',
+        'charge_name' => 'required',
+        'charge_cycle' => 'required',
+        'charge_type' => 'required',
+        'rate' => 'required|numeric',
+        'recurring_charge' => 'required',
+        'startdate' => 'nullable',
+        
+
+
+    ];
+
     public static function getFieldData($field)
     {
         switch ($field) {

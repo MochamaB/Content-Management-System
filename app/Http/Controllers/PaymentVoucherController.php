@@ -62,15 +62,15 @@ class PaymentVoucherController extends Controller
     public function create($id = null)
     {
 
-        $unit = Unit::find($id);
-        $property = Property::where('id', $unit->property->id)->first();
+     //   $unit = Unit::find($id);
+     //   $property = Property::where('id', $unit->property->id)->first();
        
  
         //   dd($latestReading);
+        return redirect()->route('unitcharge.create');
+     //   Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-
-        return View('admin.lease.create_paymentvoucher', compact('id','property', 'unit'));
+     //   return View('admin.lease.create_paymentvoucher', compact('id','property', 'unit'));
     
 
     }

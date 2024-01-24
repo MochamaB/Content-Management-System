@@ -22,6 +22,7 @@ class CheckCreateVariables
         $properties = Property::all();
         $units = Unit::with('property', 'lease')->get();
         $invoices = Invoice::all();
+        $routeName = $request->route()->getName();
        // dd($routeName);
 
         if ($request->route('id')) {

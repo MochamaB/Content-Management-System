@@ -45,7 +45,14 @@ class PaymentVoucherService
 //
 
                 //4. Create Transactions for ledger
-                $this->recordTransactionAction->securitydeposit($paymentVoucher, $model);
+                ///check if the chartaccount is either a asset,Liability, income or expense
+                $accounttype = $model->chartofaccounts->account_type;
+                if($accounttype === "Income"){
+                    $this->recordTransactionAction->voucherChargesIncome($paymentVoucher, $model);
+                }else{
+                    $this->recordTransactionAction->voucherCharges($paymentVoucher, $model);
+                }
+              //  $this->recordTransactionAction->voucherCharges($paymentVoucher, $model);
         
                 return $paymentVoucher;
            
@@ -54,7 +61,7 @@ class PaymentVoucherService
  
  
 
-    //////2. GET DATA FOR INVOICE HEADER DATA
+    //////2. GET DATA FOR VOUCHER HEADER DATA
     private function getPaymentVoucherHeaderData($model,string $modelname)
     {
         $today = Carbon::now();

@@ -151,6 +151,7 @@ class AppServiceProvider extends ServiceProvider
                 'Leasing' => ['icon' => 'key', 'submodules' => [
                     'lease' => ['display' => 'Leases'],
                     'invoice' => ['display' => 'Invoices'],
+                    'unitcharge' => ['display' => 'All Charges'],
                     'paymentvoucher' => ['display' => 'Payment Vouchers'],
                     'payment' => ['display' => 'Payments'],
                     'meter-reading' => ['display' => 'Meter Readings'],

@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Lease;
 use App\Models\Chartofaccount;
+use App\Models\Property;
+use App\Models\Unit;
+use App\Models\Utility;
 use Carbon\Carbon;
+use App\Services\TableViewDataService;
+use App\Services\PaymentVoucherService;
 
 class UnitChargeController extends Controller
 {
@@ -22,67 +27,29 @@ class UnitChargeController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    private $tableViewDataService;
+    private $paymentVoucherService;
 
-    public function __construct()
+    public function __construct(TableViewDataService $tableViewDataService, PaymentVoucherService $paymentVoucherService)
     {
         $this->model = unitcharge::class;
         $this->controller = collect([
             '0' => 'unitcharge', // Use a string for the controller name
             '1' => ' Unit Charge',
         ]);
+        $this->tableViewDataService = $tableViewDataService;
+        $this->paymentVoucherService = $paymentVoucherService;
     }
 
-    public function getUnitChargeData($unitchargedata)
-    {
-        /// TABLE DATA ///////////////////////////
-        $tableData = [
-            'headers' => ['CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'],
-            'rows' => [],
-        ];
 
-        foreach ($unitchargedata as $item) {
-            $nextDateFormatted = empty($item->nextdate) ? 'Charged Once' : Carbon::parse($item->nextdate)->format('Y-m-d');
-
-            $tableData['rows'][] = [
-                'id' => $item->id,
-                $item->charge_name,
-                $item->charge_cycle,
-                $item->charge_type,
-                $item->rate,
-                $item->recurring_charge,
-                \Carbon\Carbon::parse($item->startdate)->format('d M Y'),
-                $nextDateFormatted,
-
-            ];
-                // If the current charge has child charges, add them to the table
-                if ($item->childrencharge->isNotEmpty()) {
-                    foreach ($item->childrencharge as $child) {
-                        $nextDateFormattedChild = empty($child->nextdate) ? 'Charged Once' : Carbon::parse($child->nextdate)->format('Y-m-d');
-
-                        $tableData['rows'][] = [
-                            'id' => $child->id,
-                            '  <i class=" mdi mdi-subdirectory-arrow-right mdi-24px text-warning"> ' . $child->charge_name, // Indent child charges for clarity
-                            $child->charge_cycle,
-                            $child->charge_type,
-                            $child->rate,
-                            $child->recurring_charge,
-                            \Carbon\Carbon::parse($child->startdate)->format('d M Y'),
-                            $nextDateFormattedChild,
-                        ];
-                    }
-                }
-        }
-
-        return $tableData;
-    }
 
     public function index()
     {
-        $unitdata = $this->model::with('property')->get();
+        $unitChargeData = $this->model::with('property', 'unit')->get();
         $mainfilter =  $this->model::pluck('charge_type')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
-        $tableData = $this->getUnitChargeData($unitdata);
+        $tableData = $this->tableViewDataService->getUnitChargeData($unitChargeData, true);
 
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
     }
@@ -92,9 +59,20 @@ class UnitChargeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id = null)
     {
-        //
+        $account = Chartofaccount::all();
+        $accounts = $account->groupBy('account_type');
+
+        $unit = Unit::find($id);
+        $property = Property::where('id', $unit->property->id)->first();
+
+
+        //   dd($latestReading);
+
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+
+        return View('admin.lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts'));
     }
 
     /**
@@ -104,7 +82,38 @@ class UnitChargeController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    { 
+        ///Check if the value exists in the database
+        $chargeName = $request->input('charge_name');
+
+        $utilityNameExists = Utility::where('property_id', $request->property_id)
+            ->where('utility_name', $chargeName)
+            ->exists();
+        $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
+            ->where('charge_name', $chargeName)
+            ->exists();
+
+        if ($utilityNameExists || $chargeNameExists) {
+            return redirect()->back()->with('statuserror', 'Charge already attached to the unit or to the property in system.');
+        }
+        //// INSERT DATA TO THE UNITCHARGE
+        $validationRules = unitcharge::$validation;
+        $validatedData = $request->validate($validationRules);
+
+        $unitcharge = new Unitcharge();
+        $unitcharge->fill($validatedData);
+      //  $accounttype = $unitcharge->chartofaccounts->account_type;
+      //  dd($accounttype);
+        $unitcharge->save();
+
+        ////GENERATE A VOUCHER IF ITS A ONE TIME CHARGE
+        if ($request->charge_cycle === "Once") {
+           // dd($request->charge_cycle);
+            $this->paymentVoucherService->generatePaymentVoucher($unitcharge);
+        }
+
+        $previousUrl = Session::get('previousUrl');
+        return redirect($previousUrl)->with('status', 'Unitcharge Entered Successfully');
     }
 
 
@@ -135,7 +144,7 @@ class UnitChargeController extends Controller
             $unitcharge = $parentUtility;
         }
 
-      
+
         $pageheadings = collect([
             '0' => $unitcharge->charge_name,
             '1' => $unitcharge->unit->unit_number,

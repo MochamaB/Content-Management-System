@@ -216,7 +216,7 @@ class UnitController extends Controller
             }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges') {
-                $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges'))->render();
+                $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges','id'))->render();
             }elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
             }elseif ($title === 'Vouchers') {

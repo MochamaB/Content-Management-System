@@ -24,14 +24,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label">Type</label>
-                <select name="model_type" id="unit_id" class="formcontrol2" placeholder="Select" required readonly>
-                    <option value="Unitcharge">Unitcharge</option>
-                </select>
-            </div>
-        </div>
+       
         <hr>
         <div class="col-md-6">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Add Payment Voucher</button>

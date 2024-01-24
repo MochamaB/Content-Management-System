@@ -113,10 +113,10 @@ class UtilityController extends Controller
     public function show(Utility $utility)
     {
         // $utility = utility::find($utility->id);
-        dd($utility);
+       // dd($utility);
         // $viewData = $this->formData($this->model,$amenity);
 
-        return View('admin.CRUD.edit', compact('utility'));
+        return redirect()->route('utility.edit', ['utility' => $utility]);
     }
 
     /**

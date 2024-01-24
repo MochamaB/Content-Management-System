@@ -67,13 +67,13 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     });
 
     Route::group(['groupName' => 'Communication'], function () {
-      //  Route::resource('notification', NotificationController::class);
-      Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
-      Route::get('/email', [NotificationController::class, 'email'])->name('notification.email');
-      Route::get('/text', [NotificationController::class, 'text'])->name('notification.texts');
-      Route::get('/email/{id}', [NotificationController::class, 'show'])
-    ->where('id', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
-    ->name('notification.show');
+        //  Route::resource('notification', NotificationController::class);
+        Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
+        Route::get('/email', [NotificationController::class, 'email'])->name('notification.email');
+        Route::get('/text', [NotificationController::class, 'text'])->name('notification.texts');
+        Route::get('/email/{id}', [NotificationController::class, 'show'])
+            ->where('id', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
+            ->name('notification.show');
     });
 
     Route::group(['groupName' => 'Accounting'], function () {
@@ -93,25 +93,30 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('savelease', [LeaseController::class, 'saveLease']);
         Route::get('skiprent', [LeaseController::class, 'skiprent']);
         Route::get('skipdeposit', [LeaseController::class, 'skipdeposit']);
+
         ///////////////
-        Route::resource('unitcharge', UnitChargeController::class);
+        Route::get('unitcharge/create/{id?}', [
+            'as' => 'unitcharge.create',
+            'uses' => 'App\Http\Controllers\UnitchargeController@create'
+        ])->middleware('check.create.variables');
+        Route::resource('unitcharge', UnitChargeController::class, ['except' => 'create']);
+        /////////////////
+
         Route::resource('utility', UtilityController::class);
+        ///////////////////////
         Route::get('meter-reading/create/{id?}', [
             'as' => 'meter-reading.create',
             'uses' => 'App\Http\Controllers\MeterReadingController@create'
         ])->middleware('check.create.variables');
-
         Route::resource('meter-reading', MeterReadingController::class, ['except' => 'create']);
+        ////////////////////////////
         Route::resource('invoice', InvoiceController::class);
         Route::post('generateinvoice', [InvoiceController::class, 'generateInvoice']);
-
-        Route::get('paymentvoucher/create/{id?}', [
-            'as' => 'paymentvoucher.create',
-            'uses' => 'App\Http\Controllers\PaymentVoucherController@create'
-        ])->middleware('check.create.variables');
+        ///////////////////
+       
         Route::resource('paymentvoucher', PaymentVoucherController::class);
         Route::post('generatepaymentvoucher', [PaymentVoucherController::class, 'generatePaymentVoucher']);
-
+        ////////////////////////
         Route::get('payment/create/{id}', [
             'as' => 'payment.create',
             'uses' => 'App\Http\Controllers\PaymentController@create'
@@ -198,12 +203,12 @@ Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoic
 
 //Route::get('/notification', function () {
 //    $user = User::find(1);
- //   $tenant = User::find(1);
- //   $payment = Payment::find(1);
+//   $tenant = User::find(1);
+//   $payment = Payment::find(1);
 
 
 //    return (new PaymentNotification($payment, $tenant))
- //       ->toMail($user->user);
+//       ->toMail($user->user);
 //});
 
 require __DIR__ . '/auth.php';

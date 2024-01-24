@@ -306,8 +306,7 @@ class LeaseController extends Controller
         ]);
         $unit = Unit::where('id', $lease->unit_id)->first();
         $charges = $unit->unitcharges; ///data for utilities page
-        $unitChargeController = new UnitChargeController();
-        $unitChargeTableData = $unitChargeController->getUnitChargeData($charges);
+        $unitChargeTableData = $this->tableViewDataService->getUnitChargeData($charges);
 
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
@@ -334,7 +333,7 @@ class LeaseController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('wizard.lease.leasedetails', compact('properties', 'lease'))->render();
+                $tabContents[] = View('admin.CRUD.summary', compact('properties', 'lease'))->render();
             } elseif ($title === 'Charges and Utilities') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']])->render();
             } elseif ($title === 'Invoices') {
