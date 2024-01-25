@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id()->index();
+            $table->unsignedBigInteger('property_id')->index();
             $table->string('name');
             $table->string('account_number');
             $table->string('account_name');
@@ -22,6 +23,7 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
         });
     }
 

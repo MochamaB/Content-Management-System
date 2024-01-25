@@ -34,13 +34,14 @@ class PaymentMethodController extends Controller
 
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['NAME', 'ACCOUNT NAME', 'ACCOUNT NUMBER', 'PROVIDER', 'ACTIONS'],
+            'headers' => ['PROPERTY','NAME', 'ACCOUNT NAME', 'ACCOUNT NUMBER', 'PROVIDER', 'ACTIONS'],
             'rows' => [],
         ];
 
         foreach ($PaymentMethoddata as $item) {
             $tableData['rows'][] = [
                 'id' => $item->id,
+                $item->property->property_name,
                 $item->name,
                 $item->account_name,
                 $item->account_number,

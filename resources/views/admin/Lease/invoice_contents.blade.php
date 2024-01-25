@@ -1,12 +1,12 @@
 <div class=" contwrapper table-responsive table-responsive-sm" id="printMe">
 
-<table class="table ">
+    <table class="table ">
         <tbody>
             <!--- FIRST SECTION  HEADER------->
             <tr>
                 <td>
                     @if ($sitesettings)
-                    <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 140px; width: 180px;">
+                    <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 140px; width: 180px;border-radius:0px">
                     @else
                     <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
                     @endif
@@ -55,7 +55,7 @@
                         @elseif ( $invoice->status == 'partiallypaid' )
                         <div style="background-color:blue;font-size:17px;font-weight:800" class="badge badge-opacity-sucess"> PARTIALLY PAID</div>
                         @elseif ( $invoice->status == 'unpaid' )
-                        <div style="background-color:red;font-size:17px;font-weight:800" class="badge badge-opacity-warning;font-size:17px">PENDING </div>
+                        <div style="background-color:red;font-size:17px;font-weight:800" class="badge badge-opacity-warning;font-size:17px">UNPAID </div>
                         @endif
                     </ul>
                 </td>
@@ -81,17 +81,17 @@
                     {{$item->charge_name}} Charge
                     <!--- METER READINGS -->
                     @if($item->unitcharge->charge_type == 'units')
-                        @php
-                            $meterReadings = $item->meterReadings()
-                            ->whereDate('created_at', '>=', $invoice->created_at)
-                            ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
-                            ->first();
+                    @php
+                    $meterReadings = $item->meterReadings()
+                    ->whereDate('created_at', '>=', $invoice->created_at)
+                    ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
+                        ->first();
                         @endphp
                         <ul class="list-unstyled text-left">
-                        <li><i>Current Reading: {{$meterReadings->currentreading ?? ' 0'}} Units</i> </li>
-                        <li><i>Last Reading: {{$meterReadings->lastreading ?? ' 0'}} Units</i> </li>
-                        <ul>
-                    @endif
+                            <li><i>Current Reading: {{$meterReadings->currentreading ?? ' 0'}} Units</i> </li>
+                            <li><i>Last Reading: {{$meterReadings->lastreading ?? ' 0'}} Units</i> </li>
+                            <ul>
+                                @endif
                 </td>
                 <td class="text-center">{{$item->amount}} </td>
                 <td class="text-center"> {{$item->amount}}</td>
@@ -105,19 +105,25 @@
         <tbody>
             <tr>
                 <td>
-                    <h4><b>Payment Method </b></h4>
-                    <p>We Accept M-PESA, Cash</p>
-                    <ul class="ml-0 px-3 list-unstyled">
-                        <li>1. Go to the M-PESA Menu </li>
-                        <li>2. Go to Lipa Na Mpesa </li>
-                        <li>3. Select Paybill </li>
-                        <li>4. Enter the business no. <span style="color:blue; font-weight:700;"></span></li>
-                        <li>5. Enter the Account no. The Invoice Number <span style="color:blue; font-weight:700;">{{$invoice->id}}-{{$invoice->referenceno}}</span></li>
-                        <li>6. Enter Total amount due. <span style="color:blue; font-weight:700;">{{ $sitesettings->site_currency }} {{$invoice->totalamount}} </span></li>
-                        <li>7. Complete Transaction</li>
+                    <h4><b>Payment Methods </b></h4>
+                    <p>The following methods are available.</p>
+                    @foreach($PaymentMethod as $item)
+                    @if($item->name !== 'Cash')
+                    <h6>{{ $item->name }}</h6>
+                    <ul>  @if(stripos($item->name, 'paybill') === false)
+                        <li><strong>Account Number:</strong> {{ $item->account_number }}</li>
+                        <li><strong>Account Name:</strong> {{ $item->account_name }}</li>
+                        @else
+                        <li><strong>Paybill Number:</strong> {{ $item->account_number }}</li>
+                        <li><strong>Paybill Number:</strong> <span style="color:blue; font-weight:700;">{{$invoice->id}}-{{$invoice->referenceno}}</span></li>
+                        @endif
                     </ul>
+                  
+                    @endif
+                    @endforeach
+
                 </td>
-                <td class="">
+                <td class="align-top">
                     <h4><b>Totals </b></h4>
                     <table class="table table-bordered">
                         <tbody>
@@ -141,9 +147,10 @@
                             </tr>
                         </tbody>
                     </table>
-
-
+                
                 </td>
+
+
             </tr>
         </tbody>
     </table>

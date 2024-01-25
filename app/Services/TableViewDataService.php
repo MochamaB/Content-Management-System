@@ -35,6 +35,16 @@ class TableViewDataService
         }
     }
 
+    public function applyPaymentDateRangeFilter($query, $month, $year)
+    {
+        if ($month !== 'ALL') {
+            // Get the first and last day of the specified month
+            $firstDayOfMonth = Carbon::create($year, $month, 1)->startOfMonth();
+            $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth();
+            $query->whereBetween('created_at', [$firstDayOfMonth, $lastDayOfMonth]);
+        }
+    }
+
     public function getUnitData($unitdata)
     {
         /// TABLE DATA ///////////////////////////

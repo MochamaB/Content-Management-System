@@ -79,7 +79,7 @@ class PaymentService
         $user = Auth::user();
 
         $paymentCode = $validatedData['payment_code'];
-        $PaymentMethod = $validatedData['payment_type_id'];
+        $PaymentMethod = $validatedData['payment_method_id'];
 
         return [
             'property_id' => $model->property_id,
@@ -87,7 +87,7 @@ class PaymentService
             'model_type' => $className, ///This has plymorphism because an invoice can also be sent to a vendor.
             'model_id' => $model->id,
             'referenceno' => $referenceno,
-            'payment_type_id' => $PaymentMethod,
+            'payment_method_id' => $PaymentMethod,
             'payment_code' => $paymentCode,
             'totalamount' => null,
             'received_by' => $user->email,

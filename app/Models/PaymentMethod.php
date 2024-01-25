@@ -10,6 +10,7 @@ class PaymentMethod extends Model
     use HasFactory;
     protected $table = 'payment_methods';
     protected $fillable = [
+        'property_id',
         'name',
         'account_number',
         'account_name',
@@ -18,6 +19,7 @@ class PaymentMethod extends Model
     ];
 
     public static $fields = [
+        'property_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' =>''],
         'name' => ['label' => 'Payment Name', 'inputType' => 'text', 'required' => true, 'readonly' =>''],
         'account_number' => ['label' => 'Account Number', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'account_name' => ['label' => 'Account Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
@@ -25,6 +27,7 @@ class PaymentMethod extends Model
         // Add more fields as needed
     ];
     public static $validation = [
+        'property_id' => 'required',
         'name' => 'required',
         'account_number' => 'required',
         'account_name' => 'required',
@@ -34,10 +37,18 @@ class PaymentMethod extends Model
     public static function getFieldData($field)
     {
         switch ($field) {
+            case 'property_id':
+                // Retrieve the supervised units' properties
+                $properties = Property::pluck('property_name', 'id')->toArray();
+                return $properties;
           
                 // Add more cases for additional filter fields
             default:
                 return [];
         }
+    }
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
     }
 }

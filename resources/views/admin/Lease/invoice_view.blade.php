@@ -9,6 +9,7 @@
                 <h4>ACTIONS</h4>
             </div>
             <div class="card-body">
+            <a href="{{route('payment.create', ['id' => $invoice->id])}}" class="btn btn-success btn-lg text-white"><i class="ti-money"></i>Add Payment</a>
                 <a href="{{ url('invoice/'.$invoice->id.'/sendmail') }}" class="btn btn-primary btn-lg text-white "><i class="ti-email"></i>Send Reminder Email</a>
                 <a href="" onclick="printDiv('printMe')" class="btn btn-warning btn-lg text-white"><i class="icon-printer" style="color:white"></i> Print to PDF</a>
             </div>

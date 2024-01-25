@@ -159,7 +159,7 @@ class AppServiceProvider extends ServiceProvider
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
                     'chartofaccount' => ['display' => 'Chart Of Accounts'],
-                    'pay-method' => ['display' => 'Payment methods'],
+                    'payment-method' => ['display' => 'Payment methods'],
                 ]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => [

@@ -67,7 +67,7 @@ class PaymentController extends Controller
     public function create($id = null)
     {
         $invoice = Invoice::find($id);
-        $PaymentMethod = PaymentMethod::all();
+        $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
         $className = get_class($invoice);
 
         ////REFRENCE NO

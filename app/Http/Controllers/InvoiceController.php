@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
 use App\Models\Unitcharge;
 use App\Models\Unit;
 use App\Models\Transaction;
@@ -45,7 +46,8 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
-        $invoiceQuery = Invoice::query();
+        $invoiceQuery2 = Invoice::query();
+        
         $invoicedata = [];
         $mainfilter =  $this->model::distinct()->pluck('invoice_type')->toArray();
         ///CARD DATA
@@ -54,8 +56,8 @@ class InvoiceController extends Controller
         $month = $request->get('month', Carbon::now()->month);
         $year = $request->get('year', Carbon::now()->year);
 
-        $this->tableViewDataService->applyDateRangeFilter($invoiceQuery,$month,$year);
-        $invoicedata = $invoiceQuery->get();
+        $this->tableViewDataService->applyDateRangeFilter($invoiceQuery2,$month,$year);
+        $invoicedata = $invoiceQuery2->get();
 
         $cardData = $this->getCardData($month, $year);
         $filterData = $this->filterData($this->model);
@@ -75,13 +77,24 @@ class InvoiceController extends Controller
         $invoiceQuery = Invoice::query();
         $paymentQuery = Payment::query();
         $this->tableViewDataService->applyDateRangeFilter($invoiceQuery, $month, $year);
-        $this->tableViewDataService->applyDateRangeFilter($paymentQuery, $month, $year);
+      //  $this->tableViewDataService->applyDateRangeFilter($paymentQuery, $month, $year);
         // Count the invoices for the current month
         $invoiceCount = $invoiceQuery->count();
-        $paymentCount = $paymentQuery->count();
+        $invoicePayments = $invoiceQuery->withCount('payments')->get();
+        $paymentCount = $invoicePayments->sum('payments_count');
+       // dd($paymentCount);
         $invoicesWithoutPaymentsCount = $invoiceQuery->whereDoesntHave('payments')->count();
 
-        $paymentSum = $paymentQuery->sum('totalamount');
+        $invoices = $invoiceQuery->with('payments')->get();
+        $paymentSum = 0;
+        foreach ($invoices as $invoice) {
+            $paymentSum += $invoice->payments->sum('totalamount');
+        }
+      // Assuming $invoiceQuery contains a collection of invoices
+  
+   // $paymentSum = $invoices->pluck('payments')->flatten()->sum('totalamount');
+
+     //   $paymentSum = $paymentQuery->sum('totalamount');
         $invoiceSum = $invoiceQuery->sum('totalamount');
         $unpaidSum = $invoiceSum - $paymentSum;
         $totalCardInfo1 = 'Generated';
@@ -209,10 +222,13 @@ class InvoiceController extends Controller
         ////Opening Balance
         $openingBalance = $this->calculateOpeningBalance($invoice);
 
+        //// Data for the Payment Methods
+        $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
+
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Overview') {
-                $tabContents[] = View('admin.lease.invoice_view', compact('invoice'))->render();
+                $tabContents[] = View('admin.lease.invoice_view', compact('invoice','PaymentMethod'))->render();
             } elseif ($title === 'Account Statement') {
                 $tabContents[] = View('admin.lease.statement_view', compact('invoice', 'groupedInvoiceItems', 'transactions', 'openingBalance'))->render();
             }
