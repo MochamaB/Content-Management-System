@@ -168,7 +168,10 @@ class AppServiceProvider extends ServiceProvider
                     'text' => ['display' => 'Text Messages'],
                     ]],
 
-                'Maintenance' => ['icon' => 'broom', 'submodules' => ['',]],
+                'Maintenance' => ['icon' => 'broom', 'submodules' => [
+                    'vendor-category' => ['display' => 'Vendor Categories'],
+                    'vendors' => ['display' => 'Vendors'],
+                    ]],
 
                 'Tasks' => ['icon' => 'timetable', 'submodules' => [
                     'task' => ['display' => 'System Tasks'],

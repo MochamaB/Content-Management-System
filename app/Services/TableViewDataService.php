@@ -19,10 +19,12 @@ use Carbon\Carbon;
 
 class TableViewDataService
 {
-
+  
+    public $sitesettings;
 
     public function __construct()
     {
+        $this->sitesettings = WebsiteSetting::first();
     }
 
     public function applyDateRangeFilter($query, $month, $year)
@@ -124,7 +126,7 @@ class TableViewDataService
 
             $statusClass = $statusClasses[$status] ?? 'secondary';
             $invoiceStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
-            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . $balance . '</span>';
+            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ','). '</span>';
 
             $row = [
                 'id' => $item->id,
@@ -132,8 +134,8 @@ class TableViewDataService
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->invoice_type,
-                $sitesettings->site_currency . '. ' . $item->totalamount,
-                $sitesettings->site_currency . '. ' . $totalPaid,
+                $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
+                $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ','),
                 $balanceStatus . '  ' . $payLink,
 
 
@@ -186,7 +188,7 @@ class TableViewDataService
                 $item->referenceno,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
                 $item->voucher_type,
-                $item->totalamount,
+                $this->sitesettings->site_currency.' '.number_format($item->totalamount, 0, '.', ','),
                 $item->status,
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -231,7 +233,7 @@ class TableViewDataService
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 $type->invoice_type,
-                $item->totalamount,
+                $this->sitesettings->site_currency.' '.number_format($item->totalamount, 0, '.', ','),
                 $PaymentMethod->name .
                     ' </br>
                 <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> ' . $item->payment_code,
@@ -274,7 +276,7 @@ class TableViewDataService
             $charge_name = $item->charge_name;
             $charge_cycle = $item->charge_cycle;
             $charge_type = $item->charge_type;
-            $rate = $item->rate;
+            $rate = $this->sitesettings->site_currency.' '. number_format($item->rate, 0, '.', ',');
             $recurring_charge = $item->recurring_charge;
             $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
             $unit = $item->unit->unit_number;
@@ -446,6 +448,54 @@ class TableViewDataService
                         array_splice($row, 3, 0, $addlease); // Replace 'Default Value' with your desired default
                     }    
                 } 
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
+
+
+    public function getvendorData($vendordata, $extraColumns = false)
+    {
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['NAME', 'EMAIL', 'PHONE NUMBER', 'ACCOUNT STATUS', 'ACTIONS'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 2, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($vendordata as $item) {
+          //  $property = $item->properties->first();
+            //$subscriptionStatus = $item->vendorSubscription->first();
+           
+            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
+            <div>
+            <h6>' . $item->name.
+                '</h6>
+            </div>
+          </div>';
+
+            $row = [
+                'id' => $item->id,
+                $name,
+                $item->email,
+                $item->phonenumber,
+                $item->vendorSubscription->subscription_status,
+
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+            }
             $tableData['rows'][] = $row;
         }
 

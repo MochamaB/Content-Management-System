@@ -40,16 +40,17 @@
       @include('layouts.admin.sidebar')
       <!-- partial -->
       <div class="main-panel" >
-        <div class="content-wrapper" style="background-color: white;">
-          <div class="row">
+        <div class="content-wrapper" style="background-color: white;padding-top:0px">
+          <div class="row" >
             <div class="col-sm-12" >
-              <div class="home-tab" >
+              <div class="home-tab">
                 
                 <div class="tab-content tab-content-basic" >
-                  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
-                     <!-- Breadcrumb -->
-                     @include('layouts.admin.breadcrumbs')
+                 <!-- Breadcrumb -->
+                 @include('layouts.admin.breadcrumbs')
                       <!-- Breadcrumb -->
+                  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
+                    
                 @yield('content')
                     </div>
                 </div>

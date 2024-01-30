@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Models\Property;
+use App\Models\WebsiteSetting;
 
 class UtilityController extends Controller
 {
@@ -33,6 +34,7 @@ class UtilityController extends Controller
     public function getUtilitiesData($utilitiesdata)
     {
         /// TABLE DATA ///////////////////////////
+        $sitesettings = WebsiteSetting::first();
         $tableData = [
             'headers' => ['UTILITY', 'PROPERTY', 'TYPE', 'RATE', 'ACTIONS'],
             'rows' => [],
@@ -44,7 +46,7 @@ class UtilityController extends Controller
                 $item->utility_name,
                 $item->property->property_name,
                 $item->utility_type,
-                $item->rate,
+                $sitesettings->site_currency.' '.number_format($item->rate, 0, '.', ','),
 
             ];
         }

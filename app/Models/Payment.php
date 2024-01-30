@@ -19,7 +19,8 @@ class Payment extends Model
         'payment_code',
         'totalamount',
         'received_by',
-        'reviewed_by'
+        'reviewed_by',
+        'invoicedate'
 
     ];
 

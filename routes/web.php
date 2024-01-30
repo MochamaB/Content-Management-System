@@ -30,11 +30,14 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\VendorCategoryController;
+use App\Http\Controllers\VendorController;
 ////Test Email View////////////
 use App\Models\MeterReading;
 use App\Models\User;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\VendorCategory;
 use App\Notifications\LeaseAgreementNotification;
 use App\Notifications\UserCreatedNotification;
 use App\Notifications\InvoiceGeneratedNotification;
@@ -58,6 +61,7 @@ Route::get('/', [App\Http\Controllers\client\HomeController::class, 'index']);
 
 Route::group(['middleware' => ['auth', 'permission']], function () {
 
+//<!-------------------------------- Website Module ---------------------------------------------->////
     Route::group(['groupName' => 'Website'], function () {
         Route::resource('amenity', AmenityController::class);
         Route::resource('propertytype', PropertyTypeController::class);
@@ -66,6 +70,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('testimonial', TestimonialController::class);
     });
 
+//<!-------------------------------- Communication Module ---------------------------------------------->////
     Route::group(['groupName' => 'Communication'], function () {
         //  Route::resource('notification', NotificationController::class);
         Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
@@ -76,12 +81,14 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             ->name('notification.show');
     });
 
+//<!-------------------------------- Accounting Module ---------------------------------------------->////
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
         Route::resource('transaction', TransactionController::class);
         Route::resource('payment-method', PaymentMethodController::class);
     });
 
+//<!-------------------------------- Leasing Module ---------------------------------------------->////
     Route::group(['groupName' => 'Leasing'], function () {
         Route::resource('lease', LeaseController::class);
         ///lease wizard///////
@@ -124,6 +131,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('payment', PaymentController::class, ['except' => 'create']);
     });
 
+//<!-------------------------------- Property Module ---------------------------------------------->////
     Route::group(['groupName' => 'Property'], function () {
 
         Route::resource('property', PropertyController::class);
@@ -132,6 +140,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('unitdetail', UnitDetailsController::class);
     });
 
+//<!-------------------------------- Files Module ---------------------------------------------->////
     Route::group(['groupName' => 'Files'], function () {
         Route::get('media/create/{id}/{model}', [
             'as' => 'media.create',
@@ -140,6 +149,17 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('media', MediaController::class);
     });
 
+//<!-------------------------------- Maintenance Module ---------------------------------------------->////
+    Route::group(['groupName' => 'Maintenenace'], function () {
+
+        Route::resource('vendor-category', VendorCategoryController::class);
+        Route::resource('vendors', VendorController::class);
+
+    });
+
+
+
+    //<!-------------------------------- Tasks Module ---------------------------------------------->////
     Route::group(['groupName' => 'Tasks'], function () {
 
         Route::resource('task', TaskController::class);

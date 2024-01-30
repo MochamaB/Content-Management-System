@@ -1,5 +1,5 @@
 
-<ul class="nav nav-tabs mb-3" id="ex1" role="tablist" >
+<ul class="nav nav-tabs mb-0" id="ex1" role="tablist">
 @foreach($tabTitles as $index => $title)
         <li class="nav-item" role="presentation">
         <a class="nav-link @if($loop->first) active @endif" 
@@ -16,7 +16,7 @@
 </ul>
 
 
-<div class="tab-content" id="ex1-content">
+<div class="tab-content" id="ex1-content" style="padding-top:0.6rem;">
             <!----------- ------------------>
             @foreach($tabContents as $index => $content)
             <div class="tab-pane fade @if($loop->first) show active @endif" 

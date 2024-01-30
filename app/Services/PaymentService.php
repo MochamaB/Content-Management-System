@@ -92,6 +92,7 @@ class PaymentService
             'totalamount' => null,
             'received_by' => $user->email,
             'reviewed_by' => null,
+            'invoicedate' => $model->created_at,
         ];
     }
 
