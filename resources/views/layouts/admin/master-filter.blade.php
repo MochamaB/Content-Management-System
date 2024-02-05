@@ -1,7 +1,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="label">filter</label>
                             <select name="controller" id="controller" class="formcontrol2" onchange="applyFilters('controller')">
+                            <option value="" disabled selected>FILTER</option>
                                 <option value="All">ALL </option>
                                 @if(isset($mainfilter) && $mainfilter !== null)
                                 @foreach ($mainfilter as $item)
@@ -12,7 +12,7 @@
                         </div>
 
                     </div>
-                    <div class="col-md-2  d-flex align-items-center" >
+                    <div class="col-md-2 " style="padding-top:0px" >
 
                         <button class="btn btn-warning btn-lg text-white" id="filter" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                             <i class="fas fa-plus" id="collapseIcon"></i> Advanced Filter <i class="fas fa-times" id="expandIcon" style="display: none;"></i>

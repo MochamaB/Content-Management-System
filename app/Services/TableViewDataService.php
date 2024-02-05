@@ -501,4 +501,58 @@ class TableViewDataService
 
         return $tableData;
     }
+
+    public function getRequestData($requestdata, $extraColumns = false)
+    {
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['REQUEST CATEGORY', 'SUBJECT','STATUS', 'RAISED BY', 'PRIORITY','ASSIGNED','AMOUNT', 'ACTIONS'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 2, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($requestdata as $item) {
+            $statusClasses = [
+                'Completed' => 'active',
+                'New' => 'warning',
+                'OverDue' => 'error',
+                'In Progress' => 'information',
+                'Reported' => 'dark',
+            ];
+            
+            $status = $item->status;
+            $statusClass = $statusClasses[$status] ?? 'Reported';
+            $requestStatus = '<span class="statusdot statusdot-' . $statusClass . '"></span>';
+            $roleNames = $item->users->roles->first();
+            $raisedby =  $item->users->firstname.' '.$item->users->lastname;
+           
+            $row = [
+                'id' => $item->id,
+                $item->category,
+                $item->subject,
+                $requestStatus.' '.$status,
+                '<span class="text-muted" style="font-weight:500;font-style: italic">'.$roleNames.'</span></br>' .
+                $raisedby,
+                $item->priority,
+                $item->assigned_id ?? 'NOT ASSIGNED',
+                $this->sitesettings->site_currency.' '.number_format($item->totalamount, 0, '.', ','),
+
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
 }

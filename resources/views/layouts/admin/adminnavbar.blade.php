@@ -10,14 +10,14 @@
         @if ($sitesettings)
         <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
         @else
-        <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
+        <img src="url('uploads/images/noimage.jpg')" alt="No Image">
         @endif
       </a>
       <a class="navbar-brand brand-logo-mini" href="index.html">
       @if ($sitesettings)
         <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
         @else
-        <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
+        <img src="url('uploads/images/noimage.jpg')" alt="No Image">
         @endif
       </a>
     </div>
@@ -48,10 +48,10 @@
 
       <li class="nav-item dropdown  user-dropdown">
         <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-          <img class="img-xs rounded-circle" src="{{ url('resources/uploads/images/'.Auth::user()->profilepicture ?? 'noimage.jpg') }}" alt="Profile image"> </a>
+          <img class="img-xs rounded-circle" src="{{ url('uploads/images/'.Auth::user()->profilepicture ?? 'noimage.jpg') }}" alt="Profile image"> </a>
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
           <div class="dropdown-header text-center">
-            <img class="img-thumbnail rounded-circle" src="{{ url('resources/uploads/images/'.Auth::user()->profilepicture ?? 'noimage.jpg') }}" alt="Profile image">
+            <img class="img-thumbnail rounded-circle" src="{{ url('uploads/images/'.Auth::user()->profilepicture ?? 'noimage.jpg') }}" alt="Profile image">
             <p class="mb-1 mt-3 font-weight-semibold">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</p>
             <p class="fw-light text-muted mb-0">{{ Auth::user()->email }}</p>
           </div>

@@ -29,6 +29,7 @@ use App\Http\Controllers\PaymentVoucherController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RequestController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\VendorCategoryController;
 use App\Http\Controllers\VendorController;
@@ -154,6 +155,13 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
         Route::resource('vendor-category', VendorCategoryController::class);
         Route::resource('vendors', VendorController::class);
+
+        Route::get('request/create/{id?}', [
+            'as' => 'request.create',
+            'uses' => 'App\Http\Controllers\RequestController@create'
+        ]);
+        Route::resource('request', RequestController::class);
+
 
     });
 

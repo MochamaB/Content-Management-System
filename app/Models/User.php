@@ -154,6 +154,11 @@ class User extends Authenticatable
         return $this->hasOne(Lease::class, 'user_id');
     }
 
+    public function request()
+    {
+        return $this->hasMany(Request::class, 'user_id');
+    }
+
     public function unitswithoutlease()
     {
         return $this->belongsToMany(Unit::class, 'unit_user', 'user_id', 'unit_id')

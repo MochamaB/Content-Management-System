@@ -7,12 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>{{$sitesettings->site_name ?? 'SITE NAME'}} </title>
   <!-- plugins:css -->
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/feather/feather.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/mdi/css/materialdesignicons.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/ti-icons/css/themify-icons.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/typicons/typicons.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/simple-line-icons/css/simple-line-icons.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/vendors/css/vendor.bundle.base.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/vendors/feather/feather.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/vendors/mdi/css/materialdesignicons.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/vendors/ti-icons/css/themify-icons.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/vendors/typicons/typicons.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/vendors/simple-line-icons/css/simple-line-icons.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/vendors/css/vendor.bundle.base.css') }}">
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
@@ -22,15 +22,15 @@
 
 
   <!--- Plugins for bootstrap table--------->
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
-  <script src="{{ asset('resources/styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
+  <script src="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- End plugin css for this page -->
   <!-- inject:css -->
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/style.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/mystyle.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/wizard.css') }}">
-  <link rel="stylesheet" href="{{ asset('resources/styles/admin/css/vertical-layout-light/notification.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/style.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/mystyle.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/wizard.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/notification.css') }}">
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />
   <style>

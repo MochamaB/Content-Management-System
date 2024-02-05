@@ -133,6 +133,11 @@ class Property extends Model implements HasMedia
         return $this->hasMany(Invoice::class);
     }
 
+    public function requests()
+    {
+        return $this->hasMany(Request::class);
+    }
+
 
     /// scope showing properties with units
     public function scopeWithUnitUser($query)

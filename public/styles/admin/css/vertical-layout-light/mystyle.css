@@ -296,7 +296,7 @@
 }
 
 #filter {
-  margin-top: 25px;
+  margin-top: 5px;
   margin-left: -15px;
   border-radius: 0px;
   border-left: blue solid 10px
@@ -726,9 +726,9 @@ a .badge:hover {
 }
 
 .badge-light {
-  color: #52CDFF !important;
-  background-color: #dae3fa;
-  border: 2px solid #52CDFF !important;
+  color: #6a008a !important;
+  background-color: #edd5f5;
+  border: 2px solid #6a008a !important;
 }
 
 
@@ -736,11 +736,63 @@ a .badge:hover {
   color: #038d21 !important;
 }
 
+.text-warning{
+  color: #fdac25 !important;
+}
+.text-error{
+  color: #c50000c4 !important;
+}
+.text-information{
+  color: #3302a5c4 !important;
+}
+
+.text-light{
+  color: #6a008a  !important;
+}
 .svgimage{
   width: 350px;
   height:400px;
 }
 
+
+
+.statusdot {
+  height: 15px;
+  width: 15px;
+  border-radius: 100%;
+  display: inline-block;
+  margin-right: 5px;
+}
+.statusdot-warning {
+  background-color: #fdac25;
+  color: #fdac25 !important;
+border: 1px solid #fdac25 !important;
+
+}
+.statusdot-information {
+  background-color: #3302a5c4 !important;
+}
+.statusdot-active {
+color: #038d21 !important;
+border: 1px solid #038d21 !important;
+background-color: #c0e4c3;
+}
+
+.statusdot-error {
+color: #c50000c4 !important;
+background-color: #f9e2df;
+border: 2px solid #c50000c4 !important;
+}
+.statusdot-danger {
+  color: #f83d3dc4 !important;
+  background-color: #f9e2df;
+  border: 2px solid #f83d3dc4 !important;
+}
+.statusdot-dark {
+  color: #1E283D !important;
+  background-color: #dae3fa;
+  border: 2px solid #1E283D !important;
+}
 
 /* Responsiveness  */
 

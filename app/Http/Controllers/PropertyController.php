@@ -132,6 +132,7 @@ class PropertyController extends Controller
             'Summary',
             'Units',
             'Utilities',
+            'Requests',
             'Settings'
             //    'Maintenance',
             //    'Financials',
@@ -153,8 +154,13 @@ class PropertyController extends Controller
         $utilities = $property->utilities;
         $utilityController = new UtilityController();
         $utilityTableData = $utilityController->getUtilitiesData($utilities);
+
+        ///4. REQUESTS
+        $requests = $property->requests;
+        //   $unitController = new UnitController();
+           $requestTableData = $this->tableViewDataService->getRequestData($requests);
     
-         //4. SETTINGS
+         //5. SETTINGS
          $setting = $property->settings;
          $settingController = new SettingController();
          $settingTableData = $settingController->getSettingData($setting);
@@ -175,6 +181,9 @@ class PropertyController extends Controller
             } elseif ($title === 'Utilities') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $utilityTableData,'controller' => ['utility']], 
                 compact('amenities', 'allamenities'))->render();
+            }elseif ($title === 'Requests') {
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $requestTableData,'controller' => ['request']], 
+                compact('amenities', 'allamenities','id'))->render();
             }elseif ($title === 'Settings') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $settingTableData,'controller' => ['setting']], 
                 compact('amenities', 'allamenities','model','id'))->render();

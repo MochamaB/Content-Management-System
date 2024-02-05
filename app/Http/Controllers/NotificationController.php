@@ -14,6 +14,11 @@ class NotificationController extends Controller
 {
   public function index()
   {
+
+    $user = User::first(); // get some user
+
+// send notification 
+$user->notify(new NewsWasPublished());
     return view('admin.Communication.notification_index');
   }
   public function email()

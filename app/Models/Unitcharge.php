@@ -57,9 +57,9 @@ class Unitcharge extends Model
             case 'unit_property':
                 return [
                     'mainphoto' => 'Main Photo',
-                    'photo', 'Photo',
+                    'photo' => 'Photo',
                     'video' => 'Video',
-                    'feature', 'Feature'
+                    'feature' => 'Feature'
                 ];
                 // Add more cases for additional filter fields
             default:

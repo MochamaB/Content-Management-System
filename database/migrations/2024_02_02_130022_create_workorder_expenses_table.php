@@ -13,15 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('workorders', function (Blueprint $table) {
+        Schema::create('workorder_expenses', function (Blueprint $table) {
             $table->id()->index();
             $table->unsignedBigInteger('request_id')->index();
-            $table->unsignedBigInteger('user_id')->index();
-            $table->string('notes');
+            $table->decimal('quantity');
+            $table->string('item');
+            $table->decimal('price');
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('request_id')->references('id')->on('requests')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('workorders');
+        Schema::dropIfExists('workorder_expenses');
     }
 };

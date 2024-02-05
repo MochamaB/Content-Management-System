@@ -67,7 +67,7 @@ class Invoice extends Model
                 return  $distinctInvoiceTypes;
             case 'status':
                 return [
-                    'paid' => 'Paid',
+                    'Paid' => 'Paid',
                     'Unpaid' => 'unpaid',
                     'Over Due' => 'Over Due',
                     'partially_paid' => 'partially_paid',

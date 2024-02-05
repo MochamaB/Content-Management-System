@@ -171,6 +171,7 @@ class AppServiceProvider extends ServiceProvider
                 'Maintenance' => ['icon' => 'broom', 'submodules' => [
                     'vendor-category' => ['display' => 'Vendor Categories'],
                     'vendors' => ['display' => 'Vendors'],
+                    'request' => ['display' => 'All Requests'],
                     ]],
 
                 'Tasks' => ['icon' => 'timetable', 'submodules' => [
