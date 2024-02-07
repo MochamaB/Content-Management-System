@@ -16,7 +16,7 @@
 </ul>
 
 
-<div class="tab-content" id="ex1-content" style="padding-top:0.6rem;">
+<div class="tab-content" id="ex1-content" style="padding-top:1.6rem;">
             <!----------- ------------------>
             @foreach($tabContents as $index => $content)
             <div class="tab-pane fade @if($loop->first) show active @endif" 

@@ -420,7 +420,7 @@ class TableViewDataService
 
         foreach ($userdata as $item) {
             $unit = $item->units->first();
-            $property = $item->properties->first();
+          //  $property = $item->properties->first();
             $roleNames = $item->roles->first();
             $addlease = '<a href="' . route('lease.create') . '" class="badge badge-warning"  style="float: left; margin-right:10px">Add Lease</a>';
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
@@ -442,7 +442,7 @@ class TableViewDataService
             // If $Extra Columns is true, insert unit details at position 3
                  if ($extraColumns) {
                     if($unit){
-                   array_splice($row, 3, 0, $property->property_name. ' - ' . $unit->unit_number);
+                   array_splice($row, 3, 0, $unit->property->property_name. ' - ' . $unit->unit_number);
                      } else {
                         // Add default value when the condition is not met
                         array_splice($row, 3, 0, $addlease); // Replace 'Default Value' with your desired default
@@ -525,7 +525,7 @@ class TableViewDataService
                 'New' => 'warning',
                 'OverDue' => 'error',
                 'In Progress' => 'information',
-                'Reported' => 'dark',
+                'Assigned' => 'dark',
             ];
             
             $status = $item->status;
@@ -533,6 +533,7 @@ class TableViewDataService
             $requestStatus = '<span class="statusdot statusdot-' . $statusClass . '"></span>';
             $roleNames = $item->users->roles->first();
             $raisedby =  $item->users->firstname.' '.$item->users->lastname;
+            $assignLink = '<a href="'.url('request/assign/'.$item->id).'" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary">ASSIGN</i>  </a>';
            
             $row = [
                 'id' => $item->id,
@@ -542,7 +543,7 @@ class TableViewDataService
                 '<span class="text-muted" style="font-weight:500;font-style: italic">'.$roleNames.'</span></br>' .
                 $raisedby,
                 $item->priority,
-                $item->assigned_id ?? 'NOT ASSIGNED',
+                $item->assigned_id ?? $assignLink,
                 $this->sitesettings->site_currency.' '.number_format($item->totalamount, 0, '.', ','),
 
             ];

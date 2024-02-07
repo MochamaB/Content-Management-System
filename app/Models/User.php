@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Models\Role as Roles;
 
+
+/**
+ * @method filterUsers()
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
@@ -138,14 +142,14 @@ class User extends Authenticatable
 
      public function properties()
      {
-         return $this->belongsToMany(Property::class, 'unit_user')
-             ->withPivot('property_id')
+         return $this->belongsToMany(Property::class, 'unit_user', 'user_id', 'property_id')
+           //  ->withPivot('property_id')
              ->withTimestamps();
      }
     //// Relationship between user and Unit through pivot
     public function units()
     {
-        return $this->belongsToMany(Unit::class, 'unit_user')
+        return $this->belongsToMany(Unit::class, 'unit_user', 'user_id', 'unit_id')
             ->withPivot('property_id')
             ->withTimestamps();
     }
@@ -282,4 +286,18 @@ class User extends Authenticatable
     {
         return $this->phonenumber;
     }
+
+    public function modelrequests()
+    {
+        return $this->morphMany(Request::class, 'assigned');
+    }
+    public function scopeSameUnit($query, $user)
+    {
+        return $query->where('id', '<>', 1) // Exclude user with ID 1
+        ->where('id', '<>', $user->id) // Exclude logged in user
+        ->whereHas('units', function ($query) use ($user) {
+            $query->whereIn('unit_id', $user->units->pluck('id')->toArray());
+        });
+    }
+
 }

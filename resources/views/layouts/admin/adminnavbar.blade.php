@@ -8,7 +8,7 @@
     <div>
       <a class="navbar-brand brand-logo" href="">
         @if ($sitesettings)
-        <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
+        <img src="{{ asset($sitesettings->getFirstMediaUrl('logo')) }}" alt="Logo" style="height: 70px; width: 150px;">
         @else
         <img src="url('uploads/images/noimage.jpg')" alt="No Image">
         @endif

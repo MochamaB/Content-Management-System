@@ -84,4 +84,9 @@ class Request extends Model implements HasMedia
     {
         return $this->belongsTo(User::class,'user_id');
     }
+
+    public function assigned()
+    {
+        return $this->morphTo();
+    }
 }

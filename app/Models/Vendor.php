@@ -87,4 +87,9 @@ class Vendor extends Model
         return $this->hasOne(VendorSubscription::class);
     }
 
+    public function modelrequests()
+    {
+        return $this->morphMany(Request::class, 'assigned');
+    }
+
 }

@@ -8,7 +8,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media as BaseMedia;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class MyMedia extends Model implements HasMedia
+class Media extends BaseMedia implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 

@@ -1,4 +1,5 @@
 Composer install
+cp .env.example .env
 Change DB Name in .env file
 change sync to QUEUE_CONNECTION=database in .env file
 Run php artisan queue:table  --Generate the jobs table for the message queue.

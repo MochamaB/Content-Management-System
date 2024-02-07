@@ -23,6 +23,7 @@ use App\Scopes\UnitAccessScope;
 use App\Scopes\PropertyAccessScope;
 use App\Scopes\UtilityAccessScope;
 use App\Scopes\UserAccessScope;
+use App\Scopes\UserScope;
 use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
@@ -55,7 +56,7 @@ class AppServiceProvider extends ServiceProvider
         Invoice::addGlobalScope(new UserAccessScope);
         Paymentvoucher::addGlobalScope(new UserAccessScope);
         Payment::addGlobalScope(new UserAccessScope);
-        //   User::addGlobalScope(new UnitAccessScope);
+        //   User::addGlobalScope(new UserScope);
 
 
 

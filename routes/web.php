@@ -161,6 +161,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'uses' => 'App\Http\Controllers\RequestController@create'
         ]);
         Route::resource('request', RequestController::class);
+        Route::get('request/assign/{id}', [RequestController::class, 'assign'])->name('request.assign');
 
 
     });
