@@ -10,7 +10,7 @@
                     <div class="sl-slide-inner ">
 
                             <div class="bg-img bg-img-1" 
-                            style="background-image: url('{{ $item->getFirstMediaUrl('slider', 'thumb') }}')">
+                            style="background-image: url('{{ $item->getFirstMediaUrl('slider') }}')">
                             </div>                             
                             <blockquote><cite><a href="property.html">{{$item->slider_title}}</a></cite>
                                 <p>{{$item->slider_desc}}

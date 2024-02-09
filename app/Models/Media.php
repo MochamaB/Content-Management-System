@@ -12,5 +12,8 @@ class Media extends BaseMedia implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
 
-  
+    public function units()
+    {
+        return $this->belongsTo(Unit::class ,'unit_id');
+    }
 }

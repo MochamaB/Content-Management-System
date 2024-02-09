@@ -158,7 +158,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="label">Website Logos</label>
-                        <input type="file" name="company_logo" value="{{ $sitesettings->company_logo }}" class="form-control" id="logo" required />
+                        <input type="file" name="company_logo" value="{{ $sitesettings->company_logo }}" class="form-control" id="logo"  />
                         <img id="logo-image-before-upload" src="{{ $sitesettings->getFirstMediaUrl('logo') }}" style="height: 200px; width: 200px;">
                     </div>
                     <div class="form-group">

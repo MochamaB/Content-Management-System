@@ -9,6 +9,7 @@ use App\Models\Unit;
 use Illuminate\Support\Facades\Session;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Database\Eloquent\Model;
+use App\Services\TableViewDataService;
 
 class MediaController extends Controller
 {
@@ -20,15 +21,20 @@ class MediaController extends Controller
 
     protected $controller;
     protected $model;
+    private $tableViewDataService;
 
-    public function __construct()
+
+    public function __construct(TableViewDataService $tableViewDataService)
     {
+    
         $this->model = Media::class;
 
         $this->controller = collect([
             '0' => 'media', // Use a string for the controller name
             '1' => ' Media',
         ]);
+
+        $this->tableViewDataService = $tableViewDataService;
     }
     public function getMediaData($media)
     {
@@ -51,7 +57,19 @@ class MediaController extends Controller
 
     public function index()
     {
-        //
+        $mediadata = $this->model::all();
+        $mainfilter =  $this->model::distinct()->pluck('collection_name')->toArray();
+     //   $viewData = $this->formData($this->model);
+     //   $cardData = $this->cardData($this->model,$invoicedata);
+       // dd($cardData);
+        $controller = $this->controller;
+        $tableData = $this->tableViewDataService->getMediaData($mediadata,true);
+        
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+      //  $viewData,
+        [
+         //   'cardData' => $cardData,
+        ]);
     }
 
     /**
@@ -61,18 +79,20 @@ class MediaController extends Controller
      */
     public function create($id = null,$model = null)
     {
-
         $unit = null;
-        
-
-        if ($id !== null) {
+        if ($id === null) {
+            return back()->with('statuserror', ' Add media files from the modules');
+        }
+        else{
+           
             $unit = Unit::find($id);
             $property = Property::where('id', $unit->property->id)->first();
             $model = $model;
-        }
+        
     
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
         return View('admin.media.create_media', compact('unit','model','property','id'));
+        }
     }
 
     /**

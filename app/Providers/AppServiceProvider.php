@@ -179,7 +179,9 @@ class AppServiceProvider extends ServiceProvider
                     'task' => ['display' => 'System Tasks'],
                 ]],
 
-                'Files' => ['icon' => 'file-multiple', 'submodules' => ['',]],
+                'Files' => ['icon' => 'file-multiple', 'submodules' => [
+                    'media' => ['display' => 'All Files'],
+                    ]],
 
                 'Settings' => ['icon' => 'settings', 'submodules' => [
                     'setting' => ['display' => 'Application Settings']

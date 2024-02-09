@@ -11,6 +11,7 @@ use App\Models\Lease;
 use App\Models\WebsiteSetting;
 use App\Models\MeterReading;
 use App\Models\InvoiceItems;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ use Carbon\Carbon;
 
 class TableViewDataService
 {
-  
+
     public $sitesettings;
 
     public function __construct()
@@ -126,7 +127,7 @@ class TableViewDataService
 
             $statusClass = $statusClasses[$status] ?? 'secondary';
             $invoiceStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
-            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ','). '</span>';
+            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
 
             $row = [
                 'id' => $item->id,
@@ -188,7 +189,7 @@ class TableViewDataService
                 $item->referenceno,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
                 $item->voucher_type,
-                $this->sitesettings->site_currency.' '.number_format($item->totalamount, 0, '.', ','),
+                $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $item->status,
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -233,7 +234,7 @@ class TableViewDataService
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 $type->invoice_type,
-                $this->sitesettings->site_currency.' '.number_format($item->totalamount, 0, '.', ','),
+                $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $PaymentMethod->name .
                     ' </br>
                 <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> ' . $item->payment_code,
@@ -276,7 +277,7 @@ class TableViewDataService
             $charge_name = $item->charge_name;
             $charge_cycle = $item->charge_cycle;
             $charge_type = $item->charge_type;
-            $rate = $this->sitesettings->site_currency.' '. number_format($item->rate, 0, '.', ',');
+            $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',');
             $recurring_charge = $item->recurring_charge;
             $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
             $unit = $item->unit->unit_number;
@@ -381,18 +382,35 @@ class TableViewDataService
         ];
         $allMedia = collect();
 
-        foreach ($mediadata as $item) {
-
+        foreach ($mediadata as $key => $item) {
+            $unit = $item->unit_id;
+            $system = 'System File';
+            if($item->mime_type === 'application/pdf'){
+                $thumbnail = url('uploads/pdf.png');
+            }else{
+                $thumbnail = $item->getUrl();
+            }
             $row = [
                 'id' => $item->id,
-                $item,
+                $key+1,
+                '<img src="'.$thumbnail.'" alt="'.$item->name.'" style="width:130px;height:80px;border-radius:0">',
+                $item->file_name,
                 $item->collection_name,
+                $item->size,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
+                if ($unit) {
+                    $units = Unit::find($unit);
+                    $property = Property::where('id', $units->property->id)->first();
+                array_splice($row, 4, 0, $units->unit_number . ' - ' . $property->property_name); // Replace with how you get unit details
+                }  else {
+                    // Add default value when the condition is not met
+                    array_splice($row, 4, 0, $system); // Replace 'Default Value' with your desired default
+                } 
             }
+
 
             $tableData['rows'][] = $row;
         }
@@ -420,7 +438,7 @@ class TableViewDataService
 
         foreach ($userdata as $item) {
             $unit = $item->units->first();
-          //  $property = $item->properties->first();
+            //  $property = $item->properties->first();
             $roleNames = $item->roles->first();
             $addlease = '<a href="' . route('lease.create') . '" class="badge badge-warning"  style="float: left; margin-right:10px">Add Lease</a>';
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
@@ -440,14 +458,14 @@ class TableViewDataService
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
-                 if ($extraColumns) {
-                    if($unit){
-                   array_splice($row, 3, 0, $unit->property->property_name. ' - ' . $unit->unit_number);
-                     } else {
-                        // Add default value when the condition is not met
-                        array_splice($row, 3, 0, $addlease); // Replace 'Default Value' with your desired default
-                    }    
-                } 
+            if ($extraColumns) {
+                if ($unit) {
+                    array_splice($row, 3, 0, $unit->property->property_name . ' - ' . $unit->unit_number);
+                } else {
+                    // Add default value when the condition is not met
+                    array_splice($row, 3, 0, $addlease); // Replace 'Default Value' with your desired default
+                }
+            }
             $tableData['rows'][] = $row;
         }
 
@@ -473,13 +491,13 @@ class TableViewDataService
         ];
 
         foreach ($vendordata as $item) {
-          //  $property = $item->properties->first();
+            //  $property = $item->properties->first();
             //$subscriptionStatus = $item->vendorSubscription->first();
-           
+
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
             <div>
-            <h6>' . $item->name.
+            <h6>' . $item->name .
                 '</h6>
             </div>
           </div>';
@@ -507,7 +525,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REQUEST CATEGORY', 'SUBJECT','STATUS', 'RAISED BY', 'PRIORITY','ASSIGNED','AMOUNT', 'ACTIONS'];
+        $headers = ['REQUEST CATEGORY', 'SUBJECT', 'STATUS', 'RAISED BY', 'PRIORITY', 'ASSIGNED', 'AMOUNT', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -527,24 +545,28 @@ class TableViewDataService
                 'In Progress' => 'information',
                 'Assigned' => 'dark',
             ];
-            
+
             $status = $item->status;
             $statusClass = $statusClasses[$status] ?? 'Reported';
             $requestStatus = '<span class="statusdot statusdot-' . $statusClass . '"></span>';
             $roleNames = $item->users->roles->first();
-            $raisedby =  $item->users->firstname.' '.$item->users->lastname;
-            $assignLink = '<a href="'.url('request/assign/'.$item->id).'" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary">ASSIGN</i>  </a>';
-           
+            $raisedby =  $item->users->firstname . ' ' . $item->users->lastname;
+            $assignLink = '<a href="' . url('request/assign/' . $item->id) . '" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary">ASSIGN</i>  </a>';
+
+            $assignedModel = $item->assigned;
+
+            // Now, you can check the type of the assigned model and access its attributes accordingly
+            
             $row = [
                 'id' => $item->id,
                 $item->category,
                 $item->subject,
-                $requestStatus.' '.$status,
-                '<span class="text-muted" style="font-weight:500;font-style: italic">'.$roleNames.'</span></br>' .
-                $raisedby,
+                $requestStatus . ' ' . $status,
+                '<span class="text-muted" style="font-weight:500;font-style: italic">' . $roleNames . '</span></br>' .
+                    $raisedby,
                 $item->priority,
-                $item->assigned_id ?? $assignLink,
-                $this->sitesettings->site_currency.' '.number_format($item->totalamount, 0, '.', ','),
+                $assignedModel ?? $assignLink,
+                $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
 
             ];
             // If $Extra Columns is true, insert unit details at position 3

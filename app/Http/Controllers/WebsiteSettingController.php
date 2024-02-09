@@ -101,7 +101,7 @@ class WebsiteSettingController extends Controller
             $settingSite->addMedia($request->file('company_flavicon'))->toMediaCollection('flavicon');
         }
 
-        $settingSite->save();
+        $settingSite->update();
         return redirect('websitesetting')->with('status', 'Site Settings Updated Successfully');
     }
 
