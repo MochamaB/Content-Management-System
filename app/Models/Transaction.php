@@ -26,4 +26,23 @@ class Transaction extends Model
     {
         return $this->morphTo();
     }
+
+    public function property()
+    {
+        return $this->belongsTo(Property::class, 'property_id');
+    }
+
+    public function units()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id');
+    }
+    public function debitAccount()
+    {
+        return $this->belongsTo(Chartofaccount::class, 'debitaccount_id');
+    }
+
+    public function creditAccount()
+    {
+        return $this->belongsTo(Chartofaccount::class, 'creditaccount_id');
+    }
 }

@@ -29,6 +29,7 @@ use App\Http\Controllers\PaymentVoucherController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\VendorCategoryController;
@@ -85,8 +86,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 //<!-------------------------------- Accounting Module ---------------------------------------------->////
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
-        Route::resource('transaction', TransactionController::class);
         Route::resource('payment-method', PaymentMethodController::class);
+        Route::resource('transaction', TransactionController::class);
+        Route::get('general-ledger', [TransactionController::class, 'ledger'])->name('transaction.ledger');
     });
 
 //<!-------------------------------- Leasing Module ---------------------------------------------->////
@@ -151,7 +153,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     });
 
 //<!-------------------------------- Maintenance Module ---------------------------------------------->////
-    Route::group(['groupName' => 'Maintenenace'], function () {
+    Route::group(['groupName' => 'Maintenance'], function () {
 
         Route::resource('vendor-category', VendorCategoryController::class);
         Route::resource('vendors', VendorController::class);
@@ -175,7 +177,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('linkmonitor/{task}', [TaskController::class, 'linkmonitor']);
     });
 
-
+    //<!-------------------------------- Settings Module ---------------------------------------------->////
     Route::group(['groupName' => 'Settings'], function () {
 
 
@@ -190,6 +192,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
         Route::resource('setting', SettingController::class, ['except' => 'show', 'create']);
     });
+
+     //<!-------------------------------- User Module ---------------------------------------------->////
     Route::group(['groupName' => 'User'], function () {
 
         Route::resource('permission', PermissionController::class);
@@ -209,6 +213,14 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         ////Tenant
         Route::resource('tenant', TenantController::class);
     });
+
+     //<!-------------------------------- Report Module ---------------------------------------------->////
+    Route::group(['groupName' => 'Report'], function () {
+        Route::resource('report', ReportController::class);
+
+    });
+
+     //<!-------------------------------- Other Module ---------------------------------------------->////
 
     Route::group(['groupName' => 'Other'], function () {
         Route::resource('dashboard', DashboardController::class);

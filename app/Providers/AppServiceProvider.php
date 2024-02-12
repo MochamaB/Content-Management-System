@@ -191,6 +191,9 @@ class AppServiceProvider extends ServiceProvider
                     'role' => ['display' => 'User Roles'],
                     'permission' => ['display' => 'System Permissions']
                 ]],
+                'Reports' => ['icon' => 'chart-line', 'submodules' => [
+                    'report' => ['display' => 'All Reports'],
+                ]],
             ]);
             //  $notifications = $user->notifications;
             // Pass the authenticated user data to the 'layouts.admin' view

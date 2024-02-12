@@ -15,6 +15,7 @@ use App\Models\Property;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 
 
@@ -570,6 +571,48 @@ class TableViewDataService
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
+
+
+    public function getGeneralLedgerData($ledgerdata ,$extraColumns = false)
+    {
+        // Eager load the 'unit' relationship
+        //   $invoicedata->load('user');
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['NO', 'DATE', 'DESCRIPTION','TYPE', 'REFERENCE', 'DEBIT', 'CREDIT','AMOUNT','TOTAL CREDIT'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 3, 0, ['DETAILS']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($ledgerdata as $item) {
+        
+            $row = [
+                'id' => $item->id,
+                Carbon::parse($item->created_at)->format('Y-m-d'),
+                $item->charge_name,
+                class_basename( $item->transactionable_type),
+                $item->transactionable->referenceno,
+                $item->debitAccount->account_name,
+                $item->creditAccount->account_name,
+                $item->amount,
+
+            ];
             if ($extraColumns) {
                 array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
             }
