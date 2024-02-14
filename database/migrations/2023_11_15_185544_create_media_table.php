@@ -10,8 +10,6 @@ class CreateMediaTable extends Migration
     {
         Schema::create('media', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('property_id')->nullable()->index();
-            $table->unsignedBigInteger('unit_id')->nullable()->index();
             $table->morphs('model');
             $table->uuid('uuid')->nullable()->unique();
             $table->string('collection_name');
@@ -29,8 +27,6 @@ class CreateMediaTable extends Migration
 
             $table->nullableTimestamps();
 
-            $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
-            $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
         });
     }
 }

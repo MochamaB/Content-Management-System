@@ -442,7 +442,13 @@ class TableViewDataService
             //  $property = $item->properties->first();
             $roleNames = $item->roles->first();
             $addlease = '<a href="' . route('lease.create') . '" class="badge badge-warning"  style="float: left; margin-right:10px">Add Lease</a>';
-            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $mediaURL = $item->getFirstMediaUrl('avatar');
+            if($mediaURL){
+                $profpic = url($item->getFirstMediaUrl('avatar')); 
+            }else{
+            $profpic = url('uploads/images/avatar.png');
+            }
+            //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
             <div>
             <h6>' . $item->firstname . ' ' . $item->lastname .

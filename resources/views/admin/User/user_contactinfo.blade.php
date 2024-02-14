@@ -53,7 +53,7 @@
                             </small>
                         </h5>
                     <input type="file" name="profilepicture" value="{{$user->profilepicture }}" class="form-control" id="logo" /></br>
-                    <img id="logo-image-before-upload" src="{{ url('resources/uploads/images/'.$user->profilepicture) }}" style="height: 170px; width: 170px;">
+                    <img id="logo-image-before-upload" src="{{ $user->getFirstMediaUrl('avatar') }}" style="height: 170px; width: 170px;">
                 </div>
                 </div>
             <div class="row">

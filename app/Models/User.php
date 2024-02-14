@@ -13,14 +13,17 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Models\Role as Roles;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 
 /**
  * @method filterUsers()
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -95,7 +98,7 @@ class User extends Authenticatable
             case 'status':
                 return [
                     'Active',
-                    'Suspended',       
+                    'Suspended',
                 ];
         }
     }
@@ -135,17 +138,30 @@ class User extends Authenticatable
         $this->attributes['password'] = bcrypt($value);
     }
 
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(150)
+            ->height(150)
+            ->sharpen(10);
+    }
+    public function registerMediaCollections(): void
+    {
+        $this
+            ->addMediaCollection('avatar')
+            ->singleFile();
+    }
 
     /**
      * The units that belong to the user.
      */
 
-     public function properties()
-     {
-         return $this->belongsToMany(Property::class, 'unit_user', 'user_id', 'property_id')
-           //  ->withPivot('property_id')
-             ->withTimestamps();
-     }
+    public function properties()
+    {
+        return $this->belongsToMany(Property::class, 'unit_user', 'user_id', 'property_id')
+            //  ->withPivot('property_id')
+            ->withTimestamps();
+    }
     //// Relationship between user and Unit through pivot
     public function units()
     {
@@ -272,9 +288,9 @@ class User extends Authenticatable
     public function scopeTenants(Builder $query, User $user)
     {
         return $query->role('Tenant')
-        ->whereHas('units', function (Builder $query) use ($user) {
-            $query->whereIn('units.id', $user->units->pluck('id'));
-        });
+            ->whereHas('units', function (Builder $query) use ($user) {
+                $query->whereIn('units.id', $user->units->pluck('id'));
+            });
     }
     //// Polymorphism with Invoices Model
     public function invoices()
@@ -294,10 +310,9 @@ class User extends Authenticatable
     public function scopeSameUnit($query, $user)
     {
         return $query->where('id', '<>', 1) // Exclude user with ID 1
-        ->where('id', '<>', $user->id) // Exclude logged in user
-        ->whereHas('units', function ($query) use ($user) {
-            $query->whereIn('unit_id', $user->units->pluck('id')->toArray());
-        });
+            ->where('id', '<>', $user->id) // Exclude logged in user
+            ->whereHas('units', function ($query) use ($user) {
+                $query->whereIn('unit_id', $user->units->pluck('id')->toArray());
+            });
     }
-
 }

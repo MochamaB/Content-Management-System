@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\UserDeletedNotification;
 use App\Actions\UserRoleAction;
 use App\Actions\AttachDetachUserFromUnitAction;
+use App\Actions\UploadMediaAction;
 use App\Services\TableViewDataService;
 
 class UserController extends Controller
@@ -34,10 +35,11 @@ class UserController extends Controller
     protected $model;
     private $userRoleAction;
     protected $attachDetachUserFromUnitAction;
+    protected $uploadMediaAction;
     private $tableViewDataService;
 
     public function __construct(UserRoleAction $userRoleAction, AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction,
-    TableViewDataService $tableViewDataService)
+    UploadMediaAction $uploadMediaAction,TableViewDataService $tableViewDataService)
     {
         $this->model = User::class;
         $this->controller = collect([
@@ -47,6 +49,7 @@ class UserController extends Controller
 
         $this->userRoleAction = $userRoleAction;
         $this->attachDetachUserFromUnitAction = $attachDetachUserFromUnitAction;
+        $this->uploadMediaAction = $uploadMediaAction;
         $this->tableViewDataService = $tableViewDataService;
     }
 
@@ -201,6 +204,7 @@ class UserController extends Controller
         $user->fill($newuser);
         $user->password = 'property123';
         $user->save();
+        $this->uploadMediaAction->handle($user, 'profilepicture', 'avatar', $request);
 
         // 3. GET USER ROLE FROM SESSION AND ASSIGN NEW USER////
         $role = $request->session()->get('userRole');
@@ -330,16 +334,13 @@ class UserController extends Controller
     {
         $user = User::find($id);
         // Get the list of fillable fields from the model
-        if ($request->file('profilepicture')) {
-            $file = $request->file('profilepicture');
-            $filename = date('YmdHi') . $file->getClientOriginalName();
-            $file->move(base_path('resources/uploads/images'), $filename);
-            $user['profilepicture'] = $filename;
-            $user->update();
-        }
+        
+    
         $user->syncRoles($request->get('role'));
 
         $user->update($request->all());
+        $this->uploadMediaAction->handle($user, 'profilepicture', 'avatar', $request);
+
 
         $unitIds = $request->input('unit_id', []);
         $this->attachDetachUserFromUnitAction->assignFromView($user, $unitIds, $request);
