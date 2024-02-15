@@ -15,6 +15,12 @@
                         <option value="{{ $id }}">{{ $value }}</option>
                         @endforeach
                     </select>
+                    @elseif($filter['inputType'] == 'selectdefault')
+                    <select class="formcontrol2" name="{{ $key }}" id="">
+                        @foreach ($filter['values'] as $id => $value)
+                        <option value="{{ $id }}">{{ $value }}</option>
+                        @endforeach
+                    </select>
                     <!---- GROUP SELECT ------------->
                     @elseif($filter['inputType'] === 'selectgroup')
                     <select class="formcontrol2" id="{{ $key }}" name="{{ $key }}">

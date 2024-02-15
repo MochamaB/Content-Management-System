@@ -108,7 +108,13 @@ class TableViewDataService
             $totalPaid = $item->payments->sum('totalamount');
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
-            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $mediaURL = $item->model->getFirstMediaUrl('avatar');
+            if($mediaURL){
+                $profpic = url($item->getFirstMediaUrl('avatar')); 
+            }else{
+            $profpic = url('uploads/images/avatar.png');
+            }
+         //   $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
@@ -142,6 +148,7 @@ class TableViewDataService
 
 
             ];
+            
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
                 array_splice(
@@ -627,4 +634,6 @@ class TableViewDataService
 
         return $tableData;
     }
+
+   
 }

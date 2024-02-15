@@ -87,8 +87,10 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
         Route::resource('payment-method', PaymentMethodController::class);
-        Route::resource('transaction', TransactionController::class);
+     //   Route::resource('transaction', TransactionController::class);
         Route::get('general-ledger', [TransactionController::class, 'ledger'])->name('transaction.ledger');
+        Route::get('income-statement', [TransactionController::class, 'incomeStatement'])->name('transaction.incomestatement');
+    
     });
 
 //<!-------------------------------- Leasing Module ---------------------------------------------->////
