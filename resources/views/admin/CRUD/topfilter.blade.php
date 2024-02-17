@@ -9,16 +9,12 @@
                     <label class="label">{{ $filter['label'] }}</label>
 
                     @if($filter['inputType'] == 'select')
+                    <!------  SELECT------------>
                     <select class="formcontrol2" name="{{ $key }}" id="">
+                
                         <option value="">All {{ $filter['label'] }}</option>
                         @foreach ($filter['values'] as $id => $value)
-                        <option value="{{ $id }}">{{ $value }}</option>
-                        @endforeach
-                    </select>
-                    @elseif($filter['inputType'] == 'selectdefault')
-                    <select class="formcontrol2" name="{{ $key }}" id="">
-                        @foreach ($filter['values'] as $id => $value)
-                        <option value="{{ $id }}">{{ $value }}</option>
+                        <option value="{{ $id }}" {{ request($key) == $id ? 'selected' : '' }}>{{ $value }}</option>
                         @endforeach
                     </select>
                     <!---- GROUP SELECT ------------->
@@ -32,6 +28,10 @@
                         </optgroup>
                         @endforeach
                     </select>
+
+                    <!--------  DATE -------------->
+                    @elseif($filter['inputType'] === 'date')
+                    <input  type="date" class="form-control" id="{{ $key }}" name="{{ $key }}" value="{{ request($key) }}" />
                     @endif
 
                 </div>

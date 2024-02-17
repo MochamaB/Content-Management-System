@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'permission' => \App\Http\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
         'check.create.variables' => \App\Http\Middleware\CheckCreateVariables::class,
+        'filter' => \App\Http\Middleware\FilterMiddleware::class,
     ];
 }

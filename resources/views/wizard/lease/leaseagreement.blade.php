@@ -15,9 +15,9 @@
 @endif
 
 <script>
-    var pdfImage = "{{ url('resources/uploads/pdf.png') }}";
-    var txtImage = "{{ url('resources/uploads/txt.png') }}";
-    var noImage = "{{ url('resources/uploads/nofile.png') }}";
+    var pdfImage = "{{ url('uploads/pdf.png') }}";
+    var txtImage = "{{ url('uploads/txt.png') }}";
+    var noImage = "{{ url('uploads/nofile.png') }}";
     $(document).ready(function() {
         $('#file').change(function(e) {
             var fileName = e.target.files[0].name;

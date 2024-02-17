@@ -159,9 +159,11 @@ class AppServiceProvider extends ServiceProvider
                 ]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
+                    'general-ledger' => ['display' => 'General Ledger'],
+                    'income-statement' => ['display' => 'Profit and Loss'],
                     'chartofaccount' => ['display' => 'Chart Of Accounts'],
                     'payment-method' => ['display' => 'Payment methods'],
-                    'general-ledger' => ['display' => 'General Ledger'],
+                   
                 ]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => [
