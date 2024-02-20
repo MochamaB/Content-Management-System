@@ -19,12 +19,10 @@ class FilterService
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
         $units = Unit::pluck('unit_number', 'id')->toArray();
-        $status = Lease::pluck('status', 'status')->toArray();
         // Define the columns for the unit report
         return [
             'property_id' => ['label' => 'Properties', 'values' => $properties],
             'unit' => ['label' => 'Units', 'values' => $units],
-            'status' => ['label' => 'Status', 'values' => $status]
         ];
     }
 
@@ -34,18 +32,23 @@ class FilterService
         $units = Unit::pluck('unit_number', 'id')->toArray();
         $account = Chartofaccount::all();
         $accounts = $account->groupBy('account_type');
+        $accounts = $accounts->map(function ($group) {
+            return $group->pluck('account_name', 'id')->toArray();
+        });
         // Define the columns for the unit report
         return [
             'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select'],
             'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select'],
-            'transactionable_type' => ['label' => 'Accounts', 'values' => $accounts, 'inputType' => 'select']
+            'creditaccount_id' => ['label' => 'Accounts', 'values' => $accounts, 'inputType' => 'selectgroup'],
+            'from_date' => ['label' => 'From', 'values' => '', 'inputType' => 'date'],
+            'to_date' => ['label' => 'To', 'values' => '', 'inputType' => 'date']
         ];
     }
 
     public function getIncomeStatementFilters()
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
-        $periods = $this->getperiods();
+       
         // Define the columns for the unit report
         return [
             'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select'],
@@ -54,34 +57,18 @@ class FilterService
         ];
     }
 
-    public function getperiods()
+    public function getAllLeasesFilters()
     {
-        $periods = [
-            'month_to_date' => 'Month to Date',
-            'three_months_to_date' => 'Three Months to Date',
-            'six_months_to_date' => 'Six Months to Date',
-            'one_year' => 'One Year',
-            'last_month' => 'Last Month',
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        $units = Unit::pluck('unit_number', 'id')->toArray();
+        $status = Lease::pluck('status', 'status')->toArray();
+        // Define the columns for the unit report
+        return [
+            'property_id' => ['label' => 'Properties', 'values' => $properties],
+            'unit_id' => ['label' => 'Units', 'values' => $units],
+            'status' => ['label' => 'Status', 'values' => $status]
         ];
-        $selectedPeriod = 'three_months_to_date';  // Set a default period
-
-        switch ($selectedPeriod) {
-            case 'month_to_date':
-                return [now()->startOfMonth()];
-            case 'three_months_to_date':
-                return [now()->subMonths(3)];
-            case 'six_months_to_date':
-                return [now()->subMonths(6)];
-            case 'one_year':
-                return [now()->subYear()];
-            case 'last_month':
-                return [now()->subMonth()->startOfMonth()];
-                // Add more cases as needed for other submodules
-            default:
-                return [];
-        }
     }
-
     ///////// All Leases///////
 
     //////// Tenant Summary

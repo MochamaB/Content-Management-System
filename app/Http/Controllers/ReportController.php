@@ -9,11 +9,20 @@ use App\Services\Reports\LeaseReportService;
 
 class ReportController extends Controller
 {
+
+    private $financialReportService;
+    private $leaseReportService;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct(FinancialReportService $financialReportService,LeaseReportService $leaseReportService)
+    {
+
+        $this->financialReportService = $financialReportService;
+        $this->leaseReportService = $leaseReportService;
+    }
     public function index()
     {
         $reports = Report::all()->groupBy('module');
@@ -60,11 +69,11 @@ class ReportController extends Controller
         // Determine which service to use based on the module
         switch ($report->module) {
             case 'Financial':
-                $service = new FinancialReportService();
+                $service =$this->financialReportService;
                 break;
 
             case 'Lease':
-                $service = new LeaseReportService();
+                $service = $this->leaseReportService;
                 break;
                 // Add more cases as needed for other modules
         }

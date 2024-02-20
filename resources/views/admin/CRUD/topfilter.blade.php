@@ -20,10 +20,11 @@
                     <!---- GROUP SELECT ------------->
                     @elseif($filter['inputType'] === 'selectgroup')
                     <select class="formcontrol2" id="{{ $key }}" name="{{ $key }}">
+                    <option value="">All {{ $filter['label'] }}</option>
                         @foreach ($filter['values'] as $groupKey => $groupValues)
                         <optgroup label="{{ $groupKey }}">
                             @foreach ($groupValues as $id => $value)
-                            <option value="{{ $id }}">{{ $value }}</option>
+                            <option value="{{ $id }}" {{ request($key) == $id ? 'selected' : '' }}>{{ $value }}</option>
                             @endforeach
                         </optgroup>
                         @endforeach

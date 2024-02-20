@@ -6,7 +6,7 @@
     @include('admin.CRUD.topfilter')
    
     @if(($routeParts[1] === 'ledger'))
-    @include('admin.CRUD.table_simple', ['data' => $tableData])
+    @include('admin.Accounting.general_ledger')
 
     @else
     @include('admin.Accounting.income_statement')

@@ -74,7 +74,7 @@ class PaymentController extends Controller
         $today = Carbon::now();
         $invoicenodate = $today->format('ym');
         $unitnumber = $invoice->unit->unit_number;
-        $referenceno = 'RCT-'.$invoice->id.'-'.$invoicenodate . $unitnumber;
+        $referenceno =$invoice->id.'-'.$invoicenodate . $unitnumber;
       //  dd($referenceno);
 
       Session::flash('previousUrl', request()->server('HTTP_REFERER'));

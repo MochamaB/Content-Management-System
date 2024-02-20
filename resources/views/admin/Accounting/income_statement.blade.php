@@ -25,7 +25,7 @@ use Carbon\Carbon;
             </tr>
             @foreach($incomeTransactions->groupBy('creditaccount_id') as $creditAccountId => $transactions)
             <tr style="height:40px;">
-                <td style="font-weight:400;">{{ $transactions->first()->description }}</td>
+                <td style="font-weight:400;padding-left:15px">{{ $transactions->first()->description }}</td>
                 @php
                 $accountTotalIncome = 0;
                 @endphp
@@ -37,10 +37,10 @@ use Carbon\Carbon;
                 $grandTotalIncome += $monthTotalIncome;
                 @endphp
 
-                <td>{{ $sitesettings->site_currency }}  {{ number_format($monthTotalIncome, 0, '.', ',') }}</td>
+                <td style="padding-left:15px">{{ $sitesettings->site_currency }}  {{ number_format($monthTotalIncome, 0, '.', ',') }}</td>
                 @endforeach
 
-                <td><b>
+                <td style="padding-left:15px"><b>
                         {{ $sitesettings->site_currency }}  {{ number_format($accountTotalIncome, 0, '.', ',') }}</td>
                 </b>
             </tr>

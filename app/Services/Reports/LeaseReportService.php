@@ -6,13 +6,27 @@ namespace App\Services\Reports;
 
 use App\Models\Lease;
 use App\Models\Property;
+use App\Models\Request;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Services\FilterService;
+use App\Services\TableViewDataService;
 
 class LeaseReportService
 {
+    private $filterService;
+    private $tableViewDataService;
+
+
+    public function __construct(FilterService $filterService, TableViewDataService $tableViewDataService)
+    {
+
+        $this->filterService = $filterService;
+        $this->tableViewDataService = $tableViewDataService;
+    }
+
     public function getColumns($submodule)
     {
         // Determine the columns based on the submodule
@@ -35,14 +49,14 @@ class LeaseReportService
         // Determine the columns based on the submodule
         switch ($submodule) {
             case 'allleases':
-                return $this->getAllLeasesFilters();
+                return $this->filterService->getAllLeasesFilters();
                 break;
 
            
                 // Add more cases as needed for other submodules
 
             default:
-                return $this->getDefaultFilters();
+                return $this->filterService->getDefaultFilters();
                 break;
         }
     }
@@ -60,18 +74,7 @@ class LeaseReportService
                 // Add more cases as needed for other submodules
         }
     }
-    protected function getDefaultFilters()
-    {
-        $properties = Property::pluck('property_name', 'id')->toArray();
-        $units = Unit::pluck('unit_number', 'id')->toArray();
-        $status = Lease::pluck('status', 'status')->toArray();
-        // Define the columns for the unit report
-        return [
-            'property_id' => ['label' => 'Properties', 'values' => $properties],
-            'unit' => ['label' => 'Units', 'values' => $units],
-            'status' => ['label' => 'Status', 'values' => $status]
-        ];
-    }
+   
 
     ///////// All Leases///////
     protected function getAllLeasesColumns()
@@ -80,32 +83,20 @@ class LeaseReportService
         return ['column1', 'column2', 'column3'];
     }
 
-    protected function getAllLeasesFilters()
-    {
-        $properties = Property::pluck('property_name', 'id')->toArray();
-        $units = Unit::pluck('unit_number', 'id')->toArray();
-        $status = Lease::pluck('status', 'status')->toArray();
-        // Define the columns for the unit report
-        return [
-            'property_id' => ['label' => 'Properties', 'values' => $properties],
-            'unit_id' => ['label' => 'Units', 'values' => $units],
-            'status' => ['label' => 'Status', 'values' => $status]
-        ];
-    }
 
     protected function getAllLeasesData($filters)
     {
         // Query the data for the unit report
         $query = lease::with('property', 'unit', 'user');
-        // Example: Apply property_name filter
-        $allowedFilters = [
-            'property_id' => 'property_id',
-            'unit_id' => 'unit_id',
-            // Add more filters as needed
-        ];
-        foreach ($allowedFilters as $filterKey => $column) {
-            if (isset($filters[$filterKey])) {
-                $query->where($column, $filters[$filterKey]);
+        foreach ($filters as $column => $value) {
+            if (!empty($value)) {
+                if ($column == 'from_date' || $column == 'to_date') {
+                    // Use whereBetween on the created-at column with the date range
+                    $query->whereBetween('created_at', [$value, $value]);
+                } else {
+
+                $query->where($column, $value);
+                }
             }
         }
         // Get the data

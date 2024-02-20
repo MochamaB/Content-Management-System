@@ -29,23 +29,70 @@ class TransactionController extends Controller
 
     public function ledger(Request $request)
     {
-        $query = Transaction::with('property', 'units');
+        $query = Transaction::with('creditAccount', 'debitAccount');
+        $headers = ['DATE', 'ACCOUNT', 'DESC', 'TYPE', 'DEBIT', 'CREDIT', 'BALANCE'];
         $filterdata = $this->filterService->getGeneralLedgerFilters();
         $filters = request()->all();
+        $from_date = $request->from_date;
+        $to_date =  $request->to_date;
         foreach ($filters as $column => $value) {
             if (!empty($value)) {
+                if ($column == 'from_date' || $column == 'to_date') {
+                    // Use whereBetween on the created-at column with the date range
+                    $query->whereBetween('created_at', [$from_date, $to_date]);
+                } else {
+
                 $query->where($column, $value);
+                }
             }
         }
-        $transactions = $query->get();
-        // dd($transactions);
-        ///Data for utilities page
-        $transactionTableData = $this->tableViewDataService->getGeneralLedgerData($transactions, true);
-        return View(
-            'admin.Accounting.accounting',
-            compact('filterdata'),
-            ['tableData' => $transactionTableData, 'controller' => ['media']]
-        );
+        $transactions = $query
+            ->where("created_at", ">", Carbon::now()->subMonths(6))
+            ->orderBy('created_at', 'desc')
+            ->get();
+        // Calculate running balance
+        $balance = 0;
+        $generalLedgerEntries = [];
+
+        foreach ($transactions as $transaction) {
+            // Determine if the account is a Debit or Credit based on account type
+            if ($transaction->creditAccount->account_type === 'Liability') {
+                $debit = null;
+                $credit = $transaction->amount;
+            } elseif ($transaction->creditAccount->account_type === 'Income') {
+                $debit = $transaction->amount;
+                $credit = null;
+            } elseif ($transaction->creditAccount->account_type === 'Expenses') {
+                $debit = null;
+                $credit = $transaction->amount;
+            } elseif ($transaction->creditAccount->account_type === 'Asset') {
+                $debit = null;
+                $credit = $transaction->amount;
+            }
+            // Update balance based on Debit or Credit
+            if ($debit !== null) {
+                $balance += $transaction->amount;
+            } elseif ($credit !== null) {
+                $balance -= $transaction->amount;
+            }
+
+            // Debit entry
+            $entry = [
+                'date' => $transaction->created_at->format('Y-m-d'),
+                'description' => $transaction->description,
+                'account' => $transaction->debitAccount->account_name,
+                'charge_name' => $transaction->charge_name,
+                'debit' => $debit,
+                'credit' => $credit,
+                'balance' => $balance,
+            ];
+
+            $generalLedgerEntries[] = $entry;
+        }
+
+        //  dd($transactions);
+        //  $transactionTableData = $this->tableViewDataService->getGeneralLedgerData($transactions, true);
+        return View('admin.Accounting.accounting', compact('filterdata', 'headers', 'transactions'), ['generalLedgerEntries' => $generalLedgerEntries]);
     }
 
     public function incomeStatement(Request $request)
@@ -54,9 +101,8 @@ class TransactionController extends Controller
         $threeMonths = now()->subMonths(3);
         $incomeQuery = Transaction::whereHas('creditAccount', function ($query) {
             $query->whereBetween('account_number', [40000, 50000]);
-        })
-        ;
-    
+        });
+
         $expenseQuery = Transaction::whereHas('creditAccount', function ($query) {
             $query->whereBetween('account_number', [90000, 100000]);
         });
@@ -80,33 +126,24 @@ class TransactionController extends Controller
             }
         }
         $incomeTransactions = $incomeQuery
-        ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
-        ->where("created_at", ">", Carbon::now()->subMonths(6))
-        ->groupByRaw('creditaccount_id, month')
-        ->orderBy('creditaccount_id')->get();
+            ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
+            ->where("created_at", ">", Carbon::now()->subMonths(6))
+            ->groupByRaw('creditaccount_id, month')
+            ->orderBy('creditaccount_id')->get();
 
         $expenseTransactions = $expenseQuery
-        ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
-        ->where("created_at", ">", Carbon::now()->subMonths(6))
-        ->groupByRaw('creditaccount_id, month')
-        ->orderBy('creditaccount_id')->get();
+            ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
+            ->where("created_at", ">", Carbon::now()->subMonths(6))
+            ->groupByRaw('creditaccount_id, month')
+            ->orderBy('creditaccount_id')->get();
 
         $months = $incomeTransactions->pluck('month')->unique()->sortBy(function ($date) {
             return Carbon::parse($date)->timestamp;
         })->values();
-        // The total income
-      //  $totalIncome = $incomeQuery->sum('amount');
-        // The total expenses
-      //  $totalExpenses = $expenseQuery->sum('amount');
 
-        // The net profit or loss
-   //     $netProfit = $totalIncome - $totalExpenses;
-
-
-        //  $transactionTableData = $this->tableViewDataService->getincomeStatementData($incomeTransactions, false);
         return View(
             'admin.Accounting.accounting',
-            compact('filterdata', 'incomeTransactions', 'expenseTransactions','sitesettings','months')
+            compact('filterdata', 'incomeTransactions', 'expenseTransactions', 'sitesettings', 'months')
         );
     }
 

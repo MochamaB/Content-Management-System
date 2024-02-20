@@ -58,7 +58,7 @@ class ReportSeeder extends Seeder
                 'title'  => 'Tenant Deposits',
                 'description'  => 'Provide a snapshot of all tenant deposits(security, Meter etc..).',
                 'module'  => 'Financial',
-                'submodule'  => 'rentroll',
+                'submodule'  => 'tenantdeposits',
             ],
 
             ///--------------- Lease Reports ------------///

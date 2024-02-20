@@ -794,7 +794,17 @@ border: 2px solid #c50000c4 !important;
   border: 2px solid #1E283D !important;
 }
 
-/* Responsiveness  */
+/* Use a CSS selector to target all the cells in your table */
+#table th, #table td {
+  padding-left: 15px;
+}
+
+.row-height {
+  height:40px;
+}
+
+
+/*------------------------ Responsiveness ----------------------------------------------------------  */
 
 @media screen and (max-width: 991px) {
 

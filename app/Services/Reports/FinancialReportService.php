@@ -7,9 +7,20 @@ namespace App\Services\Reports;
 use App\Models\Lease;
 use App\Models\Property;
 use App\Models\Unit;
+use App\Services\FilterService;
+
 
 class FinancialReportService
 {
+    private $filterService;
+
+
+    public function __construct(FilterService $filterService)
+    {
+
+        $this->filterService = $filterService;
+    }
+
     public function getColumns($submodule)
     {
         // Determine the columns based on the submodule
@@ -28,7 +39,7 @@ class FinancialReportService
         // Determine the columns based on the submodule
         switch ($submodule) {
             case 'incomestatement':
-           //     return $this->getAllLeasesFilters();
+                return $this->filterService->getDefaultFilters();
                 break;
 
             case 'tenantsummary':
@@ -36,7 +47,7 @@ class FinancialReportService
                 break;
                 // Add more cases as needed for other submodules
                 default:
-                return $this->getDefaultFilters();
+                return $this->filterService->getDefaultFilters();
                 break;
         }
     }
@@ -51,18 +62,7 @@ class FinancialReportService
         }
     }
 
-    protected function getDefaultFilters()
-    {
-        $properties = Property::pluck('property_name', 'id')->toArray();
-        $units = Unit::pluck('unit_number', 'id')->toArray();
-        $status = Lease::pluck('status', 'status')->toArray();
-        // Define the columns for the unit report
-        return [
-            'property_id' => ['label' => 'Properties', 'values' => $properties],
-            'unit' => ['label' => 'Units', 'values' => $units],
-            'status' => ['label' => 'Status', 'values' => $status]
-        ];
-    }
+
 
     protected function getIncomeStatementColumns()
     {
