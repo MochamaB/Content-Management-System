@@ -69,9 +69,18 @@ class FilterService
             'status' => ['label' => 'Status', 'values' => $status]
         ];
     }
-    ///////// All Leases///////
+   
+    public function getInvoiceFilters()
+    {
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        $units = Unit::pluck('unit_number', 'id')->toArray();
 
-    //////// Tenant Summary
+        // Define the columns for the unit report
+        return [
+            'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select'],
+            'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select'],
+        ];
+    }
 
 
 

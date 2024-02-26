@@ -63,7 +63,7 @@ class MediaController extends Controller
      //   $cardData = $this->cardData($this->model,$invoicedata);
        // dd($cardData);
         $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getMediaData($mediadata,true);
+        $tableData = $this->tableViewDataService->getMediaData($mediadata,false);
         
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
       //  $viewData,
@@ -77,22 +77,19 @@ class MediaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id = null,$model = null)
+    public function create(Model $model = null)
     {
-        $unit = null;
-        if ($id === null) {
-            return back()->with('statuserror', ' Add media files from the modules');
+       
+        if ($model) {
+            // Retrieve the full model instance based on the ID
+            $ModelInstance = Model::find($model->id);
         }
-        else{
-           
-            $unit = Unit::find($id);
-            $property = Property::where('id', $unit->property->id)->first();
-            $model = $model;
+        dd($ModelInstance);
         
     
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.media.create_media', compact('unit','model','property','id'));
-        }
+        return View('admin.media.create_media', compact('model'));
+        
     }
 
     /**

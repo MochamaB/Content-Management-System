@@ -25,6 +25,7 @@ use App\Actions\RecordTransactionAction;
 use App\Services\PaymentVoucherService;
 use App\Services\InvoiceService;
 use App\Services\TableViewDataService;
+use App\Actions\UploadMediaAction;
 
 class LeaseController extends Controller
 {
@@ -38,6 +39,7 @@ class LeaseController extends Controller
     protected $model;
     protected $updateNextDateAction;
     private $updateDueDateAction;
+    protected $uploadMediaAction;
     private $paymentVoucherService;
     private $invoiceService;
     private $recordTransactionAction;
@@ -48,6 +50,7 @@ class LeaseController extends Controller
     public function __construct(
         UpdateNextDateAction $updateNextDateAction,
         UpdateDueDateAction $updateDueDateAction,
+        UploadMediaAction $uploadMediaAction,
         PaymentVoucherService $paymentVoucherService,
         InvoiceService $invoiceService,
         RecordTransactionAction $recordTransactionAction,
@@ -62,6 +65,7 @@ class LeaseController extends Controller
 
         $this->updateNextDateAction = $updateNextDateAction;
         $this->updateDueDateAction = $updateDueDateAction;
+        $this->uploadMediaAction = $uploadMediaAction;
         $this->paymentVoucherService = $paymentVoucherService;
         $this->invoiceService = $invoiceService;
         $this->recordTransactionAction = $recordTransactionAction;
@@ -135,7 +139,7 @@ class LeaseController extends Controller
         $rentcharge = $request->session()->get('rentcharge');
         $splitRentcharges = $request->session()->get('splitRentcharges');
         $depositcharge = $request->session()->get('depositcharge');
-        $account = Chartofaccount::all();
+        $account = Chartofaccount::whereIn('account_type', ['Income', 'Liability'])->get();
         $accounts = $account->groupBy('account_type');
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
         $sessioncharges = $request->session()->get('utilityCharges');
@@ -247,22 +251,25 @@ class LeaseController extends Controller
         $propertyId = $leasedetails->property_id;
         $unit->users()->attach($user, ['property_id' => $propertyId]);
 
+         //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
+         $user = User::find($lease->user_id);
+         // Redirect to the lease.create route with a success message
+         $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
+ 
+
         //8. UPLOAD LEASE AGREEMENT
-        $unit
-            ->addMediaFromRequest('leaseagreement')
-            ->withProperties(['unit_id' => $unit->id, 'property_id' => $propertyId])
-            ->toMediaCollection('Lease-Agreement');
+      //  $unit
+        //    ->addMediaFromRequest('leaseagreement')
+         //   ->withProperties(['unit_id' => $unit->id, 'property_id' => $propertyId])
+         //   ->toMediaCollection('Lease-Agreement');
+        $this->uploadMediaAction->handle($unit, 'leaseagreement', 'Lease-Agreement', $request);
 
         
 
-        //9. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
-        $user = User::find($lease->user_id);
-        // Redirect to the lease.create route with a success message
-        $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
-
+       
         //10. CREATE SETTING FOR THE DUEDATE
-        $leaseId = $lease->id;
-        $this->updateDueDateAction->duedate($leaseId);
+        //pass the lease instance to the action
+        $this->updateDueDateAction->duedate($lease);
 
         //11. FORGET SESSION DATA
         $request->session()->forget('lease');

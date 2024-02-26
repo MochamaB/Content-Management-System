@@ -34,12 +34,12 @@ class UpdateDueDateAction
         $invoice->update(['duedate' => $dueDate]);
     }
 
-    public function duedate($leaseId)
+    public function duedate($lease)
     {
-        
+        $className = get_class($lease);   
         Setting::create([
-            'settingable_type' => 'Lease',
-            'settingable_id' =>$leaseId,
+            'settingable_type' => $className,
+            'settingable_id' =>$lease->id,
             'setting_name' => 'invoiceduedate',
             'setting_value' => 15,
             'setting_description' => 'Invoices will be due after no of days of the given value',

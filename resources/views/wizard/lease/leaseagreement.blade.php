@@ -5,8 +5,8 @@
     <div class="col-md-8">
         <div class="form-group">
             <label class="label">Upload Lease Agreement<span class="requiredlabel">*</span></label>
-            <input type="file" name="media" class="form-control" id="file" required />
-            <img id="fileImage" src="{{ url('resources/uploads/nofile.png') }}" style="height: 200px; width: 200px;">
+            <input type="file" name="leaseagreement" class="form-control" id="file" required />
+            <img id="fileImage" src="{{ url('uploads/nofile.png') }}" style="height: 200px; width: 200px;">
         </div>
     </div>
 

@@ -1,7 +1,11 @@
 <div class="row">
     <div class="col-md-8">
     <div class=" contwrapper">
-        @include('admin.CRUD.edit')
+    <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Details 
+    </h4>
+    <hr>
+
+    
     </div>
 
     </div>

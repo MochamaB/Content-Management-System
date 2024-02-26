@@ -4,7 +4,7 @@
 
 <div class=" contwrapper">
 
-    <h4>New Payment Voucher</h4>
+    <h4>New Charge <span class="" style="font-style: italic;">(Bill/ Expense/ Utility/ Pre-Payment/ Fees)</span></h4>
     <hr>
     <form method="POST" action="{{ url('unitcharge') }}" class="myForm" novalidate>
         @csrf
@@ -84,7 +84,7 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label"> Payment Date<span class="requiredlabel">*</span></label>
+                <label class="label"> Payment / Start Date<span class="requiredlabel">*</span></label>
                 <input type="date" class="form-control" id="startdate" name="startdate" value="" required>
             </div>
         </div>

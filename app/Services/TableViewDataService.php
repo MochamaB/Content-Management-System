@@ -370,19 +370,14 @@ class TableViewDataService
     }
 
     ///////////////////
-    public function getMediaData($mediadata, $extraColumns = false)
+    public function getMediaData($mediadata)
     {
         // Eager load the 'unit' relationship
         //   $invoicedata->load('user');
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['NO', 'THUMBNAIL', 'NAME', 'COLLECTION', 'SIZE', 'ACTIONS'];
-
-        // If $Extra columns is true, insert 'Unit Details' at position 3
-        if ($extraColumns) {
-            array_splice($headers, 3, 0, ['DETAILS']);
-        }
+        $headers = ['NO', 'THUMBNAIL', 'NAME','CATEGORY', 'COLLECTION', 'SIZE', 'ACTIONS'];
 
         $tableData = [
             'headers' => $headers,
@@ -391,8 +386,9 @@ class TableViewDataService
         $allMedia = collect();
 
         foreach ($mediadata as $key => $item) {
-            $unit = $item->unit_id;
-            $system = 'System File';
+            $model_type = $item->model_type;
+            $parts = explode('\\', $model_type);
+            $category = end($parts);
             if($item->mime_type === 'application/pdf'){
                 $thumbnail = url('uploads/pdf.png');
             }else{
@@ -403,22 +399,12 @@ class TableViewDataService
                 $key+1,
                 '<img src="'.$thumbnail.'" alt="'.$item->name.'" style="width:130px;height:80px;border-radius:0">',
                 $item->file_name,
+                $category,
                 $item->collection_name,
                 $item->size,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
-            if ($extraColumns) {
-                if ($unit) {
-                    $units = Unit::find($unit);
-                    $property = Property::where('id', $units->property->id)->first();
-                array_splice($row, 4, 0, $units->unit_number . ' - ' . $property->property_name); // Replace with how you get unit details
-                }  else {
-                    // Add default value when the condition is not met
-                    array_splice($row, 4, 0, $system); // Replace 'Default Value' with your desired default
-                } 
-            }
-
 
             $tableData['rows'][] = $row;
         }

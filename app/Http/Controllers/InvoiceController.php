@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Notifications\InvoiceGeneratedNotification;
 use App\Services\TableViewDataService;
+use App\Services\FilterService;
 use App\Models\WebsiteSetting;
 use App\Traits\FormDataTrait;
 
@@ -30,9 +31,11 @@ class InvoiceController extends Controller
     protected $model;
     private $invoiceService;
     private $tableViewDataService;
+    private $filterService;
 
 
-    public function __construct(InvoiceService $invoiceService, TableViewDataService $tableViewDataService)
+    public function __construct(InvoiceService $invoiceService, TableViewDataService $tableViewDataService,
+    FilterService $filterService)
     {
         $this->model = Invoice::class;
         $this->controller = collect([
@@ -41,33 +44,36 @@ class InvoiceController extends Controller
         ]);
         $this->invoiceService = $invoiceService;
         $this->tableViewDataService = $tableViewDataService;
+        $this->filterService = $filterService;
     }
 
 
     public function index(Request $request)
     {
-        $invoiceQuery2 = Invoice::query();
+        $filters = request()->all();
+        $invoices = Invoice::applyFilters($filters)->get();
+     //   $invoiceQuery2 = Invoice::query();
         
-        $invoicedata = [];
+     //   $invoicedata = [];
         $mainfilter =  $this->model::distinct()->pluck('invoice_type')->toArray();
         ///CARD DATA
-        $cardData = [];
+     //   $cardData = [];
 
-        $month = $request->get('month', Carbon::now()->month);
-        $year = $request->get('year', Carbon::now()->year);
+    //    $month = $request->get('month', Carbon::now()->month);
+    //    $year = $request->get('year', Carbon::now()->year);
 
-        $this->tableViewDataService->applyDateRangeFilter($invoiceQuery2,$month,$year);
-        $invoicedata = $invoiceQuery2->get();
+   //     $this->tableViewDataService->applyDateRangeFilter($invoiceQuery2,$month,$year);
+    //    $invoicedata = $invoiceQuery2->get();
 
-        $cardData = $this->getCardData($month, $year);
-        $filterData = $this->filterData($this->model);
+    //    $cardData = $this->getCardData($month, $year);
+     //  $filterData = $this->filterData($this->model);
+        $filterdata = $this->filterService->getInvoiceFilters();
         $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getInvoiceData($invoicedata, true);
+        $tableData = $this->tableViewDataService->getInvoiceData($invoices, true);
       //  dd($filterData);
         return view('admin.CRUD.form', array_merge(
-            compact('mainfilter', 'tableData', 'controller'),
-            $filterData,
-            ['cardData' => $cardData]
+            compact('mainfilter', 'tableData', 'controller','filterdata')
+          //  ,['cardData' => $cardData]
         ));
     }
 

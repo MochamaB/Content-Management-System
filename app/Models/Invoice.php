@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Invoice extends Model
 {
@@ -157,5 +158,23 @@ class Invoice extends Model
     public function payments()
     {
         return $this->morphMany(Payment::class, 'model');
+    }
+
+    public function scopeApplyFilters($query, $filters)
+    {
+        foreach ($filters as $column => $value) {
+            if (!empty($value)) {
+                if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+                    $query->whereBetween('created_at', [$filters['from_date'], $filters['to_date']]);
+                } else {
+                    // Use where on the other columns
+                    $query->where($column, $value);
+                }
+            }
+        }
+        // Add default filter for last two months
+        $query->where("created_at", ">", Carbon::now()->subMonths(2));
+
+        return $query;
     }
 }

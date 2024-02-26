@@ -11,16 +11,16 @@
         <input type="hidden" name="id" value="{{ $id }}">
         <input type="hidden" name="model" value="{{ $model }}">
         @endif
-        @if($property)
+       
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label">Property Name</label>
+                <label class="label">Gategory Name</label>
                 <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required readonly>
                     <option value="{{$property->id}}">{{$property->property_name}}</option>
                 </select>
             </div>
         </div>
-        @endif
+    
         @if($unit)
         <div class="col-md-6">
             <div class="form-group">

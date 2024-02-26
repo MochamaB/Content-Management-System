@@ -154,6 +154,7 @@
 
 @endif
 
+@include('layouts.admin.scripts')
 
 <script>
     $(document).ready(function() {

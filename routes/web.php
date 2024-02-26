@@ -147,11 +147,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
 //<!-------------------------------- Files Module ---------------------------------------------->////
     Route::group(['groupName' => 'Files'], function () {
-        Route::get('media/create/{id}/{model}', [
+        Route::get('media/create/{model?}', [
             'as' => 'media.create',
             'uses' => 'App\Http\Controllers\MediaController@create'
         ]);
-        Route::resource('media', MediaController::class);
+        Route::resource('media', MediaController::class, ['except' => 'create']);
     });
 
 //<!-------------------------------- Maintenance Module ---------------------------------------------->////
@@ -164,7 +164,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'as' => 'request.create',
             'uses' => 'App\Http\Controllers\RequestController@create'
         ]);
-        Route::resource('request', RequestController::class);
+        Route::resource('request', RequestController::class, ['except' => 'create']);
         Route::get('request/assign/{id}', [RequestController::class, 'assign'])->name('request.assign');
 
 

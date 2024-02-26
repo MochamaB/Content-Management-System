@@ -33,7 +33,18 @@ class RoleController extends Controller
 
     public function index()
     {
-        $tablevalues = Role::orderBy('id', 'DESC')->paginate(10);
+        $user = Auth::user();
+        $role = $user->roles->first();
+       // dd($role->name);
+        if ($user->id === 1) {
+            // Superadmin can see all users
+            $tablevalues = Role::all();
+        } else {
+            // Admins can see all users except the superadmin
+            $tablevalues = Role::where('name', '<>', $role->name)
+                        ->get();
+        }
+     //   $tablevalues = Role::orderBy('id', 'DESC')->paginate(10);
         $mainfilter =  Role::pluck('name')->toArray();
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
@@ -66,7 +77,14 @@ class RoleController extends Controller
      */
     public function create(Request $request)
     {
-        $permissions = Permission::orderBy('name', 'asc')->get();
+        $user = Auth::user();
+        if (Auth::id() == 1) {
+            $permissions = Permission::orderBy('name', 'asc')->get();
+        } else {
+            $permissions = $user->permissions->pluck('name')->orderBy('name', 'asc')->get();
+        }
+        dd($permissions);
+      // $permissions = Permission::orderBy('name', 'asc')->get();
 
         // Group the permissions by module and then submodule
         $groupedPermissions = $permissions->groupBy('module')->map(function ($modulePermissions) {
@@ -177,7 +195,18 @@ class RoleController extends Controller
         ]);
         $user = Auth::user();
         $rolePermissions = $role->permissions->pluck('name')->toArray();
-        $permissions = Permission::orderby('name', 'ASC')->get();
+        $user = Auth::user();
+        if (Auth::id() == 1) {
+            $permissions = Permission::orderBy('name', 'asc')->get();
+        } else {
+            $loggeduser = Auth::user();
+            $loggeduserRoles = $loggeduser->roles;
+            $permissions = $loggeduserRoles->flatMap(function ($role) {
+                return $role->permissions;
+            });
+        }
+      //  dd($permissions);
+      //  $permissions = Permission::orderby('name', 'ASC')->get();
         // Group the permissions by module and then submodule
         $groupedPermissions = $permissions->groupBy('module')->map(function ($modulePermissions) {
             return $modulePermissions->groupBy('submodule');

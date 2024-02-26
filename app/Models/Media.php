@@ -16,4 +16,9 @@ class Media extends BaseMedia implements HasMedia
     {
         return $this->belongsTo(Unit::class ,'unit_id');
     }
+
+    public function modeltype()
+    {
+        return $this->morphTo();
+    }
 }

@@ -21,6 +21,7 @@ use App\Notifications\UserDeletedNotification;
 use App\Actions\UserRoleAction;
 use App\Actions\AttachDetachUserFromUnitAction;
 use App\Actions\UploadMediaAction;
+use App\Models\Invoice;
 use App\Services\TableViewDataService;
 
 class UserController extends Controller
@@ -58,7 +59,14 @@ class UserController extends Controller
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            $users = $this->model::all();
+            if ($user->id === 1) {
+                // Superadmin can see all users
+                $users = $this->model::all();
+            } else {
+                // Admins can see all users except the superadmin
+                $users = $this->model::where('id', '<>', 1)
+                            ->where('id', '<>', $user->id)->get();
+            }
         } else {
             $users = $user->filterUsers();
         }
@@ -83,6 +91,7 @@ class UserController extends Controller
         $userRole = $request->session()->get('userRole');
         $user = $request->session()->get('user');
         $savedRole = Role::where('id', $userRole)->first();
+
         $loggeduser = Auth::user();
         $loggeduserRoles = $loggeduser->roles;
         $loggedUserPermissions = $loggeduserRoles->flatMap(function ($role) {
@@ -246,7 +255,6 @@ class UserController extends Controller
 
         //2. GET THE TITLES FOR THE TABS
         $tabTitles = collect([
-            'Profile',
             'Invoices',
             'Payments',
             //    'Maintenance',
@@ -257,19 +265,23 @@ class UserController extends Controller
             // Add more tab titles as needed
         ]);
 
+         /// DATA FOR INVOICES TAB
+         $invoices = Invoice::all();
+         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
+
         //3. LOAD THE PAGES FOR THE TABS
         $tabContents = [];
         foreach ($tabTitles as $title) {
-            if ($title === 'Profile') {
-                $tabContents[] = View('admin.user.user_profile')->render();
-            } elseif ($title === 'Invoices') {
-                $tabContents[] = View('admin.user.user_profile')->render();
+            if ($title === 'Invoices') {
+                $tabContents[] = View('admin.User.user_tabs', ['tableData' => $invoiceTableData, 'controller' => ['']])->render();
             } elseif ($title === 'Payments') {
-                $tabContents[] = View('admin.user.user_profile')->render();
+                $tabContents[] = View('admin.user.test')->render();
+            } elseif ($title === 'Vouchers') {
+                $tabContents[] = View('admin.user.test')->render();
             }
         }
 
-        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
+        return View('admin.user.user_profile', compact('pageheadings', 'tabTitles', 'tabContents','user'));
     }
 
     /**

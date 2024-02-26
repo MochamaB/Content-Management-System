@@ -201,7 +201,7 @@ class UnitController extends Controller
 
         ///DATA FOR FILES //////
         $collections = ['picture', 'pdf', 'collection3'];
-        $files = $unit->getMedia('*');
+        $files = $unit->getMedia('Lease-Agreement');
      //   dd($files);
         $mediaTableData = $this->tableViewDataService->getMediaData($files);
         $id = $unit;
@@ -216,9 +216,9 @@ class UnitController extends Controller
             }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges') {
-                $tabContents[] = View('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges','id'))->render();
+                $tabContents[] = view('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges','id'));
             }elseif ($title === 'Invoices') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['']])->render();
             }elseif ($title === 'Vouchers') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']], compact('id'))->render();
             }elseif ($title === 'Payments') {
@@ -226,11 +226,11 @@ class UnitController extends Controller
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], compact('id'))->render();
             }elseif ($title === 'Files') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $mediaTableData,'controller' => ['media']], compact('id','model'))->render();
+                $tabContents[] = View('admin.CRUD.index', ['tableData' => $mediaTableData,'controller' => ['']], compact('id'))->render();
             }
         }
 
-        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
+        return View('admin.CRUD.show', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**
