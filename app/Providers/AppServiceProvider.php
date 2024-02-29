@@ -23,7 +23,9 @@ use App\Scopes\UnitAccessScope;
 use App\Scopes\PropertyAccessScope;
 use App\Scopes\UtilityAccessScope;
 use App\Scopes\UserAccessScope;
+use App\Scopes\ApplyFilterScope;
 use App\Scopes\UserScope;
+use App\Services\FilterService;
 use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
@@ -54,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
 
         Unit::addGlobalScope(new UnitAccessScope);
         Invoice::addGlobalScope(new UserAccessScope);
+       // Invoice::addGlobalScope(new ApplyFilterScope);
         Paymentvoucher::addGlobalScope(new UserAccessScope);
         Payment::addGlobalScope(new UserAccessScope);
         //   User::addGlobalScope(new UserScope);
@@ -74,6 +77,10 @@ class AppServiceProvider extends ServiceProvider
                 'currentUrl' => $currentUrl,
                 'sitesettings' => $sitesettings,
             ]);
+        });
+        view()->composer('layouts.admin.master-filter', function ($view) {
+            $defaultfilter = (new FilterService())->getDefaultFilters();
+            $view->with('defaultfilter', $defaultfilter);
         });
 
         //////////////  FRONT END/////////////
@@ -139,7 +146,8 @@ class AppServiceProvider extends ServiceProvider
                     'websitesetting' => ['display' => 'Site Information'],
                     'slider' => ['display' => 'Picture Sliders'],
                     'testimonial' => ['display' => 'Client Testimonials'],
-                    'amenity' => ['display' => 'Property Amenities']
+                    'amenity' => ['display' => 'Property Amenities'],
+                    'propertytype' => ['display' => 'Property Categories']
                 ]],
 
                 'Property' => ['icon' => 'bank', 'submodules' => [

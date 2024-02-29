@@ -137,7 +137,7 @@ class InvoiceService
         $referenceno = $invoicenodate . $unitnumber;
 
         return Invoice::where('referenceno', $referenceno)
-            ->where('invoice_type', $unitcharge->charge_name)
+            ->where('type', $unitcharge->charge_name)
             ->first();
     }
 
@@ -157,7 +157,7 @@ class InvoiceService
             'model_type' => $user, ///This has plymorphism because an invoice can also be sent to a vendor.
             'model_id' => $userId->user_id,
             'referenceno' => $invoicenodate . $unitnumber->unit_number,
-            'invoice_type' => $unitcharge->charge_name,
+            'type' => $unitcharge->charge_name,
             'totalamount' => null,
             'status' => 'unpaid',
             'duedate' => null,
@@ -206,14 +206,35 @@ class InvoiceService
         $childcharges = Unitcharge::where('parent_id', $unitcharge->id)->get();
         if ($childcharges->count() > 0) {
 
+
             foreach ($childcharges as $childcharge) {
+
+                if ($childcharge->charge_type === 'units') {
+                    $nextdateFormatted = Carbon::parse($childcharge->nextdate)->format('Y-m-d');
+                    $updatedFormatted = Carbon::parse($childcharge->updated_at ?? Carbon::now())->format('Y-m-d');
+        
+                    $amount = 0.00;
+                    $meterReadings = MeterReading::where('unit_id', $childcharge->unit_id)
+                        ->where('unitcharge_id', $childcharge->id)
+                        ->where('startdate', '>=', $updatedFormatted) // Check readings after updated_at
+                        ->where('startdate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
+                        ->get();
+        
+                    foreach ($meterReadings as $reading) {
+                        // Calculate the amount based on meter readings and assign it to $amount
+                        $amount = $reading->amount;
+                    }
+                } else {
+                    // If charge_type is not 'units', use the unitcharge rate as the amount
+                    $amount = $childcharge->rate;
+                }
                 InvoiceItems::create([
                     'invoice_id' => $invoice->id,
                     'unitcharge_id' => $childcharge->id,
                     'chartofaccount_id' => $childcharge->chartofaccounts_id,
                     'charge_name' => $childcharge->charge_name,
                     'description' => '',
-                    'amount' => $childcharge->rate,
+                    'amount' => $amount,
                 ]);
             }
         }

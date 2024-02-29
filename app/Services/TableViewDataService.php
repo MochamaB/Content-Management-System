@@ -141,7 +141,7 @@ class TableViewDataService
                 $invoiceStatus . '</br></br> INV#: ' . $item->id . '-' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
-                $item->invoice_type,
+                $item->type,
                 $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
                 $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ','),
                 $balanceStatus . '  ' . $payLink,
@@ -234,14 +234,14 @@ class TableViewDataService
 
         foreach ($paymentdata as $item) {
             $PaymentMethod = $item->PaymentMethod;
-            $type = $item->model;
+            $type = $item->paymentItems->first();
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $row = [
                 'id' => $item->id,
                 'RCPT#: ' . $item->id . '-' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
-                $type->invoice_type,
+                $type->charge_name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $PaymentMethod->name .
                     ' </br>

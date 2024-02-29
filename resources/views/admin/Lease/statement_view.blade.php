@@ -25,7 +25,7 @@
                                    <li>
                                         <h3 style="text-transform: uppercase;"> ACCOUNT STATEMENT</h3>
                                    </li>
-                                   <li><b>BILLING ACCOUNT:</b> {{$invoice->invoice_type}}</li>
+                                   <li><b>BILLING ACCOUNT:</b> {{$invoice->type}}</li>
 
                               </ul>
                          </td>

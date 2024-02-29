@@ -18,6 +18,7 @@
     @endif
     <br /><br /><br />
     <div class=" contwrapper">
+    <form class="filterForm" method="GET" action="{{ url()->current() }}">
         <div class="row">
             
             @include('layouts.admin.master-filter')
@@ -28,5 +29,6 @@
 
 
         </diV>
+        </form>
     </div>
 

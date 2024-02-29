@@ -2,6 +2,9 @@
 
 @section('content')
 
+@php
+
+@endphp
 
 <div class=" contwrapper">
     <h4>New Payment</h4>
@@ -50,7 +53,7 @@
 
 
         <!------- THIRD LEVEL INVOICE ITEMS -->
-        <div class="col-md-6">
+        <div class="col-md-7">
             <hr>
             <table class="table  table-bordered" style="font-size:12px;border:1px solid black;">
                 <thead>
@@ -58,8 +61,10 @@
 
                         <th>No.</th>
                         <th class="text-center">Charge </th>
-                        <th class="text-center">Balance Due </th>
-                        <th class="text-center">Amount Paid</th>
+                        <th class="text-center">Amount Due </th>
+                        <th class="text-center">Amount Paid </th>
+
+                        <th class="text-center">Amount To Pay</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,12 +74,26 @@
                         <td class="text-center" style="text-transform: capitalize;background-color:#dae3fa;">
                             {{$item->charge_name}} Charge
                         </td>
-                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. {{$item->amount}} </td>
+                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. {{number_format($item->amount),number_format($item->rate, 2, '.', ',');}} </td>
+                        <td class="text-center" style="background-color:#dae3fa;">
+                            @foreach ($invoice->payments as $payment)
+                            @foreach ($payment->paymentItems as $paymentItem)
+                            @if ($paymentItem->unitcharge_id === $item->unitcharge_id)
+                            {{ $sitesettings->site_currency }}.{{number_format($paymentItem->amount),number_format($item->rate, 2, '.', ',');}}</br>
+                            @endif
+                            @endforeach
+                            @endforeach
+                        </td>
                         <td class="text-center" style="padding:0px">
                             <div style="position: relative;">
+                                @php
+                                $amountdue = $item->amount - $invoice->payments->sum(function ($payment) use ($item) {
+                                return $payment->paymentItems->where('unitcharge_id', $item->unitcharge_id)->sum('amount'); }) 
+    
+                                @endphp
                                 <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                                 </span>
-                                <input type="text" class="form-control" name="amount[]" id="amount" value="{{$item->amount}}" style="text-align: left; padding-left: 45px; border:none">
+                                <input type="text" class="form-control" name="amount[]" id="amount" value="{{number_format($amountdue),number_format($item->rate, 2, '.', ',');}}" style="text-align: left; padding-left: 45px; border:none">
                             </div>
 
                         </td>

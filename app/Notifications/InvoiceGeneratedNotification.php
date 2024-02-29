@@ -57,14 +57,14 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
         // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
         // Create a filename using invoice values
         $referenceno = $this->invoice->id . "-" . $this->invoice->referenceno;
-        $invoicefilename = $this->invoice->invoice_type . ' - ' . $referenceno . ' ' . $this->invoice->unit->unit_number . ' invoice.pdf';
+        $invoicefilename = $this->invoice->type . ' - ' . $referenceno . ' ' . $this->invoice->unit->unit_number . ' invoice.pdf';
         $duedate = Carbon::parse($this->invoice->duedate)->format('Y-m-d');
 
-        $heading = 'New ' . $this->invoice->invoice_type . ' Invoice';
+        $heading = 'New ' . $this->invoice->type . ' Invoice';
         $linkmessage = 'To view all your invoices. Login here';
         $data = ([
             "line 1" => "Please find attached Invoice Ref Number  " . $referenceno,
-            "line 2" => $this->invoice->invoice_type . " Charge due on " . $duedate,
+            "line 2" => $this->invoice->type . " Charge due on " . $duedate,
             "line 3" => "Login to the portal to get your account statement",
             "action" => "invoice/" . $this->invoice->id,
             "line 4" => "",
@@ -74,7 +74,7 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
                 'email.template',
                 ['user' => $this->tenant, 'data' => $data, 'linkmessage' => $linkmessage, 'heading' => $heading]
             )
-            ->subject($this->invoice->invoice_type . ' Invoice')
+            ->subject($this->invoice->type . ' Invoice')
             ->attachData($invoicepdf->output(), $invoicefilename);
     }
 

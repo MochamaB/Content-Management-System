@@ -23,7 +23,6 @@ class CalculateInvoiceTotalAmountAction
 
         // Update the totalamount field in the invoice header
         $invoice->update(['totalamount' => $totalAmount]);
-
     }
 
     public function paymentVoucher(PaymentVoucher $paymentVoucher)
@@ -35,7 +34,6 @@ class CalculateInvoiceTotalAmountAction
 
         // Update the totalamount field in the invoice header
         $paymentVoucher->update(['totalamount' => $totalAmount]);
-
     }
     public function payment(Payment $payment)
     {
@@ -47,5 +45,18 @@ class CalculateInvoiceTotalAmountAction
         // Update the totalamount field in the invoice header
         $payment->update(['totalamount' => $totalAmount]);
 
+        ///get the corresponding invoice or voucher
+        $refinvoice =$payment->model;
+            ////Update Status /////
+        if ($totalAmount < $refinvoice->totalamount) {
+            // Partially paid
+            $refinvoice->update(['status' => 'partially_paid']);
+        } elseif ($totalAmount > $refinvoice->totalamount) {
+            // Overpaid
+            $refinvoice->update(['status' => 'over_paid']);
+        } elseif ($totalAmount == $refinvoice->totalamount) {
+            // Fully paid
+            $refinvoice->update(['status' => 'paid']);
+        }
     }
 }

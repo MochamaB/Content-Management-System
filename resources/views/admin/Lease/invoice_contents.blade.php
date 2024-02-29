@@ -22,7 +22,7 @@
                 <td class="text-left">
                     <ul class="ml-4 px-3 list-unstyled">
                         <li>
-                            <h3 style="text-transform: uppercase;"> {{$invoice->invoice_type}} INVOICE</h3>
+                            <h3 style="text-transform: uppercase;"> {{$invoice->type}} INVOICE</h3>
                         </li>
                         <li><b>INV#: {{$invoice->id}}-{{$invoice->referenceno}}</b></li>
                         <li style="color:red; font-weight:700;font-size:14px">TOTAL DUE</li>
@@ -52,7 +52,7 @@
                         <div style="background-color:green;font-size:17px" class="badge badge-opacity-warning"> PAID</div> <!------Status -->
                         @elseif( $invoice->status == 'overpaid' )
                         <div style="background-color:darkorange;font-size:17px" class="badge badge-opacity-warning"> OVER PAID</div>
-                        @elseif ( $invoice->status == 'partiallypaid' )
+                        @elseif ( $invoice->status == 'partially_paid' )
                         <div style="background-color:blue;font-size:17px;font-weight:800" class="badge badge-opacity-sucess"> PARTIALLY PAID</div>
                         @elseif ( $invoice->status == 'unpaid' )
                         <div style="background-color:red;font-size:17px;font-weight:800" class="badge badge-opacity-warning;font-size:17px">UNPAID </div>

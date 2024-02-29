@@ -56,11 +56,11 @@ class PaymentNotification extends Notification implements ShouldQueue
         $paymentfilename = $referenceno.' '.$this->payment->unit->unit_number.' receipt.pdf';
         $paymentdate = Carbon::parse($this->payment->created)->format('Y-m-d');
 
-        $heading = 'New '.$this->payment->model->invoice_type.' Payment';
+        $heading = 'New '.$this->payment->model->type.' Payment';
         $linkmessage = 'To view all your Receipts. Login here';
         $data = ([
             "line 1" => "Please find attached Invoice Ref Number  ".$referenceno,
-            "line 2" => $this->payment->model->invoice_type." Charge was paid on ".$paymentdate,
+            "line 2" => $this->payment->model->type." Charge was paid on ".$paymentdate,
             "line 3" => "Login to the portal to get your account statement",
             "action" => "payment/".$this->payment->id,
             "line 4" => "",
@@ -69,7 +69,7 @@ class PaymentNotification extends Notification implements ShouldQueue
             ->view(
                 'email.template',
                 ['user' => $this->user,'data'=> $data,'linkmessage' => $linkmessage,'heading' =>$heading])
-                    ->subject($this->payment->model->invoice_type.' Receipt')
+                    ->subject($this->payment->model->type.' Receipt')
                     ->attachData($paymentpdf->output(), $paymentfilename);
     }
 

@@ -66,7 +66,7 @@ class PaymentController extends Controller
      */
     public function create($id = null)
     {
-        $invoice = Invoice::find($id);
+        $invoice = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
         $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
         $className = get_class($invoice);
 
@@ -75,7 +75,8 @@ class PaymentController extends Controller
         $invoicenodate = $today->format('ym');
         $unitnumber = $invoice->unit->unit_number;
         $referenceno =$invoice->id.'-'.$invoicenodate . $unitnumber;
-      //  dd($referenceno);
+
+       
 
       Session::flash('previousUrl', request()->server('HTTP_REFERER'));
         return View('admin.lease.payment',compact('PaymentMethod','invoice','className','referenceno'));
@@ -112,6 +113,8 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
+       
+       //dd($payment->model->totalamount);
         $pageheadings = collect([
             '0' => $payment->unit->unit_number,
             '1' => $payment->unit->property->property_name,

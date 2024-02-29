@@ -17,7 +17,7 @@ class Invoice extends Model
         'model_type',
         'model_id',
         'referenceno',
-        'invoice_type',
+        'type',
         'totalamount',
         'status',
         'duedate',
@@ -29,7 +29,7 @@ class Invoice extends Model
         'property_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'unit_id' => ['label' => 'Unit', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'model_id' => ['label' => 'Tenant Name', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
-        'invoice_type' => ['label' => 'Invoice Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'type' => ['label' => 'Invoice Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'status' => ['label' => 'Status', 'inputType' => 'select', 'required' => false, 'readonly' => ''],
         'startdate' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
         'enddate' => ['label' => 'End Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
@@ -41,7 +41,7 @@ class Invoice extends Model
         'property' => ['label' => 'Property', 'inputType' => 'select'],
         'Unit' => ['label' => 'Unit', 'inputType' => 'select'],
         'tenant' => ['label' => 'Tenant Name', 'inputType' => 'select'],
-        'invoice_type' => ['label' => 'Invoice Type', 'inputType' => 'select'],
+        'type' => ['label' => 'Invoice Type', 'inputType' => 'select'],
         'status' => ['label' => 'Status', 'inputType' => 'select'],
 
 
@@ -63,8 +63,8 @@ class Invoice extends Model
                     return $invoice->model->firstname . ' ' . $invoice->model->lastname;
                 })->unique()->values()->toArray();
                 return  $tenants;
-            case 'invoice_type':
-                $distinctInvoiceTypes = Invoice::distinct('invoice_type')->pluck('invoice_type');
+            case 'type':
+                $distinctInvoiceTypes = Invoice::distinct('type')->pluck('type');
                 return  $distinctInvoiceTypes;
             case 'status':
                 return [
@@ -95,8 +95,8 @@ class Invoice extends Model
                     ->pluck('full_name', 'id')
                     ->toArray();
                 return  $tenants;
-            case 'invoice_type':
-                $distinctInvoiceTypes = Invoice::distinct('invoice_type')->pluck('invoice_type');
+            case 'type':
+                $distinctInvoiceTypes = Invoice::distinct('type')->pluck('type');
                 return  $distinctInvoiceTypes;
             case 'status':
                 return [
@@ -162,6 +162,7 @@ class Invoice extends Model
 
     public function scopeApplyFilters($query, $filters)
     {
+        
         foreach ($filters as $column => $value) {
             if (!empty($value)) {
                 if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
@@ -172,8 +173,10 @@ class Invoice extends Model
                 }
             }
         }
-        // Add default filter for last two months
-        $query->where("created_at", ">", Carbon::now()->subMonths(2));
+       // Add default filter for the last two months
+       if (empty($filters['from_date']) && empty($filters['to_date'])) {
+        $query->where("created_at", ">", Carbon::now()->subMonths(4));
+    }
 
         return $query;
     }

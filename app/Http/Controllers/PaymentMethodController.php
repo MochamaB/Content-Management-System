@@ -84,6 +84,7 @@ class PaymentMethodController extends Controller
     {
         //// Data Entry validation/////////////
         if (PaymentMethod::where('name', $request->name)
+            ->where('property_id', $request->property_id)
             ->where('account_number', $request->account_number)
             ->exists()
         ) {

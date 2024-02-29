@@ -50,12 +50,13 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
-        $filters = request()->all();
+        $filters = $request->except(['tab','_token','_method']);
         $invoices = Invoice::applyFilters($filters)->get();
+      //$invoices = Invoice::get();
      //   $invoiceQuery2 = Invoice::query();
         
      //   $invoicedata = [];
-        $mainfilter =  $this->model::distinct()->pluck('invoice_type')->toArray();
+        $mainfilter =  $this->model::distinct()->pluck('type')->toArray();
         ///CARD DATA
      //   $cardData = [];
 
@@ -252,14 +253,14 @@ class InvoiceController extends Controller
         // Calculate the sum of invoice amounts
         $invoiceAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
             ->where('unit_id', $invoice->unit_id)
-            ->where('charge_name', $invoice->invoice_type)
+            ->where('charge_name', $invoice->type)
             ->where('transactionable_type', 'App\Models\Invoice')
             ->sum('amount');
 
         // Calculate the sum of payment amounts
         $paymentAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
             ->where('unit_id', $invoice->unit_id)
-            ->where('charge_name', $invoice->invoice_type)
+            ->where('charge_name', $invoice->type)
             ->where('transactionable_type', 'App\Models\Payment')
             ->sum('amount');
 

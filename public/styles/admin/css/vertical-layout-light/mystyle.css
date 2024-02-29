@@ -589,6 +589,7 @@ input.form-control.form-control-sm.search-input {
   text-transform: uppercase;
   width: 400px;
   transition: width 0.3s;
+  display: block !important;
   /* Add a smooth transition effect for width changes */
 }
 

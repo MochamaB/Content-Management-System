@@ -216,17 +216,17 @@ class UnitController extends Controller
             }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges') {
-                $tabContents[] = view('admin.CRUD.index',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges','id'));
+                $tabContents[] = view('admin.CRUD.index_show',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges','id'));
             }elseif ($title === 'Invoices') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['']])->render();
+                $tabContents[] = view('admin.CRUD.index_show', ['tableData' => $invoiceTableData, 'controller' => ['']])->render();
             }elseif ($title === 'Vouchers') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']], compact('id'))->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']], compact('id'))->render();
             }elseif ($title === 'Payments') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], compact('id'))->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], compact('id'))->render();
             }elseif ($title === 'Files') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $mediaTableData,'controller' => ['']], compact('id'))->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $mediaTableData,'controller' => ['']], compact('id'))->render();
             }
         }
 
