@@ -205,7 +205,7 @@ class UnitController extends Controller
      //   dd($files);
         $mediaTableData = $this->tableViewDataService->getMediaData($files);
         $id = $unit;
-        $model = class_basename($this->model);
+        $model = 'units';
 
         
         // Render the Blade views for each tab content
@@ -224,7 +224,7 @@ class UnitController extends Controller
             }elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], compact('id'))->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], compact('id','model'))->render();
             }elseif ($title === 'Files') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $mediaTableData,'controller' => ['']], compact('id'))->render();
             }

@@ -79,71 +79,7 @@ class InvoiceController extends Controller
     }
 
 
-    private function getCardData($month, $year)
-    {
-        $invoiceQuery = Invoice::query();
-        $paymentQuery = Payment::query();
-        $this->tableViewDataService->applyDateRangeFilter($invoiceQuery, $month, $year);
-      //  $this->tableViewDataService->applyDateRangeFilter($paymentQuery, $month, $year);
-        // Count the invoices for the current month
-        $invoiceCount = $invoiceQuery->count();
-        $invoicePayments = $invoiceQuery->withCount('payments')->get();
-        $paymentCount = $invoicePayments->sum('payments_count');
-       // dd($paymentCount);
-        $invoicesWithoutPaymentsCount = $invoiceQuery->whereDoesntHave('payments')->count();
-
-        $invoices = $invoiceQuery->with('payments')->get();
-        $paymentSum = 0;
-        foreach ($invoices as $invoice) {
-            $paymentSum += $invoice->payments->sum('totalamount');
-        }
-      // Assuming $invoiceQuery contains a collection of invoices
-  
-   // $paymentSum = $invoices->pluck('payments')->flatten()->sum('totalamount');
-
-     //   $paymentSum = $paymentQuery->sum('totalamount');
-        $invoiceSum = $invoiceQuery->sum('totalamount');
-        $unpaidSum = $invoiceSum - $paymentSum;
-        $totalCardInfo1 = 'Generated';
-        $totalCardInfo2 = 'Paid';
-        $totalCardInfo3 = 'Unpaid';
-        //   dd($invoiceSum);
-        // Structure the data with card type information.
-        $cards = [
-            'Total Invoices' => 'total',
-            'Invoiced Amount' => 'cash',
-            'Paid Amount' => 'cash',
-            'Unpaid Amount' => 'cash'
-            // Add other card types for admin role.
-        ];
-
-        $data = [
-            'Total Invoices' => [     ///TOTAL CARD
-                'modelCount' => $invoiceCount,
-                'modeltwoCount' => $paymentCount,
-                'modelthreeCount' => $invoicesWithoutPaymentsCount,
-                'totalCardInfo1' => $totalCardInfo1,
-                'totalCardInfo2' => $totalCardInfo2,
-                'totalCardInfo3' => $totalCardInfo3,
-            ],
-            'Invoiced Amount' => [ ////CASH CARD
-                'modelCount' => $invoiceSum,
-               
-                // Add other data points related to maintenanceCount card.
-            ],
-            'Paid Amount' => [
-                'modelCount' => $paymentSum,
-                // Add other data points related to maintenanceCount card.
-            ],
-            'Unpaid Amount' => [
-                'modelCount' => $unpaidSum,
-                // Add other data points related to maintenanceCount card.
-            ],
-            // Add other card data for admin role.
-        ];
-
-        return ['cards' => $cards, 'data' => $data];
-    }
+   
 
     /**
      * Show the form for creating a new resource.

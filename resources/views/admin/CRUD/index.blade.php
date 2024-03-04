@@ -1,5 +1,5 @@
 
-@if(($routeParts[0] === 'dashboard' || $routeParts[0] === 'payments' || $routeParts[0] === 'meter-reading' ))
+@if(($routeParts[0] === 'dashboard' || $routeParts[0] === 'payments'))
 @include('admin.CRUD.date_filter')
 @endif
 

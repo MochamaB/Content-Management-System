@@ -116,7 +116,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
         Route::resource('utility', UtilityController::class);
         ///////////////////////
-        Route::get('meter-reading/create/{id?}', [
+        Route::get('meter-reading/create/{id?}/{model?}', [
             'as' => 'meter-reading.create',
             'uses' => 'App\Http\Controllers\MeterReadingController@create'
         ])->middleware('check.create.variables');
@@ -236,6 +236,7 @@ Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
 
 Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
+Route::post('api/fetch-propertyMeterReading', [MeterReadingController::class, 'fetchpropertyMeterReading']);
 Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits']);
 
 

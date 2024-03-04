@@ -82,7 +82,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFERENCE NO', 'INVOICE DATE', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
+        $headers = ['REFERENCE NO', ' DATES', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
             array_splice($headers, 2, 0, ['UNIT DETAILS']);
@@ -139,7 +139,7 @@ class TableViewDataService
             $row = [
                 'id' => $item->id,
                 $invoiceStatus . '</br></br> INV#: ' . $item->id . '-' . $item->referenceno,
-                '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
+                '<span class="text-muted" style="font-weight:500;font-style: italic"> Issue Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->type,
                 $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
@@ -353,9 +353,9 @@ class TableViewDataService
                     $startFormatted . '</span>',
                 $item->currentreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     $enddateFormatted . '</span>',
-                $usage,
+                $usage. ' units ',
                 $item->rate_at_reading,
-                $amount,
+                $this->sitesettings->site_currency . '. ' . number_format($amount, 0, '.', ','),
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {

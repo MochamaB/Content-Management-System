@@ -11,6 +11,7 @@ use App\Models\Unit;
 use App\Models\Property;
 use App\Models\Unitcharge;
 use App\Services\TableViewDataService;
+use App\Services\FilterService;
 use Carbon\Carbon;
 
 
@@ -26,8 +27,10 @@ class MeterReadingController extends Controller
     protected $controller;
     protected $model;
     private $tableViewDataService;
+    private $filterService;
 
-    public function __construct(TableViewDataService $tableViewDataService)
+    public function __construct(TableViewDataService $tableViewDataService,
+    FilterService $filterService)
     {
         $this->model = MeterReading::class;
 
@@ -37,30 +40,26 @@ class MeterReadingController extends Controller
         ]);
 
         $this->tableViewDataService = $tableViewDataService;
+        $this->filterService = $filterService;
     }
 
     public function index(Request $request)
     {
-        $meterReadingQuery = MeterReading::query();
-        $meterReadings = [];
+
+        $filters = $request->except(['tab','_token','_method']);
+        $meterReadings = MeterReading::applyFilters($filters)->get();
         $mainfilter =  $this->model::pluck('unit_id')->toArray();
-
-        $month = $request->get('month', Carbon::now()->month);
-        $year = $request->get('year', Carbon::now()->year);
-
-        $this->tableViewDataService->applyDateRangeFilter($meterReadingQuery,$month,$year);
-        $meterReadings = $meterReadingQuery->get();
-       
+        $filterdata = $this->filterService->getMeterReadingsFilters();
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getMeterReadingsData($meterReadings, true);
-     return View(
-        'admin.CRUD.form',
-        compact('mainfilter', 'tableData', 'controller'),
-        //  $viewData,
-        [
-          //     'cardData' => $cardData,
-        ]
-    );
+        return View(
+            'admin.CRUD.form',
+            compact('mainfilter', 'tableData', 'controller','filterdata'),
+            //  $viewData,
+            [
+                //     'cardData' => $cardData,
+            ]
+        );
     }
 
 
@@ -69,24 +68,41 @@ class MeterReadingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id = null)
+    public function create($id = null, $model = null)
     {
 
-        $unit = Unit::find($id);
-        $property = Property::where('id', $unit->property->id)->first();
-        $unitcharge = Unitcharge::where('unit_id', $unit->id)
-            ->where('charge_type', 'units')
-            ->get();
-            if ($unitcharge->isEmpty()) {
-                return redirect()->back()->with('statuserror', ' Cannot Add Meter reading. No Charge of type units is not attached to this unit.');
-            }
-        $meterReading = MeterReading::where('unit_id',$unit->id)->latest()->first();
-        
+
+        if ($model === 'properties') {
+            $property = Property::find($id);
+            $unit = $property->units;
+            $charges = Unitcharge::where('property_id', $property->id)
+                ->where('charge_type', 'units')
+                ->get();
+
+            $unitcharge = Unitcharge::where('property_id', $property->id)
+                ->where('charge_type', 'units')
+                ->get()
+                ->groupBy('charge_name');
+            $meterReading = MeterReading::where('property_id', $property->id)->get();
+           
+        } elseif ($model === 'units') {
+            $unit = Unit::find($id);
+            $property = Property::where('id', $unit->property->id)->first();
+            $unitcharge = Unitcharge::where('unit_id', $unit->id)
+                ->where('charge_type', 'units')
+                ->get();
+            $meterReading = MeterReading::where('unit_id', $unit->id)->latest()->first();
+        }
+
+        if ($unitcharge->isEmpty()) {
+            return redirect()->back()->with('statuserror', ' Cannot Add Meter reading. No Charge of type units is not attached to this unit.');
+        }
+
         //   dd($latestReading);
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.property.create_meterreading', compact('id','property', 'unit', 'unitcharge','meterReading'));
+        return View('admin.property.create_meterreading', compact('id', 'model', 'property', 'unit', 'unitcharge', 'meterReading','charges'));
     }
 
 
@@ -98,13 +114,78 @@ class MeterReadingController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->model === 'properties') {
+            return $this->storeProperty($request);
+        } elseif ($request->model === 'units') {
+            return $this->storeUnit($request);
+        }
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\MeterReading  $meterReading
+     * @return \Illuminate\Http\Response
+     */
+    protected function storeProperty(Request $request)
+    {
+        $currentreadings = $request->input('currentreading', []);
+        $lastreading = $request->input('lastreading', []);
+        $endDates = $request->input('enddate', []);
+        $startDates = $request->input('startdate', []);
+        foreach ($currentreadings as $key => $reading) {
+            if ($reading <= $lastreading[$key]) {
+                return redirect()->back()->withInput()->with('statuserror', 'Current Reading must be greater than the Previous Reading.');
+            }
+    
+            if (strtotime($endDates[$key]) <= strtotime($startDates[$key])) {
+                return redirect()->back()->withInput()->with('statuserror', 'End date of Reading period must be greater than the Date of last reading.');
+            }
+        }
+
+        $loggeduser = Auth::user();
+         $meterReadings = [];
+         if (!empty($request->input('unitcharge_id'))) {
+            foreach ($request->input('unitcharge_id') as $index => $reading) {
+                $rateatreading = $request->input("rate_at_reading.{$index}");
+                $currentReading = $request->input("currentreading.{$index}");
+                $lastReading = $request->input("lastreading.{$index}");
+                $readingDifference = $currentReading - $lastReading;
+                $amount = $readingDifference * $rateatreading;
+                
+                $meterReading = [
+                    'property_id' => $request->property_id,
+                    'unit_id' => $request->input("unit_id.{$index}"),
+                    'unitcharge_id' => $request->input("unitcharge_id.{$index}"),
+                    'lastreading' => $request->input("lastreading.{$index}"),
+                    'currentreading' => $request->input("currentreading.{$index}"),
+                    'rate_at_reading' => $rateatreading,
+                    'amount' => $amount,
+                    'startdate' => $request->input("startdate.{$index}"),
+                    'enddate' => $request->input("enddate.{$index}"),
+                    'recorded_by' => $loggeduser->email,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    // ... Other fields ...
+                ];
+                $meterReadings[] = $meterReading;
+            }
+        }
+        MeterReading::insert($meterReadings);
+        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+
+    }
+
+    protected function storeUnit(Request $request)
+    {
         if ($request->currentreading <= $request->lastreading) {
             return redirect()->back()->withInput()->with('statuserror', 'Current Reading must be greater than the Previous Reading.');
         }
         if (strtotime($request->enddate) <= strtotime($request->startdate)) {
             return redirect()->back()->withInput()->with('statuserror', 'End date of Reading period must be greater than the Date of last reading.');
         }
-      
+
         $loggeduser = Auth::user();
         $rateatreading = Unitcharge::where('id', $request->unitcharge_id)->first();
 
@@ -114,20 +195,14 @@ class MeterReadingController extends Controller
         $meterReading->fill($validatedData);
         $meterReading->rate_at_reading = $rateatreading->rate;
         $meterReading->amount = ($request->currentreading - $request->lastreading) * $rateatreading->rate;
-     //   dd($meterReading->amountdue);
+        //   dd($meterReading->amountdue);
         $meterReading->recorded_by = $loggeduser->email;
         $meterReading->save();
 
         $previousUrl = Session::get('previousUrl');
         return redirect($previousUrl)->with('status', 'Meter Reading Entered Successfully');
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\MeterReading  $meterReading
-     * @return \Illuminate\Http\Response
-     */
+    }
     public function show(MeterReading $meterReading)
     {
         //
@@ -182,7 +257,23 @@ class MeterReadingController extends Controller
             // Handle the case when no data is found
             return response()->json(['message' => 'No data found']);
         }
-
+    }
+    public function fetchpropertyMeterReading(Request $request)
+    {
+        $unitchargeIds =  $request->unitcharge_id;
+        $data = MeterReading::where('property_id', $request->property_id)
+            ->where('unitcharge_id', $unitchargeIds)
+            ->with('unit')
+            ->latest('created_at') // Get the latest records based on created_at timestamp
+            ->get();
+        if ($data) {
+            // Convert the result to an array
+            $data = $data->toArray();
+            return response()->json($data);
+        } else {
+            // Handle the case when no data is found
+            return response()->json(['message' => 'No data found']);
+        }
     }
 
     public function fetchAllUnits(Request $request)

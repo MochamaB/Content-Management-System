@@ -106,6 +106,18 @@
                 </select>
             </div>
         </div><br />
+        <div class="col-md-5">
+            <div class="form-group">
+                <label class="label">Rate/Amount<span class="requiredlabel">*</span></label>
+                <h5>
+                    <small class="text-muted">
+                        {{ $unitcharge->rate}}
+                    </small>
+                </h5>
+                <input type="text" class="form-control" id="rate" name="rate" value="{{$unitcharge->rate ?? ''}}">
+               
+            </div>
+        </div>
     <hr>
     <div class="col-md-6">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit:Utility Details</button>

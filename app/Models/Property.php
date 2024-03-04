@@ -138,6 +138,11 @@ class Property extends Model implements HasMedia
         return $this->hasMany(Request::class);
     }
 
+    public function meterReadings()
+    {
+        return $this->hasMany(MeterReading::class);
+    }
+
 
     /// scope showing properties with units
     public function scopeWithUnitUser($query)

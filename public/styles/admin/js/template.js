@@ -54,8 +54,8 @@
     });
 
     // Calculate the position of the active item and scroll to it
-   // var activeItemTop = $('.sidebar .nav .nav-item.active').offset().top;
-   // $('html, body').animate({ scrollTop: activeItemTop - 100 }, 500);
+    var activeItemTop = $('.sidebar .nav .nav-item.active').offset().top;
+    $('.sidebar-offcanvas').animate({ scrollTop: activeItemTop - 500 }, 500);
 
 
     //Change sidebar and content-wrapper height
@@ -83,6 +83,7 @@
         body.toggleClass('sidebar-hidden');
       } else {
         body.toggleClass('sidebar-icon-only');
+        $('.main-panel').toggleClass('main-panel-fullscreen', true);
       }
     });
 

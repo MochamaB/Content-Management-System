@@ -5,29 +5,32 @@
     <h4 style="text-transform: capitalize;"><b> </b></h4>
     <hr>
 
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label">Select Property<span class="requiredlabel">*</span></label>
-                <select name="property_id" id="" class="formcontrol2 property_id" placeholder="Select" required>
-                    <option value=""> 'Select Property'</option>
-                    @foreach($properties as $item)
-                    <option value="{{ $item->id }}">{{ $item->property_name }}</option>
-                    @endforeach
-                </select>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="label">Select Property<span class="requiredlabel">*</span></label>
+            <select name="property_id" id="" class="formcontrol2 property_id" placeholder="Select" required>
+                <option value=""> 'Select Property'</option>
+                @foreach($properties as $item)
+                <option value="{{ $item->id }}">{{ $item->property_name }}</option>
+                @endforeach
+            </select>
 
-            </div>
         </div>
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label"> Select Unit<span class="requiredlabel">*</span></label>
-                <select name="unit_id" id="" class="formcontrol2 unit_id" placeholder="Select" required>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="label"> Select Unit<span class="requiredlabel">*</span></label>
+            <select name="unit_id" id="" class="formcontrol2 unit_id" placeholder="Select" required>
 
-                    <option value=""></option>
+                <option value=""></option>
 
-                </select>
-            </div>
+            </select>
         </div>
-       
+    </div>
+    <div class="col-md-4">
+        <button type="" id="select" class=" btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;" id="select">Create {{$routeParts[0]}}</button>
+    </div>
+
 
 
 
@@ -73,20 +76,29 @@
             });
 
         });
-        $('.unit_id').on('change', function() {
-            var selectedUnitId = $(this).val();
+        $('#select').on('click', function() {
+            // Get the value of the property_id field
+            var selectedpropertyId = $('.property_id').val();
 
             // Append unit_id to the current URL
-            var newUrl = window.location.href + '/' + selectedUnitId;
+            var newUrl = window.location.href + '/' + selectedpropertyId + '/properties';
 
             // Load the new URL
             window.location.href = newUrl;
         });
-        
+        $('.unit_id').on('change', function() {
+            var selectedUnitId = $(this).val();
+
+            // Append unit_id to the current URL
+            var newUrl = window.location.href + '/' + selectedUnitId + '/units';
+
+            // Load the new URL
+            window.location.href = newUrl;
+        });
+
 
 
     });
-    
 </script>
 
 

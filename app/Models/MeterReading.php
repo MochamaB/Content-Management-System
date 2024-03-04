@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class MeterReading extends Model
 {
@@ -22,13 +23,13 @@ class MeterReading extends Model
         'recorded_by',
     ];
 
-     ////////// FIELDS FOR CREATE AND EDIT METHOD
-     public static $fields = [
+    ////////// FIELDS FOR CREATE AND EDIT METHOD
+    public static $fields = [
         'property_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'unit_id' => ['label' => 'Unit', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'unitcharge_id' => ['label' => 'Charge', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'lastreading' => ['label' => 'Last Reading', 'inputType' => 'text', 'required' => true, 'readonly' => true],
-        'currentreading' => ['label' => 'Current Reading', 'inputType' => 'text', 'required' => false, 'readonly' =>''],
+        'currentreading' => ['label' => 'Current Reading', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
         'rate_at_reading' => ['label' => 'Rate', 'inputType' => 'text', 'required' => true, 'readonly' => true],
         'startdate' => ['label' => 'Start Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
         'enddate' => ['label' => 'End Date', 'inputType' => 'date', 'required' => true, 'readonly' => ''],
@@ -58,7 +59,7 @@ class MeterReading extends Model
                 return $properties;
             case 'unit_id':
                 // Retrieve the supervised units' properties
-                    $units = Property::pluck('property_name', 'id')->toArray();
+                $units = Property::pluck('property_name', 'id')->toArray();
                 return $units;
             case 'user_id':
                 $tenants = User::selectRaw('CONCAT(firstname, " ", lastname) as full_name, id')
@@ -68,13 +69,13 @@ class MeterReading extends Model
             case 'lease_period':
                 return [
                     'monthly' => 'Month to Month',
-                    'fixed'=>'fixed'
+                    'fixed' => 'fixed'
 
                 ];
             case 'status':
                 return [
                     'active' => 'Active',
-                    'suspended'=> 'Suspended'
+                    'suspended' => 'Suspended'
 
                 ];
                 // Add more cases for additional filter fields
@@ -96,5 +97,29 @@ class MeterReading extends Model
     {
         return $this->belongsTo(Unitcharge::class);
     }
- 
+
+    public function scopeApplyFilters($query, $filters)
+    {
+
+        foreach ($filters as $column => $value) {
+            if (!empty($value)) {
+                if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+                    $query->whereBetween('created_at', [$filters['from_date'], $filters['to_date']]);
+                } else {
+                    // Handle arrays and strings
+                    if (is_array($value)) {
+                        $query->whereIn($column, $value);
+                    } else {
+                        $query->where($column, $value);
+                    }
+                }
+            }
+        }
+        // Add default filter for the last two months
+        if (empty($filters['from_date']) && empty($filters['to_date'])) {
+            $query->where("created_at", ">", Carbon::now()->subMonths(4));
+        }
+
+        return $query;
+    }
 }

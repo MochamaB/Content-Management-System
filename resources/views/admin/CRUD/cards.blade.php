@@ -1,5 +1,17 @@
-
-
+<div class="accordion" id="accordionExample">
+  <div class="accordion-item">
+    <h2 class="accordion-header" id="headingOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+        Accordion Item #1
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+      <div class="accordion-body">
+       
+      </div>
+    </div>
+  </div>
+</div>
 <div class="row" style="margin-top: 0px;">
 
     @foreach($cardData['cards'] as $card => $cardType)
@@ -167,11 +179,11 @@
             </div>
             <div class="card-body" style="padding-top:7px;padding-bottom: 0.1em;">
                 <h2 class="rate-percentage text-success d-flex">
-                   $ @if(is_array($cardData['data'][$card]))
+                    $ @if(is_array($cardData['data'][$card]))
                     {{ $cardData['data'][$card]['modelCount'] }}
                     @endif
                     <span class="text-muted font-weight-medium text-small d-flex align-items-center">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $sitesettings->site_currency ?? '' }}</span>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $sitesettings->site_currency ?? '' }}</span>
                 </h2>
             </div>
             <div class="card-footer" style="background-color:#fff ;">

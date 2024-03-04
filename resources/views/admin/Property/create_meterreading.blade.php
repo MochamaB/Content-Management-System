@@ -8,7 +8,71 @@
     <hr>
     <form method="POST" action="{{ url('meter-reading') }}" class="myForm" novalidate>
         @csrf
-        @if($id)
+        @if($model === 'properties')
+        <input type="hidden" class="form-control" name="model" id='' value="properties" readonly>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="label">Property Name</label>
+                <select name="property_id" id="property_id" class="formcontrol2 property_id" placeholder="Select" required readonly>
+                    <option value="{{$property->id}}">{{$property->property_name}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <table id="table" data-toggle="table" data-icon-size="sm" data-buttons-class="primary" data-toolbar-align="right" data-buttons-align="left" data-search-align="left" data-sort-order="asc" data-sticky-header="true" data-page-list="[100, 200, 250, 500, ALL]" data-page-size="100" data-show-footer="false" data-side-pagination="client" class="table table-bordered">
+                <thead>
+                    <tr>
+
+                        <th class="text-center">UNIT</th>
+                        <th class="text-center">CHARGE</th>
+                        <th class="text-center">DATE LAST READING </th>
+                        <th class="text-center">PREVIOUS READING</th>
+                        <th class="text-center">DATE OF READING </th>
+                        <th class="text-center">CURRENT READING</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($charges as $key=> $item)
+                    <tr style="height:35px;">
+                        @php
+                        $latestread = $item->meterReading->last();
+                        @endphp
+                        <td id='' class="text-center" style="background-color:#dae3fa;">
+                            <input type="hidden" class="" name="unit_id[]" id='' value="{{ $item->unit_id}}" readonly>
+                            {{$item->unit->unit_number}}
+                        </td>
+                        <td id='' class="text-center" style="background-color:#dae3fa;">
+                            <input type="hidden" name="unitcharge_id[]" value="{{ $item->id }}">
+                            {{$item->charge_name}}
+                        </td>
+
+                        <td class="text-center" style="padding:0px">
+                            <input type="date" class="form-control" name="startdate[]" id='startdate' value="{{ $latestread->startdate ?? old('startdate_' . $key) ?? now()->toDateString() }}" readonly>
+                        </td>
+                        <td class="text-center" style="padding:0px">
+                            <input type="number" class="form-control @error('lastreading.' . $key) is-invalid @enderror" name="lastreading[]" id='' value="{{$latestread->currentreading ?? 0.00 }}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
+                            @error('reading')
+                            <div class="invalid-feedback">Error</div>
+                            @enderror
+                        </td>
+                        <td class="text-center" style="padding:0px">
+                            <input type="date" class="form-control @error('enddate.' . $key) is-invalid @enderror" name="enddate[]" id="enddate" value="{{ old('enddate.' . $key) ??  now()->toDateString() }}" style="border:none" required>
+                        </td>
+                        <td class="text-center" style="padding:0px">
+                            <input type="number" class="form-control" name="currentreading[]" id="currentreading" value="{{ old('currentreading.' . $key)}}" style="border:none" required>
+                            <input type="hidden" name="rate_at_reading[]" value="{{ $item->rate }}">
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+
+
+        @elseif($model ==='units')
+
+        <input type="hidden" class="form-control" name="model" id='' value="units" readonly>
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Property Name</label>
@@ -25,10 +89,10 @@
                 </select>
             </div>
         </div>
-       
+
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label">Charge</label>
+                <label class="label">Charge<span class="requiredlabel">*</span></label>
                 <select name="unitcharge_id" id="unitcharge_id" class="formcontrol2" placeholder="Select" required>
                     <option value="">Select Value</option>
                     @foreach($unitcharge as $item)
@@ -76,4 +140,9 @@
 
     </form>
 </div>
+
+
+
+
+
 @endsection

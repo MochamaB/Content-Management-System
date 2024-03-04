@@ -78,6 +78,11 @@ class Unitcharge extends Model
     {
         return $this->belongsTo(Chartofaccount::class);
     }
+
+    public function meterReading()
+    {
+        return $this->hasMany(MeterReading::class, 'unitcharge_id');
+    }
 //
  //   public function lease()
   //  {
@@ -100,4 +105,7 @@ class Unitcharge extends Model
     {
         return $this->hasMany(Unitcharge::class, 'parent_id');
     }
+
+
+
 }

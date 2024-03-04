@@ -121,7 +121,7 @@ class PropertyController extends Controller
     public function show(Property $property)
     {
         ////VARIABLES FOR CRUD TEMPLATES
-
+       
         $pageheadings = collect([
             '0' => $property->property_name,
             '1' => $property->property_streetname,
@@ -132,6 +132,7 @@ class PropertyController extends Controller
             'Summary',
             'Units',
             'Utilities',
+            'Meter Readings',
             'Requests',
             'Settings'
             //    'Maintenance',
@@ -155,6 +156,11 @@ class PropertyController extends Controller
         $utilityController = new UtilityController();
         $utilityTableData = $utilityController->getUtilitiesData($utilities);
 
+         ///4. METER READINGS
+         $readings = $property->meterReadings;
+         //   $unitController = new UnitController();
+            $meterReadingTableData = $this->tableViewDataService->getMeterReadingsData($readings);
+
         ///4. REQUESTS
         $requests = $property->requests;
         //   $unitController = new UnitController();
@@ -164,8 +170,9 @@ class PropertyController extends Controller
          $setting = $property->settings;
          $settingController = new SettingController();
          $settingTableData = $settingController->getSettingData($setting);
-         $model = 'property';
+         $model = 'properties';
          $id = $property;
+        // dd($property);
 
 
         $viewData = $this->formData($this->model, $property);
@@ -181,6 +188,9 @@ class PropertyController extends Controller
             } elseif ($title === 'Utilities') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $utilityTableData,'controller' => ['utility']], 
                 compact('amenities', 'allamenities'))->render();
+            }elseif ($title === 'Meter Readings') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $meterReadingTableData,'controller' => ['meter-reading']], 
+                compact('amenities', 'allamenities','id','model'))->render();
             }elseif ($title === 'Requests') {
                 $tabContents[] = View('admin.CRUD.index', ['tableData' => $requestTableData,'controller' => ['request']], 
                 compact('amenities', 'allamenities','id'))->render();

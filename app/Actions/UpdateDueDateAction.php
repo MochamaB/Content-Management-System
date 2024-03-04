@@ -38,6 +38,8 @@ class UpdateDueDateAction
     {
         $className = get_class($lease);   
         Setting::create([
+            'category' => 'Lease Reports',
+            'title' => 'invoiceduedate',
             'settingable_type' => $className,
             'settingable_id' =>$lease->id,
             'setting_name' => 'invoiceduedate',

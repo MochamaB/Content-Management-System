@@ -15,6 +15,8 @@ class CreateSettingsTable extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
+            $table->string('category');
+            $table->string('title');
             $table->string('settingable_type'); // E.g., "User", "Lease", "Property"
             $table->unsignedBigInteger('settingable_id'); // ID of the specific model instance
             $table->string('setting_name');

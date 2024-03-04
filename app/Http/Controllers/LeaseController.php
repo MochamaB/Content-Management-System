@@ -342,14 +342,14 @@ class LeaseController extends Controller
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.CRUD.summary', compact('properties', 'lease'))->render();
             } elseif ($title === 'Charges and Utilities') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']])->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']])->render();
             } elseif ($title === 'Invoices') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
             } elseif ($title === 'Payments') {
-                $tabContents[] = View('admin.CRUD.index',['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
+                $tabContents[] = View('admin.CRUD.index_show',['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             } elseif ($title === 'Meter Readings') {
                 $tabContents[] = View(
-                    'admin.CRUD.index',
+                    'admin.CRUD.index_show',
                     ['tableData' => $MeterReadingsTableData, 'controller' => ['meter-reading']],
                     compact('id')
                 )->render();

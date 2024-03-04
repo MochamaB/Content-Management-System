@@ -7,6 +7,7 @@ use App\Models\WebsiteSetting;
 use App\Models\Slider;
 use App\Models\Testimonial;
 use App\Models\Lease;
+use App\Models\MeterReading;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Paymentvoucher;
@@ -14,6 +15,7 @@ use App\Models\Utility;
 use App\Models\User;
 use App\Models\Property;
 use App\Models\Unit;
+use App\Models\Unitcharge;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +58,8 @@ class AppServiceProvider extends ServiceProvider
 
         Unit::addGlobalScope(new UnitAccessScope);
         Invoice::addGlobalScope(new UserAccessScope);
+        MeterReading::addGlobalScope(new UserAccessScope);
+        Unitcharge::addGlobalScope(new UserAccessScope);
        // Invoice::addGlobalScope(new ApplyFilterScope);
         Paymentvoucher::addGlobalScope(new UserAccessScope);
         Payment::addGlobalScope(new UserAccessScope);
