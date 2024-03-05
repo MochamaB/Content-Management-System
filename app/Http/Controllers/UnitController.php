@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Events\AssignUserToUnit;
 use App\Http\Controllers\MeterReadingController;
 use App\Services\InvoiceService;
+use App\Services\CardService;
 use App\Services\TableViewDataService;
 
 class UnitController extends Controller
@@ -25,8 +26,10 @@ class UnitController extends Controller
     protected $model;
     private $invoiceService;
     private $tableViewDataService;
+    private $cardService;
 
-    public function __construct(InvoiceService $invoiceService,TableViewDataService $tableViewDataService)
+    public function __construct(InvoiceService $invoiceService,TableViewDataService $tableViewDataService,
+    CardService $cardService)
     {
         $this->model = Unit::class;
         $this->controller = collect([
@@ -35,6 +38,7 @@ class UnitController extends Controller
         ]);
         $this->invoiceService = $invoiceService;
         $this->tableViewDataService = $tableViewDataService;
+        $this->cardService = $cardService;
     }
 
     public function getUnitData($unitdata)
@@ -66,7 +70,8 @@ class UnitController extends Controller
         $unitdata = $this->model::with('property','lease')->get();
         $mainfilter =  $this->model::distinct()->pluck('unit_type')->toArray();
         $viewData = $this->formData($this->model);
-        $cardData = $this->cardData($this->model,$unitdata);
+     //   $cardData = $this->cardData($this->model,$unitdata);
+        $cardData = $this->cardService->unitCard($unitdata);
        // dd($cardData);
         $controller = $this->controller;
         $tableData = $this->getUnitData($unitdata);

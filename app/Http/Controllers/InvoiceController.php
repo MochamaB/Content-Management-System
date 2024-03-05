@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use App\Notifications\InvoiceGeneratedNotification;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
+use App\Services\CardService;
 use App\Models\WebsiteSetting;
 use App\Traits\FormDataTrait;
 
@@ -32,10 +33,11 @@ class InvoiceController extends Controller
     private $invoiceService;
     private $tableViewDataService;
     private $filterService;
+    private $cardService;
 
 
     public function __construct(InvoiceService $invoiceService, TableViewDataService $tableViewDataService,
-    FilterService $filterService)
+    FilterService $filterService, CardService $cardService)
     {
         $this->model = Invoice::class;
         $this->controller = collect([
@@ -45,6 +47,7 @@ class InvoiceController extends Controller
         $this->invoiceService = $invoiceService;
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
+        $this->cardService = $cardService;
     }
 
 
@@ -69,11 +72,12 @@ class InvoiceController extends Controller
     //    $cardData = $this->getCardData($month, $year);
      //  $filterData = $this->filterData($this->model);
         $filterdata = $this->filterService->getInvoiceFilters();
+        $cardData = $this->cardService->invoiceCard($invoices);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getInvoiceData($invoices, true);
       //  dd($filterData);
         return view('admin.CRUD.form', array_merge(
-            compact('mainfilter', 'tableData', 'controller','filterdata')
+            compact('mainfilter', 'tableData', 'controller','filterdata','cardData')
           //  ,['cardData' => $cardData]
         ));
     }

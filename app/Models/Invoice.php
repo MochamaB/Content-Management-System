@@ -96,7 +96,7 @@ class Invoice extends Model
                     ->toArray();
                 return  $tenants;
             case 'type':
-                $distinctInvoiceTypes = Invoice::distinct('type')->pluck('type');
+                $distinctInvoiceTypes = Invoice::distinct('type')->pluck('invoice_type');
                 return  $distinctInvoiceTypes;
             case 'status':
                 return [

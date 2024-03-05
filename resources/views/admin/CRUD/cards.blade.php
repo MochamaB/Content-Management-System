@@ -1,20 +1,10 @@
-<div class="accordion" id="accordionExample">
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="headingOne">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-       
-      </button>
-    </h2>
-    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-      <div class="accordion-body">
-       
-      
+
 <div class="row" style="margin-top: 0px;">
 
     @foreach($cardData['cards'] as $card => $cardType)
     @if($cardType === 'information')
     <!-- Information Card -->
-    <div class="col-md-3"> 
+    <div class="col-md-3">
         <div class="card h-100">
             <div class="card-header" style="background-color:#fff ;">
                 <p class="card-title card-title-dash font-weight-medium d-flex justify-content-between">
@@ -194,9 +184,5 @@
     @endforeach
 </div>
 
-</div>
-    </div>
-  </div>
-</div><br>
 
 <!-------        ----------->

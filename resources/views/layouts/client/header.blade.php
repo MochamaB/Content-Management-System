@@ -19,23 +19,23 @@
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
         <link rel="icon" href="favicon.ico" type="image/x-icon">
 
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/normalize.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/font-awesome.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/fontello.css') }}">
-        <link href="{{ asset('styles/client/assets/fonts/icon-7-stroke/css/pe-icon-7-stroke.css') }}" rel="stylesheet">
-        <link href="{{ asset('styles/client/assets/fonts/icon-7-stroke/css/helper.css')}}" rel="stylesheet">
-        <link href="{{ asset('styles/client/assets/css/animate.css') }}" rel="stylesheet" media="screen">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/bootstrap-select.min.css') }}"> 
-        <link rel="stylesheet" href="{{ asset('styles/client/bootstrap/css/bootstrap.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/icheck.min_all.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/price-range.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/owl.carousel.css') }}">  
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/owl.theme.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/owl.transitions.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/jquery.slitslider.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/responsive.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/normalize.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/font-awesome.min.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/fontello.css') }}">
+        <link href="{{ url('styles/client/assets/fonts/icon-7-stroke/css/pe-icon-7-stroke.css') }}" rel="stylesheet">
+        <link href="{{ url('styles/client/assets/fonts/icon-7-stroke/css/helper.css')}}" rel="stylesheet">
+        <link href="{{ url('styles/client/assets/css/animate.css') }}" rel="stylesheet" media="screen">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/bootstrap-select.min.css') }}"> 
+        <link rel="stylesheet" href="{{ url('styles/client/bootstrap/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/icheck.min_all.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/price-range.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/owl.carousel.css') }}">  
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/owl.theme.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/owl.transitions.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/jquery.slitslider.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/style.css') }}">
+        <link rel="stylesheet" href="{{ url('styles/client/assets/css/responsive.css') }}">
         <noscript>
-        <link rel="stylesheet" type="text/css" href="{{ asset('styles/client/assets/css/styleNoJS.css" />
+        <link rel="stylesheet" type="text/css" href="{{ url('styles/client/assets/css/styleNoJS.css" />
         </noscript>
     </head>
