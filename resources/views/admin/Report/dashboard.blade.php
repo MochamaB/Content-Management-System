@@ -3,7 +3,7 @@
 @section('content')
 
 @include('admin.CRUD.date_filter')
-@include('admin.CRUD.cards')
+@include('admin.CRUD.dashboardcards')
 <div class="row">
   <div class="col-lg-8 d-flex flex-column">
     <div class="row flex-grow">

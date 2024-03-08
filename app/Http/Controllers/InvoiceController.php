@@ -55,29 +55,14 @@ class InvoiceController extends Controller
     {
         $filters = $request->except(['tab','_token','_method']);
         $invoices = Invoice::applyFilters($filters)->get();
-      //$invoices = Invoice::get();
-     //   $invoiceQuery2 = Invoice::query();
-        
-     //   $invoicedata = [];
-        $mainfilter =  $this->model::distinct()->pluck('type')->toArray();
-        ///CARD DATA
-     //   $cardData = [];
-
-    //    $month = $request->get('month', Carbon::now()->month);
-    //    $year = $request->get('year', Carbon::now()->year);
-
-   //     $this->tableViewDataService->applyDateRangeFilter($invoiceQuery2,$month,$year);
-    //    $invoicedata = $invoiceQuery2->get();
-
-    //    $cardData = $this->getCardData($month, $year);
-     //  $filterData = $this->filterData($this->model);
+     
         $filterdata = $this->filterService->getInvoiceFilters();
         $cardData = $this->cardService->invoiceCard($invoices);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getInvoiceData($invoices, true);
       //  dd($filterData);
         return view('admin.CRUD.form', array_merge(
-            compact('mainfilter', 'tableData', 'controller','filterdata','cardData')
+            compact('tableData', 'controller','filterdata','cardData')
           //  ,['cardData' => $cardData]
         ));
     }

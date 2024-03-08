@@ -13,6 +13,7 @@ use App\Http\Controllers\MeterReadingController;
 use App\Services\InvoiceService;
 use App\Services\CardService;
 use App\Services\TableViewDataService;
+use App\Services\FilterService;
 
 class UnitController extends Controller
 {
@@ -27,9 +28,10 @@ class UnitController extends Controller
     private $invoiceService;
     private $tableViewDataService;
     private $cardService;
+    private $filterService;
 
     public function __construct(InvoiceService $invoiceService,TableViewDataService $tableViewDataService,
-    CardService $cardService)
+    CardService $cardService,FilterService $filterService)
     {
         $this->model = Unit::class;
         $this->controller = collect([
@@ -39,6 +41,7 @@ class UnitController extends Controller
         $this->invoiceService = $invoiceService;
         $this->tableViewDataService = $tableViewDataService;
         $this->cardService = $cardService;
+        $this->filterService = $filterService;
     }
 
     public function getUnitData($unitdata)
@@ -64,11 +67,11 @@ class UnitController extends Controller
         return $tableData;
     }
 
-    public function index($property = null)
+    public function index(Request $request, $property = null)
     {
-        
-        $unitdata = $this->model::with('property','lease')->get();
-        $mainfilter =  $this->model::distinct()->pluck('unit_type')->toArray();
+        $filters = $request->except(['tab','_token','_method']);
+        $unitdata = $this->model::with('property','lease')->applyFilters($filters)->get();
+        $filterdata = $this->filterService->getUnitFilters();
         $viewData = $this->formData($this->model);
      //   $cardData = $this->cardData($this->model,$unitdata);
         $cardData = $this->cardService->unitCard($unitdata);
@@ -76,7 +79,7 @@ class UnitController extends Controller
         $controller = $this->controller;
         $tableData = $this->getUnitData($unitdata);
         
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller'),
         [
             'cardData' => $cardData,
         ]);

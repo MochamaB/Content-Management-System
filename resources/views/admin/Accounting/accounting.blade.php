@@ -1,7 +1,7 @@
 @extends('layouts.admin.admin')
 
 @section('content')
-<div class=" contwrapper">
+
     
     @include('admin.CRUD.topfilter')
    
@@ -14,5 +14,5 @@
     @endif
 
 
-</div>
+
 @endsection

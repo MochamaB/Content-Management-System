@@ -99,24 +99,27 @@ class FilterService
         $properties = Property::pluck('property_name', 'id')->toArray();
         $units = Unit::pluck('unit_number', 'id')->toArray();
         $unitcharge = Unitcharge::where('charge_type', 'units')->get()->groupBy('charge_name');
-     //  $unitcharge = $charge->map(function($item) {
-       //     return [
-      //          'id' => $item[0]->id,
-       //         'charge_name' => $item[0]->charge_name
-      //      ];
-      //  })->toArray();
-       
-      //  dd($unitcharge);
-        // Convert the grouped collection back to an array
-       // $unitcharge = $groupedUnitcharge->toArray();
-
-        // Define the columns for the unit report
         return [
             'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
             'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select', 'filtertype' => 'main'],
             'unitcharge_id' => ['label' => 'Charge', 'values' => $unitcharge, 'inputType' => 'selectarray', 'filtertype' => 'advanced'],
             'from_date' => ['label' => 'From', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced'],
             'to_date' => ['label' => 'To', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced']
+        ];
+    }
+
+    public function getUnitFilters()
+    {
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        $unittype = [
+            'rent' => 'For Rent',
+            'sale' => 'For Sale',
+        ];
+        $unitcharge = Unitcharge::where('charge_type', 'units')->get()->groupBy('charge_name');
+        return [
+            'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
+            'unit_type' => ['label' => 'Types', 'values' => $unittype, 'inputType' => 'select', 'filtertype' => 'main'],
+            
         ];
     }
 }

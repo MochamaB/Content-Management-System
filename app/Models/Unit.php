@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Carbon\Carbon;
+
 
 
 
@@ -201,5 +203,26 @@ class Unit extends Model implements HasMedia
             ->width(150)
             ->height(150)
             ->sharpen(10);
+    }
+
+    public function scopeApplyFilters($query, $filters)
+    {
+        
+        foreach ($filters as $column => $value) {
+            if (!empty($value)) {
+                if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+                    $query->whereBetween('created_at', [$filters['from_date'], $filters['to_date']]);
+                } else {
+                    // Use where on the other columns
+                    $query->where($column, $value);
+                }
+            }
+        }
+       // Add default filter for the last two months
+       if (empty($filters['from_date']) && empty($filters['to_date'])) {
+        $query->where("created_at", ">", Carbon::now()->subMonths(4));
+    }
+
+        return $query;
     }
 }
