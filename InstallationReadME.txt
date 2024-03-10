@@ -8,6 +8,7 @@ php artisan migrate
 php artisan permission:create-permission-routes
 php artisan db:seed  --individual php artisan db:seed --class=UserSeeder
 php artisan schedule-monitor:sync  ---Add all tasks to spatie monitor 
+php artisan storage:link -- create link for spatie media library
 
 php artisan queue:work ---Keep running all the time
 
