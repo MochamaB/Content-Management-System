@@ -60,7 +60,7 @@
                 @if ($actualvalues)
                     <img src="{{ $actualvalues->getFirstMediaUrl($mediaCollection ?? '', 'thumb')}}" alt="thumb" style="height: 200px; width: 300px;">
                 @else
-                    <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
+                    <img src="url('uploads/images/noimage.jpg')" alt="No Image">
                 @endif
             @elseif($attributes['inputType'] === 'textarea')
             <!---- TEXTAREA INPUT ------------->
