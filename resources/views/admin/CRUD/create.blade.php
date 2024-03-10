@@ -42,7 +42,7 @@
                 @elseif($attributes['inputType'] === 'picture')
 
                 <input type="file" name="{{ $field }}" class="form-control" id="logo" name="{{ $field }}" @if($attributes['required']) required @endif />
-                <img id="logo-image-before-upload" src="{{ url('resources/uploads/images/noimage.jpg') }}" style="height: 200px; width: 200px;">
+                <img id="logo-image-before-upload" src="{{ url('uploads/images/noimage.jpg') }}" style="height: 200px; width: 200px;">
                 <!---- NUMBER INPUT ------------->
                 @elseif($attributes['inputType'] === 'number')
                 <input type="{{ $attributes['inputType'] }}" class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" name="{{ $field }}" value="{{ old($field) }}" @if($attributes['required']) required @endif>

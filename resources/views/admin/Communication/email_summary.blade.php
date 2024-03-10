@@ -10,7 +10,7 @@
                       $data = json_decode($notification->data, true);
                       @endphp
                       @if($notification->read_at == null)
-                      <tr style="height:40px; background: #e6e9ed;" class="clickable-row" data-href="{{ url('email/'.$notification->id)}}">
+                      <tr style="height:40px; background: #7fafd0;" class="clickable-row" data-href="{{ url('email/'.$notification->id)}}">
                           <td class="action"><input type="checkbox" /></td>
                           <td class="name"><a href="#" class="email">{{ $data['subject'] ?? 'Subject' }}</a></td>
                           <td class="subject"><a href="#" class="email">{{ $data['heading'] ?? 'Heading' }}</a></td>

@@ -20,7 +20,8 @@
                         </h2>
                     @else
                         <h2 class="rate-percentage text-success d-flex">
-                        {{number_format( $card['amount'], 0, '.', ','); }}
+                        {{ number_format(floatval($card['amount'] ?? 0), 0, '.', ',') }}
+
                         <span class="text-muted font-weight-medium text-small d-flex align-items-center">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $sitesettings->site_currency ?? '' }}</span>
                         </h2>

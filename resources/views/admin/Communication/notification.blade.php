@@ -3,8 +3,8 @@
 @section('content')
 
 <div class="row email-wrapper wrapper" style="margin-left:0px;margin-right:0px;">
-    <div class="mail-sidebar d-none d-lg-block col-md-3 pt-3 bg-white" style="border:1px solid #dee2e6">
-        <div class="menu-bar">
+    <div class="mail-sidebar d-none d-lg-block col-md-3 pt-3 bg-white" style="border:1px solid #dee2e6;">
+        <div class="menu-bar" style="">
             <ul class="menu-items">
                 <li class="compose mb-3"><button class="btn btn-primary btn-lg text-white">Compose</button></li>
                 <li class="active"><a class="label" href="#"><i class="ti-email"></i> Inbox</a><span class="badge badge-pill badge-success">8</span></li>

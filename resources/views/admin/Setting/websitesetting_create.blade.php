@@ -103,13 +103,13 @@
                         <div class="form-group">
                             <label class="label">Website Logos</label>
                             <input type="file" name="company_logo" value="{{ old('company_logo') }}" class="form-control" id="logo"  required/>
-                            <img id="logo-image-before-upload" src="{{ url('resources/uploads/images/noimage.jpg') }}"
+                            <img id="logo-image-before-upload" src="{{ url('uploads/images/noimage.jpg') }}"
                                             style="height: 200px; width: 200px;">
                         </div>
                         <div class="form-group">
                             <label class="label">flavicon</label>
                             <input type="file" name="company_flavicon" value="{{ old('company_flavicon') }}" class="form-control" id="flavicon" />
-                            <img id="flavicon-image-before-upload" src="{{ url('resources/uploads/Images/noimage.jpg') }}"
+                            <img id="flavicon-image-before-upload" src="{{ url('uploads/Images/noimage.jpg') }}"
                                             style="height: 100px; width: 90px;">  
                         </div>
                         <div class="col-md-4">
