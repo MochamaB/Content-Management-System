@@ -14,7 +14,7 @@
             <h4><b> Process Requests</b>
             </h4>
             <hr>
-            <h5>Status:</h5>
+            <h5><b>Status:</b></h5>
             @if ($modelrequests)
             @php
             $statusClasses = [
@@ -22,7 +22,7 @@
             'New' => 'warning',
             'OverDue' => 'error',
             'In Progress' => 'information',
-            'Reported' => 'dark',
+            'Assigned' => 'dark',
             ];
 
             // Get the status and find its corresponding class
@@ -38,23 +38,27 @@
             <span>N/A</span>
             @endif
             <hr>
-            <h5>Assigned:</h5>
+            <h5><b>Assigned:</b></h5>
             @if ($modelrequests->assigned)
+
             <!-- Assigned user or vendor exists -->
-            @if ($modelrequests->assigned_type === 'user')
-            <!-- Assigned to a user -->
-            <span>{{ $modelrequests->assigned->name }}</span>
-            @elseif ($modelrequests->assigned_type === 'vendor')
-            <!-- Assigned to a vendor -->
-            <span>{{ $modelrequests->assigned->vendor_name }}</span>
-            @endif
+                @if ($modelrequests->assigned_type === 'App\Models\User')
+                <!-- Assigned to a user -->
+                <h5>Employee- {{ $modelrequests->assigned->firstname }} {{ $modelrequests->assigned->lastname }}</h5>
+               
+
+                @elseif ($modelrequests->assigned_type === 'App\Models\Vendor')
+                <!-- Assigned to a vendor -->
+                <h5>Vendor: {{ $modelrequests->assigned->vendor_name }}</h5>
+                @endif
             @else
             <!-- No assigned user or vendor -->
             <a href="{{ url('request/assign/'.$modelrequests->id) }}">Assign Request</a>
             @endif
             <hr>
-            <h5>Total Invoice Amount:</h5>
-            <h5>Total Paid Amount:</h5>
+            <h5><b>Total Invoice Amount:</b> {{ $sitesettings->site_currency}}: {{$modelrequests->totalamount}}</h5>
+            <h5><b>Total Paid Amount:</b> {{ $sitesettings->site_currency}}:</h5>
+            <h4><b>Balance:</b></h4>
 
 
         </div>

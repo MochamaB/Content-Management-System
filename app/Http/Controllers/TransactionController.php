@@ -14,11 +14,18 @@ class TransactionController extends Controller
 
     private $filterService;
     private $tableViewDataService;
+    protected $controller;
+    protected $model;
 
 
     public function __construct(FilterService $filterService, TableViewDataService $tableViewDataService)
     {
-
+        
+        $this->model = Transaction::class;
+        $this->controller = collect([
+            '0' => 'transaction', // Use a string for the controller name
+            '1' => ' Transaction',
+        ]);
         $this->filterService = $filterService;
         $this->tableViewDataService = $tableViewDataService;
     }
@@ -29,27 +36,12 @@ class TransactionController extends Controller
 
     public function ledger(Request $request)
     {
-        $query = Transaction::with('creditAccount', 'debitAccount');
+      
         $headers = ['DATE', 'ACCOUNT', 'DESC', 'TYPE', 'DEBIT', 'CREDIT', 'BALANCE'];
         $filterdata = $this->filterService->getGeneralLedgerFilters();
-        $filters = request()->all();
-        $from_date = $request->from_date;
-        $to_date =  $request->to_date;
-        foreach ($filters as $column => $value) {
-            if (!empty($value)) {
-                if ($column == 'from_date' || $column == 'to_date') {
-                    // Use whereBetween on the created-at column with the date range
-                    $query->whereBetween('created_at', [$from_date, $to_date]);
-                } else {
-
-                $query->where($column, $value);
-                }
-            }
-        }
-        $transactions = $query
-            ->where("created_at", ">", Carbon::now()->subMonths(6))
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $filters = $request->except(['tab','_token','_method']);
+        $transactions = $this->model::with('creditAccount', 'debitAccount')->applyFilters($filters)->get();
+       
         // Calculate running balance
         $balance = 0;
         $generalLedgerEntries = [];
@@ -60,14 +52,14 @@ class TransactionController extends Controller
                 $debit = null;
                 $credit = $transaction->amount;
             } elseif ($transaction->creditAccount->account_type === 'Income') {
-                $debit = $transaction->amount;
-                $credit = null;
+                $debit = null;
+                $credit = $transaction->amount;
             } elseif ($transaction->creditAccount->account_type === 'Expenses') {
                 $debit = null;
                 $credit = $transaction->amount;
             } elseif ($transaction->creditAccount->account_type === 'Asset') {
-                $debit = null;
-                $credit = $transaction->amount;
+                $debit = $transaction->amount;
+                $credit = null;
             }
             // Update balance based on Debit or Credit
             if ($debit !== null) {
@@ -76,12 +68,16 @@ class TransactionController extends Controller
                 $balance -= $transaction->amount;
             }
 
+            $model = $transaction->transactionable;
+            $modelName = strtolower(class_basename($model));
+            $referenceno  = $model->id.'-'.$model->referenceno;
+            $link = url($modelName, ['id' => $model->id]);
             // Debit entry
             $entry = [
                 'date' => $transaction->created_at->format('Y-m-d'),
-                'description' => $transaction->description,
-                'account' => $transaction->debitAccount->account_name,
-                'charge_name' => $transaction->charge_name,
+                'description' =>$transaction->property->property_name.' - '.$transaction->units->unit_number,
+                'account' => $transaction->description,
+                'charge_name' => $transaction->charge_name.' - <a href="' . $link . '">' . $modelName . '-' . $referenceno . '</a>',
                 'debit' => $debit,
                 'credit' => $credit,
                 'balance' => $balance,

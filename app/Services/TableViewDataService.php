@@ -551,9 +551,14 @@ class TableViewDataService
             $requestStatus = '<span class="statusdot statusdot-' . $statusClass . '"></span>';
             $roleNames = $item->users->roles->first();
             $raisedby =  $item->users->firstname . ' ' . $item->users->lastname;
-            $assignLink = '<a href="' . url('request/assign/' . $item->id) . '" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary">ASSIGN</i>  </a>';
+            $assignLink = '<a href="' . url('request/assign/' . $item->id) . '" class="badge badge-information"><i class="mdi mdi-lead-pencil mdi-12px text-primary">ASSIGN</i>  </a>';
 
             $assignedModel = $item->assigned;
+            if($assignedModel){
+            $assigned = $assignedModel->firstname.' '.$assignedModel->lastname;
+            }else{
+                    $assigned =   $assignLink; 
+            }
 
             // Now, you can check the type of the assigned model and access its attributes accordingly
             
@@ -565,7 +570,7 @@ class TableViewDataService
                 '<span class="text-muted" style="font-weight:500;font-style: italic">' . $roleNames . '</span></br>' .
                     $raisedby,
                 $item->priority,
-                $assignedModel ?? $assignLink,
+                $assigned ?? $assignLink,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
 
             ];

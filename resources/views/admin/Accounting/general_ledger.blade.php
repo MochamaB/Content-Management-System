@@ -7,7 +7,7 @@ use Carbon\Carbon;
         <thead>
             <tr>
                 @foreach($headers as $header)
-                <th>{{ $header }}</th>
+                <th data-sortable="true">{{ $header }}</th>
                 @endforeach
             </tr>
         </thead>
@@ -17,7 +17,7 @@ use Carbon\Carbon;
                 <td>{{ $entry['date'] }}</td>
                 <td>{{ $entry['account'] }}</td>
                 <td>{{ $entry['description'] }}</td>
-                <td>{{ $entry['charge_name'] }}</td>
+                <td>{!! $entry['charge_name'] !!}</td>
                 <!-- Display Debit amount with currency if not null -->
                 <td>
                     @if ($entry['debit'] !== null)
