@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('workorder_expenses', function (Blueprint $table) {
             $table->id()->index();
-            $table->unsignedBigInteger('request_id')->index();
+            $table->unsignedBigInteger('ticket_id')->index();
             $table->decimal('quantity');
             $table->string('item');
             $table->decimal('price');
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('request_id')->references('id')->on('requests')->onDelete('cascade');
+            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
         });
     }
 

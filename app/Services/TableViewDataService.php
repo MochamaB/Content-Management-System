@@ -23,11 +23,32 @@ class TableViewDataService
 {
 
     public $sitesettings;
+    public $user;
+    protected $badgeClasses = [
+        'Completed' => 'active',
+        'New' => 'warning',
+        'OverDue' => 'error',
+        'In Progress' => 'information',
+        'Assigned' => 'dark',
+
+        'critical' => 'error',
+        'high' => 'warning',
+        'Normal' => 'active',
+        'Low' => 'dark',
+    ];
 
     public function __construct()
     {
         $this->sitesettings = WebsiteSetting::first();
+        $this->user = Auth::user();
     }
+
+
+    public function getBadgeClass($status)
+    {
+        return $this->badgeClasses[$status] ?? 'active';
+    }
+
 
     public function applyDateRangeFilter($query, $month, $year)
     {
@@ -109,12 +130,12 @@ class TableViewDataService
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
             $mediaURL = $item->model->getFirstMediaUrl('avatar');
-            if($mediaURL){
-                $profpic = url($item->getFirstMediaUrl('avatar')); 
-            }else{
-            $profpic = url('uploads/images/avatar.png');
+            if ($mediaURL) {
+                $profpic = url($item->getFirstMediaUrl('avatar'));
+            } else {
+                $profpic = url('uploads/images/avatar.png');
             }
-         //   $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            //   $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
@@ -148,7 +169,7 @@ class TableViewDataService
 
 
             ];
-            
+
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
                 array_splice(
@@ -353,7 +374,7 @@ class TableViewDataService
                     $startFormatted . '</span>',
                 $item->currentreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     $enddateFormatted . '</span>',
-                $usage. ' units ',
+                $usage . ' units ',
                 $item->rate_at_reading,
                 $this->sitesettings->site_currency . '. ' . number_format($amount, 0, '.', ','),
             ];
@@ -377,7 +398,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['NO', 'THUMBNAIL', 'NAME','CATEGORY', 'COLLECTION', 'SIZE', 'ACTIONS'];
+        $headers = ['NO', 'THUMBNAIL', 'NAME', 'CATEGORY', 'COLLECTION', 'SIZE', 'ACTIONS'];
 
         $tableData = [
             'headers' => $headers,
@@ -389,15 +410,15 @@ class TableViewDataService
             $model_type = $item->model_type;
             $parts = explode('\\', $model_type);
             $category = end($parts);
-            if($item->mime_type === 'application/pdf'){
+            if ($item->mime_type === 'application/pdf') {
                 $thumbnail = url('uploads/pdf.png');
-            }else{
+            } else {
                 $thumbnail = $item->getUrl();
             }
             $row = [
                 'id' => $item->id,
-                $key+1,
-                '<img src="'.$thumbnail.'" alt="'.$item->name.'" style="width:130px;height:80px;border-radius:0">',
+                $key + 1,
+                '<img src="' . $thumbnail . '" alt="' . $item->name . '" style="width:130px;height:80px;border-radius:0">',
                 $item->file_name,
                 $category,
                 $item->collection_name,
@@ -436,10 +457,10 @@ class TableViewDataService
             $roleNames = $item->roles->first();
             $addlease = '<a href="' . route('lease.create') . '" class="badge badge-warning"  style="float: left; margin-right:10px">Add Lease</a>';
             $mediaURL = $item->getFirstMediaUrl('avatar');
-            if($mediaURL){
-                $profpic = url($item->getFirstMediaUrl('avatar')); 
-            }else{
-            $profpic = url('uploads/images/avatar.png');
+            if ($mediaURL) {
+                $profpic = url($item->getFirstMediaUrl('avatar'));
+            } else {
+                $profpic = url('uploads/images/avatar.png');
             }
             //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
@@ -520,12 +541,12 @@ class TableViewDataService
         return $tableData;
     }
 
-    public function getRequestData($requestdata, $extraColumns = false)
+    public function getTicketData($ticketdata, $extraColumns = false)
     {
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REQUEST CATEGORY', 'SUBJECT', 'STATUS', 'RAISED BY', 'PRIORITY', 'ASSIGNED', 'AMOUNT', 'ACTIONS'];
+        $headers = [' CATEGORY', 'SUBJECT', 'STATUS', 'RAISED BY', 'PRIORITY', 'ASSIGNED', 'AMOUNT', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -537,7 +558,7 @@ class TableViewDataService
             'rows' => [],
         ];
 
-        foreach ($requestdata as $item) {
+        foreach ($ticketdata as $item) {
             $statusClasses = [
                 'Completed' => 'active',
                 'New' => 'warning',
@@ -548,28 +569,37 @@ class TableViewDataService
 
             $status = $item->status;
             $statusClass = $statusClasses[$status] ?? 'Reported';
+            $priority = $item->priority;
+            $priorityClass = $this->getBadgeClass($priority);
+
+            $priorityStatus = '<span class="badge badge-' . $priorityClass . '">' . $priority . '</span>';
             $requestStatus = '<span class="statusdot statusdot-' . $statusClass . '"></span>';
             $roleNames = $item->users->roles->first();
             $raisedby =  $item->users->firstname . ' ' . $item->users->lastname;
-            $assignLink = '<a href="' . url('request/assign/' . $item->id) . '" class="badge badge-information"><i class="mdi mdi-lead-pencil mdi-12px text-primary">ASSIGN</i>  </a>';
-
+            $url = url('ticket/assign/' . $item->id);
+            if (Auth::user()->can('work-order.create')|| Auth::user()->id === 1 ) {
+                $assignLink = '<a href="' .  $url . '" class="badge badge-information"><i class="mdi mdi-lead-pencil mdi-12px text-primary">ASSIGN</i>  </a>';
+            } else {
+                // Empty link or any other fallback content
+                $assignLink = '<a href="" class="badge badge-warning"><i class="mdi mdi-lead-pencil mdi-12px text-warning"> NOT ASSIGNED</i>  </a>';
+            }
             $assignedModel = $item->assigned;
-            if($assignedModel){
-            $assigned = $assignedModel->firstname.' '.$assignedModel->lastname;
-            }else{
-                    $assigned =   $assignLink; 
+            if ($assignedModel) {
+                $assigned = $assignedModel->firstname . ' ' . $assignedModel->lastname;
+            } else {
+                $assigned =   $assignLink;
             }
 
             // Now, you can check the type of the assigned model and access its attributes accordingly
-            
+
             $row = [
                 'id' => $item->id,
                 $item->category,
                 $item->subject,
                 $requestStatus . ' ' . $status,
-                '<span class="text-muted" style="font-weight:500;font-style: italic">' . $roleNames . '</span></br>' .
+                '<span class="text-muted" style="font-weight:500;font-style: italic">' . $roleNames->name . '</span></br>' .
                     $raisedby,
-                $item->priority,
+                $priorityStatus,
                 $assigned ?? $assignLink,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
 
@@ -585,14 +615,14 @@ class TableViewDataService
     }
 
 
-    public function getGeneralLedgerData($ledgerdata ,$extraColumns = false)
+    public function getGeneralLedgerData($ledgerdata, $extraColumns = false)
     {
         // Eager load the 'unit' relationship
         //   $invoicedata->load('user');
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['NO', 'DATE', 'DESCRIPTION','TYPE', 'REFERENCE', 'DEBIT', 'CREDIT','AMOUNT','TOTAL CREDIT'];
+        $headers = ['NO', 'DATE', 'DESCRIPTION', 'TYPE', 'REFERENCE', 'DEBIT', 'CREDIT', 'AMOUNT', 'TOTAL CREDIT'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -605,12 +635,12 @@ class TableViewDataService
         ];
 
         foreach ($ledgerdata as $item) {
-        
+
             $row = [
                 'id' => $item->id,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
                 $item->charge_name,
-                class_basename( $item->transactionable_type),
+                class_basename($item->transactionable_type),
                 $item->transactionable->referenceno,
                 $item->debitAccount->account_name,
                 $item->creditAccount->account_name,
@@ -625,6 +655,4 @@ class TableViewDataService
 
         return $tableData;
     }
-
-   
 }

@@ -197,6 +197,11 @@ class Unit extends Model implements HasMedia
         return $this->hasMany(MeterReading::class);
     }
 
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')

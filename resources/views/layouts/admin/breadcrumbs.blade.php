@@ -15,9 +15,8 @@
                 @endif
             @endforeach
         </h6>
-                          <button type="button" onclick="history.back()" class="btn btn-outline-primary ms-auto" 
-                                  style="border: 2px solid blue;margin-right:0px;">
-                            <i class="mdi mdi-arrow-left-bold-circle mdi-24" style="font-size: 17px;color:blue"> BACK</i>
+                          <button type="button" onclick="history.back()" class="btn btn-outline-primary ms-auto">
+                            <i class="mdi mdi-arrow-left-bold-circle mdi-24" style=""> BACK</i>
                             
                           </button>
                           

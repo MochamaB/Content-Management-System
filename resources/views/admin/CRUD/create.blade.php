@@ -48,8 +48,7 @@
                 <input type="{{ $attributes['inputType'] }}" class="form-control @error($field) is-invalid @enderror" id="{{ $field }}" name="{{ $field }}" value="{{ old($field) }}" @if($attributes['required']) required @endif>
                 @elseif($attributes['inputType'] === 'textarea')
                 <!---- TEXTAREA INPUT ------------->
-                <textarea class="form-control" style=" width: 100%;padding:  1px 10px 75px 5px;" id="{{ $field }}" name="{{ $field }}" @if($attributes['required']) required @endif>
-
+                <textarea class="form-control" id="exampleTextarea1" name="{{ $field }}" rows="3" columns= "5" @if($attributes['required']) required @endif>
                
                 </textarea>
                 

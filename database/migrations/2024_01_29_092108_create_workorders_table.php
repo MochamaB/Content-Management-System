@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('workorders', function (Blueprint $table) {
             $table->id()->index();
-            $table->unsignedBigInteger('request_id')->index();
+            $table->unsignedBigInteger('ticket_id')->index();
             $table->unsignedBigInteger('user_id')->index();
             $table->string('notes');
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('request_id')->references('id')->on('requests')->onDelete('cascade');
+            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

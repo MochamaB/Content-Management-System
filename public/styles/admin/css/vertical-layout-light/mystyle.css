@@ -873,6 +873,17 @@ border: 2px solid #c50000c4 !important;
   content: "";
 }
 
+.btn-outline-primary {
+  border: 2px solid #0000ff !important;
+  margin-right:0px;
+  font-size: 17px;
+  color:#0000ff !important;
+}
+
+.btn-outline-primary:hover {
+  color: #fff !important; /* Set the desired hover color */
+}
+
 
 /*------------------------ Responsiveness ----------------------------------------------------------  */
 

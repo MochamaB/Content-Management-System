@@ -21,16 +21,24 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    protected $controller;
+    protected $model;
     private $tableViewDataService;
 
     public function __construct(TableViewDataService $tableViewDataService)
     {
+        $this->model = Unit::class;
+        $this->controller = collect([
+            '0' => 'dashboard', // Use a string for the controller name
+            '1' => ' Dashboard',
+        ]);
         
         $this->tableViewDataService = $tableViewDataService;
     }
 
     public function index(Request $request)
     {
+        $controller = $this->controller;
         $user = auth()->user();
         $cardData = [];
         $month = $request->get('month', Carbon::now()->month);
@@ -40,10 +48,10 @@ class DashboardController extends Controller
         if ($user->hasRole('admin') || Gate::allows('view-all', $user) || $user->hasRole('Property Owner')) {
             $cardData = $this->getAdminCardData($month, $year);
         }elseif($user->hasRole('tenant')){
-            $cardData = $this->getAdminCardData($month, $year);
+            $cardData = '$this->getAdminCardData($month, $year)';
         }
 
-        return View('admin.Report.dashboard', compact('cardData'));
+        return View('admin.Report.dashboard', compact('cardData','controller'));
     }
 
     /**

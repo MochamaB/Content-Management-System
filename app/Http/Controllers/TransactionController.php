@@ -20,7 +20,7 @@ class TransactionController extends Controller
 
     public function __construct(FilterService $filterService, TableViewDataService $tableViewDataService)
     {
-        
+
         $this->model = Transaction::class;
         $this->controller = collect([
             '0' => 'transaction', // Use a string for the controller name
@@ -36,30 +36,31 @@ class TransactionController extends Controller
 
     public function ledger(Request $request)
     {
-      
-        $headers = ['DATE', 'ACCOUNT', 'DESC', 'TYPE', 'DEBIT', 'CREDIT', 'BALANCE'];
+
+        $headers = ['DATE', 'ACCOUNT', 'PROPERTY', 'DESCRIPTION', 'DEBIT', 'CREDIT', 'BALANCE'];
         $filterdata = $this->filterService->getGeneralLedgerFilters();
-        $filters = $request->except(['tab','_token','_method']);
+        $filters = $request->except(['tab', '_token', '_method']);
         $transactions = $this->model::with('creditAccount', 'debitAccount')->applyFilters($filters)->get();
-       
+
         // Calculate running balance
         $balance = 0;
         $generalLedgerEntries = [];
 
         foreach ($transactions as $transaction) {
             // Determine if the account is a Debit or Credit based on account type
-            if ($transaction->creditAccount->account_type === 'Liability') {
-                $debit = null;
+            
+            $creditAccountType = $transaction->creditAccount->account_type;
+            $debitAccountType = $transaction->debitAccount->account_type;
+
+            // Initialize debit and credit amounts
+            $debit = null;
+            $credit = null;
+
+            // Determine debit or credit based on account types
+            if ($creditAccountType === 'Liability' || $creditAccountType === 'Income' || $creditAccountType === 'Expenses') {
                 $credit = $transaction->amount;
-            } elseif ($transaction->creditAccount->account_type === 'Income') {
-                $debit = null;
-                $credit = $transaction->amount;
-            } elseif ($transaction->creditAccount->account_type === 'Expenses') {
-                $debit = null;
-                $credit = $transaction->amount;
-            } elseif ($transaction->creditAccount->account_type === 'Asset') {
+            } elseif ($debitAccountType === 'Asset') {
                 $debit = $transaction->amount;
-                $credit = null;
             }
             // Update balance based on Debit or Credit
             if ($debit !== null) {
@@ -70,14 +71,14 @@ class TransactionController extends Controller
 
             $model = $transaction->transactionable;
             $modelName = strtolower(class_basename($model));
-            $referenceno  = $model->id.'-'.$model->referenceno;
+            $referenceno  = $model->id . '-' . $model->referenceno;
             $link = url($modelName, ['id' => $model->id]);
             // Debit entry
             $entry = [
                 'date' => $transaction->created_at->format('Y-m-d'),
-                'description' =>$transaction->property->property_name.' - '.$transaction->units->unit_number,
+                'description' => $transaction->property->property_name . ' - ' . $transaction->units->unit_number,
                 'account' => $transaction->description,
-                'charge_name' => $transaction->charge_name.' - <a href="' . $link . '">' . $modelName . '-' . $referenceno . '</a>',
+                'charge_name' => $transaction->charge_name . ' -  <a href="' . $link . '">' . $modelName . '-' . $referenceno . '</a> ',
                 'debit' => $debit,
                 'credit' => $credit,
                 'balance' => $balance,
@@ -94,7 +95,10 @@ class TransactionController extends Controller
     public function incomeStatement(Request $request)
     {
         $sitesettings = WebsiteSetting::all();
-        $threeMonths = now()->subMonths(3);
+        $filterdata = $this->filterService->getIncomeStatementFilters();
+        $filters = $request->except(['tab', '_token', '_method']);
+        
+       // $threeMonths = now()->subMonths(3);
         $incomeQuery = Transaction::whereHas('creditAccount', function ($query) {
             $query->whereBetween('account_number', [40000, 50000]);
         });
@@ -103,35 +107,20 @@ class TransactionController extends Controller
             $query->whereBetween('account_number', [90000, 100000]);
         });
 
-        $filterdata = $this->filterService->getIncomeStatementFilters();
-        $filters = request()->all();
-        $from_date = $request->from_date;
-        $to_date = $request->to_date;
-        foreach ($filters as $column => $value) {
-            if (!empty($value)) {
-                // Check if the column is from-date or to-date
-                if ($column == 'from_date' || $column == 'to_date') {
-                    // Use whereBetween on the created-at column with the date range
-                    $incomeQuery->whereBetween('created_at', [$from_date, $to_date]);
-                    $expenseQuery->whereBetween('created_at', [$from_date, $to_date]);
-                } else {
-                    // Use where on the other columns
-                    $incomeQuery->where($column, $value);
-                    $expenseQuery->where($column, $value);
-                }
-            }
-        }
+       
         $incomeTransactions = $incomeQuery
             ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
             ->where("created_at", ">", Carbon::now()->subMonths(6))
             ->groupByRaw('creditaccount_id, month')
-            ->orderBy('creditaccount_id')->get();
+            ->orderBy('creditaccount_id')
+            ->applyFilters($filters)->get();
 
         $expenseTransactions = $expenseQuery
             ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
             ->where("created_at", ">", Carbon::now()->subMonths(6))
             ->groupByRaw('creditaccount_id, month')
-            ->orderBy('creditaccount_id')->get();
+            ->orderBy('creditaccount_id')
+            ->applyFilters($filters)->get();
 
         $months = $incomeTransactions->pluck('month')->unique()->sortBy(function ($date) {
             return Carbon::parse($date)->timestamp;

@@ -3,7 +3,11 @@
 @section('content')
 
 @include('admin.CRUD.date_filter')
+@if(Auth::user()->can($controller[0].'.create'))
 @include('admin.CRUD.dashboardcards')
+@else
+
+@endif
 <div class="row">
   <div class="col-lg-8 d-flex flex-column">
     <div class="row flex-grow">

@@ -53,7 +53,7 @@
                 @endif
             @else
             <!-- No assigned user or vendor -->
-            <a href="{{ url('request/assign/'.$modelrequests->id) }}">Assign Request</a>
+            <a href="{{ url('ticket/assign/'.$modelrequests->id) }}">Assign Request</a>
             @endif
             <hr>
             <h5><b>Total Invoice Amount:</b> {{ $sitesettings->site_currency}}: {{$modelrequests->totalamount}}</h5>

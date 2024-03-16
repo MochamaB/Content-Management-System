@@ -174,9 +174,9 @@ class User extends Authenticatable implements HasMedia
         return $this->hasOne(Lease::class, 'user_id');
     }
 
-    public function request()
+    public function tickets()
     {
-        return $this->hasMany(Request::class, 'user_id');
+        return $this->hasMany(ticket::class, 'user_id');
     }
 
     public function unitswithoutlease()

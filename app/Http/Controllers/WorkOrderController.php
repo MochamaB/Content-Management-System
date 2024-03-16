@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Models\Ticket;
+use App\Models\Workorder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 class WorkOrderController extends Controller
 {
     /**
@@ -21,9 +24,12 @@ class WorkOrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id)
     {
-        //
+        $tickets = Ticket::find($id);
+
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+        return View('admin.maintenance.create_workorder',compact('tickets'));
     }
 
     /**
@@ -34,7 +40,18 @@ class WorkOrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = Auth::user();
+        $validationRules = Workorder::$validation;
+        $validatedData = $request->validate($validationRules);
+        $workOrder = new Workorder();
+        $workOrder->fill($validatedData);
+        $workOrder->user_id = $user->id;
+        $workOrder->save();
+
+        $previousUrl = Session::get('previousUrl');
+      
+        return redirect($previousUrl)->with('status', 'Your Work Order Item has been saved successfully');
+       
     }
 
     /**

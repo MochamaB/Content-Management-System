@@ -161,11 +161,11 @@ class SliderController extends Controller
         $slider->fill($request->all());
 
         if ($request->file('slider_picture')) {
-            $slider->clearMediaCollection('slider_picture');
+            $slider->clearMediaCollection('slider');
             $slider->addMedia($request->file('slider_picture'))->toMediaCollection('slider');
         }
 
-        $slider->save();
+        $slider->update();
         return redirect('slider')->with('status', 'Slider Updated Successfully');
     }
 

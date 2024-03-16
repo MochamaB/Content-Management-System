@@ -4,9 +4,9 @@
 
 <div class=" contwrapper">
 
-    <h4>Assign Request</h4>
+    <h4>Assign Ticket</h4>
     <hr>
-    <form method="POST" action="{{ url('request/'.$modelrequests->id) }}" class="myForm" novalidate>
+    <form method="POST" action="{{ url('ticket/'.$modelrequests->id) }}" class="myForm" novalidate>
         @csrf
         @method('PUT')
         <div class="col-md-6">

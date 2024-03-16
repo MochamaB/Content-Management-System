@@ -10,7 +10,7 @@ class WorkorderExpense extends Model
     use HasFactory;
     protected $table = 'workorder_expenses';
     protected $fillable = [
-            'request_id',
+            'ticket_id',
             'quantity',
             'item',
             'price',
@@ -39,12 +39,6 @@ class WorkorderExpense extends Model
 
     ];
 
-    /////Filter options
-    public static $filter = [
-        'vendorcategory_id' => 'Type',
-        'property_streetname' => 'Location',
-        'property_status' => 'Status',
-        // Add more filter fields as needed
-    ];
+    
 
 }

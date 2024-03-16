@@ -164,7 +164,7 @@ class PropertyController extends Controller
         ///4. REQUESTS
         $requests = $property->requests;
         //   $unitController = new UnitController();
-           $requestTableData = $this->tableViewDataService->getRequestData($requests);
+           $requestTableData = $this->tableViewDataService->getTicketData($requests);
     
          //5. SETTINGS
          $setting = $property->settings;

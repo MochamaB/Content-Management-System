@@ -14,14 +14,14 @@ class Workorder extends Model
     use HasFactory, InteractsWithMedia, MediaUpload;
     protected $table = 'workorders';
     protected $fillable = [
-            'request_id',
+            'ticket_id',
             'user_id',
             'notes',
     ];
 
      ////////// FIELDS FOR CREATE AND EDIT METHOD
      public static $fields = [
-        'request_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'ticket_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'user_id' => ['label' => 'Vendor Category', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => ''],
         'notes' => ['label' => 'Name of Vendor', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
 
@@ -29,8 +29,7 @@ class Workorder extends Model
     ];
 
     public static $validation = [
-        'request_id' => 'required',
-        'user_id' => 'required',
+        'ticket_id' => 'required',
         'notes' => 'required',
     ];
 

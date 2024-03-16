@@ -30,10 +30,11 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\RequestController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\VendorCategoryController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WorkOrderController;
 ////Test Email View////////////
 use App\Models\MeterReading;
 use App\Models\User;
@@ -160,12 +161,18 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('vendor-category', VendorCategoryController::class);
         Route::resource('vendors', VendorController::class);
 
-        Route::get('request/create/{id?}', [
-            'as' => 'request.create',
-            'uses' => 'App\Http\Controllers\RequestController@create'
+        Route::get('ticket/create/{id?}', [
+            'as' => 'ticket.create',
+            'uses' => 'App\Http\Controllers\TicketController@create'
         ]);
-        Route::resource('request', RequestController::class, ['except' => 'create']);
-        Route::get('request/assign/{id}', [RequestController::class, 'assign'])->name('request.assign');
+        Route::resource('ticket', TicketController::class, ['except' => 'create']);
+        Route::get('ticket/assign/{id}', [TicketController::class, 'assign'])->name('ticket.assign');
+
+        Route::get('work-order/create/{id}', [
+            'as' => 'work-order.create',
+            'uses' => 'App\Http\Controllers\WorkOrderController@create'
+        ]);
+        Route::resource('work-order', WorkOrderController::class, ['except' => 'create']);
 
 
     });

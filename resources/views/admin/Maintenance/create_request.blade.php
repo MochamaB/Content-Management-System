@@ -5,7 +5,7 @@
 <div class=" contwrapper">
 
    
-    <form method="POST" action="{{ url('request') }}" class="myForm" novalidate>
+    <form method="POST" action="{{ url('ticket') }}" class="myForm" novalidate>
         @csrf
         @if ($property)
         <div class="col-md-6">
@@ -63,9 +63,8 @@
                 </select>
                 @elseif($attributes['inputType'] === 'textarea')
                 <!---- TEXTAREA INPUT ------------->
-                <textarea class="form-control" style=" width: 100%;padding:  1px 10px 75px 5px;" id="{{ $field }}" name="{{ $field }}" @if($attributes['required']) required @endif>
-
-               
+                <textarea class="form-control" id="exampleTextarea1" name="{{ $field }}" rows="4" columns= "6" @if($attributes['required']) required @endif>
+                
                 </textarea>
                 @else
                 <input type="{{ $attributes['inputType'] }}" class="form-control @error($field) is-invalid  @enderror" id="{{ $field }}" name="{{ $field }}"  value="{{ old($field) }}" 

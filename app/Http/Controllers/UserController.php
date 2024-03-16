@@ -22,6 +22,7 @@ use App\Actions\UserRoleAction;
 use App\Actions\AttachDetachUserFromUnitAction;
 use App\Actions\UploadMediaAction;
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Services\TableViewDataService;
 
 class UserController extends Controller
@@ -39,9 +40,12 @@ class UserController extends Controller
     protected $uploadMediaAction;
     private $tableViewDataService;
 
-    public function __construct(UserRoleAction $userRoleAction, AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction,
-    UploadMediaAction $uploadMediaAction,TableViewDataService $tableViewDataService)
-    {
+    public function __construct(
+        UserRoleAction $userRoleAction,
+        AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction,
+        UploadMediaAction $uploadMediaAction,
+        TableViewDataService $tableViewDataService
+    ) {
         $this->model = User::class;
         $this->controller = collect([
             '0' => 'user', // Use a string for the controller name
@@ -65,7 +69,7 @@ class UserController extends Controller
             } else {
                 // Admins can see all users except the superadmin
                 $users = $this->model::where('id', '<>', 1)
-                            ->where('id', '<>', $user->id)->get();
+                    ->where('id', '<>', $user->id)->get();
             }
         } else {
             $users = $user->filterUsers();
@@ -73,8 +77,8 @@ class UserController extends Controller
         $mainfilter =  Role::pluck('name')->toArray();
         $filterData = $this->filterData($this->model);
         $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getUserData($users,false);
-       // $userviewData = compact('tableData', 'mainfilter', 'controller');
+        $tableData = $this->tableViewDataService->getUserData($users, false);
+        // $userviewData = compact('tableData', 'mainfilter', 'controller');
 
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'), $filterData);
     }
@@ -265,23 +269,27 @@ class UserController extends Controller
             // Add more tab titles as needed
         ]);
 
-         /// DATA FOR INVOICES TAB
-         $invoices = Invoice::all();
-         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
+        /// DATA FOR INVOICES TAB
+        $invoices = Invoice::all();
+        $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
+
+        /// DATA FOR PAYMENTS TAB
+        $payments = Payment::all();
+        $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
         //3. LOAD THE PAGES FOR THE TABS
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Invoices') {
-                $tabContents[] = View('admin.User.user_tabs', ['tableData' => $invoiceTableData, 'controller' => ['']])->render();
+                $tabContents[] = View('admin.User.user_tabs', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
             } elseif ($title === 'Payments') {
-                $tabContents[] = View('admin.user.test')->render();
+                $tabContents[] = View('admin.User.user_tabs', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             } elseif ($title === 'Vouchers') {
                 $tabContents[] = View('admin.user.test')->render();
             }
         }
 
-        return View('admin.user.user_profile', compact('pageheadings', 'tabTitles', 'tabContents','user'));
+        return View('admin.user.user_profile', compact('pageheadings', 'tabTitles', 'tabContents', 'user'));
     }
 
     /**
@@ -346,8 +354,8 @@ class UserController extends Controller
     {
         $user = User::find($id);
         // Get the list of fillable fields from the model
-        
-    
+
+
         $user->syncRoles($request->get('role'));
 
         $user->update($request->all());

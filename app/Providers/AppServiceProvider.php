@@ -14,6 +14,7 @@ use App\Models\Paymentvoucher;
 use App\Models\Utility;
 use App\Models\User;
 use App\Models\Property;
+use App\Models\Ticket;
 use App\Models\Unit;
 use App\Models\Unitcharge;
 use Illuminate\Support\ServiceProvider;
@@ -52,18 +53,21 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(191);
         // Apply the UserAccessScope to specific models
         Lease::addGlobalScope(new UserAccessScope);
-
-        Property::addGlobalScope(new PropertyAccessScope);
-        Utility::addGlobalScope(new UtilityAccessScope);
-
-        Unit::addGlobalScope(new UnitAccessScope);
         Invoice::addGlobalScope(new UserAccessScope);
         MeterReading::addGlobalScope(new UserAccessScope);
         Unitcharge::addGlobalScope(new UserAccessScope);
-       // Invoice::addGlobalScope(new ApplyFilterScope);
         Paymentvoucher::addGlobalScope(new UserAccessScope);
         Payment::addGlobalScope(new UserAccessScope);
+       
+        Unit::addGlobalScope(new UnitAccessScope);
+       
+       // Invoice::addGlobalScope(new ApplyFilterScope);
+      
         //   User::addGlobalScope(new UserScope);
+        Property::addGlobalScope(new PropertyAccessScope);
+       // Ticket::addGlobalScope(new PropertyAccessScope);
+
+        Utility::addGlobalScope(new UtilityAccessScope);
 
 
 
@@ -187,7 +191,7 @@ class AppServiceProvider extends ServiceProvider
                 'Maintenance' => ['icon' => 'broom', 'submodules' => [
                     'vendor-category' => ['display' => 'Vendor Categories'],
                     'vendors' => ['display' => 'Vendors'],
-                    'request' => ['display' => 'All Requests'],
+                    'ticket' => ['display' => 'All Tickets'],
                     ]],
 
                 'Tasks' => ['icon' => 'timetable', 'submodules' => [
@@ -198,9 +202,6 @@ class AppServiceProvider extends ServiceProvider
                     'media' => ['display' => 'All Files'],
                     ]],
 
-                'Settings' => ['icon' => 'settings', 'submodules' => [
-                    'setting' => ['display' => 'Application Settings']
-                ]],
                 'User' => ['icon' => 'account-circle-outline', 'submodules' => [
                     'user' => ['display' => 'Manage Users'],
                     'role' => ['display' => 'User Roles'],
@@ -208,6 +209,9 @@ class AppServiceProvider extends ServiceProvider
                 ]],
                 'Reports' => ['icon' => 'chart-line', 'submodules' => [
                     'report' => ['display' => 'All Reports'],
+                ]],
+                'Settings' => ['icon' => 'settings', 'submodules' => [
+                    'setting' => ['display' => 'Application Settings']
                 ]],
             ]);
             //  $notifications = $user->notifications;
