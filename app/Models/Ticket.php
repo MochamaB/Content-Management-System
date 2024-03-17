@@ -91,4 +91,8 @@ class Ticket extends Model implements HasMedia
     {
         return $this->morphTo();
     }
+    public function workorders()
+    {
+        return $this->hasMany(Workorder::class);
+    }
 }

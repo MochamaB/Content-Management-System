@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorCategory;
+use App\Models\Workorder;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Auth;
@@ -118,14 +119,15 @@ class TicketController extends Controller
     public function show($id)
     {
         //  dd($id);
-        $modelrequests = Ticket::find($id);
+        $tickets = Ticket::find($id);
+        $workorders = Workorder:: where('ticket_id',$id)->get();
         //   $unit->load('property', 'unitSupervisors');
         $pageheadings = collect([
-            '0' => $modelrequests->category,
-            '1' => $modelrequests->property->property_name,
-            '2' => $modelrequests->subject,
+            '0' => $tickets->category,
+            '1' => $tickets->property->property_name,
+            '2' => $tickets->subject,
         ]);
-        $viewData = $this->formData($this->model, $modelrequests);
+        $viewData = $this->formData($this->model, $tickets);
 
         ///Data for Summary page
 
@@ -140,11 +142,11 @@ class TicketController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.maintenance.summary_request', $viewData, compact('modelrequests'))->render();
+                $tabContents[] = View('admin.maintenance.summary_request', $viewData, compact('tickets'))->render();
             } elseif ($title === 'Work Order') {
-                $tabContents[] = View('admin.maintenance.workorder', compact('modelrequests'))->render();
+                $tabContents[] = View('admin.maintenance.workorder', compact('tickets','workorders'))->render();
             } elseif ($title === 'Expenses') {
-                $tabContents[] = View('admin.maintenance.workorder', compact('modelrequests'))->render();
+                $tabContents[] = View('admin.maintenance.workorder', compact('tickets','workorders'))->render();
             }
         }
 

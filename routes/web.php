@@ -173,6 +173,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'uses' => 'App\Http\Controllers\WorkOrderController@create'
         ]);
         Route::resource('work-order', WorkOrderController::class, ['except' => 'create']);
+        Route::get('workorder-expense/create/{id}', [WorkOrderController::class, 'expense'])->name('workorder.expense');
+        Route::post('workorder-expense', [WorkOrderController::class, 'postexpense']);
+        
 
 
     });

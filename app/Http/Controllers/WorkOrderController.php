@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use App\Models\Workorder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+
 class WorkOrderController extends Controller
 {
     /**
@@ -29,7 +30,7 @@ class WorkOrderController extends Controller
         $tickets = Ticket::find($id);
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.maintenance.create_workorder',compact('tickets'));
+        return View('admin.maintenance.create_workorder', compact('tickets'));
     }
 
     /**
@@ -49,9 +50,8 @@ class WorkOrderController extends Controller
         $workOrder->save();
 
         $previousUrl = Session::get('previousUrl');
-      
+
         return redirect($previousUrl)->with('status', 'Your Work Order Item has been saved successfully');
-       
     }
 
     /**
@@ -88,6 +88,21 @@ class WorkOrderController extends Controller
         //
     }
 
+    public function expense($id)
+    {
+
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+        return View('admin.maintenance.expense');
+    }
+
+    public function postexpense(Request $request)
+    {
+        
+
+        $previousUrl = Session::get('previousUrl');
+
+        return redirect($previousUrl)->with('status', 'Your Work Order Item has been saved successfully');
+    }
     /**
      * Remove the specified resource from storage.
      *

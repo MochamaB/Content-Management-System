@@ -39,5 +39,14 @@ class Workorder extends Model
         // Add more filter fields as needed
     ];
 
+    public function users()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function tickets()
+    {
+        return $this->belongsTo(Ticket::class,'ticket_id');
+    }
     
 }

@@ -849,7 +849,7 @@ border: 2px solid #c50000c4 !important;
 
 /*----------- Timeline --------------*/
 .timeline {
-  border-left: 1px solid hsl(0, 0%, 90%);
+  border-left: 2px solid #3302a5c4 ;
   position: relative;
   list-style: none;
 }
@@ -884,6 +884,13 @@ border: 2px solid #c50000c4 !important;
   color: #fff !important; /* Set the desired hover color */
 }
 
+#table th.nomargin,
+#table td.nomargin {
+  border: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  background-color: white;
+}
 
 /*------------------------ Responsiveness ----------------------------------------------------------  */
 

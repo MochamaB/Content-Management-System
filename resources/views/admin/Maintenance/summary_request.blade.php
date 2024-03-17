@@ -15,7 +15,7 @@
             </h4>
             <hr>
             <h5><b>Status:</b></h5>
-            @if ($modelrequests)
+            @if ($tickets)
             @php
             $statusClasses = [
             'Completed' => 'active',
@@ -26,7 +26,7 @@
             ];
 
             // Get the status and find its corresponding class
-            $status = $modelrequests->status;
+            $status = $tickets->status;
             $statusClass = $statusClasses[$status] ?? 'default';
             @endphp
 
@@ -39,24 +39,24 @@
             @endif
             <hr>
             <h5><b>Assigned:</b></h5>
-            @if ($modelrequests->assigned)
+            @if ($tickets->assigned)
 
             <!-- Assigned user or vendor exists -->
-                @if ($modelrequests->assigned_type === 'App\Models\User')
+                @if ($tickets->assigned_type === 'App\Models\User')
                 <!-- Assigned to a user -->
-                <h5>Employee- {{ $modelrequests->assigned->firstname }} {{ $modelrequests->assigned->lastname }}</h5>
+                <h5>Employee- {{ $tickets->assigned->firstname }} {{ $tickets->assigned->lastname }}</h5>
                
 
-                @elseif ($modelrequests->assigned_type === 'App\Models\Vendor')
+                @elseif ($tickets->assigned_type === 'App\Models\Vendor')
                 <!-- Assigned to a vendor -->
-                <h5>Vendor: {{ $modelrequests->assigned->vendor_name }}</h5>
+                <h5>Vendor: {{ $tickets->assigned->vendor_name }}</h5>
                 @endif
             @else
             <!-- No assigned user or vendor -->
-            <a href="{{ url('ticket/assign/'.$modelrequests->id) }}">Assign Request</a>
+            <a href="{{ url('ticket/assign/'.$tickets->id) }}">Assign Request</a>
             @endif
             <hr>
-            <h5><b>Total Invoice Amount:</b> {{ $sitesettings->site_currency}}: {{$modelrequests->totalamount}}</h5>
+            <h5><b>Total Invoice Amount:</b> {{ $sitesettings->site_currency}}: {{$tickets->totalamount}}</h5>
             <h5><b>Total Paid Amount:</b> {{ $sitesettings->site_currency}}:</h5>
             <h4><b>Balance:</b></h4>
 

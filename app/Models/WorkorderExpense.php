@@ -14,6 +14,7 @@ class WorkorderExpense extends Model
             'quantity',
             'item',
             'price',
+            'amount'
     ];
 
      ////////// FIELDS FOR CREATE AND EDIT METHOD

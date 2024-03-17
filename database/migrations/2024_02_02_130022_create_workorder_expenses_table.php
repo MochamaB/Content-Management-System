@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('workorder_expenses', function (Blueprint $table) {
             $table->id()->index();
             $table->unsignedBigInteger('ticket_id')->index();
-            $table->decimal('quantity');
             $table->string('item');
+            $table->decimal('quantity');
             $table->decimal('price');
+            $table->decimal('amount');
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
