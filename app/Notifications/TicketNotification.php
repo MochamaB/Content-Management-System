@@ -7,18 +7,39 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketNotification extends Notification
+class TicketNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+    protected $user;
+    protected $ticket;
+    protected $subject;
+    protected $heading;
+    protected $linkmessage;
+    protected $data;
+    protected $ticketno;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($user,$ticket)
     {
-        //
+        $this->user = $user;
+        $this->ticket = $ticket;
+        $this->subject = 'New Ticket Created';
+        $this->heading = 'Your ticket has been sent';
+        $this->linkmessage = 'Check Ticket:';
+        $this->ticketno = 'Ticket Number:'.$this->ticket->id;
+        $this->data = ([
+            "line 1" => "Thank you for reaching out. This is just a quick note to inform you that we received your message and have already started working on resolving your issue.",
+            "line 2" => "Your Ticket Number is ".$this->ticketno,
+            "line 3" => "If you have any further questions or concerns, please let us know. We are available round-the-clock and always happy to help.",
+            "line 4" => "To view the progress of the ticket, Click here",
+            'action' => 'ticket/' . $this->ticket->id,
+            "actiondata" => "Go To Site",
+            "line 5" => "",
+        ]);
     }
 
     /**
@@ -40,10 +61,14 @@ class TicketNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        return (new MailMessage)->view(
+            'email.template',
+            ['user' => $this->user,
+            'data'=> $this->data,
+            'linkmessage' => $this->linkmessage,
+            'heading' =>$this->heading]
+        )
+        ->subject($this->subject);
     }
 
     /**
@@ -55,7 +80,14 @@ class TicketNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'user_id' => $this->user->id,
+            'phonenumber' => $this->user->phonenumber,
+            'user_email' => $this->user->email,
+            'subject' => $this->subject ?? null,
+            'heading' => $this->heading ?? null,
+            'linkmessage' => $this->linkmessage ?? null,
+            'data' => $this->data ?? null,
+            'channels' => $this->via($notifiable),
         ];
     }
 }

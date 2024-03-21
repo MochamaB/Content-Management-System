@@ -883,6 +883,15 @@ border: 2px solid #c50000c4 !important;
 .btn-outline-primary:hover {
   color: #fff !important; /* Set the desired hover color */
 }
+.btn-outline-danger {
+  border: 2px solid red !important;
+  font-size: 17px;
+  color: red;
+}
+
+.btn-outline-danger:hover {
+  color: #fff !important; /* Set the desired hover color */
+}
 
 #table th.nomargin,
 #table td.nomargin {
@@ -890,6 +899,17 @@ border: 2px solid #c50000c4 !important;
   border-top: none !important;
   border-bottom: none !important;
   background-color: white;
+}
+
+.bullet-line-list li:before {
+    width: 20px;
+    height: 20px;
+    left: -32px;
+    top: 6px;
+    border: 4px solid #E9EDFB;
+    margin-right: 15px;
+    z-index: 2;
+    background: #1F3BB3;
 }
 
 /*------------------------ Responsiveness ----------------------------------------------------------  */

@@ -30,6 +30,7 @@ use App\Scopes\ApplyFilterScope;
 use App\Scopes\UserScope;
 use App\Services\FilterService;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         Schema::defaultStringLength(191);
         // Apply the UserAccessScope to specific models
         Lease::addGlobalScope(new UserAccessScope);
@@ -69,7 +71,9 @@ class AppServiceProvider extends ServiceProvider
 
         Utility::addGlobalScope(new UtilityAccessScope);
 
-
+        Blade::directive('currency', function ($expression) {
+            return "<?= number_format($expression, 0, '.', ','); ?>";
+        });
 
         /////////// GLOBAL VIEW COMPOSERS
         view()->composer('*', function ($view) {

@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UserCreatedNotification extends Notification
+class UserCreatedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $user;
@@ -32,6 +32,7 @@ class UserCreatedNotification extends Notification
             "line 2" => "Manage and view all property data from the comfort of your computer",
             "line 3" => "The Default password is property123",
             "action" => "/dashboard",
+            "actiondata" => "Go To Site",
             "line 4" => "",
         ]);
     }

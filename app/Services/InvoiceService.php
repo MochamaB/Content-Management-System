@@ -18,6 +18,7 @@ use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
 use App\Jobs\SendInvoiceEmailJob;
+use App\Models\Transaction;
 use App\Notifications\InvoiceGeneratedNotification;
 
 
@@ -112,8 +113,17 @@ class InvoiceService
         $this->recordTransactionAction->invoiceCharges($invoice, $unitcharge);
 
         //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
-        $tenant = $invoice->model;
-        $tenant->notify(new InvoiceGeneratedNotification($invoice, $tenant));
+        $user = $invoice->model;
+        $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
+        $sixMonths = now()->subMonths(6);
+        $transactions = Transaction::where('created_at', '>=', $sixMonths)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('unitcharge_id', $unitchargeId)
+            ->get();
+        $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
+        $openingBalance = $this->calculateOpeningBalance($invoice);
+   
+        $user->notify(new InvoiceGeneratedNotification($invoice, $user,$transactions,$groupedInvoiceItems,$openingBalance));
         // SendInvoiceEmailJob::dispatch($invoice, $user);
 
 
@@ -121,11 +131,30 @@ class InvoiceService
         //   }
     }
 
-    ///////2. CHECK IF ITS TIME TO GENERATE INVOICE
-    private function isTimeToGenerateInvoice($unitcharge)
+    ///////2. GET OENING BALANCE OF THE INVOICE
+    public function calculateOpeningBalance(Invoice $invoice)
     {
-        $nextDate = Carbon::parse($unitcharge->nextdate);
-        return Carbon::now()->isSameMonth($nextDate);
+        // Get the date 6 months ago from today
+        $sixMonthsAgo = now()->subMonths(6);
+  
+        // Calculate the sum of invoice amounts
+        $invoiceAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('charge_name', $invoice->type)
+            ->where('transactionable_type', 'App\Models\Invoice')
+            ->sum('amount');
+  
+        // Calculate the sum of payment amounts
+        $paymentAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('charge_name', $invoice->type)
+            ->where('transactionable_type', 'App\Models\Payment')
+            ->sum('amount');
+  
+        // Calculate the opening balance
+        $openingBalance = $invoiceAmount - $paymentAmount;
+  
+        return $openingBalance;
     }
 
     ///3. CHECK IF INVOICE EXISTS

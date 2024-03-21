@@ -7,6 +7,7 @@ namespace App\Actions;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Paymentvoucher;
+use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Database\Eloquent\Model;
@@ -58,5 +59,16 @@ class CalculateInvoiceTotalAmountAction
             // Fully paid
             $refinvoice->update(['status' => 'paid']);
         }
+    }
+
+    public function ticket(Ticket $ticket)
+    {
+        // Calculate the total amount for the given invoice
+        $totalAmount = DB::table('workorder_expenses')
+            ->where('ticket_id', $ticket->id)
+            ->sum('amount');
+
+        // Update the totalamount field in the invoice header
+        $ticket->update(['totalamount' => $totalAmount]);
     }
 }

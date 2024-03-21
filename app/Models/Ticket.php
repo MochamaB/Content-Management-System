@@ -80,7 +80,10 @@ class Ticket extends Model implements HasMedia
         return $this->belongsTo(Property::class);
     }
 
-    
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }    
 
     public function users()
     {

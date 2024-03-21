@@ -17,18 +17,25 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $invoice;
-    protected $tenant;
+    protected $user;
+    protected $transactions;
+    protected $groupedInvoiceItems;
+    protected $openingBalance;
+   
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($invoice, $tenant)
+    public function __construct($invoice,$user,$transactions,$groupedInvoiceItems,$openingBalance)
     {
 
         $this->invoice = $invoice;
-        $this->tenant = $tenant;
+        $this->user = $user;
+        $this->transactions = $transactions;
+        $this->groupedInvoiceItems = $groupedInvoiceItems;
+        $this->openingBalance = $openingBalance;
 
     }
 
@@ -58,21 +65,19 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
         // Create a filename using invoice values
         $referenceno = $this->invoice->id . "-" . $this->invoice->referenceno;
         $invoicefilename = $this->invoice->type . ' - ' . $referenceno . ' ' . $this->invoice->unit->unit_number . ' invoice.pdf';
-        $duedate = Carbon::parse($this->invoice->duedate)->format('Y-m-d');
 
-        $heading = 'New ' . $this->invoice->type . ' Invoice';
-        $linkmessage = 'To view all your invoices. Login here';
-        $data = ([
-            "line 1" => "Please find attached Invoice Ref Number  " . $referenceno,
-            "line 2" => $this->invoice->type . " Charge due on " . $duedate,
-            "line 3" => "Login to the portal to get your account statement",
-            "action" => "invoice/" . $this->invoice->id,
-            "line 4" => "",
-        ]);
+
+       
+      
         return (new MailMessage)
             ->view(
-                'email.template',
-                ['user' => $this->tenant, 'data' => $data, 'linkmessage' => $linkmessage, 'heading' => $heading]
+                'email.statement_template',
+                ['user' => $this->user, 
+                'invoice' => $this->invoice, 
+                'transactions' => $this->transactions, 
+                'groupedInvoiceItems' => $this->groupedInvoiceItems,
+                'openingBalance' =>  $this->openingBalance
+                ]
             )
             ->subject($this->invoice->type . ' Invoice')
             ->attachData($invoicepdf->output(), $invoicefilename);
@@ -87,10 +92,11 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-     //       'user_id' => $this->user->id,
-      //      'phonenumber' => $this->user->phonenumber,
-       //     'user_email' => $this->user->email,
-
+            'user_id' => $this->user->id,
+            'phonenumber' => $this->user->phonenumber,
+            'user_email' => $this->user->email,
+            'subject' =>$this->invoice->type ?? null,
+            'channels' => $this->via($notifiable),
         ];
     }
 }

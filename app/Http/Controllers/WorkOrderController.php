@@ -5,11 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\Workorder;
+use App\Models\WorkorderExpense;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+use App\Actions\CalculateInvoiceTotalAmountAction;
 
 class WorkOrderController extends Controller
 {
+    private $calculateTotalAmountAction;
+
+    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction) 
+    {
+        $this->calculateTotalAmountAction = $calculateTotalAmountAction;
+       
+    }
     /**
      * Display a listing of the resource.
      *
@@ -90,18 +100,46 @@ class WorkOrderController extends Controller
 
     public function expense($id)
     {
-
+        $ticket = Ticket::find($id);
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.maintenance.expense');
+        return View('admin.maintenance.expense', compact('ticket'));
     }
 
     public function postexpense(Request $request)
     {
-        
+        $ticket = Ticket::find($request->ticket_id);
+        $validationRules = WorkorderExpense::$validation;
+        $validator = Validator::make($request->all(), $validationRules);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            // Validation failed, return the validation errors
+            return redirect()->back()->withInput()->with('statuserror', 'Check on errors'); // Adjust the response as needed
+        }
+        $expenses = [];
+        if (!empty($request->input('ticket_id'))) {
+            foreach ($request->input('item') as $index => $expense) {
+
+                $expense = [
+                    'ticket_id' => $request->ticket_id,
+                    'quantity' => $request->input("quantity.{$index}"),
+                    'item' => $request->input("item.{$index}"),
+                    'price' => $request->input("price.{$index}"),
+                    'amount' => $request->input("amount.{$index}"),
+                    'created_at' => now(), // Add the current timestamp for created_at
+                    'updated_at' => now(),
+                    // ... Other fields ...
+                ];
+                $expenses[] = $expense;
+            }
+        }
+        WorkorderExpense::insert($expenses);
+        //Update total amount in ticket ////////
+        $this->calculateTotalAmountAction->ticket($ticket);
 
         $previousUrl = Session::get('previousUrl');
 
-        return redirect($previousUrl)->with('status', 'Your Work Order Item has been saved successfully');
+        return redirect($previousUrl)->with('status', 'Your Expenses have been saved successfully');
     }
     /**
      * Remove the specified resource from storage.

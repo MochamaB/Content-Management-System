@@ -515,7 +515,7 @@ class TableViewDataService
             //  $property = $item->properties->first();
             //$subscriptionStatus = $item->vendorSubscription->first();
 
-            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $profpic = url('uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
             <div>
             <h6>' . $item->name .
@@ -546,7 +546,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = [' CATEGORY', 'SUBJECT', 'STATUS', 'RAISED BY', 'PRIORITY', 'ASSIGNED', 'AMOUNT', 'ACTIONS'];
+        $headers = ['STATUS', ' CATEGORY', 'SUBJECT', 'DURATION', 'RAISED BY', 'PRIORITY', 'ASSIGNED', 'AMOUNT', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -577,7 +577,7 @@ class TableViewDataService
             $roleNames = $item->users->roles->first();
             $raisedby =  $item->users->firstname . ' ' . $item->users->lastname;
             $url = url('ticket/assign/' . $item->id);
-            if (Auth::user()->can('work-order.create')|| Auth::user()->id === 1 ) {
+            if (Auth::user()->can('work-order.create') || Auth::user()->id === 1) {
                 $assignLink = '<a href="' .  $url . '" class="badge badge-information"><i class="mdi mdi-lead-pencil mdi-12px text-primary">ASSIGN</i>  </a>';
             } else {
                 // Empty link or any other fallback content
@@ -589,16 +589,26 @@ class TableViewDataService
             } else {
                 $assigned =   $assignLink;
             }
-
+            if ($item->unit) {
+                $unit = ' - ' . $item->unit->unit_number;
+            }
+            $createdAt = Carbon::parse($item->created_at);
+            // Get the current date
+            $currentDate = Carbon::now();
+            // Calculate the difference in days
+            $ageInDays = $createdAt->diffInDays($currentDate);
             // Now, you can check the type of the assigned model and access its attributes accordingly
 
             $row = [
                 'id' => $item->id,
-                $item->category,
-                $item->subject,
                 $requestStatus . ' ' . $status,
-                '<span class="text-muted" style="font-weight:500;font-style: italic">' . $roleNames->name . '</span></br>' .
-                    $raisedby,
+                $item->category,
+                $item->subject
+                    . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . $item->property->property_name . ' ' . $unit . '</span>',
+                Carbon::parse($item->created_at)->format('Y-m-d')
+                . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . $ageInDays. ' Days </span>',
+                $raisedby
+                    . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' .($roleNames ? $roleNames->name : '') . '</span>',
                 $priorityStatus,
                 $assigned ?? $assignLink,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),

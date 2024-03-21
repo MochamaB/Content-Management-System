@@ -50,7 +50,7 @@
                                     <div class="modal-header"  style="background-color:red;">
                                         <h5 class="modal-title" id="deleteConfirmationModalLabel"  style="color:white;">Confirm Deletion</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true" style="font-size: 40px; color: white;">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">

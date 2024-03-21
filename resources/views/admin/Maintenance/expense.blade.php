@@ -8,6 +8,20 @@
     <hr>
     <div class="col-md-10">
         <form method="POST" action="{{ url('workorder-expense') }}" class="myForm" novalidate>
+        @csrf
+        <div class="col-md-7">
+                <div class="form-group">
+                    <label class="label">{{$ticket->category}} Request</label>
+                    <h5>
+                        <small class="text-muted">
+                        {{$ticket->subject}}
+                        </small>
+                    </h5>
+                    <input type ="hidden" name="ticket_id" value="{{$ticket->id}}"/>
+                   
+                </div>
+            </div>
+            <br/>
             <table id="table" data-toggle="table" data-icon-size="sm" data-buttons-class="primary" data-toolbar-align="right" data-buttons-align="left" data-search-align="left" data-sort-order="asc" data-sticky-header="true" data-page-list="[100, 200, 250, 500, ALL]" data-page-size="100" data-show-footer="false" data-side-pagination="client" class="table table-bordered">
                 <thead>
                     <tr>

@@ -123,6 +123,11 @@ class Property extends Model implements HasMedia
         return $this->hasMany(Unit::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'unit_user', 'property_id', 'user_id');
+    }
+
     public function settings()
     {
         return $this->morphMany(Setting::class, 'settingable');
@@ -133,9 +138,9 @@ class Property extends Model implements HasMedia
         return $this->hasMany(Invoice::class);
     }
 
-    public function requests()
+    public function tickets()
     {
-        return $this->hasMany(Request::class);
+        return $this->hasMany(Ticket::class);
     }
 
     public function meterReadings()

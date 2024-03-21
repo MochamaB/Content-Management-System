@@ -9,86 +9,60 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use AfricasTalking\SDK\AfricasTalking;
+use App\Models\Invoice;
+use App\Models\PaymentMethod;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Http;
 
 class NotificationController extends Controller
 {
   public function index()
   {
+    $user = Auth::user();
+    $invoice = Invoice::find(1);
+     /// Data for the Account Statement
+     $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
+     //    dd($unitchargeIds);
+     $sixMonths = now()->subMonths(6);
+     $transactions = Transaction::where('created_at', '>=', $sixMonths)
+         ->where('unit_id', $invoice->unit_id)
+         ->where('unitcharge_id', $unitchargeId)
+         ->get();
+     $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
 
+     ////Opening Balance
+     $openingBalance = $this->calculateOpeningBalance($invoice);
 
-// Get the user
-$user = User::find(10);
+     //// Data for the Payment Methods
+     $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
 
-// Notification data
-$notificationData = new NewsWasPublished();
+    return view('email.template2', compact('user','invoice','transactions','groupedInvoiceItems','openingBalance'));
 
-// Get the notification message as per your implementation
-$message = $notificationData->toAfricasTalking($user);
+  }
 
-// AfricasTalking API endpoint URL for generating auth token
-$authTokenUrl = 'https://api.africastalking.com/auth-token/generate';
+  public function calculateOpeningBalance(Invoice $invoice)
+  {
+      // Get the date 6 months ago from today
+      $sixMonthsAgo = now()->subMonths(6);
 
-// AfricasTalking API endpoint URL for sending SMS
-$apiUrl = 'https://api.sandbox.africastalking.com/version1/messaging';
+      // Calculate the sum of invoice amounts
+      $invoiceAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
+          ->where('unit_id', $invoice->unit_id)
+          ->where('charge_name', $invoice->type)
+          ->where('transactionable_type', 'App\Models\Invoice')
+          ->sum('amount');
 
-// AfricasTalking API Key and username
-$apiKey = 'cf76f240eff9bf8498a913e546ee925e2bdd357414c6da0d706582913c07fef7';
-$username = 'sandbox';
+      // Calculate the sum of payment amounts
+      $paymentAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
+          ->where('unit_id', $invoice->unit_id)
+          ->where('charge_name', $invoice->type)
+          ->where('transactionable_type', 'App\Models\Payment')
+          ->sum('amount');
 
-// Build the request payload for generating auth token
-$authTokenPayload = [
-    'username' => $username,
-    'apiKey' => $apiKey,
-];
+      // Calculate the opening balance
+      $openingBalance = $invoiceAmount - $paymentAmount;
 
-// Set cURL options for generating auth token
-$curlOptions = [
-    CURLOPT_SSL_VERIFYPEER => false,
-    CURLOPT_SSL_VERIFYHOST => false,
-];
-
-// Send the request to generate auth token
-$authTokenResponse = Http::withOptions($curlOptions)->post($authTokenUrl, $authTokenPayload);
-
-// Check the response for generating auth token
-if ($authTokenResponse->successful()) {
-    $authToken = $authTokenResponse->json('token');
-
-    // Build the request payload for sending SMS
-    $smsPayload = [
-        'to' => $user->phonenumber,  // Assuming phone_number is a field in your User model
-        'message' => $message,
-    ];
-
-    // Set cURL options for sending SMS
-    $curlOptions = [
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false,
-    ];
-
-    // Send the request using Laravel's HTTP client with auth token in headers
-    $response = Http::withHeaders([
-        'Content-Type' => 'application/x-www-form-urlencoded',
-        'Authorization' => "Bearer $authToken",
-    ])->withOptions($curlOptions)->post($apiUrl, $smsPayload);
-
-    // Check the response for sending SMS
-    if ($response->successful()) {
-        // SMS sent successfully
-        return view('admin.Communication.notification_index');
-    } else {
-        // Handle the error
-        $errorMessage = $response->body();
-        // Handle or log the error message
-        echo $errorMessage;
-    }
-} else {
-    // Handle the error for generating auth token
-    $errorMessage = $authTokenResponse->body();
-    // Handle or log the error message
-    echo $errorMessage;
-}
+      return $openingBalance;
   }
   public function email()
   {

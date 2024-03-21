@@ -252,6 +252,7 @@ Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits
 
 ///Send Email
 Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoice']);
+Route::get('notification', [NotificationController::class, 'index']);
 
 //////View Your email notification
 
