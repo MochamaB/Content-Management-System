@@ -37,45 +37,8 @@ class Invoice extends Model
 
         // Add more fields as needed
     ];
-    public static $filters = [
-        'property' => ['label' => 'Property', 'inputType' => 'select'],
-        'Unit' => ['label' => 'Unit', 'inputType' => 'select'],
-        'tenant' => ['label' => 'Tenant Name', 'inputType' => 'select'],
-        'type' => ['label' => 'Invoice Type', 'inputType' => 'select'],
-        'status' => ['label' => 'Status', 'inputType' => 'select'],
 
 
-        // Add more fields as needed
-    ];
-    public static function getFilterData($filter)
-    {
-        $invoice = Invoice::with('property', 'unit', 'model')->get();
-        switch ($filter) {
-            case 'property':
-                $properties = Invoice::with('property')->get()->pluck('property.property_name')->unique()->values()->toArray();
-                //    $properties = Property::pluck('property_name')->toArray();
-                return $properties;
-            case 'Unit':
-                $units = Invoice::with('unit')->get()->pluck('unit.unit_number')->unique()->values()->toArray();
-                return $units;
-            case 'tenant':
-                $tenants = Invoice::with('model')->get()->map(function ($invoice) {
-                    return $invoice->model->firstname . ' ' . $invoice->model->lastname;
-                })->unique()->values()->toArray();
-                return  $tenants;
-            case 'type':
-                $distinctInvoiceTypes = Invoice::distinct('type')->pluck('type');
-                return  $distinctInvoiceTypes;
-            case 'status':
-                return [
-                    'Paid' => 'Paid',
-                    'Unpaid' => 'unpaid',
-                    'Over Due' => 'Over Due',
-                    'partially_paid' => 'partially_paid',
-
-                ];
-        }
-    }
     public static function getFieldData($field)
     {
         $invoice = Invoice::with('property', 'unit', 'model')->get();

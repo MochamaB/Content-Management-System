@@ -91,6 +91,8 @@
             <h5><b>Total Paid Amount:</b> {{ $sitesettings->site_currency}}:</h5>
             <h4><b>Balance:</b></h4>
         </div>
+    </div>
+</div>
         <script>
               $(document).ready(function() {
                 $('#status').on('change', function() {

@@ -16,6 +16,7 @@ use App\Models\Utility;
 use Carbon\Carbon;
 use App\Services\TableViewDataService;
 use App\Services\PaymentVoucherService;
+use App\Services\FilterService;
 
 class UnitChargeController extends Controller
 {
@@ -29,8 +30,10 @@ class UnitChargeController extends Controller
     protected $model;
     private $tableViewDataService;
     private $paymentVoucherService;
+    private $filterService;
 
-    public function __construct(TableViewDataService $tableViewDataService, PaymentVoucherService $paymentVoucherService)
+    public function __construct(TableViewDataService $tableViewDataService, PaymentVoucherService $paymentVoucherService,
+    FilterService $filterService)
     {
         $this->model = unitcharge::class;
         $this->controller = collect([
@@ -39,19 +42,22 @@ class UnitChargeController extends Controller
         ]);
         $this->tableViewDataService = $tableViewDataService;
         $this->paymentVoucherService = $paymentVoucherService;
+        $this->filterService = $filterService;
     }
 
 
 
-    public function index()
+    public function index(Request $request)
     {
-        $unitChargeData = $this->model::with('property', 'unit')->get();
-        $mainfilter =  $this->model::pluck('charge_type')->toArray();
+        $filters = $request->except(['tab','_token','_method']);
+        $unitChargeData = $this->model::with('property', 'unit')->applyFilters($filters)->get();
+        $filterdata = $this->filterService->getUnitChargeFilters($request);
+      //  $mainfilter =  $this->model::pluck('charge_type')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getUnitChargeData($unitChargeData, true);
 
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
+        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller'));
     }
 
     /**

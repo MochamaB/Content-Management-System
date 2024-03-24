@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\FilterableScope;
 
 class Unitcharge extends Model
 {
     use HasFactory;
+    use FilterableScope;
     protected $table = 'unitcharges';
     protected $fillable = [
         'property_id',

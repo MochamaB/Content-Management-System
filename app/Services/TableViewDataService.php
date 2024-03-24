@@ -306,7 +306,11 @@ class TableViewDataService
             $charge_name = $item->charge_name;
             $charge_cycle = $item->charge_cycle;
             $charge_type = $item->charge_type;
+            if($charge_type === 'fixed'){
             $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',');
+            }else{
+                $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',').' <i>Per Unit</i>';
+            }
             $recurring_charge = $item->recurring_charge;
             $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
             $unit = $item->unit->unit_number;

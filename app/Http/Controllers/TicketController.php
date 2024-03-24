@@ -214,6 +214,9 @@ class TicketController extends Controller
         $modelrequests->fill($validatedData);
         $modelrequests->status = 'Assigned';
         $modelrequests->update();
+        ///Send email on update or Assign
+
+        ///Create a charge when ticket is completed.
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }

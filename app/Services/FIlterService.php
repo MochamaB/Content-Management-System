@@ -4,6 +4,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Request;
 use App\Models\Chartofaccount;
 use App\Models\Lease;
 use App\Models\Property;
@@ -119,7 +120,33 @@ class FilterService
         return [
             'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
             'unit_type' => ['label' => 'Types', 'values' => $unittype, 'inputType' => 'select', 'filtertype' => 'main'],
-            
+
+        ];
+    }
+
+    public function getUnitChargeFilters(Request $request)
+    {
+        $propertyId = $request->property_id;
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        if ($propertyId) {
+            $units = Unit::where('property_id', $propertyId)->pluck('unit_number', 'id')->toArray();
+        }else {
+            // If property_id is not provided, fetch all units
+            $units = Unit::pluck('unit_number', 'id')->toArray();
+        }
+        $chargecycle = [
+            'Monthly' => 'Recurring',
+            'once' => 'Charged Once',
+        ];
+        $type = [
+            'fixed' => 'Fixed Rate',
+            'units' => 'Per Unit',
+        ];
+        return [
+            'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
+            'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select', 'filtertype' => 'main'],
+            'charge_cycle' => ['label' => 'Charge Frequency', 'values' => $chargecycle, 'inputType' => 'select', 'filtertype' => 'advanced'],
+            'charge_type' => ['label' => 'Charge Type', 'values' => $type, 'inputType' => 'select', 'filtertype' => 'advanced'],
         ];
     }
 }

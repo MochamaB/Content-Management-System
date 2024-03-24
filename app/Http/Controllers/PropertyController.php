@@ -49,7 +49,7 @@ class PropertyController extends Controller
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['PROPERTY', 'LOCATION', 'MANAGER', 'TYPE', 'ACTIONS'],
+            'headers' => ['PROPERTY', 'LOCATION', 'NO OF UNITS', 'TYPE', 'ACTIONS'],
             'rows' => [],
         ];
 
@@ -58,7 +58,7 @@ class PropertyController extends Controller
                 'id' => $item->id,
                 $item->property_name . ' - ' . $item->property_streetname,
                 $item->property_location,
-                $item->property_manager,
+                $item->units->count(),
                 $item->propertyType->property_type,
             ];
         }
@@ -133,7 +133,7 @@ class PropertyController extends Controller
             'Units',
             'Utilities',
             'Meter Readings',
-            'Requests',
+            'Tickets',
             'Settings'
             //    'Maintenance',
             //    'Financials',
@@ -162,9 +162,9 @@ class PropertyController extends Controller
             $meterReadingTableData = $this->tableViewDataService->getMeterReadingsData($readings);
 
         ///4. REQUESTS
-        $requests = $property->requests;
+        $tickets = $property->tickets;
         //   $unitController = new UnitController();
-           $requestTableData = $this->tableViewDataService->getTicketData($requests);
+           $requestTableData = $this->tableViewDataService->getTicketData($tickets);
     
          //5. SETTINGS
          $setting = $property->settings;
@@ -183,19 +183,19 @@ class PropertyController extends Controller
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Units') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $unitTableData,'controller' => ['unit']], 
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Utilities') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $utilityTableData,'controller' => ['utility']], 
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $utilityTableData,'controller' => ['utility']], 
                 compact('amenities', 'allamenities'))->render();
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $meterReadingTableData,'controller' => ['meter-reading']], 
                 compact('amenities', 'allamenities','id','model'))->render();
-            }elseif ($title === 'Requests') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $requestTableData,'controller' => ['request']], 
+            }elseif ($title === 'Tickets') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $requestTableData,'controller' => ['ticket']], 
                 compact('amenities', 'allamenities','id'))->render();
             }elseif ($title === 'Settings') {
-                $tabContents[] = View('admin.CRUD.index', ['tableData' => $settingTableData,'controller' => ['setting']], 
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $settingTableData,'controller' => ['setting']], 
                 compact('amenities', 'allamenities','model','id'))->render();
             }
         }

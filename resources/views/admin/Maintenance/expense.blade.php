@@ -50,7 +50,7 @@
                             <div style="position: relative;">
                                 <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                                 </span>
-                                <input type="number" class="form-control price" name="price[]" value="" style="text-align: left; padding-left: 45px;" required>
+                                <input type="number" class="form-control price money" name="price[]" value="" style="text-align: left; padding-left: 45px;" required>
                             </div>
                         </td>
 
@@ -58,7 +58,7 @@
                         <div style="position: relative;">
                                 <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                                 </span>
-                                <input type="number" class="form-control amount" name="amount[]" value="0" style="text-align: left; padding-left: 45px;" required readonly>
+                                <input type="number" class="form-control amount money" name="amount[]" value="0" style="text-align: left; padding-left: 45px;" required readonly>
                             </div>
                         </td>
                         <td class="text-center" style="background-color:#dae3fa;padding-right:20px">

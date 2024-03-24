@@ -74,12 +74,12 @@
                         <td class="text-center" style="text-transform: capitalize;background-color:#dae3fa;">
                             {{$item->charge_name}} Charge
                         </td>
-                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. {{number_format($item->amount),number_format($item->rate, 2, '.', ',');}} </td>
+                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. @currency($item->amount) </td>
                         <td class="text-center" style="background-color:#dae3fa;">
                             @foreach ($invoice->payments as $payment)
                             @foreach ($payment->paymentItems as $paymentItem)
                             @if ($paymentItem->unitcharge_id === $item->unitcharge_id)
-                            {{ $sitesettings->site_currency }}.{{number_format($paymentItem->amount),number_format($item->rate, 2, '.', ',');}}</br>
+                            {{ $sitesettings->site_currency }}.@currency($paymentItem->amount)</br>
                             @endif
                             @endforeach
                             @endforeach
@@ -93,7 +93,7 @@
                                 @endphp
                                 <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                                 </span>
-                                <input type="text" class="form-control" name="amount[]" id="amount" value="{{number_format($amountdue),number_format($item->rate, 2, '.', ',');}}" style="text-align: left; padding-left: 45px; border:none">
+                                <input type="text" class="form-control" name="amount[]" id="amount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px; border:none">
                             </div>
 
                         </td>
@@ -112,5 +112,32 @@
     </form>
 
 </div>
+<script>
+    $(document).ready(function() {
+        // Format the input value when the page loads
+        formatInputValue();
 
+        // Listen for the input event and format the value on change
+        $('input[name="amount[]"]').on('input', function() {
+            formatInputValue();
+        });
+
+        // Listen for the form submission and remove formatting before submitting
+        $('form').on('submit', function(event) {
+            // Remove formatting from input values
+            $('input[name="amount[]"]').each(function() {
+                $(this).val($(this).val().replace(/,/g, ''));
+            });
+        });
+
+        function formatInputValue() {
+            $('input[name="amount[]"]').each(function() {
+                var value = parseFloat($(this).val().replace(/,/g, ''));
+                if (!isNaN(value)) {
+                    $(this).val(value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }));
+                }
+            });
+        }
+    });
+</script>
 @endsection
