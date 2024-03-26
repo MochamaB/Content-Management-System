@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -11,7 +12,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Vendor extends Model
 {
     use HasFactory;
-    use HasFactory, InteractsWithMedia;
+    use HasFactory,Notifiable, InteractsWithMedia;
     protected $table = 'vendors';
     protected $fillable = [
         'property_id',

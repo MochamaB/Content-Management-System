@@ -30,6 +30,7 @@ class Workorder extends Model
 
     public static $validation = [
         'ticket_id' => 'required',
+        'user_id' => 'required',
         'notes' => 'required',
     ];
 

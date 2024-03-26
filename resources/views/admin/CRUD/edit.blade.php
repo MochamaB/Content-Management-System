@@ -19,7 +19,7 @@
                 @endif
             </label>
             <h5>
-                <small class="text-muted">
+                <small class="text-muted" style="text-transform: capitalize;">
                     @if($specialvalue !== null && $specialvalue->has($field))
                     {{ $specialvalue[$field] }}
                     @else

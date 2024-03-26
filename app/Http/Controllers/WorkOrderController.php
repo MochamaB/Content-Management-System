@@ -10,15 +10,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use App\Actions\CalculateInvoiceTotalAmountAction;
+use App\Models\User;
+use App\Models\Vendor;
+use App\Models\VendorCategory;
+use App\Notifications\TicketWorkOrderNotification;
+use Illuminate\Support\Facades\Notification;
+use Spatie\Permission\Models\Role as ModelsRole;
 
 class WorkOrderController extends Controller
 {
     private $calculateTotalAmountAction;
 
-    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction) 
+    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction)
     {
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
-       
     }
     /**
      * Display a listing of the resource.
@@ -37,10 +42,23 @@ class WorkOrderController extends Controller
      */
     public function create($id)
     {
+        $user = Auth::user();
         $tickets = Ticket::find($id);
+        $modelrequests = Ticket::find($id);
+        $vendorcategory = VendorCategory::all();
+        $vendorcategories = $vendorcategory->groupBy('vendor_category');
+        $vendors = Vendor::all();
+        // Get the "tenant" role
+        $tenantRole = ModelsRole::where('name', 'tenant')->first();
+
+        // Get all users except those with the "tenant" role
+        $users = $user->filterUsers();
+        //  $users = User::whereDoesntHave('roles', function ($query) use ($tenantRole) {
+        //      $query->where('role_id', $tenantRole->id);
+        //  })->get();
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.maintenance.create_workorder', compact('tickets'));
+        return View('admin.maintenance.create_workorder', compact('tickets', 'vendorcategory', 'vendors', 'users'));
     }
 
     /**
@@ -51,17 +69,27 @@ class WorkOrderController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
+
+        // $user = Auth::user();
         $validationRules = Workorder::$validation;
         $validatedData = $request->validate($validationRules);
         $workOrder = new Workorder();
         $workOrder->fill($validatedData);
-        $workOrder->user_id = $user->id;
         $workOrder->save();
 
-        $previousUrl = Session::get('previousUrl');
+        //// send Notification
+        $ticket = Ticket::find($workOrder->id);
+        $assigneduser = User::find($workOrder->user_id);
+        $ticketuser = User::find($ticket->user_id);
+        $users = [$assigneduser, $ticketuser]; // Array of users to notify
+        Notification::send($users, new TicketWorkOrderNotification($users, $ticket, $workOrder));
 
-        return redirect($previousUrl)->with('status', 'Your Work Order Item has been saved successfully');
+        $previousUrl = Session::get('previousUrl');
+        if ($previousUrl) {
+            return redirect($previousUrl)->with('status', 'Your Work Order Item has been saved successfully');
+        } else {
+            return redirect('ticket')->with('status', ' WorkOrder Added Successfully');
+        }
     }
 
     /**

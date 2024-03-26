@@ -6,7 +6,7 @@
 
     <h4>Assign Ticket</h4>
     <hr>
-    <form method="POST" action="{{ url('ticket/'.$modelrequests->id) }}" class="myForm" novalidate>
+    <form method="POST" action="{{ url('update-assign/'.$modelrequests->id) }}" class="myForm" novalidate>
         @csrf
         @method('PUT')
         <div class="col-md-6">
@@ -22,9 +22,8 @@
 
         <div class="col-md-6" id="vendorSelect" style="display: none;">
             <div class="form-group">
-                <label class="label"> Select Vendorr<span class="requiredlabel">*</span></label>
-                <select name="assigned_id" id="" class="formcontrol2 " placeholder="Select" >
-
+                <label class="label"> Select Vendor<span class="requiredlabel">*</span></label>
+                <select id="vendorSelectElement" class="formcontrol2 " placeholder="Select">
                     <option value="">Select Vendor</option>
                     @foreach($vendors as $vendor)
                     <option value="{{$vendor->id}}">{{$vendor->name}}</option>
@@ -36,7 +35,7 @@
         <div class="col-md-6" id="userSelect" style="display: none;">
             <div class="form-group">
                 <label class="label"> Select User<span class="requiredlabel">*</span></label>
-                <select name="assigned_id" id="" class="formcontrol2 " placeholder="Select" >
+                <select id="userSelectElement" class="formcontrol2 " placeholder="Select">
 
                     <option value="">Select Value</option>
                     @foreach($users as $user)
@@ -60,34 +59,39 @@
 
 
 <script>
-    $(document).ready(function() {
-        $('.assigned_type').on('change', function() {
-            var query = this.value.trim();
-            console.log(query);
+ $(document).ready(function() {
+    $('.assigned_type').on('change', function() {
+        var query = this.value.trim();
+    
+        console.log(query);
 
-            var $user = $('#userSelect');
-            var $vendor = $('#vendorSelect');
-            var $submit = $('#submit');
+        var $user = $('#userSelect');
+        var $vendor = $('#vendorSelect');
+        var $userSelect = $('#userSelectElement');
+        var $vendorSelect = $('#vendorSelectElement');
+        var $submit = $('#submit');
 
+        // Remove the name attribute from both selects initially
+        $userSelect.removeAttr('name');
+        $vendorSelect.removeAttr('name');
 
-            if (query === "App\\Models\\Vendor") {
-               
-                $user.hide();
-                $vendor.show();
-                $submit.show();
-            } else if(query === "App\\Models\\User") {
-                $user.show();
-                $vendor.hide();
-                $submit.show();
-            } else{
-                $user.hide();
-                $vendor.hide();
-                $submit.hide();
-            }
-
-        });
-
-
+        if (query === "App\\Models\\Vendor") {
+            $user.hide();
+            $vendor.show();
+            $vendorSelect.show().attr('name', 'assigned_id'); // Set the name attribute only for the visible select
+            $submit.show();
+        } else if(query === "App\\Models\\User") {
+            $vendor.hide();
+            $user.show();
+            $userSelect.show().attr('name', 'assigned_id'); // Set the name attribute only for the visible select
+            $submit.show();
+        } else{
+            $userSelect.hide();
+            $vendorSelect.hide();
+            $submit.hide();
+        }
     });
+});
+
 </script>
 @endsection

@@ -167,6 +167,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         ]);
         Route::resource('ticket', TicketController::class, ['except' => 'create']);
         Route::get('ticket/assign/{id}', [TicketController::class, 'assign'])->name('ticket.assign');
+        Route::put('update-assign/{id}', [TicketController::class, 'updateassign']);
 
         Route::get('work-order/create/{id}', [
             'as' => 'work-order.create',

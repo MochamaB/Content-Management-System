@@ -26,7 +26,10 @@ class WorkorderExpense extends Model
         'price' => 'required',
         'amount' => 'required',
     ];
-
+    public function tickets()
+    {
+        return $this->belongsTo(Ticket::class,'ticket_id');
+    }
     
 
 }

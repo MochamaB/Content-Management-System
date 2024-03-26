@@ -33,8 +33,8 @@ class TableViewDataService
 
         'critical' => 'error',
         'high' => 'warning',
-        'Normal' => 'active',
-        'Low' => 'dark',
+        'normal' => 'active',
+        'low' => 'dark',
     ];
 
     public function __construct()
@@ -156,6 +156,20 @@ class TableViewDataService
             $statusClass = $statusClasses[$status] ?? 'secondary';
             $invoiceStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
+            if (!empty($item->payments)) {
+                $receipttext = '</br><span class="text-muted" style="margin-top:5px;font-weight:500;"> Receipts</span>';
+            }else{
+                $receipttext = '';
+            }
+            $paymentLinks = '';
+            $paymentCounter = 1;
+
+            foreach ($item->payments as $payment) {
+                $id = $payment->id;
+                $refn = $payment->referenceno;
+                $paymentLinks .= '<br> <a href="' . url('payment/' . $id) . '" class="badge badge-light">' .$id.' '.$refn . '</a>';
+                $paymentCounter++;
+            }
 
             $row = [
                 'id' => $item->id,
@@ -164,11 +178,12 @@ class TableViewDataService
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->type,
                 $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
-                $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ','),
+                $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ','). $receipttext.''. $paymentLinks,
                 $balanceStatus . '  ' . $payLink,
 
 
             ];
+
 
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
@@ -306,10 +321,10 @@ class TableViewDataService
             $charge_name = $item->charge_name;
             $charge_cycle = $item->charge_cycle;
             $charge_type = $item->charge_type;
-            if($charge_type === 'fixed'){
-            $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',');
-            }else{
-                $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',').' <i>Per Unit</i>';
+            if ($charge_type === 'fixed') {
+                $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',');
+            } else {
+                $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',') . ' <i>Per Unit</i>';
             }
             $recurring_charge = $item->recurring_charge;
             $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
@@ -610,9 +625,9 @@ class TableViewDataService
                 $item->subject
                     . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . $item->property->property_name . ' ' . $unit . '</span>',
                 Carbon::parse($item->created_at)->format('Y-m-d')
-                . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . $ageInDays. ' Days </span>',
+                    . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . $ageInDays . ' Days </span>',
                 $raisedby
-                    . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' .($roleNames ? $roleNames->name : '') . '</span>',
+                    . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . ($roleNames ? $roleNames->name : '') . '</span>',
                 $priorityStatus,
                 $assigned ?? $assignLink,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
@@ -659,6 +674,46 @@ class TableViewDataService
                 $item->debitAccount->account_name,
                 $item->creditAccount->account_name,
                 $item->amount,
+
+            ];
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
+
+    public function getWorkOrderExpenseData($expensedata, $extraColumns = false)
+    {
+        // Eager load the 'unit' relationship
+        //   $invoicedata->load('user');
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['NO', 'DATE','ITEM DESCRIPTION', 'QUANTITY', 'PRICE', 'AMOUNT','ACTION'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 3, 0, ['DETAILS']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($expensedata as $key => $item) {
+
+            $row = [
+                'id' => $item->id,
+                $key+1,
+                Carbon::parse($item->created_at)->format('Y-m-d'),
+                $item->item,
+                $item->quantity,
+                $this->sitesettings->site_currency . ' ' . number_format($item->price, 0, '.', ','),
+                $this->sitesettings->site_currency . ' ' . number_format($item->amount, 0, '.', ','),
 
             ];
             if ($extraColumns) {

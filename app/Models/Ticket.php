@@ -98,4 +98,8 @@ class Ticket extends Model implements HasMedia
     {
         return $this->hasMany(Workorder::class);
     }
+    public function workorderExpenses()
+    {
+        return $this->hasMany(WorkorderExpense::class);
+    }
 }

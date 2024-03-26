@@ -27,10 +27,11 @@
 @else
 
     <ul class="bullet-line-list">
+    @foreach($workorders as $item)
         <li>
-            @foreach($workorders as $item)
+          
             <div class="d-flex justify-content-between">
-                <div><span class="text-light-green">{{$item->users->firstname}} {{$item->users->lastname}} - {{$item->users->roles->first()->name}}</span>
+                <div><h5 class="text-information">{{$item->users->firstname}} {{$item->users->lastname}} - {{$item->users->roles->first()->name}}</h5>
                     <p class="text-muted mb-2 fw-bold">{{\Carbon\Carbon::parse($item->created_at)->format('d M Y')}}</p>
                     <p class="text-muted">
                         {{$item->notes}}
@@ -71,9 +72,9 @@
                     @endif
                 </div>
             </div>
-            @endforeach
+          
         </li>
-
+        @endforeach
 
 
     </ul>

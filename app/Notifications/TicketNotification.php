@@ -7,7 +7,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TicketNotification extends Notification implements ShouldQueue
+//class TicketNotification extends Notification implements ShouldQueue
+class TicketNotification extends Notification 
+//implements ShouldQueue
 {
     use Queueable;
     protected $user;
@@ -37,7 +39,6 @@ class TicketNotification extends Notification implements ShouldQueue
             "line 3" => "If you have any further questions or concerns, please let us know. We are available round-the-clock and always happy to help.",
             "line 4" => "To view the progress of the ticket, Click here",
             'action' => 'ticket/' . $this->ticket->id,
-            "actiondata" => "Go To Site",
             "line 5" => "",
         ]);
     }
@@ -50,7 +51,7 @@ class TicketNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**

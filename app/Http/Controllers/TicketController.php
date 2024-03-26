@@ -9,6 +9,7 @@ use App\Models\Vendor;
 use App\Models\VendorCategory;
 use App\Models\Workorder;
 use App\Notifications\AdminTicketNotification;
+use App\Notifications\TicketAssignNotification;
 use App\Notifications\TicketNotification;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
@@ -91,7 +92,7 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-       
+
         $validationRules = Ticket::$validation;
         $validatedData = $request->validate($validationRules);
         $ticketData = new Ticket;
@@ -103,15 +104,15 @@ class TicketController extends Controller
 
         ///Create Notification for to the User/Tenant
         $property = Property::find($request->property_id);
-        $attachedUsers = $property->users()->whereDoesntHave('roles', function ($query) {
-            $query->whereIn('name', ['staff', 'tenant']);
-        })->get();
-        $loggeduser = User::find ($ticketData->user_id);
+        //     $attachedUsers = $property->users()->whereDoesntHave('roles', function ($query) {
+        //        $query->whereIn('name', ['staff', 'tenant']);
+        //     })->get();
+        $loggeduser = User::find($ticketData->user_id);
         $loggeduser->notify(new TicketNotification($user, $ticketData));
 
-        foreach ($attachedUsers as $individualUser) {
-            $individualUser->notify(new AdminTicketNotification($individualUser, $ticketData));
-        }
+        //   foreach ($attachedUsers as $individualUser) {
+        //       $individualUser->notify(new AdminTicketNotification($individualUser, $ticketData));
+        //    }
 
         $previousUrl = Session::get('previousUrl');
         if ($previousUrl) {
@@ -141,6 +142,8 @@ class TicketController extends Controller
         $viewData = $this->formData($this->model, $tickets);
 
         ///Data for Expenses page
+        $workorderexpenses = $tickets->workorderExpenses;
+        $expensestableData = $this->tableViewDataService->getWorkOrderExpenseData($workorderexpenses, false);
 
 
 
@@ -159,7 +162,7 @@ class TicketController extends Controller
             } elseif ($title === 'Work Order') {
                 $tabContents[] = View('admin.maintenance.workorder', compact('tickets', 'workorders'))->render();
             } elseif ($title === 'Expenses') {
-                $tabContents[] = View('admin.maintenance.view_expenses', compact('tickets', 'workorders'))->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $expensestableData, 'controller' => ['workorder-expense']], compact('id'));
             }
         }
 
@@ -195,6 +198,36 @@ class TicketController extends Controller
 
         return View('admin.maintenance.assign', compact('vendorcategories', 'modelrequests', 'vendors', 'users'));
     }
+
+    public function updateassign(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'assigned_type' => 'required',
+            'assigned_id' => 'required',
+
+        ]);
+
+        $ticket = Ticket::find($id);
+        $ticket->fill($validatedData);
+        $ticket->status = 'Assigned';
+        $ticket->update();
+
+        ///Send email on update or Assign
+        if ($request->assigned_type === "App\\Models\\User") {
+            $user = User::find($request->assigned_id);
+        } else {
+            $user = Vendor::find($request->assigned_id);
+        }
+        $user->notify(new TicketAssignNotification($user, $ticket));
+
+        ///Create a charge when ticket is completed.
+        $previousUrl = Session::get('previousUrl');
+        if ($previousUrl) {
+            return redirect($previousUrl)->with('status', 'Ticket has been assigned successfully');
+        } else {
+            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
+        }
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -204,21 +237,23 @@ class TicketController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validatedData = $request->validate([
-            'assigned_type' => 'required',
-            'assigned_id' => 'required',
 
-        ]);
         // dd($request->all());
         $modelrequests = Ticket::find($id);
-        $modelrequests->fill($validatedData);
-        $modelrequests->status = 'Assigned';
+        $modelrequests->fill($request->all());
         $modelrequests->update();
+
         ///Send email on update or Assign
+        if ($request->assigned_id) {
+        }
 
         ///Create a charge when ticket is completed.
-
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
+        $previousUrl = Session::get('previousUrl');
+        if ($previousUrl) {
+            return redirect($previousUrl)->with('status', 'Your request has been sent successfully');
+        } else {
+            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
+        }
     }
 
     /**
