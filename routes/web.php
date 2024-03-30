@@ -61,7 +61,7 @@ use App\Notifications\PaymentNotification;
 Route::get('/', [App\Http\Controllers\client\HomeController::class, 'index']);
 
 
-
+Route::resource('dashboard', DashboardController::class);
 Route::group(['middleware' => ['auth', 'permission']], function () {
 
 //<!-------------------------------- Website Module ---------------------------------------------->////
@@ -174,7 +174,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'uses' => 'App\Http\Controllers\WorkOrderController@create'
         ]);
         Route::resource('work-order', WorkOrderController::class, ['except' => 'create']);
-        Route::get('workorder-expense/create/{id}', [WorkOrderController::class, 'expense'])->name('workorder.expense');
+        Route::get('workorder-expense/create/{id}', [WorkOrderController::class, 'expense'])->name('work-order.expense');
         Route::post('workorder-expense', [WorkOrderController::class, 'postexpense']);
         
 
@@ -236,9 +236,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
      //<!-------------------------------- Other Module ---------------------------------------------->////
 
     Route::group(['groupName' => 'Other'], function () {
-        Route::resource('dashboard', DashboardController::class);
+       
 
-        Route::get('cards', [DashboardController::class, 'cards']);
+        
     });
 });
 

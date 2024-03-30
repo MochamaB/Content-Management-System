@@ -602,12 +602,19 @@ class TableViewDataService
                 // Empty link or any other fallback content
                 $assignLink = '<a href="" class="badge badge-warning"><i class="mdi mdi-lead-pencil mdi-12px text-warning"> NOT ASSIGNED</i>  </a>';
             }
+            $assignedType = $item->assigned_type;
             $assignedModel = $item->assigned;
-            if ($assignedModel) {
+            ////CHECK IF ITS A VENDOR OR A USER STAFF
+            if($assignedType === 'App\\Models\\User')
+            {
                 $assigned = $assignedModel->firstname . ' ' . $assignedModel->lastname;
-            } else {
+            } elseif($assignedType === 'App\\Models\\Vendor') {
+                $assigned = $assignedModel->name;
+            }
+            else{
                 $assigned =   $assignLink;
             }
+            
             if ($item->unit) {
                 $unit = ' - ' . $item->unit->unit_number;
             }

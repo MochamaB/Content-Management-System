@@ -17,13 +17,14 @@
     Add Site Information</button>
 <br /><br /><br />
 <div class=" contwrapper">
-    <h3>Website settings have not been found.</h3>
+   
     <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-        <img class="svgimage float-center" src="{{ asset('resources/uploads/svg/settings.svg') }}">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+        <h3>Website settings have not been found.</h3>
+        <img class="svgimage float-center" src="{{ url('uploads/vectors/settings.svg') }}">
         </div>
-        <div class="col-md-4"></div>
+        <div class="col-md-3"></div>
     </div>
    
 

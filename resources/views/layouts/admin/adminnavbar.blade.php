@@ -10,14 +10,14 @@
         @if ($sitesettings)
         <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: 70px; width: 150px;">
         @else
-        <img src="url('uploads/images/noimage.jpg')" alt="No Image">
+        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 70px; width: 150px;">
         @endif
       </a>
       <a class="navbar-brand brand-logo-mini" href="index.html">
         @if ($sitesettings)
         <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
         @else
-        <img src="url('uploads/images/noimage.jpg')" alt="No Image">
+        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image">
         @endif
       </a>
     </div>

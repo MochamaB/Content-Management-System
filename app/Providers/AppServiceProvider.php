@@ -60,14 +60,14 @@ class AppServiceProvider extends ServiceProvider
         Unitcharge::addGlobalScope(new UserAccessScope);
         Paymentvoucher::addGlobalScope(new UserAccessScope);
         Payment::addGlobalScope(new UserAccessScope);
-       
+
         Unit::addGlobalScope(new UnitAccessScope);
-       
-       // Invoice::addGlobalScope(new ApplyFilterScope);
-      
+
+        // Invoice::addGlobalScope(new ApplyFilterScope);
+
         //   User::addGlobalScope(new UserScope);
         Property::addGlobalScope(new PropertyAccessScope);
-       // Ticket::addGlobalScope(new PropertyAccessScope);
+        // Ticket::addGlobalScope(new PropertyAccessScope);
 
         Utility::addGlobalScope(new UtilityAccessScope);
 
@@ -183,20 +183,20 @@ class AppServiceProvider extends ServiceProvider
                     'income-statement' => ['display' => 'Profit and Loss'],
                     'chartofaccount' => ['display' => 'Chart Of Accounts'],
                     'payment-method' => ['display' => 'Payment methods'],
-                   
+
                 ]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => [
                     'notification' => ['display' => 'Notification Center'],
                     'email' => ['display' => 'Emails'],
                     'text' => ['display' => 'Text Messages'],
-                    ]],
+                ]],
 
                 'Maintenance' => ['icon' => 'broom', 'submodules' => [
                     'vendor-category' => ['display' => 'Vendor Categories'],
                     'vendors' => ['display' => 'Vendors'],
                     'ticket' => ['display' => 'All Tickets'],
-                    ]],
+                ]],
 
                 'Tasks' => ['icon' => 'timetable', 'submodules' => [
                     'task' => ['display' => 'System Tasks'],
@@ -204,16 +204,16 @@ class AppServiceProvider extends ServiceProvider
 
                 'Files' => ['icon' => 'file-multiple', 'submodules' => [
                     'media' => ['display' => 'All Files'],
-                    ]],
-
+                ]],
+                'Reports' => ['icon' => 'chart-line', 'submodules' => [
+                    'report' => ['display' => 'All Reports'],
+                ]],
                 'User' => ['icon' => 'account-circle-outline', 'submodules' => [
                     'user' => ['display' => 'Manage Users'],
                     'role' => ['display' => 'User Roles'],
                     'permission' => ['display' => 'System Permissions']
                 ]],
-                'Reports' => ['icon' => 'chart-line', 'submodules' => [
-                    'report' => ['display' => 'All Reports'],
-                ]],
+
                 'Settings' => ['icon' => 'settings', 'submodules' => [
                     'setting' => ['display' => 'Application Settings']
                 ]],

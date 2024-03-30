@@ -783,8 +783,9 @@ a .badge:hover {
   color: #6a008a  !important;
 }
 .svgimage{
-  width: 350px;
-  height:400px;
+  float:center;
+  width: 450px;
+  height:300px;
 }
 
 

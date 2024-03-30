@@ -17,6 +17,11 @@ class RolesTableSeeder extends Seeder
     {
         $roles = [
             [
+                'name' => 'SuperAdmin',
+                'guard_name' => 'web',
+                'description' => 'God User',
+            ],
+            [
                 'name' => 'Administrator',
                 'guard_name' => 'web',
                 'description' => 'Has control of every module and properties and cannot be edited',

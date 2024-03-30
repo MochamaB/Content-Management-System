@@ -369,7 +369,7 @@
     if ($("#marketingOverview").length) {
       var marketingOverviewChart = document.getElementById("marketingOverview").getContext('2d');
       var marketingOverviewData = {
-          labels: ["JAN","FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"],
+          labels: ["JAN","FEB", "MAR", "APR", "MAY", "JUN"],
           datasets: [{
               label: 'Last week',
               data: [110, 220, 200, 190, 220, 110, 210, 110, 205, 202, 201, 150],

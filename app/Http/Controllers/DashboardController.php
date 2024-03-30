@@ -12,7 +12,9 @@ use App\Models\Lease;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Services\TableViewDataService;
+use App\Services\CardService;
 use Carbon\Carbon;
+
 
 class DashboardController extends Controller
 {
@@ -24,8 +26,9 @@ class DashboardController extends Controller
     protected $controller;
     protected $model;
     private $tableViewDataService;
+    private $cardService;
 
-    public function __construct(TableViewDataService $tableViewDataService)
+    public function __construct(TableViewDataService $tableViewDataService, CardService $cardService)
     {
         $this->model = Unit::class;
         $this->controller = collect([
@@ -34,24 +37,36 @@ class DashboardController extends Controller
         ]);
         
         $this->tableViewDataService = $tableViewDataService;
+        $this->cardService = $cardService;
     }
 
     public function index(Request $request)
     {
         $controller = $this->controller;
         $user = auth()->user();
-        $cardData = [];
-        $month = $request->get('month', Carbon::now()->month);
-        $year = $request->get('year', Carbon::now()->year);
+       
+      
+        $properties = Property::with('units','leases', 'invoices')->get();
+        $units = Unit::with('properties','leases', 'invoices')->get();
+        $cardData = $this->cardService->topCard($properties,$units);
 
-        /** @var \App\Models\User $user */
-        if ($user->hasRole('admin') || Gate::allows('view-all', $user) || $user->hasRole('Property Owner')) {
-            $cardData = $this->getAdminCardData($month, $year);
-        }elseif($user->hasRole('tenant')){
-            $cardData = '$this->getAdminCardData($month, $year)';
-        }
+        $invoiceData = Invoice::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')
+        ->groupBy('month')
+        ->orderBy('month', 'asc')
+        ->get()
+        ->pluck('total', 'month')
+        ->all();
+       
 
-        return View('admin.Report.dashboard', compact('cardData','controller'));
+        // Example query to get payment data (adjust the query to fit your needs)
+    $paymentData = Payment::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')
+                           ->groupBy('month')
+                           ->orderBy('month', 'asc')
+                           ->get()
+                           ->pluck('total', 'month')
+                           ->all();
+
+        return View('admin.Report.dashboard', compact('cardData','controller','invoiceData', 'paymentData'));
     }
 
     /**

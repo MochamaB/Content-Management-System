@@ -4,6 +4,8 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+
 
 class CreateSuperUserSeeder extends Seeder
 {
@@ -25,6 +27,10 @@ class CreateSuperUserSeeder extends Seeder
             'status' => 'Active',
             'profilepicture' => 'avatar.png',
         ]);
+
+         // Assign SuperAdmin role to the user
+         $superAdminRole = Role::where('name', 'SuperAdmin')->first();
+         $user->assignRole($superAdminRole);
     
     }
 }

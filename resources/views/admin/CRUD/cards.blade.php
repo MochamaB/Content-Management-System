@@ -27,15 +27,17 @@
                         </h2>
                 @endif
             </div>
-            <!--
+            @if (!empty($card['links']))
             <div class="card-footer" style="background-color:#fff ;">
                 <h6 class="text-muted">
                     .
                     <span class="text-warning font-weight-medium">
-                        Text
+                        <a class="table" href="{{ url($card['links']) }}">
+                        View More</a>
                     </span>
                 </h6>
-            </div> -->
+            </div>
+            @endif
         </div>
     </div>
     @endforeach
