@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
             CreateSuperUserSeeder::class,
             PropertyTypeSeeder::class,
             ChartOfAccountsSeeder::class,
-          //  PaymentMethodSeeder::class,
+            ReportSeeder::class,
           
             InvoiceTaskSeeder::class,
             AmenitySeeder::class,

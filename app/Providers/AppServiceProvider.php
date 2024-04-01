@@ -215,7 +215,8 @@ class AppServiceProvider extends ServiceProvider
                 ]],
 
                 'Settings' => ['icon' => 'settings', 'submodules' => [
-                    'setting' => ['display' => 'Application Settings']
+                    'setting' => ['display' => 'Application Settings'],
+                    'system-setting' => ['display' => 'System Settings']
                 ]],
             ]);
             //  $notifications = $user->notifications;

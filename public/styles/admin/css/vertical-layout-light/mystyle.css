@@ -70,16 +70,22 @@
 
 .sidebar-offcanvas {
   position: fixed;
-  width: 255px; /* Set the width of the sidebar */
+  width: 254px; /* Set the width of the sidebar */
   max-height: calc(100vh - 97px);
   top: 97px;
   bottom: 0;
-  overflow: auto;
+  overflow: hidden;
   transition: width 0.25s ease-out;
   scrollbar-width: thin;  
-  scrollbar-color: #adb5bd #0a2351;
+  /*scrollbar-color: #adb5bd #0a2351; */
+  scrollbar-color: #ffaf00 #adb5bd;
   
 }
+
+.sidebar-offcanvas:hover {
+  overflow: auto;
+}
+
 .main-panel {
   flex: 1;
   margin-left: 255px; /* Adjust to match the width of the sidebar */
@@ -826,6 +832,16 @@ border: 2px solid #c50000c4 !important;
   color: #1E283D !important;
   background-color: #1E283D;
   border: 2px solid #1E283D !important;
+}
+
+.alert-success {
+  color: #10a939;
+  background-color: #baf7bf;
+  border-color: #10a939;
+}
+.btn-success {
+  background: #10a939;
+  color: #ffffff;
 }
 
 /* Use a CSS selector to target all the cells in your table */

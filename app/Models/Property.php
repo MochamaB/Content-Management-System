@@ -130,7 +130,7 @@ class Property extends Model implements HasMedia
 
     public function settings()
     {
-        return $this->morphMany(Setting::class, 'settingable');
+        return $this->morphMany(Setting::class, 'model');
     }
 
     public function invoices()

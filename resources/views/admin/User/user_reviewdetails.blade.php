@@ -5,7 +5,7 @@
     <hr>
     <h4 class="">When you click Save, we will:</h4>
                   
-                  <ul class="list-ticked" >
+                  <ul class="" >
                     <li>Email instructions to the user telling them how to sign in</li>
                     <li>Use the listed email address as their username</li>
                     <li>Prompt them to choose a password when they try to sign in</li>

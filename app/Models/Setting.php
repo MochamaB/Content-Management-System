@@ -29,9 +29,8 @@ class Setting extends Model
 
   
 
-    public function settingable()
+    public function model()
     {
         return $this->morphTo();
     }
-
 }

@@ -731,4 +731,42 @@ class TableViewDataService
 
         return $tableData;
     }
+
+
+    public function getSettingData($settingdata, $extraColumns = false)
+    {
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['NAME','KEY', 'VALUE', 'ACTIONS'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 2, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($settingdata as $item) {
+           
+            $row = [
+                'id' => $item->id,
+                $item->name,
+                $item->key,
+                $item->value,
+                $item->description,
+
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
 }

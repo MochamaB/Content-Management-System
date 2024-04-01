@@ -3,28 +3,28 @@
 @section('content')
 
 <div class=" contwrapper">
+    <h4></h4>
+    <hr>
+    @foreach($settings as $module => $name)
+    <div class="d-flex align-items-center">
 
-  @foreach ($settings as $module => $moduleData)
-      <div class="d-flex align-items-center">
-      <i class="mdi mdi mdi-{{$moduleData['icon']}}" style="color: #007bff; font-size: 2rem; padding-right:14px;"></i>
-        <h4 class="mb-0">{{$module}} Settings</h4>
-      </div>
-          <hr><br />
-  <div class="row">
-    @foreach($moduleData['submodules'] as $submodule)
-    <div class="col-md-6" style="padding-bottom:30px;">
-      <a class=""  href="{{ url('setting/'.$submodule) }}">
-        <h5 style="text-transform: capitalize;">{{$submodule}}</h5>
-      </a>
-      <div class="media">
-        <div class="media-body">
-          <p class="card-text"></p>
-        </div>
-      </div>
+        <h3 class="mb-0" style="font-weight:800">{{ $module }} </h3>
     </div>
-    @endforeach
-  </div>
-  @endforeach
-</div>
 
+    <div class="row">
+        @foreach($name as $item)
+        <div class="col-md-6" style="padding:15px 15px 15px 15px;">
+            <a class="table" href="{{ url('setting/'.$item->name) }}">
+                <h5 style="text-transform: capitalize;">{{$item->name}}</h5>
+            </a>
+            <span class="text-muted" style="font-weight:500;font-style: italic">
+                {{$item->description}}
+            </span>
+        </div>
+        @endforeach
+    </div>
+    <hr>
+    @endforeach
+
+</div>
   @endsection

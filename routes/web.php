@@ -62,7 +62,7 @@ Route::get('/', [App\Http\Controllers\client\HomeController::class, 'index']);
 
 
 Route::resource('dashboard', DashboardController::class);
-Route::group(['middleware' => ['auth', 'permission']], function () {
+Route::group(['middleware' => ['auth', 'permission','verified']], function () {
 
 //<!-------------------------------- Website Module ---------------------------------------------->////
     Route::group(['groupName' => 'Website'], function () {
@@ -194,17 +194,19 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::group(['groupName' => 'Settings'], function () {
 
 
-        Route::get('setting/create/{id}/{model}', [
+        Route::get('setting/create/{name?}', [
             'as' => 'setting.create',
             'uses' => 'App\Http\Controllers\SettingController@create'
         ]);
-        Route::get('setting/{model}', [
+        Route::get('setting/{name}', [
             'as' => 'setting.show',
             'uses' => 'App\Http\Controllers\SettingController@show'
         ]);
 
         Route::resource('setting', SettingController::class, ['except' => 'show', 'create']);
-    });
+        Route::get('system-setting', [SettingController::class, 'systemsetting'])->name('setting.system');
+        Route::post('update-systemsetting}', [SettingController::class, 'updateSystemSettings']);
+    }); 
 
      //<!-------------------------------- User Module ---------------------------------------------->////
     Route::group(['groupName' => 'User'], function () {

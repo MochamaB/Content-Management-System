@@ -47,7 +47,6 @@ class SliderController extends Controller
     public function index()
     { 
         $tablevalues= $this->model::all();
-        $mainfilter =  $this->model::pluck('id')->toArray();
         $viewData = $this->sliderData();
         $controller = $this->controller;
 
@@ -73,7 +72,7 @@ class SliderController extends Controller
            ];
        }
 
-       return View('admin.CRUD.form',compact('mainfilter','tableData','controller'),$viewData);
+       return View('admin.CRUD.form',compact('tableData','controller'),$viewData);
    }
 
     /**
