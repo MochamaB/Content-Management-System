@@ -16,7 +16,7 @@ class InvoiceTaskSeeder extends Seeder
      */
     public function run()
     {
-        $task = Task::create([
+        $task = Task::updateOrCreate([
             'name' => 'Automatically Generate Invoice', 
             'command' => 'generate:invoice',
             'frequency' => 'monthly',

@@ -38,7 +38,13 @@ class PropertyTypeSeeder extends Seeder
         ];
         
         foreach ($propertyTypes as $propertyTypeData) {
-            PropertyType::create($propertyTypeData);
+            $existingSetting = PropertyType::where('property_category', $propertyTypeData['property_category'])
+            ->where('property_type', $propertyTypeData['property_type'])
+            ->first();
+            if (!$existingSetting) {
+                PropertyType::create($propertyTypeData);
+            }
+          
         }
         
     }

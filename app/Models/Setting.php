@@ -10,13 +10,13 @@ class Setting extends Model
     use HasFactory;
     protected $table = 'settings';
     protected $fillable = [
-        'category',
-        'title',
-        'settingable_type',
-        'settingable_id',
-        'setting_name',
-        'setting_value',
-        'setting_description',
+        'model_type',
+        'model_id',
+        'info',
+        'name',
+        'key',
+        'value',
+        'description',
     ];
      ////////// FIELDS FOR CREATE AND EDIT METHOD
      public static $fields = [
@@ -26,6 +26,18 @@ class Setting extends Model
         'setting_value' => ['label' => 'Street Address', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         // Add more fields as needed
     ];
+
+    public static $validation = [
+        'module' => 'required',
+        'name' => 'required',
+        'model_type' => 'required',
+        'model_id' => 'required',
+        'key' => 'required',
+        'value' => 'required',
+        'description' => 'required',
+
+    ];
+
 
   
 

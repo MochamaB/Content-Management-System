@@ -168,7 +168,14 @@ class ChartOfAccountsSeeder extends Seeder
         ];
 
         foreach ($chartOfAccounts as $chartOfAccountData) {
+            $existingSetting = Chartofaccount::where('account_number', $chartOfAccountData['account_number'])
+            ->where('account_name', $chartOfAccountData['account_name'])
+            ->first();
+            if (!$existingSetting) {
             Chartofaccount::create($chartOfAccountData);
+            }
         }
+
+        
     }
 }

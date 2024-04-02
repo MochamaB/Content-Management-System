@@ -8,6 +8,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use App\Services\TableViewDataService;
+use Illuminate\Support\Facades\Session;
 
 class SettingController extends Controller
 {
@@ -51,9 +52,9 @@ class SettingController extends Controller
     public function index()
     {
 
-        $settings =  $reports = Setting::all()
-            ->unique('name')
-            ->groupBy('module');
+        $settings = Setting::all()
+            ->unique('model_type')
+            ->groupBy('model_type');
 
         return View('admin.setting.index', compact('settings'));
     }
@@ -65,18 +66,19 @@ class SettingController extends Controller
      */
     public function create($name = null)
     {
-        $options = [];
         if ($name) {
             $setting = Setting::where('name', $name)->first();
-            if ($setting->model_type === 'App\\Model\\Property') {
+            if ($setting->model_type === 'App\Models\Property') {
                 $options =  Property::pluck('property_name', 'id')->toArray();
-            }else if($setting->model_type === 'App\\Model\\Lease'){
+            } else if ($setting->model_type === 'App\Model\Lease') {
                 $options = Lease::with('units')->pluck('units.unit_number', 'id')->toArray();
             }
         } else {
         }
 
-        return View('admin.setting.create', compact('name', 'setting','options'));
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+
+        return View('admin.setting.create', compact('name', 'setting', 'options'));
     }
 
     /**
@@ -87,15 +89,26 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-        Setting::create([
-            'settingable_type' => $request->settingable_type,
-            'settingable_id' => $request->settingable_id,
-            'setting_name' => $request->setting_name,
-            'setting_value' => $request->setting_value,
-            'setting_description' => $request->setting_description,
-        ]);
+        $exists = Setting::where('name', $request->name)
+            ->where('model_id', $request->model_id)
+            ->where('key', $request->key)
+            ->exists();
+        if ($exists) {
+            // Setting already exists, handle accordingly
+            return redirect()->back()->with('statuserror', 'Override setting with this item already in system'); 
+        }
+        $validationRules = Setting::$validation;
+        $validatedData = $request->validate($validationRules);
+        $setting = new Setting();
+        $setting->fill($validatedData);
+        $setting->save();
 
-        return redirect('setting/' . $request->settingable_type)->with('status', ' Setting Added Successfully');
+        $previousUrl = Session::get('previousUrl');
+        if ($previousUrl) {
+            return redirect($previousUrl)->with('status', 'Your Override setting has been saved successfully');
+        } else {
+            return redirect('setting/' . $request->name)->with('status', ' Setting Added Successfully');
+        }
     }
 
     /**
@@ -104,14 +117,16 @@ class SettingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $name)
+    public function show(Request $request, $model_type)
     {
-
-        $setting = Setting::where('name', $name)->first();
+        $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure
+        // Combine the namespace with the class name
+        $modelType = $namespace . $model_type;
+        $setting = Setting::where('model_type', $modelType)->first();
         $pageheadings = collect([
-            '0' => $setting->name,
+            '0' => $model_type.' Settings',
             '1' => 'Category',
-            '2' => $setting->module,
+            '2' => $setting->info,
         ]);
 
         $tabTitles = collect([
@@ -122,7 +137,7 @@ class SettingController extends Controller
 
         $controller = 'setting';
 
-        $globalSettings = Setting::where('name', $setting->name)
+        $globalSettings = Setting::where('model_type', $modelType)
             ->whereNull('model_id')
             ->get();
         $individualSetting = Setting::where('name', $setting->name)
@@ -130,7 +145,7 @@ class SettingController extends Controller
             ->get();
 
         $settingsTableData = $this->tableViewDataService->getSettingData($individualSetting, true);
-        $id = $name;
+        $id = $setting->model_type;
 
         $tabContents = [];
         foreach ($tabTitles as $title) {
@@ -184,7 +199,7 @@ class SettingController extends Controller
 
     public function edit($id)
     {
-        //
+        return redirect()->back()->with('statuserror', 'Override Setting cannot be edited but only deleted');
     }
 
     /**
@@ -196,7 +211,11 @@ class SettingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $settings = Setting::find($id);
+        $settings->fill($request->all());
+        $settings->update();
+
+        return redirect()->back()->with('status', 'your Global Setting hasb been updated');
     }
 
     /**

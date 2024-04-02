@@ -35,7 +35,13 @@ class AmenitySeeder extends Seeder
         ];
         
         foreach ($amenities as $amenitiesTypeData) {
+            $existingSetting = Amenity::where('amenity_name', $amenitiesTypeData['amenity_name'])
+                ->first();
+                if (!$existingSetting) {
             Amenity::create($amenitiesTypeData);
+                }
         }
+
+        
     }
 }

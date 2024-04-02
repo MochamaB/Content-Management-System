@@ -64,7 +64,12 @@ class RolesTableSeeder extends Seeder
         ];
 
         foreach ($roles as $rolesData) {
-            Role::create($rolesData);
+            $existingSetting = Role::where('name', $rolesData['name'])
+                ->first();
+            if (!$existingSetting) {
+                Role::create($rolesData);
+            }
+            
         }
     }
 }

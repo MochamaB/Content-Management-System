@@ -168,8 +168,8 @@ class PropertyController extends Controller
     
          //5. SETTINGS
          $setting = $property->settings;
-         $settingController = new SettingController();
-         $settingTableData = $settingController->getSettingData($setting);
+      //   $settingController = new SettingController();
+         $settingTableData = $this->tableViewDataService->getSettingData($setting);
          $model = 'properties';
          $id = $property;
         // dd($property);

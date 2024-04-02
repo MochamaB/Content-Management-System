@@ -5,26 +5,22 @@
 <div class=" contwrapper">
     <h4></h4>
     <hr>
-    @foreach($settings as $module => $name)
-    <div class="d-flex align-items-center">
-
-        <h3 class="mb-0" style="font-weight:800">{{ $module }} </h3>
-    </div>
-
     <div class="row">
-        @foreach($name as $item)
+    @foreach($settings as $model_type => $item)
+    @php
+    $className = class_basename($model_type)
+    @endphp
         <div class="col-md-6" style="padding:15px 15px 15px 15px;">
-            <a class="table" href="{{ url('setting/'.$item->name) }}">
-                <h5 style="text-transform: capitalize;">{{$item->name}}</h5>
+            <a class="table" href="{{ url('setting/'.$className) }}">
+                <h5 style="text-transform: capitalize;">{{$className}} Settings</h5>
             </a>
             <span class="text-muted" style="font-weight:500;font-style: italic">
-                {{$item->description}}
+            {{$item->first()->info}}
             </span>
         </div>
         @endforeach
     </div>
     <hr>
-    @endforeach
 
 </div>
   @endsection

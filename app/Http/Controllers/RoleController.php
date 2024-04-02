@@ -35,21 +35,22 @@ class RoleController extends Controller
     {
         $user = Auth::user();
         $role = $user->roles->first();
-       // dd($role->name);
+        // dd($role->name);
         if ($user->id === 1) {
-            // Superadmin can see all users
+            // Superadmin can see all Roles
             $tablevalues = Role::all();
         } else {
             // Admins can see all users except the superadmin
             $tablevalues = Role::where('name', '<>', $role->name)
-                        ->get();
+                ->whereNot('name', 'SuperAdmin')
+                ->get();
         }
-     //   $tablevalues = Role::orderBy('id', 'DESC')->paginate(10);
+        //   $tablevalues = Role::orderBy('id', 'DESC')->paginate(10);
         $mainfilter =  Role::pluck('name')->toArray();
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['ROLE', 'NO OF USERS','PERMISSIONS', 'ACTIONS'],
+            'headers' => ['ROLE', 'NO OF USERS', 'PERMISSIONS', 'ACTIONS'],
             'rows' => [],
         ];
 
@@ -84,7 +85,7 @@ class RoleController extends Controller
             $permissions = $user->permissions->pluck('name')->orderBy('name', 'asc')->get();
         }
         dd($permissions);
-      // $permissions = Permission::orderBy('name', 'asc')->get();
+        // $permissions = Permission::orderBy('name', 'asc')->get();
 
         // Group the permissions by module and then submodule
         $groupedPermissions = $permissions->groupBy('module')->map(function ($modulePermissions) {
@@ -109,7 +110,7 @@ class RoleController extends Controller
             if ($title === 'Summary') {
                 $stepContents[] = View('wizard.role.role_summary', compact('role'))->render();
             } elseif ($title === 'Menu Access') {
-                $stepContents[] = View('wizard.role.role_permissions', compact('groupedPermissions', 'checkboxPermissions','rolePermissions'))->render();
+                $stepContents[] = View('wizard.role.role_permissions', compact('groupedPermissions', 'checkboxPermissions', 'rolePermissions'))->render();
             } elseif ($title === 'Report Access') {
                 $stepContents[] = View('wizard.role.role_reports')->render();
             }
@@ -205,8 +206,8 @@ class RoleController extends Controller
                 return $role->permissions;
             });
         }
-      //  dd($permissions);
-      //  $permissions = Permission::orderby('name', 'ASC')->get();
+        //  dd($permissions);
+        //  $permissions = Permission::orderby('name', 'ASC')->get();
         // Group the permissions by module and then submodule
         $groupedPermissions = $permissions->groupBy('module')->map(function ($modulePermissions) {
             return $modulePermissions->groupBy('submodule');

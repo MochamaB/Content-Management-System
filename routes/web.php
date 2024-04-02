@@ -60,9 +60,9 @@ use App\Notifications\PaymentNotification;
 
 Route::get('/', [App\Http\Controllers\client\HomeController::class, 'index']);
 
-
 Route::resource('dashboard', DashboardController::class);
-Route::group(['middleware' => ['auth', 'permission','verified']], function () {
+
+Route::group(['middleware' => ['auth', 'permission']], function () {
 
 //<!-------------------------------- Website Module ---------------------------------------------->////
     Route::group(['groupName' => 'Website'], function () {
@@ -198,13 +198,13 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
             'as' => 'setting.create',
             'uses' => 'App\Http\Controllers\SettingController@create'
         ]);
-        Route::get('setting/{name}', [
+        Route::get('setting/{model_type}', [
             'as' => 'setting.show',
             'uses' => 'App\Http\Controllers\SettingController@show'
         ]);
 
         Route::resource('setting', SettingController::class, ['except' => 'show', 'create']);
-        Route::get('system-setting', [SettingController::class, 'systemsetting'])->name('setting.system');
+        Route::get('system', [SettingController::class, 'systemsetting'])->name('setting.system');
         Route::post('update-systemsetting}', [SettingController::class, 'updateSystemSettings']);
     }); 
 
@@ -238,7 +238,7 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
      //<!-------------------------------- Other Module ---------------------------------------------->////
 
     Route::group(['groupName' => 'Other'], function () {
-       
+        
 
         
     });
