@@ -1,7 +1,5 @@
-<div class="row" style="margin-top: 0px;">
 
     @foreach($cardData as $cardType => $card)
-
     <div class="col-md-3">
         <div class="card h-100">
             <div class="card-header" style="background-color:#ffff ;">
@@ -40,4 +38,5 @@
             @endif
         </div>
     </div>
+
     @endforeach

@@ -1,4 +1,4 @@
-<nav class="sidebar sidebar-offcanvas">
+<nav class="sidebar sidebar-offcanvas" >
   <ul class="nav">
     <li class="nav-item">
       <a class="nav-link" href="{{ url('/dashboard') }}">

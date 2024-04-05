@@ -17,9 +17,7 @@ use App\Http\Controllers\Admin\Report\DashboardController;
 Route::prefix("admin")->group(function(){
     
 
-    Route::get('/dashboard', function () {
-        dd('Welcome to admin user routes.');
-    });
+   
 
 
 

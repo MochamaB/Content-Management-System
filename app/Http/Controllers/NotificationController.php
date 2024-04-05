@@ -18,25 +18,9 @@ class NotificationController extends Controller
 {
   public function index()
   {
-    $user = Auth::user();
-    $invoice = Invoice::find(1);
-     /// Data for the Account Statement
-     $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
-     //    dd($unitchargeIds);
-     $sixMonths = now()->subMonths(6);
-     $transactions = Transaction::where('created_at', '>=', $sixMonths)
-         ->where('unit_id', $invoice->unit_id)
-         ->where('unitcharge_id', $unitchargeId)
-         ->get();
-     $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
+   
 
-     ////Opening Balance
-     $openingBalance = $this->calculateOpeningBalance($invoice);
-
-     //// Data for the Payment Methods
-     $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
-
-    return view('email.template2', compact('user','invoice','transactions','groupedInvoiceItems','openingBalance'));
+    return view('admin.Communication.notification_index');
 
   }
 

@@ -135,7 +135,7 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
             $sitesettings = WebsiteSetting::first();
 
-            if (Gate::allows('view-all', $user)) {
+            if (Gate::allows('view-all', $user) || stripos($user->roles->first()->name, 'admin') === true) {
                 $notifications = Notification::all();
                 $unreadNotifications = $notifications->where('read_at', null);
             } else {
@@ -216,7 +216,7 @@ class AppServiceProvider extends ServiceProvider
 
                 'Settings' => ['icon' => 'settings', 'submodules' => [
                     'setting' => ['display' => 'Application Settings'],
-                    'system' => ['display' => 'System Settings']
+                    'system-setting' => ['display' => 'System Settings']
                 ]],
             ]);
             //  $notifications = $user->notifications;

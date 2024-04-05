@@ -18,12 +18,7 @@
           <span class="badge badge-pill badge-primary float-right">View all</span>
         </a>
         <div class="dropdown-divider"></div>
-        <a class="dropdown-item preview-item">
-          <div class="preview-item-content flex-grow py-2">
-            <p class="preview-subject ellipsis font-weight-medium text-dark">Subject </p>
-            <p class="fw-light small-text mb-0"> Heading </p>
-          </div>
-        </a>
+        
 
 
       </div>

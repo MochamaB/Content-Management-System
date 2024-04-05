@@ -108,7 +108,8 @@ class PropertyController extends Controller
             $property->property_status ='Active';
             $property->save();
 
-            return redirect('property')->with('status', 'Property Added Successfully');
+            return redirect()->route('property.show', $property->id)->with('status', 'Property Added Successfully');
+
         }
     }
 
@@ -174,14 +175,18 @@ class PropertyController extends Controller
          $id = $property;
         // dd($property);
 
-
-        $viewData = $this->formData($this->model, $property);
+        $specialvalue = collect([
+            'property_type' => $property->propertyType->property_type, // Use a string for the controller name
+            '1' => ' Unit',
+        ]);
+        $viewData = $this->formData($this->model, $property,$specialvalue);
+       
         //  $unitviewData = $result['unitviewData'];
         // Render the Blade views for each tab content
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities'))->render();
+                $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities','specialvalue'))->render();
             } elseif ($title === 'Units') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();

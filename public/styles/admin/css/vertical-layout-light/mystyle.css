@@ -85,14 +85,15 @@
 .sidebar-offcanvas:hover {
   overflow: auto;
 }
+.sidebar-icon-only .sidebar {
+  width: 70px;
+  background: #fff;
+}
 
 .main-panel {
   flex: 1;
   margin-left: 255px; /* Adjust to match the width of the sidebar */
   transition: padding-left 0.25s ease-out;
-}
-.sidebar-icon-only .main-panel {
-  margin-left: 60px;
 }
 
 
@@ -437,6 +438,17 @@ a.reademail:visited {
   font-weight: 400;
   text-decoration: none;
   text-transform: capitalize;
+}
+a.genlink {
+  color: #0a0e1f;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;
+  text-transform: capitalize;
+}
+a.genlink:hover {
+  color: #ffaf00;
+  font-size: 20px;
 }
 
 * {

@@ -123,6 +123,10 @@ class Property extends Model implements HasMedia
         return $this->hasMany(Unit::class);
     }
 
+    public function leases()
+    {
+        return $this->hasMany(Lease::class);
+    }
     public function users()
     {
         return $this->belongsToMany(User::class, 'unit_user', 'property_id', 'user_id');

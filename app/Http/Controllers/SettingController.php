@@ -167,11 +167,7 @@ class SettingController extends Controller
 
     public function systemsetting()
     {
-        // Get all .env variables
-        $envVariables = $_ENV;
-
-        // Pass the variables to the view
-        return view('admin.Setting.systemsetting', compact('envVariables'));
+        
     }
 
     public function updateSystemSettings(Request $request)

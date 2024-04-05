@@ -81,7 +81,7 @@
         </div>
     </div>
     <div class="col-md-4">
-        <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" id="submitBtn">Edit {{$routeParts[0]}}</button>
+        <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit {{$routeParts[0]}}</button>
     </div>
 
 

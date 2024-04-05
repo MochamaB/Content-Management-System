@@ -30,6 +30,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\VendorCategoryController;
@@ -75,22 +76,22 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
 //<!-------------------------------- Communication Module ---------------------------------------------->////
     Route::group(['groupName' => 'Communication'], function () {
-        //  Route::resource('notification', NotificationController::class);
-        Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
-        Route::get('/email', [NotificationController::class, 'email'])->name('notification.email');
-        Route::get('/text', [NotificationController::class, 'text'])->name('notification.texts');
-        Route::get('/email/{id}', [NotificationController::class, 'show'])
-            ->where('id', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
-            ->name('notification.show');
+        Route::get('email/{id}', [NotificationController::class, 'show'])
+        ->where('id', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
+        ->name('notification.show');
+        Route::resource('notification', NotificationController::class, ['except' => 'show']);
+        Route::get('email', [NotificationController::class, 'email'])->name('notification.email');
+        Route::get('text', [NotificationController::class, 'text'])->name('notification.text');
+       
     });
 
 //<!-------------------------------- Accounting Module ---------------------------------------------->////
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
         Route::resource('payment-method', PaymentMethodController::class);
-     //   Route::resource('transaction', TransactionController::class);
+        Route::resource('transaction', TransactionController::class);
         Route::get('general-ledger', [TransactionController::class, 'ledger'])->name('transaction.ledger');
-        Route::get('income-statement', [TransactionController::class, 'incomeStatement'])->name('transaction.incomestatement');
+        Route::get('income-statement', [TransactionController::class, 'incomeStatement'])->name('transaction.statement');
     
     });
 
@@ -206,6 +207,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('setting', SettingController::class, ['except' => 'show', 'create']);
         Route::get('system', [SettingController::class, 'systemsetting'])->name('setting.system');
         Route::post('update-systemsetting}', [SettingController::class, 'updateSystemSettings']);
+
+        Route::resource('system-setting', SystemSettingController::class);
     }); 
 
      //<!-------------------------------- User Module ---------------------------------------------->////
@@ -230,7 +233,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     });
 
      //<!-------------------------------- Report Module ---------------------------------------------->////
-    Route::group(['groupName' => 'Report'], function () {
+    Route::group(['groupName' => 'Reports'], function () {
         Route::resource('report', ReportController::class);
 
     });
@@ -255,7 +258,7 @@ Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits
 
 ///Send Email
 Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoice']);
-Route::get('notification', [NotificationController::class, 'index']);
+//Route::get('notification', [NotificationController::class, 'index']);
 
 //////View Your email notification
 

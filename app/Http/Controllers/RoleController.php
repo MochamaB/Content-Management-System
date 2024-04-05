@@ -53,6 +53,7 @@ class RoleController extends Controller
             'headers' => ['ROLE', 'NO OF USERS', 'PERMISSIONS', 'ACTIONS'],
             'rows' => [],
         ];
+        $allpermissions = Permission::count();
 
         foreach ($tablevalues as $item) {
             $showLink = url($this->controller['0'] . 'show' . $item->id);
@@ -63,7 +64,7 @@ class RoleController extends Controller
                 $item->name . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     $item->description . '</span>',
                 $userCount,
-                $permissionCount,
+                $permissionCount.' / '.$allpermissions,
 
             ];
         }

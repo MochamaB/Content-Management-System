@@ -1,28 +1,13 @@
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-7">
     <div class=" contwrapper">
-    <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Details 
-    </h4>
+   
+    @include('admin.CRUD.edit')
+
     <hr>
-
-    
-    </div>
-
-    </div>
-
-
-
-
-
-    <div class="col-md-4">
-
-        <div class="card">
-            <div class="card-header">
-                <h4>Amenities
-
-            </div>
-            <div class="card-body">
-                @if($amenities->isEmpty())
+    <h4 style="text-transform: capitalize;">Amenities 
+    </h4>
+    @if($amenities->isEmpty())
                 <h5>
                     <small class="text-muted">
                         No Amenities added
@@ -43,7 +28,30 @@
                 <button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0" data-toggle="modal" data-target="#exampleModal">
                     Add Amenities
                 </button>
-            </div>
+
+
+
+    
+    </div>
+
+    </div>
+
+
+
+
+
+    <div class="col-md-5" >
+        <div class=" contwrapper" style="background-color: #dfebf3;border: 1px solid #7fafd0;">
+
+            <h4><b> Balances</b>
+            </h4>
+            <hr>
+            <h5>Pre-payments:</h5>
+            <h5>Total Invoices:</h5>
+            <h5>Total Invoice Amount:</h5>
+            <h5>Total Paid Amount:</h5>
+
+
         </div>
 
     </div>
