@@ -77,9 +77,8 @@
   overflow: hidden;
   transition: width 0.25s ease-out;
   scrollbar-width: thin;  
-  /*scrollbar-color: #adb5bd #0a2351; */
-  scrollbar-color: #ffaf00 #adb5bd;
-  
+  scrollbar-color: #adb5bd #0a2351; 
+ 
 }
 
 .sidebar-offcanvas:hover {
@@ -399,6 +398,7 @@
 .modaltitle {
   color: white;
 }
+/*-------- -------------- a LInks*/
 
 a.table:link {
   color: #1F3BB3;
@@ -451,6 +451,8 @@ a.genlink:hover {
   font-size: 20px;
 }
 
+
+
 * {
   box-sizing: border-box
 }
@@ -459,7 +461,7 @@ body {
   font-family: "Lato", sans-serif;
 }
 
-/* Style the tab */
+/*---------------------- Style the tab */
 .tab {
   float: left;
   border: 1px solid #ccc;
@@ -530,7 +532,7 @@ body {
   transform: translateY(-50%);
 }
 
-/* Style the tab content */
+/* -------------------------Style the tab content */
 .tabcontent {
   float: left;
   padding: 30px 32px;
@@ -540,7 +542,7 @@ body {
   height: auto;
 }
 
-/* Wizard style the tab content */
+/*----------------------- Wizard style the tab content */
 .wizardtab {
   float: left;
   border: 1px solid #ccc;
@@ -625,7 +627,7 @@ body {
 }
 
 
-/* Style the search input field */
+/*------------------------ Style the search input field */
 input.form-control.form-control-sm.search-input {
   border-radius: 0px;
   border: 2px solid #b6b6b6;
@@ -722,7 +724,7 @@ select:focus {
 }
 
 
-/* badges */
+/*--------------- badges */
 .badge {
   border-radius: 20px;
   font-size: 12.5px;

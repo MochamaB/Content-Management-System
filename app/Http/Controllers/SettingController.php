@@ -129,33 +129,13 @@ class SettingController extends Controller
             '2' => $setting->info,
         ]);
 
-        $tabTitles = collect([
-            'Global Settings',
-            'Overrides',
+        $tabData = $this->tableViewDataService->generateSettingTabContents($modelType, $setting);
 
+        return view('admin.CRUD.form', [
+            'pageheadings' => $pageheadings,
+            'tabTitles' => $tabData['tabTitles'],
+            'tabContents' => $tabData['tabContents'],
         ]);
-
-        $controller = 'setting';
-
-        $globalSettings = Setting::where('model_type', $modelType)
-            ->whereNull('model_id')
-            ->get();
-        $individualSetting = Setting::where('name', $setting->name)
-            ->whereNotNull('model_id')
-            ->get();
-
-        $settingsTableData = $this->tableViewDataService->getSettingData($individualSetting, true);
-        $id = $setting->model_type;
-
-        $tabContents = [];
-        foreach ($tabTitles as $title) {
-            if ($title === 'Global Settings') {
-                $tabContents[] = View('admin.setting.global_settings', compact('setting', 'globalSettings'))->render();
-            } elseif ($title === 'Overrides') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $settingsTableData, 'controller' => ['setting']], compact('id'))->render();
-            }
-        }
-        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**

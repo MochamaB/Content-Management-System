@@ -10,7 +10,9 @@ use App\Models\Amenity;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\UnitController;
+use App\Models\Setting;
 use App\Services\TableViewDataService;
+use App\Services\FilterService;
 
 class PropertyController extends Controller
 {
@@ -23,8 +25,9 @@ class PropertyController extends Controller
     protected $controller;
     protected $model;
     private $tableViewDataService;
+    protected $filterService;
 
-    public function __construct(TableViewDataService $tableViewDataService)
+    public function __construct(TableViewDataService $tableViewDataService,FilterService $filterService)
     {
         $this->model = Property::class;
 
@@ -33,16 +36,17 @@ class PropertyController extends Controller
             '1' => 'Property',
         ]);
         $this->tableViewDataService = $tableViewDataService;
+        $this->filterService = $filterService;
     }
 
 
 
-    public function index()
+    public function index(Request $request,)
     {
-        $tablevalues = Property::all();
+        $filters = $request->except(['tab','_token','_method']);
+        $filterdata = $this->filterService->getPropertyFilters($request);
+        $tablevalues = Property::ApplyFilters($filters)->get();
         //   $tablevalues = Property::withUserUnits()->get();
-
-        $mainfilter =  $this->model::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
      //   $cardData = $this->cardData($this->model);
       //  dd($cardData);
@@ -64,10 +68,10 @@ class PropertyController extends Controller
         }
 
         return view('admin.CRUD.form', [
-            'mainfilter' => $mainfilter,
             'tableData' => $tableData,
             'controller' => $this->controller,
             'viewData' => $viewData,
+            'filterdata' => $filterdata,
        //     'cardData' => $cardData,
         ]);
     }
@@ -168,13 +172,19 @@ class PropertyController extends Controller
            $requestTableData = $this->tableViewDataService->getTicketData($tickets);
     
          //5. SETTINGS
+         $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure
+         // Combine the namespace with the class name
+         $modelType = $namespace . 'Property';
          $setting = $property->settings;
-      //   $settingController = new SettingController();
-         $settingTableData = $this->tableViewDataService->getSettingData($setting);
+         $setting = Setting::where('model_type', $modelType)->first();
+        
+         $settingTableData = $this->tableViewDataService->generateSettingTabContents($modelType, $setting);
+       
          $model = 'properties';
          $id = $property;
         // dd($property);
 
+        ///// Used to Set Property TYpe name in the edit view.///
         $specialvalue = collect([
             'property_type' => $property->propertyType->property_type, // Use a string for the controller name
             '1' => ' Unit',
@@ -200,7 +210,7 @@ class PropertyController extends Controller
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $requestTableData,'controller' => ['ticket']], 
                 compact('amenities', 'allamenities','id'))->render();
             }elseif ($title === 'Settings') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $settingTableData,'controller' => ['setting']], 
+                $tabContents[] = View('admin.CRUD.tabs_horizontal_show', ['tabTitles' => $settingTableData['tabTitles'], 'tabContents' => $settingTableData['tabContents'],'controller' => ['setting']], 
                 compact('amenities', 'allamenities','model','id'))->render();
             }
         }

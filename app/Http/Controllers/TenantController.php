@@ -32,7 +32,7 @@ class TenantController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if (Gate::allows('view-all', $user)) {
+        if (Gate::allows('view-all', $user) || Gate::allows('admin', $user)) {
             $tenants =User::role('tenant')->get();
         } else {
             $tenants = User::Tenants($user)->get();

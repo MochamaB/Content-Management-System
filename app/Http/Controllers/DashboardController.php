@@ -47,7 +47,7 @@ class DashboardController extends Controller
        
       
         $properties = Property::with('units','leases', 'invoices')->get();
-        $units = Unit::with('properties','leases', 'invoices')->get();
+        $units = Unit::with('property','lease', 'invoices')->get();
         $cardData = $this->cardService->topCard($properties,$units);
 
         $invoiceData = Invoice::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')

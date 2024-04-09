@@ -135,7 +135,7 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
             $sitesettings = WebsiteSetting::first();
 
-            if (Gate::allows('view-all', $user) || stripos($user->roles->first()->name, 'admin') === true) {
+            if (Gate::allows('view-all', $user) || Gate::allows('admin', $user)) {
                 $notifications = Notification::all();
                 $unreadNotifications = $notifications->where('read_at', null);
             } else {
@@ -154,14 +154,6 @@ class AppServiceProvider extends ServiceProvider
             $userRoles = auth()->user()->roles;
             $userPermissions = $userRoles->map->permissions->flatten();
             $sidebar = collect([
-                'Website' => ['icon' => 'web', 'submodules' => [
-                    'websitesetting' => ['display' => 'Site Information'],
-                    'slider' => ['display' => 'Picture Sliders'],
-                    'testimonial' => ['display' => 'Client Testimonials'],
-                    'amenity' => ['display' => 'Property Amenities'],
-                    'propertytype' => ['display' => 'Property Categories']
-                ]],
-
                 'Property' => ['icon' => 'bank', 'submodules' => [
                     'property' => ['display' => 'Property / Company'],
                     'unit' => ['display' => 'Units'],
@@ -212,6 +204,14 @@ class AppServiceProvider extends ServiceProvider
                     'user' => ['display' => 'Manage Users'],
                     'role' => ['display' => 'User Roles'],
                     'permission' => ['display' => 'System Permissions']
+                ]],
+
+                'Website' => ['icon' => 'web', 'submodules' => [
+                    'websitesetting' => ['display' => 'Site Information'],
+                    'slider' => ['display' => 'Picture Sliders'],
+                    'testimonial' => ['display' => 'Client Testimonials'],
+                    'amenity' => ['display' => 'Property Amenities'],
+                    'propertytype' => ['display' => 'Property Categories']
                 ]],
 
                 'Settings' => ['icon' => 'settings', 'submodules' => [

@@ -26,7 +26,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('view-all', function ($user) {
-            return $user->id === 1 || $user->roles->contains(function ($role) {
+            return $user->id === 1;
+        });
+
+        Gate::define('admin', function ($user) {
+            return $user->roles->contains(function ($role) {
                 return str_contains(strtolower($role->name), 'admin');
             });
         });

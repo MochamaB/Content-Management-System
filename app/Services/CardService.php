@@ -42,6 +42,34 @@ class CardService
         return $cards;
     }
 
+    public function tenantTopCard($properties,$units)
+    {
+        $propertyCount = $properties->count();
+        $unitCount = $units->count();
+        $invoiceCount =  $units->flatMap(function ($units) {
+            return $units->invoices;
+        })->count();
+        $invoices =  $units->flatMap(function ($units) {
+            return $units->invoices;
+        })->sum('totalamount');
+        $payments = $units->flatMap(function ($units) {
+            return $units->payments;
+        })->sum('totalamount');
+        $balance = $invoices - $payments;
+        //   $invoicepaid =  $invoices->filter(function ($invoice) {
+        //        return $invoice->payments !== null;
+        //   })->sum('payments.totalamount');
+        //  $invoicePayments = $invoices->withCount('payments')->get();
+        //  $paymentCount = $invoicePayments->sum('payments_count');
+        // Define the columns for the unit report
+        $cards =  [
+            'invoiceCount' => ['title' => 'Total Invoices', 'value' => $invoiceCount, 'amount' => '', 'pecentage' => '', 'links' => '/invoice'],
+            'unpaidInvoices' => ['title' => 'Unpaid Invoices', 'value' => $unitCount, 'amount' =>'', 'pecentage' => '', 'links' => '/unit'],
+            'requests' => ['title' => 'Maintenance Requests', 'value' => '', 'amount' => $payments, 'pecentage' => '', 'links' => '/invoice'],
+            'payment' => ['title' => 'Payments Total', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
+        ];
+        return $cards;
+    }
 
 
     public function invoiceCard($invoices)

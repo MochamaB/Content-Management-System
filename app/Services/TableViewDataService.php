@@ -12,10 +12,12 @@ use App\Models\WebsiteSetting;
 use App\Models\MeterReading;
 use App\Models\InvoiceItems;
 use App\Models\Property;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\View;
 
 
 
@@ -768,5 +770,40 @@ class TableViewDataService
         }
 
         return $tableData;
+    }
+
+    public function generateSettingTabContents($modelType, $setting)
+    {
+        
+        $tabTitles = collect([
+            'Global Settings',
+            'Overrides',
+        ]);
+        $controller = 'setting';
+        $globalSettings = Setting::where('model_type', $modelType)
+            ->whereNull('model_id')
+            ->get();
+
+        $individualSetting = Setting::where('model_type', $modelType)
+            ->whereNotNull('model_id')
+            ->get();
+
+        $settingsTableData = $this->getSettingData($individualSetting, true);
+        $id = $setting->model_type;
+
+        $tabContents = [];
+
+        foreach ($tabTitles as $title) {
+            if ($title === 'Global Settings') {
+                $tabContents[] = View('admin.setting.global_settings', compact('setting', 'globalSettings'))->render();
+            } elseif ($title === 'Overrides') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $settingsTableData, 'controller' => ['setting']], compact('id'))->render();
+            }
+        }
+
+        return [
+            'tabTitles' => $tabTitles,
+            'tabContents' => $tabContents,
+        ];
     }
 }

@@ -63,15 +63,14 @@ class UserController extends Controller
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            if ($user->id === 1) {
+        
                 // Superadmin can see all users
                 $users = $this->model::all();
-            } else {
-                // Admins can see all users except the superadmin
-                $users = $this->model::where('id', '<>', 1)
-                    ->where('id', '<>', $user->id)->get();
-            }
-        } else {
+          
+        }else if(Gate::allows('admin', $user))  {
+            $users = $this->model::where('id', '<>', 1)
+            ->where('id', '<>', $user->id)->get();
+        }else {
             $users = $user->filterUsers();
         }
         $mainfilter =  Role::pluck('name')->toArray();
@@ -115,7 +114,11 @@ class UserController extends Controller
 
         if (Gate::allows('view-all', $loggeduser)) {
             $roles = Role::all();
-        } else {
+        }else if (Gate::allows('admin', $loggeduser)){
+            $roles = $filteredRoles->reject(function ($role) {
+                return $role->id === 1;
+            })->all();
+        }else {
             $roles =  $filteredRoles->all();
         }
 

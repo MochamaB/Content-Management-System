@@ -4,7 +4,7 @@
 
 
 
-@include('admin.CRUD.cards')
+@include('admin.CRUD.dashboardcards')
 
 <div class="row" style="padding-top:40px">
 

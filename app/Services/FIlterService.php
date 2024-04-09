@@ -28,6 +28,16 @@ class FilterService
         ];
     }
 
+    public function getPropertyFilters()
+    {
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        return [
+            'id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
+
+        ];
+    }
+
+
     public function getGeneralLedgerFilters()
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
