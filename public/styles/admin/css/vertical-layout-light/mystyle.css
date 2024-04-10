@@ -957,6 +957,16 @@ border: 2px solid #c50000c4 !important;
   display: none;
 }
 
+/* Close button */
+.closebtn{
+  color:red;
+  font-size: 36px;
+}
+
+.closebtn:hover {
+  color:red;
+  font-size: 48px;
+}
 /*------------------------ Responsiveness ----------------------------------------------------------  */
 
 @media screen and (max-width: 991px) {

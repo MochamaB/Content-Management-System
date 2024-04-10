@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\FilterableScope;
 
 class Paymentvoucher extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterableScope;
     protected $table = 'paymentvouchers';
     protected $fillable = [
         'property_id',
@@ -36,6 +37,15 @@ class Paymentvoucher extends Model
         return $this->belongsTo(Unit::class);
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'model_id')->where('model_type', User::class);
+    }
+
+    public function lease()
+    {
+        return $this->belongsTo(Lease::class, 'unit_id');
+    }
 
     public function paymentvoucherItems()
     {

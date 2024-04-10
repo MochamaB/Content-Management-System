@@ -13,7 +13,7 @@
       </a>
       @endif
       <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
-        <a class="dropdown-item py-3">
+        <a href ="{{url('notification')}}" class="dropdown-item py-3">
           <p class="mb-0 font-weight-medium float-left">You have {{ $unreadNotifications->count() }} unread mails </p>
           <span class="badge badge-pill badge-primary float-right">View all</span>
         </a>

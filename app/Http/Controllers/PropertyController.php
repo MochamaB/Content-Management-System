@@ -41,7 +41,7 @@ class PropertyController extends Controller
 
 
 
-    public function index(Request $request,)
+    public function index(Request $request)
     {
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);

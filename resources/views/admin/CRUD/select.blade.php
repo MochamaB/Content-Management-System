@@ -88,7 +88,7 @@
         });
         $('.unit_id').on('change', function() {
             var selectedUnitId = $(this).val();
-
+            $('#select').hide();
             // Append unit_id to the current URL
             var newUrl = window.location.href + '/' + selectedUnitId + '/units';
 

@@ -16,6 +16,19 @@
                 </select>
             </div>
         </div>
+
+        @if($model === 'properties')
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="label">Unit Number</label>
+                <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required>
+                    @foreach($unit as $item)
+                    <option value="{{$item->id}}">{{$item->unit_number}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        @else
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Unit Number</label>
@@ -24,6 +37,7 @@
                 </select>
             </div>
         </div>
+        @endif
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Name of the Charge <span class="requiredlabel">*</span></label>

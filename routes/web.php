@@ -13,6 +13,8 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitDetailsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GeneralLedgerController;
+use App\Http\Controllers\IncomeStatementController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
@@ -90,9 +92,9 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
         Route::resource('payment-method', PaymentMethodController::class);
         Route::resource('transaction', TransactionController::class);
-        Route::get('general-ledger', [TransactionController::class, 'ledger'])->name('transaction.ledger');
-        Route::get('income-statement', [TransactionController::class, 'incomeStatement'])->name('transaction.statement');
-    
+        Route::resource('general-ledger', GeneralLedgerController::class);
+        Route::resource('income-statement', IncomeStatementController::class);
+
     });
 
 //<!-------------------------------- Leasing Module ---------------------------------------------->////
@@ -109,7 +111,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::get('skipdeposit', [LeaseController::class, 'skipdeposit']);
 
         ///////////////
-        Route::get('unitcharge/create/{id?}', [
+        Route::get('unitcharge/create/{id?}/{model?}', [
             'as' => 'unitcharge.create',
             'uses' => 'App\Http\Controllers\UnitchargeController@create'
         ])->middleware('check.create.variables');
@@ -254,6 +256,7 @@ Route::post('api/check-chargename', [LeaseController::class, 'checkchargename'])
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
 Route::post('api/fetch-propertyMeterReading', [MeterReadingController::class, 'fetchpropertyMeterReading']);
 Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits']);
+Route::post('closewizard/{routePart}', [SettingController::class, 'closewizard'])->name('closewizard');
 
 
 ///Send Email

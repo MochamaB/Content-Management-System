@@ -88,6 +88,7 @@ class MeterReadingController extends Controller
         } elseif ($model === 'units') {
             $unit = Unit::find($id);
             $property = Property::where('id', $unit->property->id)->first();
+            $charges = '';
             $unitcharge = Unitcharge::where('unit_id', $unit->id)
                 ->where('charge_type', 'units')
                 ->get();

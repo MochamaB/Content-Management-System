@@ -12,6 +12,9 @@
         </ul>
     </div>
     <div class="col-md-9 right-side">
+        <a href="#" class="mb-0 me-0  float-end" data-toggle="modal" data-target="#closeWizardModal">
+            <i class=" mdi mdi-close-circle-outline me-2 closebtn"></i>
+        </a>
         @foreach($stepContents as $index => $content)
         <div class="main {{ $index === 0 ? 'active' : '' }}">
             {!! $content !!}
@@ -19,6 +22,30 @@
         @endforeach
 
 
+    </div>
+</div>
+
+<div class="modal fade" id="closeWizardModal" tabindex="-1" role="dialog" aria-labelledby="closeWizardModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:red;">
+                <h5 class="modal-title" id="closeWizardModalLabel" style="color:white;">Close Wizard</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true" style="font-size: 40px; color: white;">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to Exit this Wizard. All Data will be lost?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger btn-lg text-danger mb-0 me-2" data-dismiss="modal">Cancel</button>
+                <!----- Goes to Close wizard method in settingsController ------>
+                <form action="{{ url('closewizard/'.$routeParts[0] )}}" method="POST">
+                    @csrf <!-- CSRF token for Laravel -->
+                    <button type="submit" class="btn btn-danger btn-lg text-white mb-0 me-0">Close Wizard</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

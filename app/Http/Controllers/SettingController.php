@@ -8,6 +8,7 @@ use App\Models\Setting;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use App\Services\TableViewDataService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class SettingController extends Controller
@@ -203,5 +204,24 @@ class SettingController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function closewizard(Request $request,$routePart)
+    {
+        // Get all session keys
+        $keys = $request->session()->all();
+      //  dd($keys);
+
+        // Loop through the keys and forget them, except for the user login and default session keys
+        foreach ($keys as $key => $value) {
+            if (!in_array($key, ['_token','url', '_previous', 'flash', 'login_web_' . Auth::id()])) {
+                if (str_starts_with($key, 'wizard_')) {
+                    $request->session()->forget($key);
+                }
+            }
+        }
+
+        // Redirect to the previous page or a default page
+        return redirect($routePart)->with('statuserror', 'You have exited the wizard');
     }
 }

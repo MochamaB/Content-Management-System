@@ -49,13 +49,13 @@
                         <li><b>DUE DATE:</b> {{\Carbon\Carbon::parse($invoice->duedate)->format('d M Y')}}</li>
                         <li></br></li>
                         @if( $invoice->status == 'paid' )
-                        <div style="background-color:green;font-size:17px" class="badge badge-opacity-warning"> PAID</div> <!------Status -->
+                        <div class="badge badge-active"> PAID</div> <!------Status -->
                         @elseif( $invoice->status == 'overpaid' )
-                        <div style="background-color:darkorange;font-size:17px" class="badge badge-opacity-warning"> OVER PAID</div>
+                        <div class="badge badge-information"> OVER PAID</div>
                         @elseif ( $invoice->status == 'partially_paid' )
-                        <div style="background-color:blue;font-size:17px;font-weight:800" class="badge badge-opacity-sucess"> PARTIALLY PAID</div>
+                        <div class="badge badge-warning"> PARTIALLY PAID</div>
                         @elseif ( $invoice->status == 'unpaid' )
-                        <div style="background-color:red;font-size:17px;font-weight:800" class="badge badge-opacity-warning;font-size:17px">UNPAID </div>
+                        <div class="badge badge-error">UNPAID </div>
                         @endif
                     </ul>
                 </td>

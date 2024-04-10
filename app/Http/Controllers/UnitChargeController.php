@@ -65,20 +65,22 @@ class UnitChargeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id = null)
+    public function create($id = null,$model = null)
     {
+        if ($model === 'properties') {
+            $property = Property::find($id);
+            $unit = $property->units;
+        } elseif ($model === 'units') {
+            $unit = Unit::find($id);
+            $property = Property::where('id', $unit->property->id)->first();
+        }
         $account = Chartofaccount::all();
         $accounts = $account->groupBy('account_type');
 
-        $unit = Unit::find($id);
-        $property = Property::where('id', $unit->property->id)->first();
-
-
-        //   dd($latestReading);
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts'));
+        return View('admin.lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts','model'));
     }
 
     /**

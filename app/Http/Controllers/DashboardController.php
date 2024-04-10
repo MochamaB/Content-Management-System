@@ -35,7 +35,7 @@ class DashboardController extends Controller
             '0' => 'dashboard', // Use a string for the controller name
             '1' => ' Dashboard',
         ]);
-        
+
         $this->tableViewDataService = $tableViewDataService;
         $this->cardService = $cardService;
     }
@@ -44,29 +44,35 @@ class DashboardController extends Controller
     {
         $controller = $this->controller;
         $user = auth()->user();
-       
-      
-        $properties = Property::with('units','leases', 'invoices')->get();
-        $units = Unit::with('property','lease', 'invoices')->get();
-        $cardData = $this->cardService->topCard($properties,$units);
+
+        $properties = Property::with('units', 'leases', 'invoices')->get();
+        $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
+
+       // dd($user->roles);
+
+        if ($user && $user->id !== 1 && $user->roles->first()->name === "Tenant") {
+            $cardData = $this->cardService->tenantTopCard($properties, $units);
+        } else {
+            $cardData = $this->cardService->topCard($properties, $units);
+        }
 
         $invoiceData = Invoice::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')
-        ->groupBy('month')
-        ->orderBy('month', 'asc')
-        ->get()
-        ->pluck('total', 'month')
-        ->all();
-       
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->get()
+            ->pluck('total', 'month')
+            ->all();
+
 
         // Example query to get payment data (adjust the query to fit your needs)
-    $paymentData = Payment::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')
-                           ->groupBy('month')
-                           ->orderBy('month', 'asc')
-                           ->get()
-                           ->pluck('total', 'month')
-                           ->all();
+        $paymentData = Payment::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->get()
+            ->pluck('total', 'month')
+            ->all();
 
-        return View('admin.Report.dashboard', compact('cardData','controller','invoiceData', 'paymentData'));
+        return View('admin.Report.dashboard', compact('cardData', 'controller', 'invoiceData', 'paymentData'));
     }
 
     /**
@@ -82,7 +88,7 @@ class DashboardController extends Controller
         $paymentQuery = Payment::query();
         $this->tableViewDataService->applyDateRangeFilter($invoiceQuery, $month, $year);
         $this->tableViewDataService->applyDateRangeFilter($paymentQuery, $month, $year);
-        
+
         $propertyCount = Property::count();
         $unitCount = Unit::count();
         $leaseCount = Lease::count();
@@ -137,7 +143,7 @@ class DashboardController extends Controller
         return ['cards' => $cards, 'data' => $data];
     }
 
-    
+
 
 
     public function create()

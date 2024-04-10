@@ -5,7 +5,7 @@
     
     @include('admin.CRUD.topfilter')
    
-    @if(($routeParts[1] === 'ledger'))
+    @if(($routeParts[0] === 'general-ledger'))
     @include('admin.Accounting.general_ledger')
 
     @else

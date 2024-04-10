@@ -105,6 +105,33 @@ class FilterService
         ];
     }
 
+    public function getPaymentVoucherFilters(Request $request)
+    {
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        $propertyId = $request->property_id;
+        if ($propertyId) {
+            $units = Unit::where('property_id', $propertyId)->pluck('unit_number', 'id')->toArray();
+        }else {
+            // If property_id is not provided, fetch all units
+            $units = Unit::pluck('unit_number', 'id')->toArray();
+        }
+        $unitcharge = Unitcharge::pluck('charge_name', 'id')->unique()->toArray();
+        $status = [
+            'paid' => 'Paid',
+            'payable' => 'Payable',
+        ];
+
+        // Define the columns for the unit report
+        return [
+            'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
+            'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select', 'filtertype' => 'main'],
+            'status' => ['label' => 'Status', 'values' => $status, 'inputType' => 'select', 'filtertype' => 'main'],
+            'unitcharge_id' => ['label' => 'Charge', 'values' => $unitcharge, 'inputType' => 'select', 'filtertype' => 'advanced'],
+            'from_date' => ['label' => 'From', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced'],
+            'to_date' => ['label' => 'To', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced']
+        ];
+    }
+
     public function getMeterReadingsFilters()
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
@@ -136,8 +163,9 @@ class FilterService
 
     public function getUnitChargeFilters(Request $request)
     {
-        $propertyId = $request->property_id;
+       
         $properties = Property::pluck('property_name', 'id')->toArray();
+        $propertyId = $request->property_id;
         if ($propertyId) {
             $units = Unit::where('property_id', $propertyId)->pluck('unit_number', 'id')->toArray();
         }else {

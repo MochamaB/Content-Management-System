@@ -134,15 +134,15 @@ class LeaseController extends Controller
             return back()->with('statuserror', 'There no tenant Role in system. Create Role and Tenants First');
         }
         $tenants = User::withoutActiveLease($role)->get(); ///tenantdetailsview
-        $lease = $request->session()->get('lease');
-        $tenantdetails = $request->session()->get('tenantdetails');
-        $rentcharge = $request->session()->get('rentcharge');
-        $splitRentcharges = $request->session()->get('splitRentcharges');
-        $depositcharge = $request->session()->get('depositcharge');
+        $lease = $request->session()->get('wizard_lease');
+        $tenantdetails = $request->session()->get('wizard_tenantdetails');
+        $rentcharge = $request->session()->get('wizard_rentcharge');
+        $splitRentcharges = $request->session()->get('wizard_splitRentcharges');
+        $depositcharge = $request->session()->get('wizard_depositcharge');
         $account = Chartofaccount::whereIn('account_type', ['Income', 'Liability'])->get();
         $accounts = $account->groupBy('account_type');
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
-        $sessioncharges = $request->session()->get('utilityCharges');
+        $sessioncharges = $request->session()->get('wizard_utilityCharges');
 
         //  dd($utilityCharges);
 
@@ -190,7 +190,7 @@ class LeaseController extends Controller
         ]);
         
         ///1. SAVE LEASE DETAILS
-        $leasedetails = $request->session()->get('lease');
+        $leasedetails = $request->session()->get('wizard_lease');
         if (!empty($leasedetails)) {
             $lease = new Lease();
             $lease->fill($leasedetails->toArray());
@@ -199,7 +199,7 @@ class LeaseController extends Controller
 
 
         ///2. SAVE TENANT COSIGNER DETAILS
-        $tenantdetails = $request->session()->get('tenantdetails');
+        $tenantdetails = $request->session()->get('wizard_tenantdetails');
         if (!empty($tenantdetails)) {
             $tenantdetailsModel = new Tenantdetails();
             $tenantdetailsModel->fill($tenantdetails->toArray());
@@ -207,7 +207,7 @@ class LeaseController extends Controller
         }
 
         //3. SAVE RENT CHARGE
-        $rentcharge = $request->session()->get('rentcharge');
+        $rentcharge = $request->session()->get('wizard_rentcharge');
         if (!empty($rentcharge)) {
             $rentchargeModel = new Unitcharge();
             $rentchargeModel->fill($rentcharge->toArray());
@@ -228,7 +228,7 @@ class LeaseController extends Controller
         }
 
         //5. SAVE SECURITY DEPOSIT AND GENERATE PAYMENT VOUCHER AND TRANSACTIONS
-        $depositcharge = $request->session()->get('depositcharge');
+        $depositcharge = $request->session()->get('wizard_depositcharge');
         if (!empty($depositcharge)) {
             $depositchargeModel = new Unitcharge();
             $depositchargeModel->fill($depositcharge->toArray());
@@ -240,7 +240,7 @@ class LeaseController extends Controller
         }
 
         //6. SAVE UTILITY CHARGES
-        $utilitycharges = $request->session()->get('utilityCharges');
+        $utilitycharges = $request->session()->get('wizard_utilityCharges');
         if (!empty($utilitycharges)) {
             Unitcharge::insert($utilitycharges);
         }
@@ -269,15 +269,15 @@ class LeaseController extends Controller
        
         //10. CREATE SETTING FOR THE DUEDATE
         //pass the lease instance to the action
-        $this->updateDueDateAction->duedate($lease);
+       // $this->updateDueDateAction->duedate($lease);
 
         //11. FORGET SESSION DATA
-        $request->session()->forget('lease');
-        $request->session()->forget('tenantdetails');
-        $request->session()->forget('rentcharge');
-        $request->session()->forget('splitRentcharges');
-        $request->session()->forget('depositcharge');
-        $request->session()->forget('utilityCharges');
+        $request->session()->forget('wizard_lease');
+        $request->session()->forget('wizard_tenantdetails');
+        $request->session()->forget('wizard_rentcharge');
+        $request->session()->forget('wizard_splitRentcharges');
+        $request->session()->forget('wizard_depositcharge');
+        $request->session()->forget('wizard_utilityCharges');
 
         return redirect()->route('lease.index')->with('status', 'Lease Created Successfully');
     }
@@ -453,15 +453,15 @@ class LeaseController extends Controller
         $validationRules = Lease::$validation;
         $validatedData = $request->validate($validationRules);
 
-        if (empty($request->session()->get('lease'))) {
+        if (empty($request->session()->get('wizard_lease'))) {
             $lease = new Lease();
             $lease->fill($validatedData);
-            $request->session()->put('lease', $lease);
+            $request->session()->put('wizard_lease', $lease);
             //      $lease->save();
         } else {
-            $lease = $request->session()->get('lease');
+            $lease = $request->session()->get('wizard_lease');
             $lease->fill($validatedData);
-            $request->session()->put('lease', $lease);
+            $request->session()->put('wizard_lease', $lease);
             //     $lease->update();
         }
 
@@ -481,14 +481,14 @@ class LeaseController extends Controller
             'emergency_email' => 'required|email',
         ]);
 
-        if (empty($request->session()->get('tenantdetails'))) {
+        if (empty($request->session()->get('wizard_tenantdetails'))) {
             $tenantdetails = new Tenantdetails();
             $tenantdetails->fill($validatedData);
-            $request->session()->put('tenantdetails', $tenantdetails);
+            $request->session()->put('wizard_tenantdetails', $tenantdetails);
         } else {
-            $tenantdetails = $request->session()->get('tenantdetails');
+            $tenantdetails = $request->session()->get('wizard_tenantdetails');
             $tenantdetails->fill($validatedData);
-            $request->session()->put('tenantdetails', $tenantdetails);
+            $request->session()->put('wizard_tenantdetails', $tenantdetails);
         }
 
         // Redirect to the lease.create route with a success message
@@ -513,17 +513,17 @@ class LeaseController extends Controller
         $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
 
 
-        if (empty($request->session()->get('rentcharge'))) {
+        if (empty($request->session()->get('wizard_rentcharge'))) {
             $rentcharge = new Unitcharge();
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
-            $request->session()->put('rentcharge', $rentcharge);
+            $request->session()->put('wizard_rentcharge', $rentcharge);
             //     $rentcharge->save();
         } else {
-            $rentcharge = $request->session()->get('rentcharge');
+            $rentcharge = $request->session()->get('wizard_rentcharge');
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
-            $request->session()->put('rentcharge', $rentcharge);
+            $request->session()->put('wizard_rentcharge', $rentcharge);
             //      $rentcharge->update();
         }
         $splitchargeNames = $request->input('splitcharge_name', []);
@@ -554,7 +554,7 @@ class LeaseController extends Controller
     public function splitRentcharges(Request $request)
     {
         //1. GET SESSION DATA
-        $rentcharge = $request->session()->get('rentcharge');
+        $rentcharge = $request->session()->get('wizard_rentcharge');
         $rentchargeIdentifier = uniqid('rentcharge_', true);
 
         ///2. ADD SPLITRENTCHARGES TO THE SESSION
@@ -583,25 +583,25 @@ class LeaseController extends Controller
             }
         }
 
-        if (empty($request->session()->get('splitRentcharges'))) {
-            $request->session()->put('splitRentcharges', $splitRentCharges);
+        if (empty($request->session()->get('wizard_splitRentcharges'))) {
+            $request->session()->put('wizard_splitRentcharges', $splitRentCharges);
         } else {
-            $request->session()->put('splitRentcharges', $splitRentCharges);
+            $request->session()->put('wizard_splitRentcharges', $splitRentCharges);
         }
     }
 
     public function deposit(StoreUnitChargeRequest $request)
     {
         $validatedData = $request->validated();
-        if (empty($request->session()->get('depositcharge'))) {
+        if (empty($request->session()->get('wizard_depositcharge'))) {
             $depositcharge = new Unitcharge();
             $depositcharge->fill($validatedData);
-            $request->session()->put('depositcharge', $depositcharge);
+            $request->session()->put('wizard_depositcharge', $depositcharge);
             //   $charge->save();
         } else {
-            $depositcharge = $request->session()->get('depositcharge');
+            $depositcharge = $request->session()->get('wizard_depositcharge');
             $depositcharge->fill($validatedData);
-            $request->session()->put('depositcharge', $depositcharge);
+            $request->session()->put('wizard_depositcharge', $depositcharge);
             //   $charge->update();
         }
 
@@ -612,18 +612,18 @@ class LeaseController extends Controller
     public function skiprent(Request $request)
     {
         /// FORGET THE RENT CHARGE SESSION IF THIS IS SKIPPED
-        $request->session()->forget('rentcharge');
-        $request->session()->forget('splitRentcharges');
-        $request->session()->forget('depositcharge');
+        $request->session()->forget('wizard_rentcharge');
+        $request->session()->forget('wizard_splitRentcharges');
+        $request->session()->forget('wizard_depositcharge');
         return redirect()->route('lease.create', ['active_tab' => '3'])
             ->with('status', 'Rent details skipped. Add Security Deposit');
     }
     public function skipdeposit(Request $request)
     {
         /// FORGET THE RENT CHARGE SESSION IF THIS IS SKIPPED
-        $request->session()->forget('rentcharge');
-        $request->session()->forget('splitRentcharges');
-        $request->session()->forget('depositcharge');
+        $request->session()->forget('wizard_rentcharge');
+        $request->session()->forget('wizard_splitRentcharges');
+        $request->session()->forget('wizard_depositcharge');
         return redirect()->route('lease.create', ['active_tab' => '4'])
             ->with('status', 'Deposit details skipped. Add Utilities');
     }
@@ -662,7 +662,7 @@ class LeaseController extends Controller
                 $utilityCharges[] = $utilitycharge;
             }
         }
-        $request->session()->put('utilityCharges', $utilityCharges);
+        $request->session()->put('wizard_utilityCharges', $utilityCharges);
 
         return redirect()->route('lease.create', ['active_tab' => '5'])
             ->with('status', 'Utilities Assigned Successfully. Accept Terms and Conditions');

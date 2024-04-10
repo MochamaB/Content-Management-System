@@ -48,7 +48,7 @@ class UnitController extends Controller
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['UNIT','TYPE', 'BEDS', 'BATHS', 'LEASE', 'ACTIONS'],
+            'headers' => ['UNIT','TYPE', 'BEDS / BATHS', 'LEASE', 'ACTIONS'],
             'rows' => [],
         ];
 
@@ -58,8 +58,7 @@ class UnitController extends Controller
                 'id' => $item->id,
                 $item->unit_number.' - '.$item->property->property_name.'('.$item->property->property_location.')',
                 $item->unit_type,
-                $item->bedrooms,
-                $item->bathrooms,
+                $item->bedrooms.'<span style="font-size:20px;"> / </span> '.$item->bathrooms,
                 $leaseStatus,
             ];
         }

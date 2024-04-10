@@ -6,10 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Property;
 use App\Models\MyMedia;
 use App\Models\Unit;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\TableViewDataService;
+use Illuminate\Support\Facades\Auth;
 
 class MediaController extends Controller
 {
@@ -57,15 +59,23 @@ class MediaController extends Controller
 
     public function index()
     {
-        $mediadata = $this->model::all();
-        $mainfilter =  $this->model::distinct()->pluck('collection_name')->toArray();
+        $user= Auth()->user();
+        $role = $user->roles->first()->name;
+        $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
+        if (Gate::allows('view-all', $user) ||Gate::allows('admin', $user) ) {
+            $mediadata = $this->model::all();
+        }else{
+            $mediadata = Media::where('model_type',['App\Models\Lease','App\Models\User'])
+                            ->get();
+        }
+    
      //   $viewData = $this->formData($this->model);
      //   $cardData = $this->cardData($this->model,$invoicedata);
        // dd($cardData);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getMediaData($mediadata,false);
         
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+        return View('admin.CRUD.form', compact('tableData', 'controller'),
       //  $viewData,
         [
          //   'cardData' => $cardData,

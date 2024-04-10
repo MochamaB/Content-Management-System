@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Gate;
 class CardService
 {
     /////// DASHBOARD CARDS
-    public function topCard($properties,$units)
+    public function topCard($properties, $units)
     {
         $propertyCount = $properties->count();
         $unitCount = $units->count();
@@ -35,38 +35,34 @@ class CardService
         // Define the columns for the unit report
         $cards =  [
             'propertyCount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'pecentage' => '', 'links' => '/property'],
-            'unitCount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' =>'', 'pecentage' => '', 'links' => '/unit'],
+            'unitCount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'pecentage' => '', 'links' => '/unit'],
             'invoices' => ['title' => 'Total Invoiced', 'value' => '', 'amount' => $payments, 'pecentage' => '', 'links' => '/invoice'],
             'balance' => ['title' => 'Balance Not Paid', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
         ];
         return $cards;
     }
 
-    public function tenantTopCard($properties,$units)
+    public function tenantTopCard($properties, $units)
     {
-        $propertyCount = $properties->count();
-        $unitCount = $units->count();
+
         $invoiceCount =  $units->flatMap(function ($units) {
             return $units->invoices;
         })->count();
-        $invoices =  $units->flatMap(function ($units) {
+        $maintenance = $units->flatMap(function ($units) {
+            return $units->tickets;
+        })->count();
+        $invoiceSum =  $units->flatMap(function ($units) {
             return $units->invoices;
         })->sum('totalamount');
-        $payments = $units->flatMap(function ($units) {
+        $paymentSum = $units->flatMap(function ($units) {
             return $units->payments;
         })->sum('totalamount');
-        $balance = $invoices - $payments;
-        //   $invoicepaid =  $invoices->filter(function ($invoice) {
-        //        return $invoice->payments !== null;
-        //   })->sum('payments.totalamount');
-        //  $invoicePayments = $invoices->withCount('payments')->get();
-        //  $paymentCount = $invoicePayments->sum('payments_count');
-        // Define the columns for the unit report
+        $balance = $invoiceSum - $paymentSum;
         $cards =  [
-            'invoiceCount' => ['title' => 'Total Invoices', 'value' => $invoiceCount, 'amount' => '', 'pecentage' => '', 'links' => '/invoice'],
-            'unpaidInvoices' => ['title' => 'Unpaid Invoices', 'value' => $unitCount, 'amount' =>'', 'pecentage' => '', 'links' => '/unit'],
-            'requests' => ['title' => 'Maintenance Requests', 'value' => '', 'amount' => $payments, 'pecentage' => '', 'links' => '/invoice'],
-            'payment' => ['title' => 'Payments Total', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
+            'maintenance' => ['title' => 'No of Tickets', 'value' => $maintenance, 'amount' => '', 'pecentage' => '', 'links' => '/ticket'],
+            'invoiceSum' => ['title' => 'Total Invoiced', 'value' => $invoiceSum, 'amount' => '', 'pecentage' => '', 'links' => '/invoice'],
+            'paymentSum' => ['title' => 'Total Paid', 'value' => '', 'amount' => $paymentSum, 'pecentage' => '', 'links' => '/invoice'],
+            'balance' => ['title' => 'Unpaid Balance', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
         ];
         return $cards;
     }

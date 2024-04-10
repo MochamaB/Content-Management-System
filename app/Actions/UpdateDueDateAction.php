@@ -16,8 +16,7 @@ class UpdateDueDateAction
     public function handle(Invoice $invoice)
     {
         // Get the due date setting from the settings table
-        $dueDateSetting = Setting::where('key', 'duedate')
-                                ->where('name', 'Due date for lease')->first();
+        $dueDateSetting = Setting::where('key', 'duedate')->first();
         // Default due date offset (in days) if the setting is not found
         $defaultDueDateOffset = 15;
         $startDate = Carbon::parse($invoice->created_at);
@@ -34,18 +33,6 @@ class UpdateDueDateAction
         $invoice->update(['duedate' => $dueDate]);
     }
 
-    public function duedate($lease)
-    {
-        $className = get_class($lease);   
-        Setting::create([
-            'category' => 'Lease Reports',
-            'title' => 'invoiceduedate',
-            'settingable_type' => $className,
-            'settingable_id' =>$lease->id,
-            'setting_name' => 'invoiceduedate',
-            'setting_value' => 15,
-            'setting_description' => 'Invoices will be due after no of days of the given value',
-        ]);
-    }
+   
 
 }

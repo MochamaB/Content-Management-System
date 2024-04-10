@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Unitcharge;
 use App\Services\PaymentVoucherService;
 use App\Services\TableViewDataService;
+use App\Services\FilterService;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Session;
 
@@ -24,9 +25,11 @@ class PaymentVoucherController extends Controller
     protected $model;
     private $paymentVoucherService;
     private $tableViewDataService;
+    private $filterService;
    
 
-    public function __construct(PaymentVoucherService $paymentVoucherService,TableViewDataService $tableViewDataService)
+    public function __construct(PaymentVoucherService $paymentVoucherService,TableViewDataService $tableViewDataService,
+    FilterService $filterService)
     {
         $this->model = Paymentvoucher::class;
         $this->controller = collect([
@@ -35,19 +38,21 @@ class PaymentVoucherController extends Controller
         ]);
         $this->paymentVoucherService = $paymentVoucherService;
         $this->tableViewDataService = $tableViewDataService;
+        $this->filterService = $filterService;
        
     }
-    public function index()
+    public function index(Request $request)
     {
-        $paymentvoucherdata = $this->model::with('property','unit')->get();
-        $mainfilter =  $this->model::distinct()->pluck('voucher_type')->toArray();
+        $filters = $request->except(['tab','_token','_method']);
+        $filterdata = $this->filterService->getPaymentVoucherFilters($request);
+        $paymentvoucherdata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
      //   $viewData = $this->formData($this->model);
      //   $cardData = $this->cardData($this->model,$invoicedata);
        // dd($cardData);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getPaymentVoucherData($paymentvoucherdata,true);
         
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
+        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller'),
       //  $viewData,
         [
          //   'cardData' => $cardData,
@@ -108,9 +113,25 @@ class PaymentVoucherController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Paymentvoucher $paymentvoucher)
     {
-        //
+        $pageheadings = collect([
+            '0' => $paymentvoucher->unit->unit_number,
+            '1' => $paymentvoucher->unit->property->property_name,
+            '2' => $paymentvoucher->unit->property->property_streetname,
+        ]);
+        $tabTitles = collect([
+            'Overview',
+        ]);
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
+            if ($title === 'Overview') {
+                $tabContents[] = View('admin.lease.paymentvoucher_view', compact('paymentvoucher'))->render();
+            } 
+        }
+
+
+        return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**
