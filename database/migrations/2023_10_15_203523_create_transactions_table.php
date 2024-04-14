@@ -16,11 +16,11 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
-            $table->unsignedBigInteger('unit_id')->index();
-            $table->unsignedBigInteger('unitcharge_id')->index(); ///unitcharge_id,
+            $table->unsignedBigInteger('unit_id')->nullable()->index();
+            $table->unsignedBigInteger('unitcharge_id')->nullable()->index(); ///unitcharge_id,
             $table->string('charge_name');
             $table->unsignedBigInteger('transactionable_id');   ////id value of the model
-            $table->string('transactionable_type'); ///Name of the Model, Invoice,Voucher, Fees,
+            $table->string('transactionable_type'); ///Name of the Model, Invoice,Voucher, Expense,
             $table->string('description');
             $table->unsignedBigInteger('debitaccount_id');
             $table->unsignedBigInteger('creditaccount_id');

@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\FilterableScope;
+
 
 class Amenity extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterableScope;
     protected $table = 'amenities';
     protected $fillable = [
         'amenity_name',

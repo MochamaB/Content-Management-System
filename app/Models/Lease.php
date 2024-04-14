@@ -10,10 +10,12 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Traits\MediaUpload;
+use App\Traits\FilterableScope;
+
 
 class Lease extends Model implements HasMedia
 {
-    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload;
+    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload,FilterableScope;
     protected $table = 'leases';
     protected $fillable = [
         'property_id',

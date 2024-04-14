@@ -164,13 +164,14 @@ class AppServiceProvider extends ServiceProvider
                 'Leasing' => ['icon' => 'key', 'submodules' => [
                     'lease' => ['display' => 'Leases'],
                     'invoice' => ['display' => 'Invoices'],
-                    'unitcharge' => ['display' => 'All Charges'],
-                    'paymentvoucher' => ['display' => 'Payment Vouchers'],
+                    'unitcharge' => ['display' => 'All Utility Charges'],
                     'payment' => ['display' => 'Payments'],
                     'meter-reading' => ['display' => 'Meter Readings'],
                 ]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
+                    'expense' => ['display' => 'Expenses'],
+                    'paymentvoucher' => ['display' => 'Payment Vouchers'],
                     'general-ledger' => ['display' => 'General Ledger'],
                     'income-statement' => ['display' => 'Profit and Loss'],
                     'chartofaccount' => ['display' => 'Chart Of Accounts'],

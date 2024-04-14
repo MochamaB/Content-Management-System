@@ -13,6 +13,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitDetailsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\GeneralLedgerController;
 use App\Http\Controllers\IncomeStatementController;
 use App\Http\Controllers\NotificationController;
@@ -94,6 +95,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('transaction', TransactionController::class);
         Route::resource('general-ledger', GeneralLedgerController::class);
         Route::resource('income-statement', IncomeStatementController::class);
+        Route::get('expense/create/{id?}/{model?}', [
+            'as' => 'expense.create',
+            'uses' => 'App\Http\Controllers\ExpenseController@create'
+        ])->middleware('check.create.variables');
+        Route::resource('expense', ExpenseController::class);
 
     });
 

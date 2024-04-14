@@ -4,6 +4,7 @@
 namespace App\Actions;
 
 use App\Models\Chartofaccount;
+use App\Models\Expense;
 use App\Models\InvoiceItems;
 use App\Models\PaymentVoucherItems;
 use App\Models\Invoice;
@@ -112,6 +113,27 @@ class RecordTransactionAction
                 'amount' => $item->amount,
             ]);
         }
+    }
+
+    public function expense(Expense $expense)
+    {
+        
+        $className = get_class($expense);
+      
+            $description = Chartofaccount::where('id', $expense->chartofaccount_id)->first();
+            Transaction::create([
+                'property_id' => $expense->property_id,
+                'unit_id' => $expense->unit_id ?? null,
+                'unitcharge_id' => null,
+                'charge_name' => $expense->name,
+                'transactionable_id' => $expense->id,
+                'transactionable_type' => $className, ///Model Name Unitcharge
+                'description' => $description->account_name, ///Description of the charge
+                'debitaccount_id' => $expense->chartofaccount_id,/// increase the Accounts Payable
+                'creditaccount_id' => 4, ///All the income accounts
+                'amount' => $expense->totalamount,
+            ]);
+        
     }
 
 }

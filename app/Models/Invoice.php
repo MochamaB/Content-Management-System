@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Traits\FilterableScope;
+
 
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory,FilterableScope;
     protected $table = 'invoices';
     protected $fillable = [
         'property_id',

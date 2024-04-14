@@ -41,9 +41,10 @@ class IncomeStatementController extends Controller
         });
 
         $expenseQuery = Transaction::whereHas('creditAccount', function ($query) {
-            $query->whereBetween('account_number', [90000, 100000]);
+            $query->whereBetween('account_number', [31000, 32000]);
         });
 
+      //  dd($expenseQuery);
        
         $incomeTransactions = $incomeQuery
             ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
@@ -59,9 +60,10 @@ class IncomeStatementController extends Controller
             ->orderBy('creditaccount_id')
             ->applyFilters($filters)->get();
 
-        $months = $incomeTransactions->pluck('month')->unique()->sortBy(function ($date) {
-            return Carbon::parse($date)->timestamp;
-        })->values();
+            $months = $incomeTransactions->concat($expenseTransactions)->pluck('month')->unique()->sortBy(function ($date) {
+                return Carbon::parse($date)->timestamp;
+            })->values();
+            
 
         return View(
             'admin.Accounting.accounting',

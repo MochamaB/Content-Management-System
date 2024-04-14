@@ -1,6 +1,59 @@
 @extends('layouts.admin.admin')
 
 @section('content')
+<style>
+    @media screen and (max-width: 600px) {
+  table {
+    border: 0;
+  }
+
+  table caption {
+    font-size: 1.3em;
+  }
+  
+  table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  
+  table tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: .625em;
+  }
+  
+  table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: .8em;
+    text-align: right;
+  }
+  
+  table td::before {
+    /*
+    * aria-label has no advantage, it won't be read inside a table
+    content: attr(aria-label);
+    */
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
+
+
+
+</style>
 
 <div class=" contwrapper">
 
@@ -37,28 +90,28 @@
                         @php
                         $latestread = $item->meterReading->last();
                         @endphp
-                        <td id='' class="text-center" style="background-color:#dae3fa;">
+                        <td data-label="UNIT" id='' class="text-center" style="background-color:#dae3fa;">
                             <input type="hidden" class="" name="unit_id[]" id='' value="{{ $item->unit_id}}" readonly>
                             {{$item->unit->unit_number}}
                         </td>
-                        <td id='' class="text-center" style="background-color:#dae3fa;">
+                        <td data-label="CHARGE" id='' class="text-center" style="background-color:#dae3fa;">
                             <input type="hidden" name="unitcharge_id[]" value="{{ $item->id }}">
                             {{$item->charge_name}}
                         </td>
 
-                        <td class="text-center" style="padding:0px">
+                        <td data-label="DATE LAST READING" class="text-center" style="padding:0px">
                             <input type="date" class="form-control" name="startdate[]" id='startdate' value="{{ $latestread->startdate ?? old('startdate_' . $key) ?? now()->toDateString() }}" readonly>
                         </td>
-                        <td class="text-center" style="padding:0px">
+                        <td data-label="PREVIOUS READING" class="text-center" style="padding:0px">
                             <input type="number" class="form-control @error('lastreading.' . $key) is-invalid @enderror" name="lastreading[]" id='' value="{{$latestread->currentreading ?? 0.00 }}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
                             @error('reading')
                             <div class="invalid-feedback">Error</div>
                             @enderror
                         </td>
-                        <td class="text-center" style="padding:0px">
+                        <td data-label="DATE OF READING" class="text-center" style="padding:0px">
                             <input type="date" class="form-control @error('enddate.' . $key) is-invalid @enderror" name="enddate[]" id="enddate" value="{{ old('enddate.' . $key) ??  now()->toDateString() }}" style="border:none" required>
                         </td>
-                        <td class="text-center" style="padding:0px">
+                        <td data-label="CURRENT READING" class="text-center" style="padding:0px">
                             <input type="number" class="form-control" name="currentreading[]" id="currentreading" value="{{ old('currentreading.' . $key)}}" style="border:none" required>
                             <input type="hidden" name="rate_at_reading[]" value="{{ $item->rate }}">
                         </td>

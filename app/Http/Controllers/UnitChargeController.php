@@ -74,7 +74,7 @@ class UnitChargeController extends Controller
             $unit = Unit::find($id);
             $property = Property::where('id', $unit->property->id)->first();
         }
-        $account = Chartofaccount::all();
+        $account = Chartofaccount::whereIn('account_type', ['Income', 'Liability'])->get();
         $accounts = $account->groupBy('account_type');
 
 
@@ -114,7 +114,7 @@ class UnitChargeController extends Controller
       //  dd($accounttype);
         $unitcharge->save();
 
-        ////GENERATE A VOUCHER IF ITS A ONE TIME CHARGE
+        ////GENERATE A VOUCHER OR EXPENSE IF ITS A ONE TIME CHARGE
         if ($request->charge_cycle === "Once") {
            // dd($request->charge_cycle);
             $this->paymentVoucherService->generatePaymentVoucher($unitcharge);

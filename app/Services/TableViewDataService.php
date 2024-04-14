@@ -806,4 +806,51 @@ class TableViewDataService
             'tabContents' => $tabContents,
         ];
     }
+
+    public function getExpenseData($expensedata, $extraColumns = false)
+    {
+
+        /// TABLE DATA ///////////////////////////
+
+        $headers = ['REFERENCE NO', ' NAME', 'ACCOUNT', 'AMOUNT', 'DUEDATE', 'ACTIONS'];
+
+        // If $Extra columns is true, insert 'Unit Details' at position 3
+        if ($extraColumns) {
+            array_splice($headers, 2, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($expensedata as $item) {
+            $statusClasses = [
+                'paid' => 'active',
+                'unpaid' => 'warning',
+                'Over Due' => 'danger',
+                'partially_paid' => 'dark',
+                'over_paid' => 'light',
+            ];
+
+           
+
+            $row = [
+                'id' => $item->id,
+                $item->referenceno,
+                $item->name,
+                $item->account->account_name,
+                $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
+                Carbon::parse($item->duedate)->format('Y-m-d'),
+
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
 }

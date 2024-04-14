@@ -4,7 +4,7 @@
 
 <div class=" contwrapper">
 
-    <h4>New Charge <span class="" style="font-style: italic;">(Bill/ Expense/ Utility/ Pre-Payment/ Fees)</span></h4>
+    <h4>New Utility Charge on Unit</h4>
     <hr>
     <form method="POST" action="{{ url('unitcharge') }}" class="myForm" novalidate>
         @csrf
@@ -16,12 +16,13 @@
                 </select>
             </div>
         </div>
-
+    <!-------- Unit Input---->
         @if($model === 'properties')
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label">Unit Number</label>
+                <label class="label">Unit Number <span class="requiredlabel">*</span></label>
                 <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required>
+                <option value="">Select Value</option>
                     @foreach($unit as $item)
                     <option value="{{$item->id}}">{{$item->unit_number}}</option>
                     @endforeach

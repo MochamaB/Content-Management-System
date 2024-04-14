@@ -51,7 +51,7 @@ class GeneralLedgerController extends Controller
             // Determine debit or credit based on account types
             if ($creditAccountType === 'Liability' || $creditAccountType === 'Income' || $creditAccountType === 'Expenses') {
                 $credit = $transaction->amount;
-            } elseif ($debitAccountType === 'Asset') {
+            } elseif ($debitAccountType === 'Asset' || $debitAccountType === 'Expenses') {
                 $debit = $transaction->amount;
             }
             // Update balance based on Debit or Credit
@@ -68,7 +68,7 @@ class GeneralLedgerController extends Controller
             // Debit entry
             $entry = [
                 'date' => $transaction->created_at->format('Y-m-d'),
-                'description' => $transaction->property->property_name . ' - ' . $transaction->units->unit_number,
+                'description' => $transaction->property->property_name . ' - ' . ($transaction->units ? $transaction->units->unit_number : ''),
                 'account' => $transaction->description,
                 'charge_name' => $transaction->charge_name . ' -  <a href="' . $link . '">' . $modelName . '-' . $referenceno . '</a> ',
                 'debit' => $debit,
