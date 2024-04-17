@@ -28,7 +28,7 @@
                                     <h3 style="text-transform: uppercase;"> {{$paymentvoucher->voucher_type}}</h3>
                                 </li>
                                 <li><b>PV#: {{$paymentvoucher->id}}-{{$paymentvoucher->referenceno}}</b></li>
-                                <li style="color:red; font-weight:700;font-size:14px">TOTAL PAID</li>
+                                <li style="color:red; font-weight:700;font-size:14px">TOTAL RECEIVED</li>
                                 <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} @currency($paymentvoucher->totalamount)</li>
                             </ul>
                         </td>
@@ -39,7 +39,12 @@
                             <h4="text-muted"><b>PAID BY</b></h4>
                                 <ul class="ml-2 px-3 list-unstyled">
                                     <li><b>PROPERTY:</b> {{$paymentvoucher->property->property_name}}</li>
-                                    <li><b>UNIT NUMBER:</b> {{$paymentvoucher->unit->unit_number}}</li>
+                                    <li><b>UNIT NUMBER:</b> {{$payment->unit->unit_number ?? 'NONE'}}</li>
+                                    <li><b>NAME:</b> {{$paymentvoucher->model->name}}
+                                        {{$paymentvoucher->model->firstname}} {{$paymentvoucher->model->lastname}}
+                                    </li>
+                                    <li><b>EMAIL:</b> {{$paymentvoucher->model->email}}</li>
+                                    <li><b>PHONE NO:</b> {{$paymentvoucher->model->phonenumber}}</li>
 
                                 </ul>
                         </td>
@@ -52,7 +57,7 @@
                                 @if( $paymentvoucher->status == 'paid' )
                                 <div style="background-color:green;font-size:17px" class="badge badge-opacity-warning"> PAID</div> <!------Status -->
                                 @elseif( $paymentvoucher->status == 'Payable' )
-                                <div  class="badge badge-warning">PAYABLE</div>
+                                <div class="badge badge-warning">PAYABLE</div>
                                 @endif
 
                             </ul>

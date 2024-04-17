@@ -136,6 +136,10 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('generateinvoice', [InvoiceController::class, 'generateInvoice']);
         ///////////////////
        
+        Route::get('paymentvoucher/create/{id?}/{model?}', [
+            'as' => 'paymentvoucher.create',
+            'uses' => 'App\Http\Controllers\PaymentVoucherController@create'
+        ])->middleware('check.create.variables');
         Route::resource('paymentvoucher', PaymentVoucherController::class);
         Route::post('generatepaymentvoucher', [PaymentVoucherController::class, 'generatePaymentVoucher']);
         ////////////////////////

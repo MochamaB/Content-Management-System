@@ -240,7 +240,7 @@ class TableViewDataService
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 2, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
+                array_splice($row, 2, 0, $item->unit->unit_number ?? '' . ' - ' . $item->property->property_name); // Replace with how you get unit details
             }
 
             $tableData['rows'][] = $row;

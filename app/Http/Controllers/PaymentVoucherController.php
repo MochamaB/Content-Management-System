@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chartofaccount;
 use App\Models\Paymentvoucher;
+use App\Models\PaymentVoucherItems;
 use App\Models\Property;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Models\Unitcharge;
+use App\Models\Vendor;
 use App\Services\PaymentVoucherService;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Traits\FormDataTrait;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class PaymentVoucherController extends Controller
@@ -64,20 +69,27 @@ class PaymentVoucherController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id = null)
+    public function create($id = null,$model = null)
     {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if ($model === 'properties') {
+            $property = Property::find($id);
+            $unit = $property->units;
+        } elseif ($model === 'units') {
+            $unit = Unit::find($id);
+            $property = Property::where('id', $unit->property->id)->first();
+        }
+        $account = Chartofaccount::whereIn('account_type', ['Liability'])->get();
+        $accounts = $account->groupBy('account_type');
+        $vendors = Vendor::all();
+        $users = $user->filterUsers();
 
-     //   $unit = Unit::find($id);
-     //   $property = Property::where('id', $unit->property->id)->first();
-       
- 
-        //   dd($latestReading);
-        return redirect()->route('unitcharge.create');
-     //   Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-     //   return View('admin.lease.create_paymentvoucher', compact('id','property', 'unit'));
-    
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
+        return View('admin.accounting.create_paymentvoucher', compact('id', 'property', 'unit','account', 'accounts','model','vendors','users'));
+        //
     }
 
     public function generatePaymentVoucher(Request $request)
@@ -104,7 +116,27 @@ class PaymentVoucherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         ////REFRENCE NO <DOCUMENT><PROPERTYNO><UNITNUMBER><DATE><ID>
+         $doc = 'PV';
+         $propertynumber = 'P' . str_pad($request->property_id, 2, '0', STR_PAD_LEFT);
+         $unitnumber = $request->unit_id ?? 'N';
+         $date = Carbon::now()->format('ymd');
+        
+         $referenceno = $doc.$propertynumber.$unitnumber.$date;
+ 
+         //// INSERT DATA TO THE PAYMENT VOUCHER
+         $validationRules = Paymentvoucher::$validation;
+         $validatedData = $request->validate($validationRules);
+
+         $this->paymentVoucherService->generatePaymentVoucherForm($validatedData,$request,$referenceno);
+ 
+        
+        $previousUrl = Session::get('previousUrl');
+        if ($previousUrl) {
+            return redirect($previousUrl)->with('status', 'Your Expense has been saved successfully');
+        } else {
+            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+        }
     }
 
     /**
@@ -116,9 +148,9 @@ class PaymentVoucherController extends Controller
     public function show(Paymentvoucher $paymentvoucher)
     {
         $pageheadings = collect([
-            '0' => $paymentvoucher->unit->unit_number,
-            '1' => $paymentvoucher->unit->property->property_name,
-            '2' => $paymentvoucher->unit->property->property_streetname,
+            '0' => $paymentvoucher->unit->unit_number ?? '',
+            '1' => $paymentvoucher->unit->property->property_name  ?? $paymentvoucher->property->property_name,
+            '2' => $paymentvoucher->unit->property->property_streetname  ?? $paymentvoucher->property->property_streetname,
         ]);
         $tabTitles = collect([
             'Overview',

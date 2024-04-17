@@ -46,10 +46,6 @@
 
 /*--------------------------- Side Bar */
 
-#sidebar {
-  background-color: #0a2351;
-  border-right: 2px solid #c8c8c9;
-}
 
 .sidebar {
   min-height: calc(100vh - 97px);
@@ -95,7 +91,13 @@
   transition: padding-left 0.25s ease-out;
 }
 
-
+.sidebar-icon-only .main-panel {
+  width: calc(100% - 70px);
+  margin-left: 70px;
+}
+.sidebar-collapsed .main-panel {
+  margin-left: 70px;
+}
 
 
 

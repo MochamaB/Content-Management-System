@@ -13,15 +13,30 @@ class Paymentvoucher extends Model
     protected $fillable = [
         'property_id',
         'unit_id',
+        'payable_type',
+        'payable_id',
         'model_type',
         'model_id',
         'referenceno',
-        'voucher_type',
+        'name',
         'totalamount',
         'status',
         'duedate'
 
     ];
+
+    public static $validation = [
+        'property_id' => 'required',
+        'unit_id' => 'nullable',
+        'payable_type' => 'nullable',
+        'payable_id' => 'nullable',
+        'model_type' => 'required',
+        'model_id' => 'required',
+        'name' => 'required',
+        'status' => 'nullable',
+        'duedate' => 'nullable|date',
+    ];
+
 
     public function model()
     {

@@ -80,7 +80,7 @@ class PaymentVoucherService
             'referenceno' => 'PV '. $date . $unitnumber->unit_number,
             'name' => $model->charge_name, ///Generated from securitydeposit
             'totalamount' => null,
-            'status' => 'Payable',
+            'status' => 'unpaid',
             'duedate' => null,
         ];
     }
@@ -104,5 +104,39 @@ class PaymentVoucherService
             'amount' => $model->rate,
         ]);  
         
+    }
+
+    ////// PAyment voucher from the createmethod
+    public function generatePaymentVoucherForm($validatedData ,$request,$referenceno)
+    {
+        $paymentvoucher = new Paymentvoucher();
+        $paymentvoucher->fill($validatedData);
+        $paymentvoucher->referenceno = $referenceno;
+        $paymentvoucher->save();
+
+        $paymentVoucherItems = [];
+        if (!empty($paymentvoucher->id)) {
+           foreach ($request->input('chartofaccount_id') as $index => $item) { 
+               $paymentVoucherItem = [
+                   'paymentvoucher_id' => $paymentvoucher->id,
+                   'unitcharge_id' => null,
+                   'chartofaccount_id' => $request->input("chartofaccount_id.{$index}"),
+                   'charge_name' => $request->input("charge_name.{$index}"),
+                   'description' => null,
+                   'payment_method' => null,
+                   'amount' => $request->input("amount.{$index}"),
+                   'created_at' => now(),
+                   'updated_at' => now(),
+                   // ... Other fields ...
+               ];
+               $paymentVoucherItems[] = $paymentVoucherItem;
+           }
+       }
+       PaymentVoucherItems::insert($paymentVoucherItems);
+
+        //3. Update Total Amount in PaymentVoucher Header
+        $this->calculateTotalAmountAction->paymentVoucher($paymentvoucher);
+      //4. Create Transactions for ledger
+        $this->recordTransactionAction->voucherCharges($paymentvoucher);
     }
 }

@@ -20,7 +20,7 @@ class RecordTransactionAction
 {
     use AsAction;
 
-    public function voucherCharges(Model $model, Unitcharge $unitcharge)
+    public function voucherCharges(Model $model, Unitcharge $unitcharge = null)
     {
         //     Debit: Bank Account (Asset)
         //     Credit: Security Deposit Liability (Liability)
@@ -33,8 +33,8 @@ class RecordTransactionAction
             $description = Chartofaccount::where('id', $item->chartofaccount_id)->first();
             Transaction::create([
                 'property_id' => $model->property_id,
-                'unit_id' => $model->unit_id,
-                'unitcharge_id' => $unitcharge->id,
+                'unit_id' => $model->unit_id ?? null,
+                'unitcharge_id' => $unitcharge->id ?? null,
                 'charge_name' => $item->charge_name,
                 'transactionable_id' => $model->id,
                 'transactionable_type' => $className, ///Model Name Unitcharge
@@ -44,6 +44,7 @@ class RecordTransactionAction
                 'amount' => $item->amount,
             ]);
         }
+        
     }
 
     public function invoiceCharges(Invoice $invoice, Unitcharge $unitcharge)
