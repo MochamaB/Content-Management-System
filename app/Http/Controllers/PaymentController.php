@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Expense;
 use Illuminate\Http\Request;
 use App\Models\Unit;
 use App\Models\Payment;
 use App\Models\Property;
 use App\Models\Invoice;
 use App\Models\PaymentMethod;
+use App\Models\Paymentvoucher;
 use App\Traits\FormDataTrait;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +17,8 @@ use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 use App\Notifications\PaymentNotification;
 use App\Services\TableViewDataService;
+use App\Actions\RecordTransactionAction;
+
 
 class PaymentController extends Controller
 {
@@ -24,39 +28,45 @@ class PaymentController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     use FormDataTrait;
-     protected $controller;
-     protected $model;
-     private $paymentService;
-     private $tableViewDataService;
+    use FormDataTrait;
+    protected $controller;
+    protected $model;
+    private $paymentService;
+    private $tableViewDataService;
+    private $recordTransactionAction;
 
-     public function __construct(PaymentService $paymentService,TableViewDataService $tableViewDataService)
-     {
-         $this->model = Payment::class;
-         $this->controller = collect([
-             '0' => 'payment', // Use a string for the controller name
-             '1' => ' Payment',
-         ]);
+    public function __construct(PaymentService $paymentService, TableViewDataService $tableViewDataService,
+    RecordTransactionAction $recordTransactionAction)
+    {
+        $this->model = Payment::class;
+        $this->controller = collect([
+            '0' => 'payment', // Use a string for the controller name
+            '1' => ' Payment',
+        ]);
 
-         $this->paymentService = $paymentService;
-         $this->tableViewDataService = $tableViewDataService;
-     }
+        $this->paymentService = $paymentService;
+        $this->tableViewDataService = $tableViewDataService;
+        $this->recordTransactionAction = $recordTransactionAction;
+    }
 
     public function index()
     {
-        $paymentdata = $this->model::with('property','lease','unit')->get();
+        $paymentdata = $this->model::with('property', 'lease', 'unit')->get();
         $mainfilter =  $this->model::distinct()->pluck('payment_code')->toArray();
-     //   $viewData = $this->formData($this->model);
-     //   $cardData = $this->cardData($this->model,$invoicedata);
-       // dd($cardData);
+        //   $viewData = $this->formData($this->model);
+        //   $cardData = $this->cardData($this->model,$invoicedata);
+        // dd($cardData);
         $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getPaymentData($paymentdata,true);
-        
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'),
-      //  $viewData,
-        [
-         //   'cardData' => $cardData,
-        ]);
+        $tableData = $this->tableViewDataService->getPaymentData($paymentdata, true);
+
+        return View(
+            'admin.CRUD.form',
+            compact('mainfilter', 'tableData', 'controller'),
+            //  $viewData,
+            [
+                //   'cardData' => $cardData,
+            ]
+        );
     }
 
     /**
@@ -64,22 +74,36 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id = null)
+    public function create($id = null, $model = null)
     {
-        $invoice = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
-        $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
-        $className = get_class($invoice);
+        switch ($model) {
+            case 'Expense':
+                $instance = Expense::find($id); // replace with actual logic to load an Expense
+                $number = 'EXP' . $instance->property->id;
+                break;
+            case 'PaymentVoucher':
+                $instance = Paymentvoucher::find($id); // replace with actual logic to load a PaymentVoucher
+                $number = 'PV' . $instance->property->id;
+                break;
+            default:
+                $instance = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
+                $number = 'INV' . $instance->unit->unit_number;
+                break; // or handle this case differently
+        }
 
+        //     $invoice = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
+        $PaymentMethod = PaymentMethod::where('property_id', $instance->property_id)->get();
+        $className = get_class($instance);
+        $referenceno = PaymentMethod::where('property_id', $instance->property_id)->get();
         ////REFRENCE NO
         $today = Carbon::now();
-        $invoicenodate = $today->format('ym');
-        $unitnumber = $invoice->unit->unit_number;
-        $referenceno =$invoice->id.'-'.$invoicenodate . $unitnumber;
+        $date = $today->format('ym');
+        $referenceno = $instance->id . '-' . $number . $date;
 
-       
 
-      Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.lease.payment',compact('PaymentMethod','invoice','className','referenceno'));
+
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+        return View('admin.lease.payment', compact('PaymentMethod', 'instance', 'className', 'referenceno', 'model'));
     }
 
     /**
@@ -90,16 +114,27 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        $invoiceId = $request->input('invoice');
-        $model = Invoice::find($invoiceId);
-
-        $items = $model->getItems;
-     //   dd($items);
+       
         $validationRules = Payment::$validation;
         $validatedData = $request->validate($validationRules);
-        
-     //   dd($validatedData);
-        $this->paymentService->generatePayment($model,$validatedData);
+        $instanceId = $request->input('instanceId');
+        $user = Auth::user();
+     //   dd($request->model);
+        switch ($request->model) {
+            case 'Expense':
+                $model = Expense::find($instanceId);
+                $this->paymentService->generateExpensePayment($model, $validatedData);
+                break;
+            case 'PaymentVoucher':
+                $payment = new Payment();
+                $payment->fill($validatedData);
+                $payment->save();
+                break;
+            default:
+                $model = Invoice::find($instanceId);
+                $this->paymentService->generatePayment($model, $validatedData);
+                break; // or handle this case differently
+        }
 
         $previousUrl = Session::get('previousUrl');
         return redirect($previousUrl)->with('status', 'Payment Added Successfully');
@@ -113,12 +148,12 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-       
-       //dd($payment->model->totalamount);
+
+        //dd($payment->model->totalamount);
         $pageheadings = collect([
-            '0' => $payment->unit->unit_number,
-            '1' => $payment->unit->property->property_name,
-            '2' => $payment->unit->property->property_streetname,
+            '0' => $payment->unit->unit_number ?? '',
+            '1' => $payment->unit->property->property_name ?? $payment->property->property_name,
+            '2' => $payment->unit->property->property_streetname ?? $payment->property->property_streetname,
         ]);
         $tabTitles = collect([
             'Overview',
@@ -128,7 +163,7 @@ class PaymentController extends Controller
         foreach ($tabTitles as $title) {
             if ($title === 'Overview') {
                 $tabContents[] = View('admin.lease.payment_view', compact('payment'))->render();
-            } 
+            }
         }
         return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
@@ -144,18 +179,19 @@ class PaymentController extends Controller
         //
     }
 
-    public function sendemail(){
+    public function sendemail()
+    {
 
         $invoiceId = '1';
         $model = Invoice::find($invoiceId);
 
         $items = $model->getItems;
-     //   dd($items);
+        //   dd($items);
         $validationRules = Payment::$validation;
         $validatedData = $request->validate($validationRules);
-        
-     //   dd($validatedData);
-        $this->paymentService->generatePayment($model,$validatedData);
+
+        //   dd($validatedData);
+        $this->paymentService->generatePayment($model, $validatedData);
 
         $previousUrl = Session::get('previousUrl');
         return redirect($previousUrl)->with('status', 'Payment Added Successfully');

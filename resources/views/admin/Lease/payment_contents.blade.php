@@ -25,19 +25,20 @@
                         <h3 style="text-transform: uppercase;"> RECEIPT</h3>
                     </li>
                     <li><b>{{$payment->referenceno}}</b></li>
-                    <li style="color:red; font-weight:700;font-size:14px">TOTAL DUE</li>
-                    <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} {{$payment->totalamount}}</li>
+                    <li style="color:green; font-weight:700;font-size:14px">TOTAL PAID</li>
+                    <li style="color:green; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} @currency($payment->totalamount)</li>
                 </ul>
             </td>
         </tr>
         <!------ SECOND SECTION DETAILS -->
         <tr>
             <td></br>
-                <h4="text-muted"><b>PAYMENT BY</b></h4>
+                <h4="text-muted"><b>PAYMENT TO</b></h4>
                     <ul class="ml-2 px-3 list-unstyled">
                         <li><b>PROPERTY:</b> {{$payment->property->property_name}}</li>
-                        <li><b>UNIT NUMBER:</b> {{$payment->unit->unit_number}}</li>
-                        <li><b>NAME:</b> {{$payment->model->model->firstname}} {{$payment->model->model->lastname}}</li>
+                        <li><b>UNIT NUMBER:</b> {{$payment->unit->unit_number ?? 'NONE'}}</li>
+                        <li><b>NAME:</b> {{$payment->model->model->name}}
+                         {{$payment->model->model->firstname}} {{$payment->model->model->lastname}}</li>
                         <li><b>EMAIL:</b> {{$payment->model->model->email}}</li>
                         <li><b>PHONE NO:</b> {{$payment->model->model->phonenumber}}</li>
                     </ul>
@@ -66,6 +67,7 @@
         </tr>
     </thead>
     <tbody>
+        @if(class_basename($payment->model_type) === 'Invoice')
         @foreach($payment->paymentItems as $key=> $item)
         <tr style="height:35px;">
             <td class="text-center">{{$key+1}}</td>
@@ -78,6 +80,17 @@
 
         </tr>
         @endforeach
+        @else
+        <tr style="height:35px;">
+            <td class="text-center">1 </td>
+            <td class="text-center" style="text-transform: capitalize;">
+                {{$payment->model->name}}
+            </td>
+            <td class="text-center">{{ $sitesettings->site_currency }} @currency($payment->totalamount) </td>
+            <td class="text-center"> {{ $sitesettings->site_currency }} @currency($payment->totalamount)</td>
+
+        </tr>
+        @endif
     </tbody>
 </table></br>
 <!------- FOURTH LEVEL PAYMENT DETAILS AND TOTALS-->
@@ -99,7 +112,7 @@
                     <tbody>
                         <tr style="height:45px;">
                             <td>Sub Total Amount</td>
-                            <td class="text-center">{{ $sitesettings->site_currency }} {{$payment->totalamount}}</td>
+                            <td class="text-center">{{ $sitesettings->site_currency }} @currency($payment->totalamount)</td>
                         </tr>
                         <tr style="height:45px;">
                             <td>Tax & Discounts</td>
@@ -112,7 +125,7 @@
                         <tr style="height:45px;">
                             <td class="text-bold-800" style="font-size:18px;font-weight:700">Total Paid</td>
 
-                            <td class="text-bold-800 text-center" style="font-size:18px;font-weight:700">{{ $sitesettings->site_currency }} {{$payment->totalamount}} </td>
+                            <td class="text-bold-800 text-center" style="font-size:18px;font-weight:700">{{ $sitesettings->site_currency }} @currency($payment->totalamount) </td>
 
                         </tr>
                     </tbody>

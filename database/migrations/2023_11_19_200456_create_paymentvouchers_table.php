@@ -17,10 +17,12 @@ return new class extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->nullable()->index();
-            $table->string('model_type'); // Who the voucher goes to E.g., "User", "Vendor"
-            $table->unsignedBigInteger('model_id'); // ID of the specific model instance
+            $table->string('payable_type')->nullable();// What the voucher is for to E.g., "Unitcharge", "Expense"
+            $table->unsignedBigInteger('payable_id')->nullable(); // ID of the specific model instance
+            $table->string('model_type')->nullable(); // Who the voucher goes to E.g., "User", "Vendor"
+            $table->unsignedBigInteger('model_id')->nullable();
             $table->string('referenceno');
-            $table->string('voucher_type'); //Name of the charge E.g Rent,Utility,Maintenance
+            $table->string('name'); //Name of the charge E.g Deposit,Utility,Maintenance
             $table->decimal('totalamount')->nullable();
             $table->string('status');
             $table->timestamp("duedate")->nullable();

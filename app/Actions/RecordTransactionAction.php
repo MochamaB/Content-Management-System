@@ -136,4 +136,24 @@ class RecordTransactionAction
         
     }
 
+    public function payexpenses(Payment $payment, Model $model,)
+    {
+        $className = get_class($payment);
+       
+            $description = Chartofaccount::where('id', $model->chartofaccount_id)->first();
+            Transaction::create([
+                'property_id' => $payment->property_id,
+                'unit_id' => $payment->unit_id ?? null,
+                'unitcharge_id' => null,
+                'charge_name' => $model->name,
+                'transactionable_id' => $payment->id,
+                'transactionable_type' =>$className, ///Model Name Invoice
+                'description' => $description->account_name, ///Description of the charge
+                'debitaccount_id' => 4, ///Increase the Accounts Payable
+                'creditaccount_id' => 1,/// Decrease the bank account
+                'amount' => $payment->totalamount,
+            ]);
+        
+    }
+
 }

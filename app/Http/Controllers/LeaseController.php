@@ -230,12 +230,13 @@ class LeaseController extends Controller
         //5. SAVE SECURITY DEPOSIT AND GENERATE PAYMENT VOUCHER AND TRANSACTIONS
         $depositcharge = $request->session()->get('wizard_depositcharge');
         if (!empty($depositcharge)) {
+            $user = User::find($leasedetails->user_id);
             $depositchargeModel = new Unitcharge();
             $depositchargeModel->fill($depositcharge->toArray());
             $depositchargeModel->save();
 
             //  Generate Payment Voucher and Transactions
-           $this->paymentVoucherService->generatePaymentVoucher($depositchargeModel);
+           $this->paymentVoucherService->generatePaymentVoucher($depositchargeModel,$user);
 
         }
 

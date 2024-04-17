@@ -25,9 +25,15 @@ class Payment extends Model
     ];
 
     public static $validation = [
+        'property_id' => 'nullable',
+        'unit_id' => 'nullable',
+        'model_type' => 'nullable',
+        'model_id' => 'nullable',
+        'referenceno' => 'nullable',
         'payment_method_id' => 'required',
         'payment_code' => 'nullable|unique:payments',
-        'amount' => 'required',
+        'amount' => 'nullable',
+        'totalamount' => 'nullable',
     ];
 
     /////Polymorphic Relationship (Payment can belong to an Invoice or Voucher or Charge)

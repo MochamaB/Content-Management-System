@@ -68,4 +68,9 @@ class Expense extends Model
     {
         return $this->morphMany(Transaction::class, 'transactionable');
     }
+
+    public function payments()
+    {
+        return $this->morphMany(Payment::class, 'model');
+    }
 }

@@ -16,6 +16,7 @@ use App\Traits\FormDataTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Session;
 use App\Actions\RecordTransactionAction;
+use App\Actions\UploadMediaAction;
 
 
 class ExpenseController extends Controller
@@ -33,6 +34,7 @@ class ExpenseController extends Controller
      private $tableViewDataService;
      private $filterService;
      private $recordTransactionAction;
+     protected $uploadMediaAction;
 
      public function __construct(CardService $cardService,TableViewDataService $tableViewDataService,
      FilterService $filterService, RecordTransactionAction $recordTransactionAction)
@@ -109,6 +111,14 @@ class ExpenseController extends Controller
         $expense->fill($validatedData);
         $expense->referenceno = $referenceno;
         $expense->save();
+
+        ///// UPLOAD RECEIPT ///////////////////
+        if($expense->unit_id === null){
+            $model = Property::find($expense->property_id);
+        }else{
+            $model = Unit::find($expense->unit_id);
+        }
+        $this->uploadMediaAction->handle($model, 'receipt', 'Receipt', $request);
 
         //// GENERATE TRANSACTION/JOURNAL ENTRY
         $this->recordTransactionAction->expense($expense);

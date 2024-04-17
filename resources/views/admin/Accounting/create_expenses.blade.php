@@ -84,7 +84,7 @@
 
                 <div class="form-group">
                     <label class="label">Upload Receipt / Attachment</label>
-                    <input type="file" name="" value="" class="form-control" id="" />
+                    <input type="file" name="receipt" value="" class="form-control" id="" />
                     <img class="img-fluid" id="logo-image-before-upload" src="{{ url('uploads/vectors/addfile.png') }}">
 
                 </div>

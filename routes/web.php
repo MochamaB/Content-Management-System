@@ -139,7 +139,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('paymentvoucher', PaymentVoucherController::class);
         Route::post('generatepaymentvoucher', [PaymentVoucherController::class, 'generatePaymentVoucher']);
         ////////////////////////
-        Route::get('payment/create/{id}', [
+        Route::get('payment/create/{id?}/{model?}', [
             'as' => 'payment.create',
             'uses' => 'App\Http\Controllers\PaymentController@create'
         ]);

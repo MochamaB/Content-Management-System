@@ -51,7 +51,7 @@ class GeneralLedgerController extends Controller
             // Determine debit or credit based on account types
             if ($creditAccountType === 'Liability' || $creditAccountType === 'Income' || $creditAccountType === 'Expenses') {
                 $credit = $transaction->amount;
-            } elseif ($debitAccountType === 'Asset' || $debitAccountType === 'Expenses') {
+            } elseif ($debitAccountType === 'Asset' || $debitAccountType === 'Expenses' || $debitAccountType === 'Liability') {
                 $debit = $transaction->amount;
             }
             // Update balance based on Debit or Credit

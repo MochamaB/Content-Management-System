@@ -43,7 +43,7 @@ class PaymentService
     {
 
         $paymentData = $this->getPaymentHeaderData($model, $validatedData);
-        
+
 
         //1. Create Payment Header Data
         $payment = $this->createPayment($paymentData);
@@ -58,8 +58,8 @@ class PaymentService
         $this->recordTransactionAction->payments($payment);
 
         //5. Send Email/Notification to the Tenant containing the receipt.
-             $user = $payment->model->model;
-             $user->notify(new PaymentNotification($payment, $user));
+        $user = $payment->model->model;
+        $user->notify(new PaymentNotification($payment, $user));
 
 
         return $payment;
@@ -84,7 +84,7 @@ class PaymentService
         return [
             'property_id' => $model->property_id,
             'unit_id' => $model->unit_id,
-            'model_type' => $className, ///This has plymorphism because an invoice can also be sent to a vendor.
+            'model_type' => $className, ///This has plymorphism because payment can be an invoice,expense or voucher
             'model_id' => $model->id,
             'referenceno' => $referenceno,
             'payment_method_id' => $PaymentMethod,
@@ -121,5 +121,21 @@ class PaymentService
                 'amount' => $amount,
             ]);
         }
+    }
+
+    /////////Pay for expenses
+    public function generateExpensePayment(Model $model, $validatedData)
+    {
+        $user = Auth::user();
+        $payment = new Payment();
+        $payment->fill($validatedData);
+        $payment->received_by = $user->email;
+        $payment->save();
+        //2. Create Transactions for ledger
+        $this->recordTransactionAction->payexpenses($payment, $model);
+
+        //3. Send Email/Notification to the Tenant containing the receipt.
+        $user = $payment->model->model;
+        $user->notify(new PaymentNotification($payment, $user));
     }
 }

@@ -13,7 +13,7 @@ class UserAccessScope implements Scope
 
         $user = auth()->user();
 
-        if ($user && $user->id !== 1 /*&& $userRole !== 'Administrator'*/) {
+        if ($user && $user->id !== 1 && stripos($user->roles->first()->name, 'admin') === false) {
             // Filter units based on the logged-in user's unit_ids
             $builder->whereHas('unit', function ($query) use ($user) {
                 $query->whereHas('users', function ($subQuery) use ($user) {

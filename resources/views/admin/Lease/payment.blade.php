@@ -11,26 +11,29 @@
     <hr>
     <form method="POST" action="{{ url('payment') }}" class="myForm" novalidate>
         @csrf
-        <input type="hidden" name="invoice" value="{{ $invoice->id }}">
+        <input type="hidden" name="instanceId" value="{{ $instance->id }}">
+        <input type="hidden" name="model" value="{{$model}}">
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Property Name</label>
                 <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required readonly>
-                    <option value="{{$invoice->property->id}}">{{$invoice->property->property_name}}</option>
+                    <option value="{{$instance->property->id}}">{{$instance->property->property_name}}</option>
                 </select>
             </div>
         </div>
+        @if($instance->unit_id)
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Unit Number</label>
                 <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required readonly>
-                    <option value="{{$invoice->unit->id}}">{{$invoice->unit->unit_number}}</option>
+                    <option value="{{$instance->unit->id}}">{{$instance->unit->unit_number}}</option>
                 </select>
             </div>
         </div>
+        @endif
         <div class="col-md-6">
             <input type="hidden" class="form-control" name="model_type" id="model_type" value="{{$className}}">
-            <input type="hidden" class="form-control" name="model_id" id="model_id" value="{{$invoice->id}}">
+            <input type="hidden" class="form-control" name="model_id" id="model_id" value="{{$instance->id}}">
             <input type="hidden" class="form-control" name="referenceno" id="referenceno" value="{{$referenceno}}">
         </div>
         <div class="col-md-6">
@@ -53,7 +56,7 @@
 
 
         <!------- THIRD LEVEL INVOICE ITEMS -->
-        <div class="col-md-7">
+        <div class="col-md-8">
             <hr>
             <table class="table  table-bordered" style="font-size:12px;border:1px solid black;">
                 <thead>
@@ -68,7 +71,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($invoice->invoiceItems as $key=> $item)
+                    @if($model === 'Invoice')
+                    @foreach($instance->invoiceItems as $key=> $item)
                     <tr style="height:35px;">
                         <td class="text-center" style="background-color:#dae3fa;">{{$key+1}}</td>
                         <td class="text-center" style="text-transform: capitalize;background-color:#dae3fa;">
@@ -76,7 +80,7 @@
                         </td>
                         <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. @currency($item->amount) </td>
                         <td class="text-center" style="background-color:#dae3fa;">
-                            @foreach ($invoice->payments as $payment)
+                            @foreach ($instance->payments as $payment)
                             @foreach ($payment->paymentItems as $paymentItem)
                             @if ($paymentItem->unitcharge_id === $item->unitcharge_id)
                             {{ $sitesettings->site_currency }}.@currency($paymentItem->amount)</br>
@@ -87,9 +91,9 @@
                         <td class="text-center" style="padding:0px">
                             <div style="position: relative;">
                                 @php
-                                $amountdue = $item->amount - $invoice->payments->sum(function ($payment) use ($item) {
-                                return $payment->paymentItems->where('unitcharge_id', $item->unitcharge_id)->sum('amount'); }) 
-    
+                                $amountdue = $item->amount - $instance->payments->sum(function ($payment) use ($item) {
+                                return $payment->paymentItems->where('unitcharge_id', $item->unitcharge_id)->sum('amount'); })
+
                                 @endphp
                                 <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                                 </span>
@@ -99,6 +103,35 @@
                         </td>
                     </tr>
                     @endforeach
+                    @else
+                    <tr style="height:35px;">
+                        <td class="text-center" style="background-color:#dae3fa;">1</td>
+                        <td class="text-center" style="text-transform: capitalize;background-color:#dae3fa;">
+                            {{$instance->name}}
+                        </td>
+                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. @currency($instance->totalamount) </td>
+                        <td class="text-center" style="background-color:#dae3fa;">
+                            @if($instance->payments->isEmpty())
+                            {{ $sitesettings->site_currency }}.@currency(0)</br>
+                            @else
+                            @foreach ($instance->payments as $payment)
+                            {{ $sitesettings->site_currency }}.@currency($payment->totalamount)</br>
+                            @endforeach
+                            @endif
+                        </td>
+                        <td class="text-center" style="padding:0px">
+                            <div style="position: relative;">
+                                @php
+                                $amountdue = $instance->totalamount - $instance->payments->sum('totalamount')
+                                @endphp
+                                <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
+                                </span>
+                                <input type="text" class="form-control" name="totalamount" id="totalamount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px; border:none">
+                            </div>
+
+                        </td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
         </div></br>
@@ -134,7 +167,10 @@
             $('input[name="amount[]"]').each(function() {
                 var value = parseFloat($(this).val().replace(/,/g, ''));
                 if (!isNaN(value)) {
-                    $(this).val(value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 }));
+                    $(this).val(value.toLocaleString('en-US', {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    }));
                 }
             });
         }

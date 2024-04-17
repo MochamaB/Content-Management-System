@@ -22,6 +22,8 @@ class InvoiceGeneratedNotification extends Notification
     protected $transactions;
     protected $groupedInvoiceItems;
     protected $openingBalance;
+    protected $subject;
+    protected $heading;
    
 
     /**
@@ -37,6 +39,8 @@ class InvoiceGeneratedNotification extends Notification
         $this->transactions = $transactions;
         $this->groupedInvoiceItems = $groupedInvoiceItems;
         $this->openingBalance = $openingBalance;
+        $this->subject = $this->invoice->type . ' Invoice';
+        $this->heading =  'New '.$this->invoice->type.' Invoice';
 
     }
 
@@ -80,7 +84,7 @@ class InvoiceGeneratedNotification extends Notification
                 'openingBalance' =>  $this->openingBalance
                 ]
             )
-            ->subject($this->invoice->type . ' Invoice')
+            ->subject($this->subject)
             ->attachData($invoicepdf->output(), $invoicefilename);
     }
 
@@ -96,7 +100,10 @@ class InvoiceGeneratedNotification extends Notification
             'user_id' => $this->user->id,
             'phonenumber' => $this->user->phonenumber,
             'user_email' => $this->user->email,
-            'subject' =>$this->invoice->type ?? null,
+            'subject' => $this->subject ?? null,
+            'heading' => $this->heading ?? null,
+            'linkmessage' => null,
+            'data' => null,
             'channels' => $this->via($notifiable),
         ];
     }

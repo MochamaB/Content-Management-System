@@ -13,6 +13,7 @@ use App\Actions\RecordTransactionAction;
 use App\Models\Paymentvoucher;
 use App\Models\PaymentVoucherItems;
 use App\Actions\CalculateInvoiceTotalAmountAction;
+use App\Models\User;
 
 class PaymentVoucherService
 {
@@ -28,11 +29,11 @@ class PaymentVoucherService
        
     }
 
-    public function generatePaymentVoucher(Model $model)
+    public function generatePaymentVoucher(Model $model, User $user)
     {
-                $modelname = class_basename($model);
+                $modelname = get_class($model);
         
-                $paymentVoucherData = $this->getPaymentVoucherHeaderData($model,$modelname);
+                $paymentVoucherData = $this->getPaymentVoucherHeaderData($model,$modelname,$user);
 
                 //1. Create Payment Voucher Header Data
                 $paymentVoucher = $this->createPaymentVoucher($paymentVoucherData);
@@ -62,19 +63,22 @@ class PaymentVoucherService
  
 
     //////2. GET DATA FOR VOUCHER HEADER DATA
-    private function getPaymentVoucherHeaderData($model,string $modelname)
+    private function getPaymentVoucherHeaderData($model,string $modelname,$user)
     {
         $today = Carbon::now();
         $date = $today->format('ym');
         $unitnumber = Unit::where('id', $model->unit_id)->first();
+        $usermodelname = get_class($user);
 
         return [
             'property_id' => $model->property_id,
             'unit_id' => $model->unit_id,
-            'model_type' => $modelname,
-            'model_id' => $model->id,
+            'payable_type' => $modelname,
+            'payable_id' => $model->id,
+            'model_type' => $usermodelname,
+            'model_id' => $user->id,
             'referenceno' => 'PV '. $date . $unitnumber->unit_number,
-            'voucher_type' => $model->charge_name, ///Generated from securitydeposit
+            'name' => $model->charge_name, ///Generated from securitydeposit
             'totalamount' => null,
             'status' => 'Payable',
             'duedate' => null,

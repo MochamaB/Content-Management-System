@@ -14,7 +14,7 @@ class UnitAccessScope implements Scope
         // Get the authenticated user
         $user = auth()->user();
      //   $userRole =$user->roles->pluck('name');
-        if ($user && $user->id !== 1 /*&& $userRole !== 'Administrator'*/) {
+        if ($user && $user->id !== 1 && stripos($user->roles->first()->name, 'admin') === false) {
             // Filter units based on the logged-in user's unit_ids
             $builder->whereHas('users', function ($query) use ($user) {
                 $query->where('user_id', $user->id);

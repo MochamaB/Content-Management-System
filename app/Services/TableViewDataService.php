@@ -234,7 +234,7 @@ class TableViewDataService
                 'id' => $item->id,
                 $item->referenceno,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
-                $item->voucher_type,
+                $item->name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $item->status,
             ];
@@ -258,7 +258,7 @@ class TableViewDataService
         // $invoicedata->load('user');
 
         // TABLE DATA
-        $headers = ['REFERENCE NO', 'PAYMENT DATE', 'TYPE', 'AMOUNT', 'PAY METHOD', 'ACTIONS'];
+        $headers = ['REFERENCE NO', 'PAYMENT DATE', 'TYPE','DESCRIPTION', 'AMOUNT', 'PAY METHOD', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -277,9 +277,10 @@ class TableViewDataService
             $row = [
                 'id' => $item->id,
                 'RCPT#: ' . $item->id . '-' . $item->referenceno,
-                '<span class="text-muted" style="font-weight:500;font-style: italic"> Invoice Date  -  Due Date</span></br>' .
+                '<span class="text-muted" style="font-weight:500;font-style: italic"> Paid on Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
-                $type->charge_name,
+                class_basename($item->model),
+                $type->charge_name ?? $item->model->name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $PaymentMethod->name .
                     ' </br>
@@ -289,7 +290,7 @@ class TableViewDataService
 
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 3, 0, $item->unit->unit_number . ' - ' . $item->property->property_name); // Replace with how you get unit details
+                array_splice($row, 3, 0, $item->unit->unit_number ?? '' . ' - ' . $item->property->property_name); // Replace with how you get unit details
             }
 
             $tableData['rows'][] = $row;
@@ -812,7 +813,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFERENCE NO', ' NAME', 'ACCOUNT', 'AMOUNT', 'DUEDATE', 'ACTIONS'];
+        $headers = ['REFNO','STATUS | DUEDATE', 'NAME', 'ACCOUNT', 'AMOUNT DUE','PAID','BALANCE', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -833,15 +834,42 @@ class TableViewDataService
                 'over_paid' => 'light',
             ];
 
-           
+            $today = Carbon::now();
+            $totalPaid = $item->payments->sum('totalamount');
+            $balance = $item->totalamount - $totalPaid;
+            $payLink = ''; // Initialize $payLink
+
+            if ($item->payments->isEmpty()) {
+                $status = 'unpaid';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id,'model' => class_basename($item)]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
+            } elseif ($totalPaid < $item->totalamount) {
+                $status = 'partially_paid';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id,'model' => class_basename($item)]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
+            } elseif ($totalPaid > $item->totalamount) {
+                $status = 'over_paid';
+            } elseif ($totalPaid == $item->totalamount) {
+                $status = 'paid';
+            }
+
+            if ($item->duedate < $today && $status == 'unpaid') {
+                $status = 'Over Due';
+            }
+    //        $status = $item->status;
+            $statusClass = $statusClasses[$status] ?? 'unpaid';
+            $expenseStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
+            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
+
+            
 
             $row = [
                 'id' => $item->id,
                 $item->referenceno,
+                $expenseStatus.' </br></br>'.Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->name,
                 $item->account->account_name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
-                Carbon::parse($item->duedate)->format('Y-m-d'),
+                $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
+                $balanceStatus . ' </br></br> ' . $payLink,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
