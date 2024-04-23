@@ -98,10 +98,12 @@ class ExpenseController extends Controller
     {
 
         ////REFRENCE NO
-        $today = Carbon::now();
-        $date = $today->format('ym');
-        $propertynumber = $request->property_id;
-        $referenceno = 'EXP -'.$date . $propertynumber;
+         $doc = 'EXP-';
+         $propertynumber = 'P' . str_pad($request->property_id, 2, '0', STR_PAD_LEFT);
+         $unitnumber = $request->unit_id ?? 'N';
+         $date = Carbon::now()->format('ymd');
+        
+         $referenceno = $doc.$propertynumber.$unitnumber.'-'.$date;
 
         //// INSERT DATA TO THE UNITCHARGE
         $validationRules = Expense::$validation;

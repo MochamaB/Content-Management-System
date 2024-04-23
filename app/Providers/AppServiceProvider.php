@@ -10,7 +10,7 @@ use App\Models\Lease;
 use App\Models\MeterReading;
 use App\Models\Notification;
 use App\Models\Payment;
-use App\Models\Paymentvoucher;
+use App\Models\Deposit;
 use App\Models\Utility;
 use App\Models\User;
 use App\Models\Property;
@@ -58,7 +58,7 @@ class AppServiceProvider extends ServiceProvider
         Invoice::addGlobalScope(new UserAccessScope);
         MeterReading::addGlobalScope(new UserAccessScope);
         Unitcharge::addGlobalScope(new UserAccessScope);
-        Paymentvoucher::addGlobalScope(new UserAccessScope);
+        Deposit::addGlobalScope(new UserAccessScope);
         Payment::addGlobalScope(new UserAccessScope);
 
         Unit::addGlobalScope(new UnitAccessScope);
@@ -170,13 +170,13 @@ class AppServiceProvider extends ServiceProvider
                 ]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
-                    'expense' => ['display' => 'Expenses'],
-                    'paymentvoucher' => ['display' => 'Payment Vouchers'],
+                    'expense' => ['display' => 'Bills & Expenses'],
+                    'deposit' => ['display' => 'Deposits'],
                     'general-ledger' => ['display' => 'General Ledger'],
                     'income-statement' => ['display' => 'Profit and Loss'],
                     'chartofaccount' => ['display' => 'Chart Of Accounts'],
                     'payment-method' => ['display' => 'Payment methods'],
-
+                    'transaction-type' => ['display' => 'Transaction Types'],
                 ]],
 
                 'Communication' => ['icon' => 'email-open', 'submodules' => [

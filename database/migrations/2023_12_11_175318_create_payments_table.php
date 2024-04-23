@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->nullable()->index();
-            $table->string('model_type'); // What payment is for - Invoices,PaymentVoucher,Maintenance,Subscription
+            $table->string('model_type'); // What payment is for - Invoices,Deposit,Maintenance,Subscription
             $table->unsignedBigInteger('model_id'); // ID of the specific model instance
             $table->string('referenceno');
             $table->unsignedBigInteger('payment_method_id');

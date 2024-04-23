@@ -9,6 +9,7 @@ use App\Actions\CalculateInvoiceTotalAmountAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentItems;
 use App\Notifications\InvoiceGeneratedNotification;
@@ -71,15 +72,12 @@ class PaymentService
     private function getPaymentHeaderData($model, $validatedData)
     {
         ////REFRENCE NO
-        $today = Carbon::now();
-        $invoicenodate = $today->format('ym');
-        $unitnumber = $model->unit->unit_number;
-        $referenceno = 'RCT-' . $model->id . '-' . $invoicenodate . $unitnumber;
+
+        $referenceno = $validatedData['referenceno'];
         $className = get_class($model);
         $user = Auth::user();
-
         $paymentCode = $validatedData['payment_code'];
-        $PaymentMethod = $validatedData['payment_method_id'];
+        $paymentMethod = $validatedData['payment_method_id'];
 
         return [
             'property_id' => $model->property_id,
@@ -87,7 +85,7 @@ class PaymentService
             'model_type' => $className, ///This has plymorphism because payment can be an invoice,expense or voucher
             'model_id' => $model->id,
             'referenceno' => $referenceno,
-            'payment_method_id' => $PaymentMethod,
+            'payment_method_id' => $paymentMethod,
             'payment_code' => $paymentCode,
             'totalamount' => null,
             'received_by' => $user->email,
@@ -106,7 +104,14 @@ class PaymentService
     private function createPaymentItems($model, $payment, $validatedData)
     {
         // Create Payment items
-        $items = $model->getItems;
+        // Check if model is an instance of Expense
+        if ($model instanceof Invoice) {
+          // For other models (like Invoice), get the items as before
+          $items = $model->getItems;
+        } else {
+           // For expenses, treat the entire expense as a single item
+            $items = collect([$model]);
+        }
         $perPaymentAmounts = $validatedData['amount'];
 
         foreach ($items as $key => $item) {
@@ -114,9 +119,9 @@ class PaymentService
             $amount = $perPaymentAmounts[$key];
             PaymentItems::create([
                 'payment_id' => $payment->id,
-                'unitcharge_id' => $item->unitcharge_id,
-                'chartofaccount_id' => 1,
-                'charge_name' => $item->charge_name,
+                'unitcharge_id' => $item->unitcharge_id ?? null,
+                'chartofaccount_id' => $item->chartofaccount_id,
+                'charge_name' => $item->charge_name ?? $item->name,
                 'description' => '',
                 'amount' => $amount,
             ]);

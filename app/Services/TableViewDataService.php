@@ -37,6 +37,12 @@ class TableViewDataService
         'high' => 'warning',
         'normal' => 'active',
         'low' => 'dark',
+
+        'paid' => 'active',
+        'unpaid' => 'warning',
+        'Over Due' => 'danger',
+        'partially_paid' => 'dark',
+        'over_paid' => 'light',
     ];
 
     public function __construct()
@@ -160,7 +166,7 @@ class TableViewDataService
             $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
             if (!empty($item->payments)) {
                 $receipttext = '</br><span class="text-muted" style="margin-top:5px;font-weight:500;"> Receipts</span>';
-            }else{
+            } else {
                 $receipttext = '';
             }
             $paymentLinks = '';
@@ -169,7 +175,7 @@ class TableViewDataService
             foreach ($item->payments as $payment) {
                 $id = $payment->id;
                 $refn = $payment->referenceno;
-                $paymentLinks .= '<br> <a href="' . url('payment/' . $id) . '" class="badge badge-light">' .$id.' '.$refn . '</a>';
+                $paymentLinks .= '<br> <a href="' . url('payment/' . $id) . '" class="badge badge-light">' . $id . ' ' . $refn . '</a>';
                 $paymentCounter++;
             }
 
@@ -180,7 +186,7 @@ class TableViewDataService
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->type,
                 $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
-                $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ','). $receipttext.''. $paymentLinks,
+                $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ',') . $receipttext . '' . $paymentLinks,
                 $balanceStatus . '  ' . $payLink,
 
 
@@ -210,14 +216,14 @@ class TableViewDataService
     }
 
     ///////////////////
-    public function getPaymentVoucherData($paymentvoucherdata, $extraColumns = false)
+    public function getDepositData($Depositdata, $extraColumns = false)
     {
         // Eager load the 'unit' relationship
         //   $invoicedata->load('user');
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFERENCE NO', 'VOUCHER DATE', 'TYPE', 'AMOUNT RECEIVED', 'STATUS', 'ACTIONS'];
+        $headers = ['REFERENCE NO', 'STATUS | DUEDATE', 'NAME','ACCOUNT', 'AMOUNT RECEIVED', 'PAID', 'BALANCE', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -229,18 +235,62 @@ class TableViewDataService
             'rows' => [],
         ];
 
-        foreach ($paymentvoucherdata as $item) {
+        foreach ($Depositdata as $item) {
+            $statusClasses = [
+                'paid' => 'active',
+                'unpaid' => 'warning',
+                'Over Due' => 'danger',
+                'partially_paid' => 'dark',
+                'over_paid' => 'light',
+            ];
+            $today = Carbon::now();
+            $totalPaid = $item->payments->sum('totalamount');
+            $balance = $item->totalamount - $totalPaid;
+            $payLink = ''; // Initialize $payLink
+            if ($item->payments->isEmpty()) {
+                $status = 'unpaid';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
+            } elseif ($totalPaid < $item->totalamount) {
+                $status = 'partially_paid';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
+            } elseif ($totalPaid > $item->totalamount) {
+                $status = 'over_paid';
+            } elseif ($totalPaid == $item->totalamount) {
+                $status = 'paid';
+            }
+
+            if ($item->duedate !== null && $item->duedate < $today && $status == 'unpaid') {
+                $status = 'Over Due';
+            }
+            //        $status = $item->status;
+            $statusClass = $statusClasses[$status] ?? 'unpaid';
+            $voucherStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
+            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
+            if ($item->duedate !== null) {
+                $dueDate = Carbon::parse($item->duedate)->format('Y-m-d');
+            } else {
+                $dueDate = "";
+            }
+
+
+
             $row = [
                 'id' => $item->id,
                 $item->referenceno,
-                Carbon::parse($item->created_at)->format('Y-m-d'),
+                $voucherStatus . ' </br></br>' . $dueDate,
                 $item->name,
+                $item->account->account_name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
-                $item->status,
+                $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
+                $balanceStatus . ' </br></br> ' . $payLink,
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 2, 0, $item->unit->unit_number ?? '' . ' - ' . $item->property->property_name); // Replace with how you get unit details
+                if ($item->unit) {
+                    array_splice($row, 2, 0, $item->unit->unit_number . ' - ' . $item->property->property_name);
+                } else {
+                    array_splice($row, 2, 0, $item->property->property_name);
+                } // Replace with how you get unit details
             }
 
             $tableData['rows'][] = $row;
@@ -258,7 +308,7 @@ class TableViewDataService
         // $invoicedata->load('user');
 
         // TABLE DATA
-        $headers = ['REFERENCE NO', 'PAYMENT DATE', 'TYPE','DESCRIPTION', 'AMOUNT', 'PAY METHOD', 'ACTIONS'];
+        $headers = ['REFERENCE NO', 'PAYMENT DATE', 'TYPE', 'DESCRIPTION', 'AMOUNT', 'PAY METHOD', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -608,16 +658,14 @@ class TableViewDataService
             $assignedType = $item->assigned_type;
             $assignedModel = $item->assigned;
             ////CHECK IF ITS A VENDOR OR A USER STAFF
-            if($assignedType === 'App\\Models\\User')
-            {
+            if ($assignedType === 'App\\Models\\User') {
                 $assigned = $assignedModel->firstname . ' ' . $assignedModel->lastname;
-            } elseif($assignedType === 'App\\Models\\Vendor') {
+            } elseif ($assignedType === 'App\\Models\\Vendor') {
                 $assigned = $assignedModel->name;
-            }
-            else{
+            } else {
                 $assigned =   $assignLink;
             }
-            
+
             if ($item->unit) {
                 $unit = ' - ' . $item->unit->unit_number;
             }
@@ -702,7 +750,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['NO', 'DATE','ITEM DESCRIPTION', 'QUANTITY', 'PRICE', 'AMOUNT','ACTION'];
+        $headers = ['NO', 'DATE', 'ITEM DESCRIPTION', 'QUANTITY', 'PRICE', 'AMOUNT', 'ACTION'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -718,7 +766,7 @@ class TableViewDataService
 
             $row = [
                 'id' => $item->id,
-                $key+1,
+                $key + 1,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
                 $item->item,
                 $item->quantity,
@@ -741,7 +789,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['NAME','KEY', 'VALUE', 'ACTIONS'];
+        $headers = ['NAME', 'KEY', 'VALUE', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -754,7 +802,7 @@ class TableViewDataService
         ];
 
         foreach ($settingdata as $item) {
-           
+
             $row = [
                 'id' => $item->id,
                 $item->name,
@@ -775,7 +823,7 @@ class TableViewDataService
 
     public function generateSettingTabContents($modelType, $setting)
     {
-        
+
         $tabTitles = collect([
             'Global Settings',
             'Overrides',
@@ -813,7 +861,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFNO','STATUS | DUEDATE', 'NAME', 'ACCOUNT', 'AMOUNT DUE','PAID','BALANCE', 'ACTIONS'];
+        $headers = ['REFNO', 'STATUS | DUEDATE', 'NAME', 'ACCOUNT', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -841,10 +889,10 @@ class TableViewDataService
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id,'model' => class_basename($item)]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
             } elseif ($totalPaid < $item->totalamount) {
                 $status = 'partially_paid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id,'model' => class_basename($item)]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
             } elseif ($totalPaid > $item->totalamount) {
                 $status = 'over_paid';
             } elseif ($totalPaid == $item->totalamount) {
@@ -854,17 +902,17 @@ class TableViewDataService
             if ($item->duedate < $today && $status == 'unpaid') {
                 $status = 'Over Due';
             }
-    //        $status = $item->status;
+            //        $status = $item->status;
             $statusClass = $statusClasses[$status] ?? 'unpaid';
             $expenseStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
 
-            
+
 
             $row = [
                 'id' => $item->id,
                 $item->referenceno,
-                $expenseStatus.' </br></br>'.Carbon::parse($item->duedate)->format('Y-m-d'),
+                $expenseStatus . ' </br></br>' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->name,
                 $item->account->account_name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),

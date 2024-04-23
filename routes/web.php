@@ -28,7 +28,7 @@ use App\Http\Controllers\PropertyTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\PaymentVoucherController;
+use App\Http\Controllers\DepositController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
@@ -36,6 +36,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\VendorCategoryController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkOrderController;
@@ -100,6 +101,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'uses' => 'App\Http\Controllers\ExpenseController@create'
         ])->middleware('check.create.variables');
         Route::resource('expense', ExpenseController::class);
+        Route::resource('transaction-type', TransactionTypeController::class);
 
     });
 
@@ -136,12 +138,12 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('generateinvoice', [InvoiceController::class, 'generateInvoice']);
         ///////////////////
        
-        Route::get('paymentvoucher/create/{id?}/{model?}', [
-            'as' => 'paymentvoucher.create',
-            'uses' => 'App\Http\Controllers\PaymentVoucherController@create'
+        Route::get('deposit/create/{id?}/{model?}', [
+            'as' => 'deposit.create',
+            'uses' => 'App\Http\Controllers\DepositController@create'
         ])->middleware('check.create.variables');
-        Route::resource('paymentvoucher', PaymentVoucherController::class);
-        Route::post('generatepaymentvoucher', [PaymentVoucherController::class, 'generatePaymentVoucher']);
+        Route::resource('deposit', DepositController::class);
+        Route::post('generateDeposit', [DepositController::class, 'generateDeposit']);
         ////////////////////////
         Route::get('payment/create/{id?}/{model?}', [
             'as' => 'payment.create',

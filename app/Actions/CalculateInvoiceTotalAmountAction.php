@@ -6,7 +6,7 @@ namespace App\Actions;
 
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\Paymentvoucher;
+use App\Models\Deposit;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -26,15 +26,15 @@ class CalculateInvoiceTotalAmountAction
         $invoice->update(['totalamount' => $totalAmount]);
     }
 
-    public function paymentVoucher(PaymentVoucher $paymentVoucher)
+    public function Deposit(Deposit $Deposit)
     {
         // Calculate the total amount for the given invoice
-        $totalAmount = DB::table('paymentvoucher_items')
-            ->where('paymentvoucher_id', $paymentVoucher->id)
+        $totalAmount = DB::table('Deposit_items')
+            ->where('Deposit_id', $Deposit->id)
             ->sum('amount');
 
         // Update the totalamount field in the invoice header
-        $paymentVoucher->update(['totalamount' => $totalAmount]);
+        $Deposit->update(['totalamount' => $totalAmount]);
     }
     public function payment(Payment $payment)
     {

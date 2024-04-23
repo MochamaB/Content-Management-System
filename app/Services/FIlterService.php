@@ -105,7 +105,7 @@ class FilterService
         ];
     }
 
-    public function getPaymentVoucherFilters(Request $request)
+    public function getDepositFilters(Request $request)
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
         $propertyId = $request->property_id;
@@ -118,7 +118,7 @@ class FilterService
         $unitcharge = Unitcharge::pluck('charge_name', 'id')->unique()->toArray();
         $status = [
             'paid' => 'Paid',
-            'payable' => 'Payable',
+            'unpaid' => 'Unpaid',
         ];
 
         // Define the columns for the unit report

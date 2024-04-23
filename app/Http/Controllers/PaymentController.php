@@ -9,7 +9,7 @@ use App\Models\Payment;
 use App\Models\Property;
 use App\Models\Invoice;
 use App\Models\PaymentMethod;
-use App\Models\Paymentvoucher;
+use App\Models\Deposit;
 use App\Traits\FormDataTrait;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\Auth;
@@ -79,26 +79,31 @@ class PaymentController extends Controller
         switch ($model) {
             case 'Expense':
                 $instance = Expense::find($id); // replace with actual logic to load an Expense
-                $number = 'EXP' . $instance->property->id;
+                $doc = 'EXP-';
+                $propertynumber =  'P' . str_pad($instance->property->id, 2, '0', STR_PAD_LEFT);
+                $unitnumber =$instance->unit->unit_number ?? 'N';
                 break;
-            case 'PaymentVoucher':
-                $instance = Paymentvoucher::find($id); // replace with actual logic to load a PaymentVoucher
-                $number = 'PV' . $instance->property->id;
+            case 'Deposit':
+                $instance = Deposit::find($id); 
+                $doc = 'PV-';
+                $propertynumber =  'P' . str_pad($instance->property->id, 2, '0', STR_PAD_LEFT);
+                $unitnumber =$instance->unit->unit_number ?? 'N';
                 break;
             default:
                 $instance = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
-                $number = 'INV' . $instance->unit->unit_number;
+                $doc = 'INV-';
+                $propertynumber =  'P' . str_pad($instance->property->id, 2, '0', STR_PAD_LEFT);
+                $unitnumber =$instance->unit->unit_number ?? 'N';
                 break; // or handle this case differently
         }
 
         //     $invoice = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
         $PaymentMethod = PaymentMethod::where('property_id', $instance->property_id)->get();
         $className = get_class($instance);
-        $referenceno = PaymentMethod::where('property_id', $instance->property_id)->get();
-        ////REFRENCE NO
-        $today = Carbon::now();
-        $date = $today->format('ym');
-        $referenceno = $instance->id . '-' . $number . $date;
+        ///REFERENCE NO
+        $date = Carbon::now()->format('ymd');
+       
+        $referenceno = $doc.$propertynumber.$unitnumber.'-'.$date;
 
 
 
@@ -125,10 +130,9 @@ class PaymentController extends Controller
                 $model = Expense::find($instanceId);
                 $this->paymentService->generateExpensePayment($model, $validatedData);
                 break;
-            case 'PaymentVoucher':
-                $payment = new Payment();
-                $payment->fill($validatedData);
-                $payment->save();
+            case 'Deposit':
+                $model = Deposit::find($instanceId);
+                $this->paymentService->generatePayment($model, $validatedData);
                 break;
             default:
                 $model = Invoice::find($instanceId);

@@ -22,7 +22,7 @@ use Carbon\Carbon;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\RecordTransactionAction;
-use App\Services\PaymentVoucherService;
+use App\Services\DepositService;
 use App\Services\InvoiceService;
 use App\Services\TableViewDataService;
 use App\Actions\UploadMediaAction;
@@ -40,7 +40,7 @@ class LeaseController extends Controller
     protected $updateNextDateAction;
     private $updateDueDateAction;
     protected $uploadMediaAction;
-    private $paymentVoucherService;
+    private $DepositService;
     private $invoiceService;
     private $recordTransactionAction;
     private $tableViewDataService;
@@ -51,7 +51,7 @@ class LeaseController extends Controller
         UpdateNextDateAction $updateNextDateAction,
         UpdateDueDateAction $updateDueDateAction,
         UploadMediaAction $uploadMediaAction,
-        PaymentVoucherService $paymentVoucherService,
+        DepositService $DepositService,
         InvoiceService $invoiceService,
         RecordTransactionAction $recordTransactionAction,
         TableViewDataService $tableViewDataService
@@ -66,7 +66,7 @@ class LeaseController extends Controller
         $this->updateNextDateAction = $updateNextDateAction;
         $this->updateDueDateAction = $updateDueDateAction;
         $this->uploadMediaAction = $uploadMediaAction;
-        $this->paymentVoucherService = $paymentVoucherService;
+        $this->DepositService = $DepositService;
         $this->invoiceService = $invoiceService;
         $this->recordTransactionAction = $recordTransactionAction;
         $this->tableViewDataService = $tableViewDataService;
@@ -236,7 +236,7 @@ class LeaseController extends Controller
             $depositchargeModel->save();
 
             //  Generate Payment Voucher and Transactions
-           $this->paymentVoucherService->generatePaymentVoucher($depositchargeModel,$user);
+           $this->DepositService->generateDeposit($depositchargeModel,$user);
 
         }
 

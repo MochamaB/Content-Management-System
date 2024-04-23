@@ -6,11 +6,12 @@ namespace App\Actions;
 use App\Models\Chartofaccount;
 use App\Models\Expense;
 use App\Models\InvoiceItems;
-use App\Models\PaymentVoucherItems;
+
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentItems;
 use App\Models\Transaction;
+use App\Models\TransactionType;
 use App\Models\Unitcharge;
 use Carbon\Carbon;
 use Lorisleiva\Actions\Concerns\AsAction;
@@ -20,30 +21,31 @@ class RecordTransactionAction
 {
     use AsAction;
 
-    public function voucherCharges(Model $model, Unitcharge $unitcharge = null)
+   
+
+    public function deposit(Model $model, Unitcharge $unitcharge = null)
     {
         //     Debit: Bank Account (Asset)
         //     Credit: Security Deposit Liability (Liability)
 
-        $paymentvoucheritems = PaymentVoucherItems::where('paymentvoucher_id', $model->id)->get();
+      
         $className = get_class($model);
-        ///Instead of VoucherItems recordtransaction on Invoice
-                    ///Model ////////
-        foreach ($paymentvoucheritems as $item) {
-            $description = Chartofaccount::where('id', $item->chartofaccount_id)->first();
+        $transactionType = TransactionType::where('model', 'Deposit')->first();
+       
+            $description = Chartofaccount::where('id', $model->chartofaccount_id)->first();
             Transaction::create([
                 'property_id' => $model->property_id,
                 'unit_id' => $model->unit_id ?? null,
                 'unitcharge_id' => $unitcharge->id ?? null,
-                'charge_name' => $item->charge_name,
+                'charge_name' => $model->name,
                 'transactionable_id' => $model->id,
                 'transactionable_type' => $className, ///Model Name Unitcharge
                 'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => 1, //// decsrease the Bank Account amount
-                'creditaccount_id' => $item->chartofaccount_id, //Increase the Liability account
-                'amount' => $item->amount,
+                'debitaccount_id' => $transactionType->debitaccount_id, //// decsrease the Bank Account amount
+                'creditaccount_id' => $model->chartofaccount_id, //Increase the Liability account
+                'amount' => $model->totalamount,
             ]);
-        }
+        
         
     }
 
@@ -51,7 +53,7 @@ class RecordTransactionAction
     {
         $className = get_class($invoice);
         $invoiceitems = InvoiceItems::where('invoice_id', $invoice->id)->get();
-
+        $transactionType = TransactionType::where('name', 'Invoice Charges')->first();
         foreach ($invoiceitems as $item) {
             $description = Chartofaccount::where('id', $item->chartofaccount_id)->first();
             Transaction::create([
@@ -62,7 +64,7 @@ class RecordTransactionAction
                 'transactionable_id' => $invoice->id,
                 'transactionable_type' =>$className, ///Model Name Invoice
                 'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => 2,/// increase the Accounts Payable
+                'debitaccount_id' => $transactionType->debitaccount_id,/// increase the Accounts Payable
                 'creditaccount_id' => $item->chartofaccount_id, ///Decrease the income accounts
                 'amount' => $item->amount,
             ]);
@@ -90,37 +92,14 @@ class RecordTransactionAction
                 'amount' => $item->amount,
             ]);
         }
-    }
+    } 
 
-    public function voucherChargesIncome(Model $model, Unitcharge $unitcharge)
-    {
-       
-        $paymentvoucheritems = PaymentVoucherItems::where('paymentvoucher_id', $model->id)->get();
-        $className = get_class($model);
-        ///Instead of VoucherItems recordtransaction on Invoice
-                    ///Model ////////
-        foreach ($paymentvoucheritems as $item) {
-            $description = Chartofaccount::where('id', $item->chartofaccount_id)->first();
-            Transaction::create([
-                'property_id' => $model->property_id,
-                'unit_id' => $model->unit_id,
-                'unitcharge_id' => $unitcharge->id,
-                'charge_name' => $item->charge_name,
-                'transactionable_id' => $model->id,
-                'transactionable_type' => $className, ///Model Name Unitcharge
-                'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => 2,/// increase the Accounts Payable
-                'creditaccount_id' => $item->chartofaccount_id, ///All the income accounts
-                'amount' => $item->amount,
-            ]);
-        }
-    }
 
     public function expense(Expense $expense)
     {
         
-        $className = get_class($expense);
-      
+            $className = get_class($expense);
+            $transactionType = TransactionType::where('name', 'Expenses')->first();
             $description = Chartofaccount::where('id', $expense->chartofaccount_id)->first();
             Transaction::create([
                 'property_id' => $expense->property_id,
@@ -130,8 +109,8 @@ class RecordTransactionAction
                 'transactionable_id' => $expense->id,
                 'transactionable_type' => $className, ///Model Name Unitcharge
                 'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => $expense->chartofaccount_id,/// increase the Accounts Payable
-                'creditaccount_id' => 4, ///All the income accounts
+                'debitaccount_id' => $expense->chartofaccount_id ?? $transactionType->debitaccount_id ,/// increase the Accounts Payable
+                'creditaccount_id' =>$transactionType->creditaccount_id, ///All the income accounts
                 'amount' => $expense->totalamount,
             ]);
         
@@ -142,6 +121,8 @@ class RecordTransactionAction
         $className = get_class($payment);
        
             $description = Chartofaccount::where('id', $model->chartofaccount_id)->first();
+            $transactionType = TransactionType::where('name', 'Payment Of Expenses')->first();
+            
             Transaction::create([
                 'property_id' => $payment->property_id,
                 'unit_id' => $payment->unit_id ?? null,
@@ -150,8 +131,8 @@ class RecordTransactionAction
                 'transactionable_id' => $payment->id,
                 'transactionable_type' =>$className, ///Model Name Invoice
                 'description' => $description->account_name, ///Description of the charge
-                'debitaccount_id' => 4, ///Increase the Accounts Payable
-                'creditaccount_id' => 1,/// Decrease the bank account
+                'debitaccount_id' => $transactionType->debitaccount_id, ///Increase the Accounts Payable
+                'creditaccount_id' => $transactionType->creditaccount_id,/// Decrease the bank account
                 'amount' => $payment->totalamount,
             ]);
         

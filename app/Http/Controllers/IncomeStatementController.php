@@ -34,36 +34,49 @@ class IncomeStatementController extends Controller
         $sitesettings = WebsiteSetting::all();
         $filterdata = $this->filterService->getIncomeStatementFilters();
         $filters = $request->except(['tab', '_token', '_method']);
-        
-       // $threeMonths = now()->subMonths(3);
-        $incomeQuery = Transaction::whereHas('creditAccount', function ($query) {
-            $query->whereBetween('account_number', [40000, 50000]);
+
+        // $threeMonths = now()->subMonths(3);
+        $incomeQuery = Transaction::where(function ($query) {
+            $query->whereHas('creditAccount', function ($subQuery) {
+                $subQuery->whereBetween('account_number', [40000, 50000]);
+            })->orWhereHas('debitAccount', function ($subQuery) {
+                $subQuery->whereBetween('account_number', [40000, 50000]);
+            });
         });
 
-        $expenseQuery = Transaction::whereHas('creditAccount', function ($query) {
-            $query->whereBetween('account_number', [31000, 32000]);
+        $expenseQuery = Transaction::where(function ($query) {
+            $query->whereHas('creditAccount', function ($subQuery) {
+                $subQuery->whereBetween('account_number', [91000, 100000]);
+            })->orWhereHas('debitAccount', function ($subQuery) {
+                $subQuery->whereBetween('account_number', [91000, 100000]);
+            });
         });
 
-      //  dd($expenseQuery);
-       
         $incomeTransactions = $incomeQuery
-            ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
+            ->selectRaw('IFNULL(creditaccount_id, debitaccount_id) as account_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
             ->where("created_at", ">", Carbon::now()->subMonths(6))
-            ->groupByRaw('creditaccount_id, month')
-            ->orderBy('creditaccount_id')
-            ->applyFilters($filters)->get();
+            ->groupByRaw('account_id, month')
+            ->orderBy('account_id')
+            ->applyFilters($filters)
+            ->get();
 
         $expenseTransactions = $expenseQuery
-            ->selectRaw('creditaccount_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
+            ->selectRaw('IFNULL(creditaccount_id, debitaccount_id) as account_id, sum(amount) as total, MAX(description) as description, DATE_FORMAT(created_at, "%M %Y") as month')
             ->where("created_at", ">", Carbon::now()->subMonths(6))
-            ->groupByRaw('creditaccount_id, month')
-            ->orderBy('creditaccount_id')
-            ->applyFilters($filters)->get();
+            ->groupByRaw('account_id, month')
+            ->orderBy('account_id')
+            ->applyFilters($filters)
+            ->get();
 
-            $months = $incomeTransactions->concat($expenseTransactions)->pluck('month')->unique()->sortBy(function ($date) {
+        $months = $incomeTransactions->concat($expenseTransactions)
+            ->pluck('month')
+            ->unique()
+            ->sortBy(function ($date) {
                 return Carbon::parse($date)->timestamp;
-            })->values();
-            
+            })
+            ->values();
+
+
 
         return View(
             'admin.Accounting.accounting',

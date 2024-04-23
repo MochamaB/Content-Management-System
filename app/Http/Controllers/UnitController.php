@@ -150,7 +150,7 @@ class UnitController extends Controller
             'Users',
             'Charges',
             'Invoices',
-            'Vouchers',
+            'Deposits',
             'Payments',
             'Meter Readings',
             'Files'
@@ -191,10 +191,10 @@ class UnitController extends Controller
         $invoices = $unit->invoices;
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
 
-          /// DATA FOR PAYMENTVOUCHER TAB
-          $paymentvoucher = $unit->paymentvouchers;
+          /// DATA FOR Deposit TAB
+          $deposit = $unit->deposits;
           // dd($payments);
-           $paymentvoucherTableData = $this->tableViewDataService->getPaymentVoucherData($paymentvoucher);
+           $depositTableData = $this->tableViewDataService->getDepositData($deposit);
 
          /// DATA FOR PAYMENTS TAB
          $payments = $unit->payments;
@@ -226,8 +226,8 @@ class UnitController extends Controller
                 $tabContents[] = view('admin.CRUD.index_show',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges','id'));
             }elseif ($title === 'Invoices') {
                 $tabContents[] = view('admin.CRUD.table', ['data' => $invoiceTableData, 'controller' => ['invoice']])->render();
-            }elseif ($title === 'Vouchers') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $paymentvoucherTableData, 'controller' => ['paymentvoucher']], compact('id'))->render();
+            }elseif ($title === 'Deposits') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $depositTableData, 'controller' => ['deposit']], compact('id'))->render();
             }elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.CRUD.table', ['data' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {

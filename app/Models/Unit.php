@@ -177,11 +177,6 @@ class Unit extends Model implements HasMedia
         return $this->hasMany(Invoice::class);
     }
 
-    public function paymentvouchers()
-    {
-        return $this->hasMany(Paymentvoucher::class);
-    }
-
     public function payments()
     {
         return $this->hasMany(Payment::class);
@@ -196,7 +191,10 @@ class Unit extends Model implements HasMedia
     {
         return $this->hasMany(MeterReading::class);
     }
-
+    public function deposits()
+    {
+        return $this->hasMany(Deposit::class);
+    }
     public function tickets()
     {
         return $this->hasMany(Ticket::class);

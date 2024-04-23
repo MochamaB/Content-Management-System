@@ -47,8 +47,8 @@
                 <option value="{{ $actualvalues->$field }}">{{ $actualvalues->$field }}</option>
                 @foreach ($data[$field] as $groupLabel => $options)
                 <optgroup label="{{ $groupLabel }}">
-                    @foreach ($options as $option)
-                    <option value="{{ $option }}">{{ $option }}</option>
+                @foreach ($options as $id => $option)
+                    <option value="{{ $id }}">{{ $option }}</option>
                     @endforeach
                 </optgroup>
                 @endforeach

@@ -15,7 +15,7 @@ use App\Models\Unit;
 use App\Models\Utility;
 use Carbon\Carbon;
 use App\Services\TableViewDataService;
-use App\Services\PaymentVoucherService;
+use App\Services\DepositService;
 use App\Services\FilterService;
 
 class UnitChargeController extends Controller
@@ -29,10 +29,10 @@ class UnitChargeController extends Controller
     protected $controller;
     protected $model;
     private $tableViewDataService;
-    private $paymentVoucherService;
+    private $DepositService;
     private $filterService;
 
-    public function __construct(TableViewDataService $tableViewDataService, PaymentVoucherService $paymentVoucherService,
+    public function __construct(TableViewDataService $tableViewDataService, DepositService $DepositService,
     FilterService $filterService)
     {
         $this->model = unitcharge::class;
@@ -41,7 +41,7 @@ class UnitChargeController extends Controller
             '1' => ' Unit Charge',
         ]);
         $this->tableViewDataService = $tableViewDataService;
-        $this->paymentVoucherService = $paymentVoucherService;
+        $this->DepositService = $DepositService;
         $this->filterService = $filterService;
     }
 
@@ -117,7 +117,7 @@ class UnitChargeController extends Controller
         ////GENERATE A VOUCHER OR EXPENSE IF ITS A ONE TIME CHARGE
         if ($request->charge_cycle === "Once") {
            // dd($request->charge_cycle);
-            $this->paymentVoucherService->generatePaymentVoucher($unitcharge);
+            $this->DepositService->generateDeposit($unitcharge);
         }
 
         $previousUrl = Session::get('previousUrl');

@@ -111,9 +111,9 @@ class Lease extends Model implements HasMedia
         return $this->hasMany(Invoice::class, 'unit_id');
     }
     
-    public function paymentvoucher()
+    public function deposit()
     {
-        return $this->hasMany(Paymentvoucher::class, 'unit_id');
+        return $this->hasMany(Deposit::class, 'unit_id');
     }
 
     public function unitcharges()
