@@ -34,9 +34,9 @@ class ChartOfAccountController extends Controller
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            $tablevalues= Chartofaccount::all();
+            $tablevalues= Chartofaccount::orderBy('account_number', 'asc')->get();
         }else{
-            $tablevalues = Chartofaccount::all();
+            $tablevalues = Chartofaccount::orderBy('account_number', 'asc')->get();
         }
 
         
@@ -87,17 +87,10 @@ class ChartOfAccountController extends Controller
         ->exists()) {
             return back()->with('status','Account already exists.');
         }
-       
+        $validationRules = Chartofaccount::$validation;
+        $validatedData = $request->validate($validationRules);
         $model = new Chartofaccount();
-        // Get the list of fillable fields from the model
-        $fillableFields = $model->getFillable();
-        // Loop through the fillable fields and set the values from the request
-        foreach ($fillableFields as $field) {
-            // Make sure the field exists in the request before setting it
-            if ($request->has($field)) {
-                $model->$field = $request->input($field);
-            }
-        }
+        $model->fill($validatedData);
         $model->save();
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');

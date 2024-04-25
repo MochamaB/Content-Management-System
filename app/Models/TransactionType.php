@@ -11,14 +11,18 @@ class TransactionType extends Model
     protected $table = 'transaction_types';
     protected $fillable = [
         'name',
+        'description',
         'model',
+        'account_type',
         'debitaccount_id',
         'creditaccount_id',
     ];
 
     public static $fields = [
-        'name' => ['label' => 'Transaction Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
-        'model' => ['label' => 'Model', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'model' => ['label' => 'Action of transaction', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'description' => ['label' => 'Transaction Description', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
+        'name' => ['label' => 'Account of Transaction', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'account_type' => ['label' => 'Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'debitaccount_id' => ['label' => 'Debit Account', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => ''],
         'creditaccount_id' => ['label' => 'Credit Account', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => ''],
         // Add more fields as needed
@@ -26,7 +30,9 @@ class TransactionType extends Model
 
     public static $validation = [
         'name' => 'required',
+        'description' => 'required',
         'model' => 'required',
+        'account_type' => 'required',
         'debitaccount_id' => 'required',
         'creditaccount_id' => 'required',
 
@@ -36,13 +42,26 @@ class TransactionType extends Model
     {
         switch ($field) {
 
+            case 'name':
+                // Retrieve the supervised units' properties
+                $name = Chartofaccount::pluck('account_name', 'account_name')->toArray();
+                return $name;
             case 'model':
                 return [
-                    'Invoice' => 'Invoice',
-                    'Payment' => 'Payment',
-                    'Expense' => 'Expense',
-                    'Deposit' => 'Deposit'
+                    'Invoice' => 'Generate Invoice',
+                    'Payment' => 'Make Payment',
+                    'Expense' => 'Record Expense',
+                    'Deposit' => 'Record Deposit'
                 ];
+            case 'account_type':
+                return [
+                    'Asset' => 'Asset',
+                    'Liability' => 'Liability',
+                    'Income' => 'Income',
+                    'Expense' => 'Expense',
+                    'Equity' => 'Equity'
+                ];
+
             case 'debitaccount_id':
                 $account = Chartofaccount::all();
                 $accounts = $account->groupBy('account_type');

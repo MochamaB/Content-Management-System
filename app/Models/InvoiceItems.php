@@ -27,6 +27,10 @@ class InvoiceItems extends Model
     {
         return $this->belongsTo(Unitcharge::class);
     }
+    public function accounts()
+    {
+        return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
+    }
     public function meterReadings()
 {
     return $this->hasMany('App\Models\MeterReading', 'unitcharge_id', 'unitcharge_id');

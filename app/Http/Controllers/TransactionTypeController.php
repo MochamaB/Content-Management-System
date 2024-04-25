@@ -34,31 +34,46 @@ class TransactionTypeController extends Controller
     {
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
-            $tablevalues = TransactionType::all();
+            $tablevalues = TransactionType::orderBy('name', 'asc')->get();
         } else {
-            $tablevalues = TransactionType::all();
+            $tablevalues = TransactionType::orderBy('name', 'asc')->get();
         }
 
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['NAME','MODEL', 'DEBIT ACCOUNT','CREDIT ACCOUNT','ACTIONS'],
+            'headers' => ['DESCRIPTION', 'NAME', 'ACTION', 'TYPE', 'DEBIT ACCOUNT', 'CREDIT ACCOUNT', 'ACTIONS'],
             'rows' => [],
         ];
 
         foreach ($tablevalues as  $item) {
+            $modelname = $item->model;
+            if ($modelname === 'Invoice') {
+                $prefix = ' Genarate';
+            } elseif ($modelname === 'Payment') {
+                $prefix = ' Make';
+            } elseif ($modelname === 'Expense') {
+                $prefix = ' Record';
+            } else {
+                $prefix = ' Record';
+            }
             $tableData['rows'][] = [
                 'id' => $item->id,
+                $item->description,
                 $item->name,
-                $item->model,
+                $prefix . ' ' . $item->model,
+                $item->account_type,
                 $item->debit->account_name,
                 $item->credit->account_name,
 
             ];
         }
 
-        return View('admin.CRUD.form',compact('tableData', 'controller'),$viewData,
+        return View(
+            'admin.CRUD.form',
+            compact('tableData', 'controller'),
+            $viewData,
             ['controller' => $this->controller]
         );
     }
@@ -72,7 +87,7 @@ class TransactionTypeController extends Controller
     {
         $viewData = $this->formData($this->model);
 
-        return View('admin.CRUD.form',$viewData);
+        return View('admin.CRUD.form', $viewData);
     }
 
     /**
@@ -83,6 +98,12 @@ class TransactionTypeController extends Controller
      */
     public function store(Request $request)
     {
+        if (TransactionType::where('name', $request->name)
+            ->where('model', $request->model)
+            ->exists()
+        ) {
+            return back()->with('status', 'Transaction type already exists.');
+        }
         $validationRules = TransactionType::$validation;
         $validatedData = $request->validate($validationRules);
         $transactionType = new TransactionType;
@@ -117,9 +138,9 @@ class TransactionTypeController extends Controller
             'creditaccount_id' => $transactionType->credit->account_name,
             '1' => ' Transactiontype',
         ]);
-        $viewData = $this->formData($this->model,$transactionType,$specialvalue);
-        
-        return View('admin.CRUD.form',$viewData);
+        $viewData = $this->formData($this->model, $transactionType, $specialvalue);
+
+        return View('admin.CRUD.form', $viewData);
     }
 
     /**
@@ -134,7 +155,7 @@ class TransactionTypeController extends Controller
         $model = TransactionType::find($id);
         // Get the list of fillable fields from the model
         $model->update($request->all());
-        return redirect($this->controller[0])->with('status', $this->controller[1] . ' was edited Successfully');     
+        return redirect($this->controller[0])->with('status', $this->controller[1] . ' was edited Successfully');
     }
 
     /**

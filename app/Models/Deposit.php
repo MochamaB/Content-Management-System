@@ -69,7 +69,7 @@ class Deposit extends Model
     {
         return $this->morphMany(Payment::class, 'model');
     }
-    public function account()
+    public function accounts()
     {
         return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
     }

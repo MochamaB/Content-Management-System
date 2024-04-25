@@ -18,57 +18,56 @@ class DepositService
 {
     private $calculateTotalAmountAction;
     private $recordTransactionAction;
-   
 
-    public function __construct(CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
-        RecordTransactionAction $recordTransactionAction)
-    {
+
+    public function __construct(
+        CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
+        RecordTransactionAction $recordTransactionAction
+    ) {
         $this->recordTransactionAction = $recordTransactionAction;
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
-       
     }
 
-    public function generateDeposit(Model $model, User $user =null)
+    public function generateDeposit(Model $model, User $user = null)
     {
-                $modelname = get_class($model);
-        
-                $DepositData = $this->getDepositHeaderData($model,$modelname,$user);
 
-                //1. Create Payment Voucher Header Data
-                $Deposit = $this->createDeposit($DepositData);
 
-    
+        $DepositData = $this->getDepositHeaderData($model, $user);
 
-                //4. Create Transactions for ledger
-                ///check if the chartaccount is either a asset,Liability, income or expense
-                $accounttype = $model->chartofaccounts->account_type;
-               
-                $this->recordTransactionAction->deposit($Deposit, $model);
-                
-              //  $this->recordTransactionAction->voucherCharges($Deposit, $model);
-        
-                return $Deposit;
-           
+        //1. Create Payment Voucher Header Data
+        $deposit = $this->createDeposit($DepositData);
+
+        //2. Create Transactions for ledger
+        ///check if the chartaccount is either a asset,Liability, income or expense
+        $accounttype = $model->chartofaccounts->account_type;
+
+        $this->recordTransactionAction->deposit($deposit, $model);
+
+        //  $this->recordTransactionAction->voucherCharges($Deposit, $model);
+
+        return $deposit;
     }
 
- 
- 
+
+
 
     //////2. GET DATA FOR VOUCHER HEADER DATA
-    private function getDepositHeaderData($model,string $modelname,$user)
+    private function getDepositHeaderData($model, $user)
     {
-        $today = Carbon::now();
-        $date = $today->format('ym');
-        $unitnumber = Unit::where('id', $model->unit_id)->first();
+        $doc = 'DEP-';
+        $propertynumber = 'P' . str_pad($model->property_id, 2, '0', STR_PAD_LEFT);
+        $unitnumber = $model->unit_id ?? 'N';
+        $date = Carbon::now()->format('ymd');
+        $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
         $usermodelname = get_class($user);
 
         return [
             'property_id' => $model->property_id,
             'unit_id' => $model->unit_id,
-            'chartofaccount_id' =>'',
+            'chartofaccount_id' => '',
             'model_type' => $usermodelname,
             'model_id' => $user->id,
-            'referenceno' => 'PV '. $date . $unitnumber->unit_number,
+            'referenceno' => $referenceno,
             'name' => $model->charge_name, ///Generated from securitydeposit
             'totalamount' => null,
             'status' => 'unpaid',
@@ -81,19 +80,19 @@ class DepositService
         return Deposit::create($data);
     }
 
-    
+
 
 
 
     ////// PAyment voucher from the createmethod
-    public function generateDepositForm($validatedData ,$request,$referenceno)
+    public function generateDepositForm($validatedData, $request, $referenceno)
     {
         $deposit = new Deposit();
         $deposit->fill($validatedData);
         $deposit->referenceno = $referenceno;
         $deposit->save();
 
-      //4. Create Transactions for ledger
-        $this->recordTransactionAction->deposit($deposit);
+        //4. Create Transactions for ledger
+        $this->recordTransactionAction->transaction($deposit);
     }
 }

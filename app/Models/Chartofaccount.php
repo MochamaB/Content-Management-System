@@ -20,10 +20,17 @@ class Chartofaccount extends Model
     ////////// FIELDS FOR CREATE AND EDIT METHOD
     public static $fields = [
         'account_type' => ['label' => 'Account Type', 'inputType' => 'select', 'required' => true, 'readonly' => true],
-        'account_number' => ['label' => 'Account Number', 'inputType' => 'text', 'required' => true, 'readonly' => true],
+        'account_number' => ['label' => 'Account Number', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'account_name' => ['label' => 'Account Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'account_level' => ['label' => 'Account Level', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         // Add more fields as needed
+    ];
+
+    public static $validation = [
+        'account_type' => 'required',
+        'account_number' => 'required|unique:chartofaccounts,account_number',
+        'account_name' =>  'required|unique:chartofaccounts,account_name',
+        'account_level' => 'required',
     ];
     public static function getFieldData($field)
     {

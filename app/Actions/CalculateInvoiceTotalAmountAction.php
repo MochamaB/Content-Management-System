@@ -26,16 +26,7 @@ class CalculateInvoiceTotalAmountAction
         $invoice->update(['totalamount' => $totalAmount]);
     }
 
-    public function Deposit(Deposit $Deposit)
-    {
-        // Calculate the total amount for the given invoice
-        $totalAmount = DB::table('Deposit_items')
-            ->where('Deposit_id', $Deposit->id)
-            ->sum('amount');
 
-        // Update the totalamount field in the invoice header
-        $Deposit->update(['totalamount' => $totalAmount]);
-    }
     public function payment(Payment $payment)
     {
         // Calculate the total amount for the given invoice

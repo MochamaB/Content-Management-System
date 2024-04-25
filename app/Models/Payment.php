@@ -67,7 +67,10 @@ class Payment extends Model
     {
         return $this->hasMany(PaymentItems::class);
     }
-
+    public function getItems()
+    {
+        return $this->hasMany(PaymentItems::class);
+    }
     ///////Polymorphic Relationship with Transactions
     public function transactions()
     {

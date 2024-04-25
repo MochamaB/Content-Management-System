@@ -52,11 +52,11 @@ class PaymentService
         //2. Create Payment items
         $this->createPaymentItems($model, $payment, $validatedData);
 
-        //3. Update Total Amount in Invoice Header
-        $this->calculateTotalAmountAction->payment($payment);
-
+        //3. Update Total Amount in Payment Header
+        $this->calculateTotalAmountAction->payment($payment,$model);
+        
         //4. Create Transactions for ledger
-        $this->recordTransactionAction->payments($payment);
+        $this->recordTransactionAction->transaction($payment);
 
         //5. Send Email/Notification to the Tenant containing the receipt.
         $user = $payment->model->model;
@@ -65,6 +65,7 @@ class PaymentService
 
         return $payment;
     }
+    
 
 
 
@@ -87,7 +88,7 @@ class PaymentService
             'referenceno' => $referenceno,
             'payment_method_id' => $paymentMethod,
             'payment_code' => $paymentCode,
-            'totalamount' => null,
+            'totalamount' => $model->totalamount ?? null,
             'received_by' => $user->email,
             'reviewed_by' => null,
             'invoicedate' => $model->created_at,

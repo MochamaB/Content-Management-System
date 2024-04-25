@@ -55,7 +55,7 @@ class Expense extends Model
     {
         return $this->belongsTo(Unit::class);
     }
-    public function account()
+    public function accounts()
     {
         return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
     }

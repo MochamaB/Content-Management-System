@@ -277,14 +277,14 @@ Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoic
 
 //////View Your email notification
 
-//Route::get('/notification', function () {
-//    $user = User::find(1);
-//   $tenant = User::find(1);
-//   $payment = Payment::find(1);
+Route::get('/notificationview', function () {
+    $user = User::find(1);
+   $tenant = User::find(1);
+   $payment = Payment::find(1);
 
 
-//    return (new PaymentNotification($payment, $tenant))
-//       ->toMail($user->user);
-//});
+   return (new PaymentNotification($payment, $tenant))
+      ->toMail($user->user);
+});
 
 require __DIR__ . '/auth.php';

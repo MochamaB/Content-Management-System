@@ -22,4 +22,9 @@ class PaymentItems extends Model
     {
         return $this->belongsTo(Payment::class);
     }
+
+    public function accounts()
+    {
+        return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
+    }
 }
