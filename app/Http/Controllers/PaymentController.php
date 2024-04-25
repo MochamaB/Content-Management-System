@@ -85,7 +85,7 @@ class PaymentController extends Controller
                 break;
             case 'Deposit':
                 $instance = Deposit::find($id); 
-                $doc = 'PV-';
+                $doc = 'DEP-';
                 $propertynumber =  'P' . str_pad($instance->property->id, 2, '0', STR_PAD_LEFT);
                 $unitnumber =$instance->unit->unit_number ?? 'N';
                 break;

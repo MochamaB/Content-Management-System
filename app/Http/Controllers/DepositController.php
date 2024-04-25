@@ -120,13 +120,13 @@ class DepositController extends Controller
          $unitnumber = $request->unit_id ?? 'N';
          $date = Carbon::now()->format('ymd');
         
-         $referenceno = $doc.$propertynumber.$unitnumber.'-'.$date;
+         $formreferenceno = $doc.$propertynumber.$unitnumber.'-'.$date;
  
          //// INSERT DATA TO THE PAYMENT VOUCHER
          $validationRules = Deposit::$validation;
          $validatedData = $request->validate($validationRules);
 
-         $this->depositService->generateDepositForm($validatedData,$request,$referenceno);
+         $this->depositService->generateDeposit(null,null,$validatedData,$formreferenceno);
  
          return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
          /*

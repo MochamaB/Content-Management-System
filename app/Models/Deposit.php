@@ -13,7 +13,6 @@ class Deposit extends Model
     protected $fillable = [
         'property_id',
         'unit_id',
-        'chartofaccount_id',
         'model_type',
         'model_id',
         'referenceno',
@@ -27,7 +26,6 @@ class Deposit extends Model
     public static $validation = [
         'property_id' => 'required',
         'unit_id' => 'nullable',
-        'chartofaccount_id' => 'required',
         'model_type' => 'required',
         'model_id' => 'required',
         'name' => 'required',
@@ -73,4 +71,9 @@ class Deposit extends Model
     {
         return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
     }
+    public function getItems()
+    {
+        return $this->belongsTo(DepositItems::class);
+    }
 }
+

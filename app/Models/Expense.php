@@ -14,8 +14,7 @@ class Expense extends Model
     protected $fillable = [
         'property_id',
         'unit_id',
-        'chartofaccount_id',
-        'name',
+        'charge_name',
         'model_type',
         'model_id',
         'referenceno',
@@ -30,7 +29,7 @@ class Expense extends Model
         'property_id' => 'required',
         'unit_id' => 'nullable',
         'chartofaccount_id' => 'required',
-        'name' => 'required',
+        'charge_name' => 'required',
         'model_type' => 'required',
         'model_id' => 'required',
         'description' => 'nullable',

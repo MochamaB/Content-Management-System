@@ -21,7 +21,7 @@
                 if ($field.val().trim() === '') {
                     $field.addClass('is-invalid');
                     $field.siblings('.invalid-feedback').show();
-                    $field.after('<div class="invalid-feedback">Please fill in this field.</div>');
+                 //   $field.after('<div class="invalid-feedback">Please fill in this field.</div>');
                     isValid = false;
                 } else {
                     $field.removeClass('is-invalid');
@@ -127,6 +127,36 @@ function applyFilters(filterField) {
 }
 
 </script>
+
+<!--- Script for formatting money/currency inputs -->
+<script>
+$(document).ready(function() {
+  $('input.money, input[name="amount[]"], input[name="amount"]').each(function() {
+    $(this)
+      .attr('inputMode', 'decimal')
+      .attr('placeholder', 'Enter Amount')
+      .on('focus', function() {
+        $(this).data('lastValue', $(this).val());
+        $(this).attr('type', 'number');
+      })
+      .on('blur', function() {
+        var value = $(this).val();
+        $(this).attr('type', '');
+        if (value !== '') {
+          $(this).val((+value).toLocaleString());
+        } else {
+          $(this).val('');
+        }
+      });
+  });
+
+  $('button[type="reset"]').on('click', function() {
+    $(this).prev('input').val('');
+  });
+});
+
+</script>
+
 
 <!---- SHOW PDF OR TXT WHEN FILE IS UPLOADED----->
 

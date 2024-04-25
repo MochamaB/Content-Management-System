@@ -24,11 +24,11 @@ class RecordTransactionAction
 
     public function transaction(Model $model, Unitcharge $unitcharge = null)
     {
-        ////GET MODEL CLASS AND MODEL NAME
+        ////1.GET MODEL CLASS AND MODEL NAME
         $class = get_class($model);
         $modelName = class_basename($model);
 
-        /////CHECK IF THE MODEL HAS MODEL ITEMS
+        /////2. CHECK IF THE MODEL HAS MODEL ITEMS
         if ($modelName === 'Invoice' || $modelName === 'Payment') {
             // For other models (like Invoice), get the items as before
             $items = $model->getItems;
@@ -47,14 +47,19 @@ class RecordTransactionAction
             $creditAccountId = null;
 
             if ($transactionType) {
-                // Check if the debit account type matches the account type of the $item->chartofaccount_id
+                /* Check if the debit account type matches the account type of the $item->chartofaccount_id
+                - if it matches then use the account for the particular transaction 
+                else use the default for the account type in transaction table */
                 if ($transactionType->debit->account_type === $item->accounts->account_type) {
                     $debitAccountId = $item->chartofaccount_id;
                 } else {
-                    // Use the debit account ID from the transaction type
+                    // Use the debit account ID from the transaction type table
                     $debitAccountId = $transactionType->debitaccount_id;
                 }
-                // Check if the credit account type matches the account type of the $item->chartofaccount_id
+
+               /* Check if the credit account type matches the account type of the $item->chartofaccount_id
+                - if it matches then use the account for the particular transaction 
+                else use the default for the account type in transaction table */
                 if ($transactionType->credit->account_type === $item->accounts->account_type) {
                     $creditAccountId = $item->chartofaccount_id;
                 } else {
@@ -63,8 +68,8 @@ class RecordTransactionAction
                 }
             }
             $transaction = Transaction::create([
-                'property_id' => $item->property_id,
-                'unit_id' => $item->unit_id,
+                'property_id' => $item->property_id ?? $model->property_id,
+                'unit_id' => $item->unit_id ?? $model->unit_id,
                 'unitcharge_id' =>  $unitcharge->id ?? null,
                 'charge_name' => $item->charge_name ?? $item->name,
                 'transactionable_id' => $model->id,
@@ -77,8 +82,8 @@ class RecordTransactionAction
 
             // Record ledger entry for debit
             LedgerEntry::create([
-                'property_id' => $item->property_id,
-                'unit_id' => $item->unit_id,
+                'property_id' => $item->property_id ?? $model->property_id,
+                'unit_id' => $item->unit_id ?? $model->unit_id,
                 'chartofaccount_id' => $debitAccountId,
                 'transaction_id' => $transaction->id,
                 'amount' => $item->amount ?? $item->totalamount,
@@ -87,8 +92,8 @@ class RecordTransactionAction
 
             // Record ledger entry for credit
             LedgerEntry::create([
-                'property_id' => $item->property_id,
-                'unit_id' => $item->unit_id,
+                'property_id' => $item->property_id ?? $model->property_id,
+                'unit_id' => $item->unit_id ?? $model->unit_id,
                 'chartofaccount_id' => $creditAccountId, // Change this to the appropriate account ID
                 'transaction_id' => $transaction->id,
                 'amount' => $item->amount ?? $item->totalamount,

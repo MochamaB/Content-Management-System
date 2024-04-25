@@ -9,6 +9,7 @@ use App\Actions\CalculateInvoiceTotalAmountAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
+use App\Models\Deposit;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentItems;
@@ -16,6 +17,7 @@ use App\Notifications\InvoiceGeneratedNotification;
 use App\Notifications\PaymentNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use \Illuminate\Support\Facades\Log;
 
 
 
@@ -60,8 +62,13 @@ class PaymentService
 
         //5. Send Email/Notification to the Tenant containing the receipt.
         $user = $payment->model->model;
-        $user->notify(new PaymentNotification($payment, $user));
-
+        try {
+            $user->notify(new PaymentNotification($payment, $user));
+        } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+            Log::error('Failed to send payment notification: ' . $e->getMessage());
+        }
+      
 
         return $payment;
     }
@@ -88,7 +95,7 @@ class PaymentService
             'referenceno' => $referenceno,
             'payment_method_id' => $paymentMethod,
             'payment_code' => $paymentCode,
-            'totalamount' => $model->totalamount ?? null,
+            'totalamount' =>  null,
             'received_by' => $user->email,
             'reviewed_by' => null,
             'invoicedate' => $model->created_at,
@@ -106,18 +113,20 @@ class PaymentService
     {
         // Create Payment items
         // Check if model is an instance of Expense
-        if ($model instanceof Invoice) {
+        if ($model instanceof Deposit) {
           // For other models (like Invoice), get the items as before
-          $items = $model->getItems;
+          $items = collect([$model]);
+          
         } else {
            // For expenses, treat the entire expense as a single item
-            $items = collect([$model]);
+           $items = $model->getItems;
         }
-        $perPaymentAmounts = $validatedData['amount'];
+       
+        
 
         foreach ($items as $key => $item) {
             // Get the corresponding amount
-            $amount = $perPaymentAmounts[$key];
+            $amount = $validatedData['amount'][$key];
             PaymentItems::create([
                 'payment_id' => $payment->id,
                 'unitcharge_id' => $item->unitcharge_id ?? null,

@@ -56,7 +56,7 @@
 
 
         <!------- THIRD LEVEL INVOICE ITEMS -->
-        <div class="col-md-8">
+        <div class="col-md-10">
             <hr>
             <table class="table  table-bordered" style="font-size:12px;border:1px solid black;">
                 <thead>
@@ -126,7 +126,7 @@
                                 @endphp
                                 <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                                 </span>
-                                <input type="text" class="form-control" name="totalamount" id="totalamount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px; border:none">
+                                <input type="text" class="form-control" name="amount[]" id="amount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px; border:none">
                             </div>
 
                         </td>
@@ -143,37 +143,7 @@
         </div>
 
     </form>
-
+    
 </div>
-<script>
-    $(document).ready(function() {
-        // Format the input value when the page loads
-        formatInputValue();
 
-        // Listen for the input event and format the value on change
-        $('input[name="amount[]"]').on('input', function() {
-            formatInputValue();
-        });
-
-        // Listen for the form submission and remove formatting before submitting
-        $('form').on('submit', function(event) {
-            // Remove formatting from input values
-            $('input[name="amount[]"]').each(function() {
-                $(this).val($(this).val().replace(/,/g, ''));
-            });
-        });
-
-        function formatInputValue() {
-            $('input[name="amount[]"]').each(function() {
-                var value = parseFloat($(this).val().replace(/,/g, ''));
-                if (!isNaN(value)) {
-                    $(this).val(value.toLocaleString('en-US', {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2
-                    }));
-                }
-            });
-        }
-    });
-</script>
 @endsection
