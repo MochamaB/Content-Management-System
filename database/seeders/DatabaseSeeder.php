@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             ChartOfAccountsSeeder::class,
             ReportSeeder::class,
             SettingSeeder::class,
-            
+            TransactionTypeSeeder::class,
             InvoiceTaskSeeder::class,
             AmenitySeeder::class,
         ]);
