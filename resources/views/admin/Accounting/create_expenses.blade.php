@@ -30,7 +30,7 @@
 
                 <div class="form-group">
                     <label class="label">Name of the Expense<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control" id="charge_name" name="charge_name" value="" required>
+                    <input type="text" class="form-control" id="charge_name" name="name" value="" required>
                 </div>
 
                 <input type="hidden" class="form-control" name="model_type" value="App\Models\Vendor" required>

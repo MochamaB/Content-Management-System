@@ -35,18 +35,18 @@ class RecordTransactionAction
        
         foreach ($items as $item) {
             $account = Chartofaccount::where('id', $item->chartofaccount_id)->first();
-            $transactionType = TransactionType::where('model', $modelName)
+            $transactionType = TransactionType::where('model',$modelName)
                 ->where('account_type', $item->accounts->account_type)
                 ->first();
 
             // Initialize variables for debit and credit account IDs
             $debitAccountId = null;
             $creditAccountId = null;
-
             if ($transactionType) {
                 /* Check if the debit account type matches the account type of the $item->chartofaccount_id
                 - if it matches then use the account for the particular transaction 
                 else use the default for the account type in transaction table */
+                
                 if ($transactionType->debit->account_type === $item->accounts->account_type) {
                     $debitAccountId = $item->chartofaccount_id;
                 } else {
@@ -66,7 +66,7 @@ class RecordTransactionAction
             }
             $transaction = Transaction::create([
                 'property_id' => $model->property_id,
-                'unit_id' => $model->unit_id,
+                'unit_id' => $model->unit_id ?? null,
                 'unitcharge_id' =>  $unitcharge->id ?? null,
                 'charge_name' => $item->charge_name ?? $model->name,
                 'transactionable_id' => $model->id,

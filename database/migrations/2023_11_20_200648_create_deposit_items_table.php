@@ -19,7 +19,6 @@ return new class extends Migration
             $table->unsignedBigInteger('unitcharge_id')->nullable()->index();
             $table->unsignedBigInteger('chartofaccount_id')->index();
             $table->string('description')->nullable();
-            $table->string('payment_method')->nullable();
             $table->decimal('amount');
 
             $table->timestamps();

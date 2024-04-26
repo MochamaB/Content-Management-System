@@ -1,6 +1,6 @@
 <?php
 
-// app/Services/DepositService.php
+// app/Services/expenseService.php
 
 namespace App\Services;
 
@@ -10,56 +10,68 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Actions\RecordTransactionAction;
-use App\Models\Deposit;
+use App\Models\Expense;
 use App\Actions\CalculateInvoiceTotalAmountAction;
-use App\Models\DepositItems;
+use App\Models\ExpenseItems;
+use App\Models\Property;
 use App\Models\User;
+use App\Actions\UploadMediaAction;
 
-class DepositService
+class ExpenseService
 {
     private $calculateTotalAmountAction;
     private $recordTransactionAction;
+    protected $uploadMediaAction;
 
 
     public function __construct(
         CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
-        RecordTransactionAction $recordTransactionAction
+        RecordTransactionAction $recordTransactionAction,
+        UploadMediaAction $uploadMediaAction
     ) {
         $this->recordTransactionAction = $recordTransactionAction;
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
+        $this->uploadMediaAction = $uploadMediaAction;
     }
 
-    public function generateDeposit(Model $model = null, User $user = null, $validatedData = null, $formreferenceno = null)
+    public function generateExpense(Model $model = null, User $user = null, $validatedData = null, $formreferenceno = null,$request =null)
     {
 
 
-        $DepositData = $this->getDepositHeaderData($model, $user, $validatedData, $formreferenceno);
+        $ExpenseData = $this->getExpenseHeaderData($model, $user, $validatedData, $formreferenceno);
 
-        //1. Create Deposit Header Data
+        //1. Create Expense Header Data
        
-        $deposit = $this->createDeposit($DepositData);
+        $expense = $this->createExpense($ExpenseData);
 
-        //2. Create Deposit items
-            $this->createDepositItems($deposit, $model, $validatedData);
+        //2. Create expense items
+            $this->createExpenseItems($expense, $model, $validatedData);
 
-        //3. Update Total Amount in Payment Header
-            $this->calculateTotalAmountAction->total($deposit);
+            
+        /////3. UPLOAD RECEIPT ///////////////////
+        if($expense->unit_id === null){
+            $model = Property::find($expense->property_id);
+        }else{
+            $model = Unit::find($expense->unit_id);
+        }
+        $this->uploadMediaAction->handle($model, 'receipt', 'Receipt', $request);
 
-        //4. Create Transactions for ledger
+        //4. Update Total Amount in Payment Header
+            $this->calculateTotalAmountAction->total($expense);
+
+        //5. Create Transactions for ledger
 
 
-            $this->recordTransactionAction->transaction($deposit, $model);
+            $this->recordTransactionAction->transaction($expense);
 
-        //  $this->recordTransactionAction->voucherCharges($Deposit, $model);
-
-        return $deposit;
+        return $expense;
     }
 
 
 
 
     //////2. GET DATA FOR VOUCHER HEADER DATA
-    private function getDepositHeaderData($model, $user, $validatedData, $formreferenceno)
+    private function getExpenseHeaderData($model, $user, $validatedData, $formreferenceno)
     {
         if (!is_null($validatedData)) {
             return [
@@ -69,13 +81,13 @@ class DepositService
                 'model_type' => $validatedData['model_type'],
                 'model_id' => $validatedData['model_id'],
                 'referenceno' => $formreferenceno,
-                'name' => $validatedData['name'], ///Generated from securitydeposit
+                'name' => $validatedData['name'], ///Generated from securityexpense
                 'totalamount' => null,
                 'status' => 'unpaid',
                 'duedate' => $validatedData['duedate'] ?? null,
             ];
         } else {
-            $doc = 'DEP-';
+            $doc = 'EXP-';
             $propertynumber = 'P' . str_pad($model->property_id, 2, '0', STR_PAD_LEFT);
             $unitnumber = $model->unit_id ?? 'N';
             $date = Carbon::now()->format('ymd');
@@ -86,10 +98,10 @@ class DepositService
                 'property_id' => $model->property_id,
                 'unit_id' => $model->unit_id,
                 'unitcharge_id' => $model->unit_id ?? null,
-                'model_type' => 'App\\Models\\User',
+                'model_type' => 'App\\Models\\Vendor',
                 'model_id' => $user->id,
                 'referenceno' => $referenceno,
-                'name' => $model->charge_name, ///Generated from securitydeposit
+                'name' => $model->charge_name, ///Generated from securityexpense
                 'totalamount' => null,
                 'status' => 'unpaid',
                 'duedate' => null,
@@ -97,41 +109,41 @@ class DepositService
         }
     }
 
-    private function createDeposit($data)
+    private function createExpense($data)
     {
-        return Deposit::create($data);
+        return Expense::create($data);
     }
 
-    private function createDepositItems($deposit, $model, $validatedData)
+    private function createExpenseItems($expense, $model, $validatedData)
     {
 
         if (!is_null($validatedData)) {
-                // Create deposit items from the form input names
+                // Create expense items from the form input names
                 foreach ($validatedData['chartofaccount_id'] as $index => $item) {
-                    $depositItem = new DepositItems([
-                        'deposit_id' => $deposit->id,
+                    $expenseItem = new ExpenseItems([
+                        'expense_id' => $expense->id,
                         'unitcharge_id' => null,
                         'chartofaccount_id' => $item ?? null,
                         'description' => $validatedData['description'][$index] ?? null,
                         'amount' => $validatedData['amount'][$index] ?? null,
                     ]);
-                    $depositItem->save();
+                    $expenseItem->save();
                 }
             
         } else {
             // Get items from the model (e.g., invoices)
             $items = $model->getItems();
 
-            // Create deposit items from the model items
+            // Create expense items from the model items
             foreach ($items as $item) {
-                $depositItem = new DepositItems([
-                    'deposit_id' => $deposit->id,
+                $expenseItem = new ExpenseItems([
+                    'expense_id' => $expense->id,
                     'unitcharge_id' => $model->unitcharge_id ?? null,
                     'chartofaccount_id' => $item->chartofaccounts_id,
                     'description' => $item->charge_name,
                     'amount' => $item->amount,
                 ]);
-                $depositItem->save();
+                $expenseItem->save();
             }
         }
     }
@@ -139,15 +151,4 @@ class DepositService
 
 
 
-    ////// PAyment voucher from the createmethod
-    public function generateDepositForm($validatedData, $request, $referenceno)
-    {
-        $deposit = new Deposit();
-        $deposit->fill($validatedData);
-        $deposit->referenceno = $referenceno;
-        $deposit->save();
-
-        //4. Create Transactions for ledger
-        $this->recordTransactionAction->transaction($deposit);
-    }
 }

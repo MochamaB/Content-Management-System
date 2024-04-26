@@ -14,11 +14,10 @@ class Expense extends Model
     protected $fillable = [
         'property_id',
         'unit_id',
-        'name',
         'model_type',
         'model_id',
         'referenceno',
-        'description',
+        'name',
         'totalamount',
         'status',
         'duedate',
@@ -28,14 +27,14 @@ class Expense extends Model
     public static $validation = [
         'property_id' => 'required',
         'unit_id' => 'nullable',
-        'chartofaccount_id' => 'required',
-        'name' => 'required',
         'model_type' => 'required',
         'model_id' => 'required',
-        'description' => 'nullable',
-        'totalamount' => 'required',
-        'status' => 'required',
-        'duedate' => 'required|date',
+        'name' => 'required',
+        'status' => 'nullable',
+        'duedate' => 'nullable|date',
+        'chartofaccount_id' => 'required',
+        'description' => 'required',
+        'amount' => 'required',
     ];
 
 
@@ -54,11 +53,7 @@ class Expense extends Model
     {
         return $this->belongsTo(Unit::class);
     }
-    public function accounts()
-    {
-        return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
-    }
-
+  
     public function lease()
     {
         return $this->belongsTo(Lease::class, 'unit_id');
@@ -71,5 +66,10 @@ class Expense extends Model
     public function payments()
     {
         return $this->morphMany(Payment::class, 'model');
+    }
+
+    public function getItems()
+    {
+        return $this->hasMany(ExpenseItems::class);
     }
 }

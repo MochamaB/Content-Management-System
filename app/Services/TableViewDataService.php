@@ -860,7 +860,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFNO', 'STATUS | DUEDATE', 'NAME', 'ACCOUNT', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
+        $headers = ['REFNO', 'STATUS | DUEDATE', 'NAME','AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -913,7 +913,6 @@ class TableViewDataService
                 $item->referenceno,
                 $expenseStatus . ' </br></br>' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->name,
-                $item->accounts->account_name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
                 $balanceStatus . ' </br></br> ' . $payLink,

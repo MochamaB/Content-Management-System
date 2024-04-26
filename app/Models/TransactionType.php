@@ -58,7 +58,7 @@ class TransactionType extends Model
                     'Asset' => 'Asset',
                     'Liability' => 'Liability',
                     'Income' => 'Income',
-                    'Expense' => 'Expense',
+                    'Expenses' => 'Expense',
                     'Equity' => 'Equity'
                 ];
 

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Services\ExpenseService;
 use App\Models\WebsiteSetting;
 use App\Traits\FormDataTrait;
 use Carbon\Carbon;
@@ -33,11 +34,12 @@ class ExpenseController extends Controller
      private $cardService;
      private $tableViewDataService;
      private $filterService;
+     private $expenseService;
      private $recordTransactionAction;
      protected $uploadMediaAction;
 
      public function __construct(CardService $cardService,TableViewDataService $tableViewDataService,
-     FilterService $filterService, RecordTransactionAction $recordTransactionAction)
+     FilterService $filterService, RecordTransactionAction $recordTransactionAction, ExpenseService $expenseService)
      {
          $this->model = Expense::class;
          $this->controller = collect([
@@ -47,6 +49,7 @@ class ExpenseController extends Controller
          $this->cardService = $cardService;
          $this->tableViewDataService = $tableViewDataService;
          $this->filterService = $filterService;
+         $this->expenseService = $expenseService;
          $this->recordTransactionAction = $recordTransactionAction;
         
      }
@@ -103,34 +106,19 @@ class ExpenseController extends Controller
          $unitnumber = $request->unit_id ?? 'N';
          $date = Carbon::now()->format('ymd');
         
-         $referenceno = $doc.$propertynumber.$unitnumber.'-'.$date;
+         $formreferenceno  = $doc.$propertynumber.$unitnumber.'-'.$date;
 
         //// INSERT DATA TO THE UNITCHARGE
         $validationRules = Expense::$validation;
         $validatedData = $request->validate($validationRules);
 
-        $expense = new Expense();
-        $expense->fill($validatedData);
-        $expense->referenceno = $referenceno;
-        $expense->save();
-
-        ///// UPLOAD RECEIPT ///////////////////
-        if($expense->unit_id === null){
-            $model = Property::find($expense->property_id);
-        }else{
-            $model = Unit::find($expense->unit_id);
-        }
-        $this->uploadMediaAction->handle($model, 'receipt', 'Receipt', $request);
-
-        //// GENERATE TRANSACTION/JOURNAL ENTRY
-        $this->recordTransactionAction->expense($expense);
-
+        $this->expenseService->generateExpense(null,null,$validatedData,$formreferenceno,$request);
 
         $previousUrl = Session::get('previousUrl');
         if ($previousUrl) {
             return redirect($previousUrl)->with('status', 'Your Expense has been saved successfully');
         } else {
-            return redirect('expense/' . $request->name)->with('status', ' Expense Added Successfully');
+            return redirect('expense/')->with('status', ' Expense Added Successfully');
         }
     }
 
