@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('model_type')->nullable(); // Who the deposit is for E.g., "User", "Vendor"
             $table->unsignedBigInteger('model_id')->nullable();
             $table->string('referenceno');
-            $table->string('charge_name'); //Name of the charge E.g Deposit,Utility,Maintenance
+            $table->string('name'); //Name of the charge E.g Deposit,Utility,Maintenance
             $table->decimal('totalamount')->nullable();
             $table->string('status');
             $table->timestamp("duedate")->nullable();

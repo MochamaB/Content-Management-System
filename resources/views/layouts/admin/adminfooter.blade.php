@@ -150,8 +150,15 @@ $(document).ready(function() {
       });
   });
 
-  $('button[type="reset"]').on('click', function() {
-    $(this).prev('input').val('');
+// Add this event listener to remove the commas
+$('form').on('submit', function() {
+    $('input.money, input[name="amount[]"], input[name="amount"]').each(function() {
+      var value = $(this).val();
+      if (value !== '') {
+        // Remove commas from the value
+        $(this).val(value.replace(/,/g, ''));
+      }
+    });
   });
 });
 

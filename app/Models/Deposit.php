@@ -29,9 +29,11 @@ class Deposit extends Model
         'model_type' => 'required',
         'model_id' => 'required',
         'name' => 'required',
-        'totalamount' => 'required',
         'status' => 'nullable',
         'duedate' => 'nullable|date',
+        'chartofaccount_id' => 'required',
+        'description' => 'required',
+        'amount' => 'required',
     ];
 
 
@@ -67,13 +69,10 @@ class Deposit extends Model
     {
         return $this->morphMany(Payment::class, 'model');
     }
-    public function accounts()
-    {
-        return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
-    }
+  
     public function getItems()
     {
-        return $this->belongsTo(DepositItems::class);
+        return $this->hasMany(DepositItems::class);
     }
 }
 

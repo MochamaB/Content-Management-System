@@ -27,12 +27,8 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Name / Memo<span class="requiredlabel">*</span></label>
-                <input type="text" class="form-control" id="charge_name" name="charge_name" value="" required list="list">
-                <datalist id="list">
-                    @foreach($account as $item)
-                    <option value="{{$item->account_name}}">
-                        @endforeach
-                </datalist>
+                <input type="text" class="form-control" id="name" name="name" value="" required list="list">
+                
             </div>
         </div>
         <div class="col-md-6">

@@ -13,7 +13,6 @@ class InvoiceItems extends Model
         'invoice_id',
         'unitcharge_id',
         'chartofaccount_id',
-        'charge_name',
         'description',
         'amount',
 

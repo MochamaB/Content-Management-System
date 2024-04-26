@@ -13,7 +13,6 @@ class DepositItems extends Model
         'deposit_id',
         'unitcharge_id',
         'chartofaccount_id',
-        'charge_name',
         'description',
         'amount',
 
@@ -22,5 +21,9 @@ class DepositItems extends Model
     public function deposit()
     {
         return $this->belongsTo(Deposit::class);
+    }
+    public function accounts()
+    {
+        return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
     }
 }

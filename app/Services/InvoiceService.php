@@ -186,7 +186,7 @@ class InvoiceService
             'model_type' => $user, ///This has plymorphism because an invoice can also be sent to a vendor.
             'model_id' => $userId->user_id,
             'referenceno' => $invoicenodate . $unitnumber->unit_number,
-            'type' => $unitcharge->charge_name,
+            'name' => $unitcharge->charge_name,
             'totalamount' => null,
             'status' => 'unpaid',
             'duedate' => null,
@@ -226,8 +226,7 @@ class InvoiceService
             'invoice_id' => $invoice->id,
             'unitcharge_id' => $unitcharge->id,
             'chartofaccount_id' => $unitcharge->chartofaccounts_id,
-            'charge_name' => $unitcharge->charge_name,
-            'description' => '',
+            'description' =>$unitcharge->charge_name,
             'amount' => $amount,
         ]);
 
@@ -261,8 +260,7 @@ class InvoiceService
                     'invoice_id' => $invoice->id,
                     'unitcharge_id' => $childcharge->id,
                     'chartofaccount_id' => $childcharge->chartofaccounts_id,
-                    'charge_name' => $childcharge->charge_name,
-                    'description' => '',
+                    'description' =>$childcharge->charge_name,
                     'amount' => $amount,
                 ]);
             }

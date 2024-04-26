@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->nullable()->index();
-            $table->string('charge_name');
+            $table->string('name');
             $table->string('model_type'); // Who the voucher goes to E.g., "User", "Vendor"
             $table->unsignedBigInteger('model_id'); // ID of the specific model instance
             $table->string('referenceno');

@@ -25,7 +25,7 @@
                     </select>
                 </td>
                 <td class="text-center" style="padding:0px">
-                    <input type="text" class="form-control " name="charge_name[]" value="" required>
+                    <input type="text" class="form-control " name="description[]" value="" required>
                 </td>
                 <td id='' class="text-center" style="padding:0px">
                     <div style="position: relative;">

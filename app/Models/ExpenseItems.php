@@ -13,7 +13,6 @@ class ExpenseItems extends Model
         'expense_id',
         'unitcharge_id',
         'chartofaccount_id',
-        'charge_name',
         'description',
         'amount',
 
@@ -22,5 +21,9 @@ class ExpenseItems extends Model
     public function expense()
     {
         return $this->belongsTo(Expense::class);
+    }
+    public function accounts()
+    {
+        return $this->belongsTo(Chartofaccount::class, 'chartofaccount_id');
     }
 }

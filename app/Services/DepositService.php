@@ -36,16 +36,19 @@ class DepositService
         $DepositData = $this->getDepositHeaderData($model, $user, $validatedData, $formreferenceno);
 
         //1. Create Deposit Header Data
+       
         $deposit = $this->createDeposit($DepositData);
 
         //2. Create Deposit items
-        $this->createDepositItems($deposit, $model, $validatedData);
+            $this->createDepositItems($deposit, $model, $validatedData);
 
-        //2. Create Transactions for ledger
-        ///check if the chartaccount is either a asset,Liability, income or expense
-        $accounttype = $model->chartofaccounts->account_type;
+        //3. Update Total Amount in Payment Header
+            $this->calculateTotalAmountAction->total($deposit);
 
-        $this->recordTransactionAction->deposit($deposit, $model);
+        //4. Create Transactions for ledger
+
+
+            $this->recordTransactionAction->transaction($deposit, $model);
 
         //  $this->recordTransactionAction->voucherCharges($Deposit, $model);
 
@@ -58,25 +61,40 @@ class DepositService
     //////2. GET DATA FOR VOUCHER HEADER DATA
     private function getDepositHeaderData($model, $user, $validatedData, $formreferenceno)
     {
-        $doc = 'DEP-';
-        $propertynumber = 'P' . str_pad($model->property_id, 2, '0', STR_PAD_LEFT);
-        $unitnumber = $model->unit_id ?? 'N';
-        $date = Carbon::now()->format('ymd');
-        $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
-        $usermodelname = get_class($user);
+        if (!is_null($validatedData)) {
+            return [
+                'property_id' => $validatedData['property_id'],
+                'unit_id' => $validatedData['unit_id'],
+                'unitcharge_id' => null,
+                'model_type' => $validatedData['model_type'],
+                'model_id' => $validatedData['model_id'],
+                'referenceno' => $formreferenceno,
+                'name' => $validatedData['name'], ///Generated from securitydeposit
+                'totalamount' => null,
+                'status' => 'unpaid',
+                'duedate' => $validatedData['duedate'] ?? null,
+            ];
+        } else {
+            $doc = 'DEP-';
+            $propertynumber = 'P' . str_pad($model->property_id, 2, '0', STR_PAD_LEFT);
+            $unitnumber = $model->unit_id ?? 'N';
+            $date = Carbon::now()->format('ymd');
+            $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
+            $usermodelname = get_class($user);
 
-        return [
-            'property_id' => $model->property_id ?? $validatedData['property_id'],
-            'unit_id' => $model->unit_id ?? $validatedData['unit_id'],
-            'unitcharge_id' => $model->unit_id ?? null,
-            'model_type' => $usermodelname ?? $validatedData['model_type'],
-            'model_id' => $user->id ?? $validatedData['model_id'],
-            'referenceno' => $referenceno ?? $formreferenceno,
-            'charge_name' => $model->charge_name ?? $validatedData['charge_name'], ///Generated from securitydeposit
-            'totalamount' => null,
-            'status' => 'unpaid',
-            'duedate' => $validatedData['duedate'] ?? null,
-        ];
+            return [
+                'property_id' => $model->property_id,
+                'unit_id' => $model->unit_id,
+                'unitcharge_id' => $model->unit_id ?? null,
+                'model_type' => 'App\\Models\\User',
+                'model_id' => $user->id,
+                'referenceno' => $referenceno,
+                'name' => $model->charge_name, ///Generated from securitydeposit
+                'totalamount' => null,
+                'status' => 'unpaid',
+                'duedate' => null,
+            ];
+        }
     }
 
     private function createDeposit($data)
@@ -88,21 +106,18 @@ class DepositService
     {
 
         if (!is_null($validatedData)) {
-            // Check if the validated form data has input chartofaccount with square brackets
-            if (array_key_exists('chartofaccount_id[]', $validatedData)) {
                 // Create deposit items from the form input names
-                foreach ($validatedData['chartofaccount_id[]'] as $index => $item) {
+                foreach ($validatedData['chartofaccount_id'] as $index => $item) {
                     $depositItem = new DepositItems([
                         'deposit_id' => $deposit->id,
                         'unitcharge_id' => null,
-                        'chartofaccount_id' => $validatedData['chartofaccount_id'][$index] ?? null,
-                        'charge_name' => $validatedData['charge_name'][$index] ?? null,
-                        'description' => '',
-                        'amount' => $validatedData['chartofaccount_id'][$index] ?? null,
+                        'chartofaccount_id' => $item ?? null,
+                        'description' => $validatedData['description'][$index] ?? null,
+                        'amount' => $validatedData['amount'][$index] ?? null,
                     ]);
                     $depositItem->save();
                 }
-            }
+            
         } else {
             // Get items from the model (e.g., invoices)
             $items = $model->getItems();
@@ -113,15 +128,12 @@ class DepositService
                     'deposit_id' => $deposit->id,
                     'unitcharge_id' => $model->unitcharge_id ?? null,
                     'chartofaccount_id' => $item->chartofaccounts_id,
-                    'charge_name' => $item->charge_name,
-                    'description' => $item->description ?? '',
-                    'amount' => $item->rate,
-
+                    'description' => $item->charge_name,
+                    'amount' => $item->amount,
                 ]);
                 $depositItem->save();
             }
         }
-        
     }
 
 

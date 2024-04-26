@@ -28,14 +28,11 @@ class RecordTransactionAction
         $class = get_class($model);
         $modelName = class_basename($model);
 
-        /////2. CHECK IF THE MODEL HAS MODEL ITEMS
-        if ($modelName === 'Invoice' || $modelName === 'Payment') {
+        /////2.  GET MODEL ITEMS
+        
             // For other models (like Invoice), get the items as before
             $items = $model->getItems;
-        } else {
-            // For expenses, treat the entire expense as a single item
-            $items = collect([$model]);
-        }
+       
         foreach ($items as $item) {
             $account = Chartofaccount::where('id', $item->chartofaccount_id)->first();
             $transactionType = TransactionType::where('model', $modelName)
@@ -68,35 +65,35 @@ class RecordTransactionAction
                 }
             }
             $transaction = Transaction::create([
-                'property_id' => $item->property_id ?? $model->property_id,
-                'unit_id' => $item->unit_id ?? $model->unit_id,
+                'property_id' => $model->property_id,
+                'unit_id' => $model->unit_id,
                 'unitcharge_id' =>  $unitcharge->id ?? null,
-                'charge_name' => $item->charge_name ?? $item->name,
+                'charge_name' => $item->charge_name ?? $model->name,
                 'transactionable_id' => $model->id,
                 'transactionable_type' => $class, ///Model Name Invoice
                 'description' => $account->account_name, ///Description of the charge
                 'debitaccount_id' => $debitAccountId, ///Increase the Income Accounts
                 'creditaccount_id' => $creditAccountId, /// Decrease the Accounts Payable that was increased wehn invoices
-                'amount' => $item->amount ?? $item->totalamount,
+                'amount' => $item->amount,
             ]);
 
             // Record ledger entry for debit
             LedgerEntry::create([
-                'property_id' => $item->property_id ?? $model->property_id,
-                'unit_id' => $item->unit_id ?? $model->unit_id,
+                'property_id' => $transaction->property_id,
+                'unit_id' => $transaction->unit_id,
                 'chartofaccount_id' => $debitAccountId,
                 'transaction_id' => $transaction->id,
-                'amount' => $item->amount ?? $item->totalamount,
+                'amount' => $transaction->amount,
                 'entry_type' => 'debit',
             ]);
 
             // Record ledger entry for credit
             LedgerEntry::create([
-                'property_id' => $item->property_id ?? $model->property_id,
-                'unit_id' => $item->unit_id ?? $model->unit_id,
+                'property_id' => $transaction->property_id,
+                'unit_id' => $transaction->unit_id,
                 'chartofaccount_id' => $creditAccountId, // Change this to the appropriate account ID
                 'transaction_id' => $transaction->id,
-                'amount' => $item->amount ?? $item->totalamount,
+                'amount' => $transaction->amount,
                 'entry_type' => 'credit',
             ]);
         }

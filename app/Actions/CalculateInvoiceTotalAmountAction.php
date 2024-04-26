@@ -26,6 +26,15 @@ class CalculateInvoiceTotalAmountAction
         $invoice->update(['totalamount' => $totalAmount]);
     }
 
+    public function total(Model $model)
+    {
+        // Calculate the total amount for the given model
+        $items = $model->getItems;
+        $totalAmount = $items->sum('amount');
+        // Update the totalamount field in the invoice header
+        $model->update(['totalamount' => $totalAmount]);
+    }
+
 
     public function payment(Payment $payment)
     {

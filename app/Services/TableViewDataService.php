@@ -223,7 +223,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFERENCE NO', 'STATUS | DUEDATE', 'NAME','ACCOUNT', 'AMOUNT RECEIVED', 'PAID', 'BALANCE', 'ACTIONS'];
+        $headers = ['REFERENCE NO', 'STATUS | DUEDATE', 'NAME', 'AMOUNT RECEIVED', 'PAID', 'BALANCE', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -279,7 +279,6 @@ class TableViewDataService
                 $item->referenceno,
                 $voucherStatus . ' </br></br>' . $dueDate,
                 $item->name,
-                $item->accounts->account_name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
                 $balanceStatus . ' </br></br> ' . $payLink,

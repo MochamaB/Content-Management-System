@@ -19,7 +19,7 @@ class Invoice extends Model
         'model_type',
         'model_id',
         'referenceno',
-        'type',
+        'name',
         'totalamount',
         'status',
         'duedate',
