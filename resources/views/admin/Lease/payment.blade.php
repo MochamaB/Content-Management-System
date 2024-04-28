@@ -71,12 +71,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if($model === 'Invoice')
-                    @foreach($instance->invoiceItems as $key=> $item)
+                    @foreach($instance->getItems as $key=> $item)
                     <tr style="height:35px;">
                         <td class="text-center" style="background-color:#dae3fa;">{{$key+1}}</td>
                         <td class="text-center" style="text-transform: capitalize;background-color:#dae3fa;">
-                            {{$item->charge_name}} Charge
+                            {{$item->charge_name ?? $item->description}} Charge
                         </td>
                         <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. @currency($item->amount) </td>
                         <td class="text-center" style="background-color:#dae3fa;">
@@ -103,35 +102,6 @@
                         </td>
                     </tr>
                     @endforeach
-                    @else
-                    <tr style="height:35px;">
-                        <td class="text-center" style="background-color:#dae3fa;">1</td>
-                        <td class="text-center" style="text-transform: capitalize;background-color:#dae3fa;">
-                            {{$instance->name}}
-                        </td>
-                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. @currency($instance->totalamount) </td>
-                        <td class="text-center" style="background-color:#dae3fa;">
-                            @if($instance->payments->isEmpty())
-                            {{ $sitesettings->site_currency }}.@currency(0)</br>
-                            @else
-                            @foreach ($instance->payments as $payment)
-                            {{ $sitesettings->site_currency }}.@currency($payment->totalamount)</br>
-                            @endforeach
-                            @endif
-                        </td>
-                        <td class="text-center" style="padding:0px">
-                            <div style="position: relative;">
-                                @php
-                                $amountdue = $instance->totalamount - $instance->payments->sum('totalamount')
-                                @endphp
-                                <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
-                                </span>
-                                <input type="text" class="form-control" name="amount[]" id="amount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px; border:none">
-                            </div>
-
-                        </td>
-                    </tr>
-                    @endif
                 </tbody>
             </table>
         </div></br>

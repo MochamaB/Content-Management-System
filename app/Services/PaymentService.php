@@ -9,7 +9,6 @@ use App\Actions\CalculateInvoiceTotalAmountAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
-use App\Models\Deposit;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentItems;
@@ -55,8 +54,8 @@ class PaymentService
         $this->createPaymentItems($model, $payment, $validatedData);
 
         //3. Update Total Amount in Payment Header
-        $this->calculateTotalAmountAction->payment($payment,$model);
-        
+        $this->calculateTotalAmountAction->payment($payment, $model);
+
         //4. Create Transactions for ledger
         $this->recordTransactionAction->transaction($payment);
 
@@ -68,11 +67,11 @@ class PaymentService
             // Log the error or perform any necessary actions
             Log::error('Failed to send payment notification: ' . $e->getMessage());
         }
-      
+
 
         return $payment;
     }
-    
+
 
 
 
@@ -112,27 +111,19 @@ class PaymentService
     private function createPaymentItems($model, $payment, $validatedData)
     {
         // Create Payment items
-        // Check if model is an instance of Expense
-        if ($model instanceof Deposit) {
-          // For other models (like Invoice), get the items as before
-          $items = collect([$model]);
-          
-        } else {
-           // For expenses, treat the entire expense as a single item
-           $items = $model->getItems;
-        }
-       
-        
+        $items = $model->getItems;
+
+        $perPaymentAmounts = $validatedData['amount'];
 
         foreach ($items as $key => $item) {
             // Get the corresponding amount
-            $amount = $validatedData['amount'][$key];
+            $amount = $perPaymentAmounts[$key];
             PaymentItems::create([
                 'payment_id' => $payment->id,
                 'unitcharge_id' => $item->unitcharge_id ?? null,
                 'chartofaccount_id' => $item->chartofaccount_id,
-                'charge_name' => $item->charge_name ?? $item->name,
-                'description' => '',
+                'charge_name' => $item->charge_name ?? $item->description,
+                'description' => $item->description,
                 'amount' => $amount,
             ]);
         }

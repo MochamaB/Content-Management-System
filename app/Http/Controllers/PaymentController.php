@@ -128,7 +128,7 @@ class PaymentController extends Controller
         switch ($request->model) {
             case 'Expense':
                 $model = Expense::find($instanceId);
-                $this->paymentService->generateExpensePayment($model, $validatedData);
+                $this->paymentService->generatePayment($model, $validatedData);
                 break;
             case 'Deposit':
                 $model = Deposit::find($instanceId);
