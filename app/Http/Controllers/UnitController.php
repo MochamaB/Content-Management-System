@@ -150,11 +150,13 @@ class UnitController extends Controller
             'Users',
             'Charges',
             'Invoices',
-            'Deposits',
             'Payments',
             'Meter Readings',
+            'Tickets',
+            'Deposits',
+            'Expenses',
             'Files'
-            //    'Maintenance',
+            //    
             //    'Financials',
             //    'Users',
             //    'Invoices',
@@ -206,6 +208,16 @@ class UnitController extends Controller
         $MeterReadingsTableData = $this->tableViewDataService->getMeterReadingsData($meterReadings);
         $id = $unit;
 
+         /// DATA FOR EXPENSES TAB
+         $expenses = $unit->expenses;
+        // dd($payments);
+         $expenseTableData = $this->tableViewDataService->getExpenseData($expenses);
+
+          /// DATA FOR TICKETS TAB
+          $tickets = $unit->tickets;
+          // dd($payments);
+           $ticketTableData = $this->tableViewDataService->getTicketData($tickets);
+
         ///DATA FOR FILES //////
         $collections = ['picture', 'pdf', 'collection3'];
         $files = $unit->getMedia('Lease-Agreement');
@@ -223,15 +235,19 @@ class UnitController extends Controller
             }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges') {
-                $tabContents[] = view('admin.CRUD.index_show',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('charges','id'));
+                $tabContents[] = view('admin.CRUD.index_show',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('id','model'));
             }elseif ($title === 'Invoices') {
                 $tabContents[] = view('admin.CRUD.table', ['data' => $invoiceTableData, 'controller' => ['invoice']])->render();
             }elseif ($title === 'Deposits') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $depositTableData, 'controller' => ['deposit']], compact('id'))->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $depositTableData, 'controller' => ['deposit']], compact('id','model'))->render();
             }elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.CRUD.table', ['data' => $paymentTableData, 'controller' => ['payment']])->render();
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $MeterReadingsTableData,'controller' => ['meter-reading']], compact('id','model'))->render();
+            }elseif ($title === 'Expenses') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $expenseTableData, 'controller' => ['expense']], compact('id','model'))->render();
+            }elseif ($title === 'Tickets') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $ticketTableData, 'controller' => ['ticket']], compact('id','model'))->render();
             }elseif ($title === 'Files') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $mediaTableData,'controller' => ['']], compact('id'))->render();
             }

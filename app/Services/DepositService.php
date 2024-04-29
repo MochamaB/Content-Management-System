@@ -120,19 +120,19 @@ class DepositService
             
         } else {
             // Get items from the model (e.g., invoices)
-            $items = $model->getItems();
+           // $items = $model->getItems();
 
             // Create deposit items from the model items
-            foreach ($items as $item) {
+            
                 $depositItem = new DepositItems([
                     'deposit_id' => $deposit->id,
-                    'unitcharge_id' => $model->unitcharge_id ?? null,
-                    'chartofaccount_id' => $item->chartofaccounts_id,
-                    'description' => $item->charge_name,
-                    'amount' => $item->amount,
+                    'unitcharge_id' => $model->unitcharge_id ?? $model->id,
+                    'chartofaccount_id' => $model->chartofaccounts_id,
+                    'description' => $model->charge_name,
+                    'amount' => $model->rate,
                 ]);
                 $depositItem->save();
-            }
+            
         }
     }
 

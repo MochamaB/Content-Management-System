@@ -172,6 +172,7 @@ class AppServiceProvider extends ServiceProvider
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
                     'expense' => ['display' => 'Bills & Expenses'],
                     'deposit' => ['display' => 'Deposits'],
+                    'transaction' => ['display' => 'Financials'],
                     'general-ledger' => ['display' => 'General Ledger'],
                     'income-statement' => ['display' => 'Profit and Loss'],
                     'chartofaccount' => ['display' => 'Chart Of Accounts'],

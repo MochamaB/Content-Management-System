@@ -497,10 +497,11 @@ class LeaseController extends Controller
         return redirect()->route('lease.create', ['active_tab' => '2'])
             ->with('status', 'Tenant Details Created Successfully. Enter Rent Details');
     }
-    public function rent(StoreUnitChargeRequest $request)
+    public function rent(Request $request)
     {
         ////1. VALIDATE FIELD
-        $validatedData = $request->validated();
+        $validationRules = Unitcharge::$validation;
+        $validatedData = $request->validate($validationRules);
         $rules = [
             'splitcharge_name.*' => 'required|string|max:255',
             // Add other validation rules for the remaining fields
@@ -591,7 +592,7 @@ class LeaseController extends Controller
         }
     }
 
-    public function deposit(StoreUnitChargeRequest $request)
+    public function securitydeposit(StoreUnitChargeRequest $request)
     {
         $validatedData = $request->validated();
         if (empty($request->session()->get('wizard_depositcharge'))) {

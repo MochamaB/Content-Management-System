@@ -42,12 +42,14 @@ class Unitcharge extends Model
         'charge_cycle' => 'required',
         'charge_type' => 'required',
         'rate' => 'required|numeric',
+        'parent_id' => 'nullable',
         'recurring_charge' => 'required',
         'startdate' => 'nullable',
         
 
 
     ];
+
 
     public static function getFieldData($field)
     {

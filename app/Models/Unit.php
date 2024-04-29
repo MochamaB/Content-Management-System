@@ -199,6 +199,10 @@ class Unit extends Model implements HasMedia
     {
         return $this->hasMany(Ticket::class);
     }
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
 
     public function registerMediaConversions(Media $media = null): void
     {

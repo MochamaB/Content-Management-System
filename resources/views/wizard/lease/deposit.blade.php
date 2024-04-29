@@ -32,7 +32,7 @@
 
         </div>
     </div><br />
-    <form method="POST" action="{{ url('deposit') }}" class="myForm" enctype="multipart/form-data" novalidate>
+    <form method="POST" action="{{ url('securitydeposit') }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
         <div class="col-md-6">
 

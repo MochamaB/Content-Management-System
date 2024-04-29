@@ -15,6 +15,7 @@
       if (current === "") {
         //for root url
         if (href.endsWith("index.html")) {
+          alert(urlFirstPart);
           element.parents('.nav-item').last().addClass('active');
           if (element.parents('.sub-menu').length) {
             element.closest('.collapse').addClass('show');
@@ -24,6 +25,7 @@
       } else {
         //for other url
         if (href.endsWith(current)) {
+        //  alert(pathParts);
           element.parents('.nav-item').last().addClass('active');
           if (element.parents('.sub-menu').length) {
             element.closest('.collapse').addClass('show');
@@ -36,7 +38,8 @@
       }
     }
 
-    var current = location.pathname.split("/").slice(-1)[0].replace(/^\/|\/$/g, '');
+    var pathParts = window.location.pathname.split('/');
+    var current = pathParts[1];
     $('.nav li a', sidebar).each(function () {
       var $this = $(this);
       addActiveClass($this);

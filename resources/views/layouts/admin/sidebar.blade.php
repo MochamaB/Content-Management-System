@@ -34,7 +34,7 @@
                 @if( Auth::user()->can($submodule.'.index') || Auth::user()->id === 1)
                 <li class="nav-item"> 
                   @if($routeParts[0] === $submodule)
-                    <a class="nav-link" style="text-transform: capitalize;" href="{{ url($currentUrl) }}"> {{ $submoduleDisplay['display'] ?? $submodule }}</a>
+                    <a class="nav-link" style="text-transform: capitalize;"  href="{{ url('/'.$submodule) }}"> {{ $submoduleDisplay['display'] ?? $submodule }}</a>
                   @else
                     <a class="nav-link" style="text-transform: capitalize;" href="{{ url('/'.$submodule) }}"> {{ $submoduleDisplay['display'] ?? $submodule }}</a>
                   @endif

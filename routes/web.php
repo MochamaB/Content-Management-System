@@ -100,7 +100,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'as' => 'expense.create',
             'uses' => 'App\Http\Controllers\ExpenseController@create'
         ])->middleware('check.create.variables');
-        Route::resource('expense', ExpenseController::class);
+        Route::resource('expense', ExpenseController::class, ['except' => 'create']);
         Route::resource('transaction-type', TransactionTypeController::class);
 
     });
@@ -112,7 +112,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('leasedetails', [LeaseController::class, 'leasedetails']);
         Route::post('cosigner', [LeaseController::class, 'cosigner']);
         Route::post('rent', [LeaseController::class, 'rent']);
-        Route::post('deposit', [LeaseController::class, 'deposit']);
+        Route::post('securitydeposit', [LeaseController::class, 'securitydeposit']);
         Route::post('assignutilities', [LeaseController::class, 'assignUtilities']);
         Route::post('savelease', [LeaseController::class, 'saveLease']);
         Route::get('skiprent', [LeaseController::class, 'skiprent']);
@@ -142,7 +142,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'as' => 'deposit.create',
             'uses' => 'App\Http\Controllers\DepositController@create'
         ])->middleware('check.create.variables');
-        Route::resource('deposit', DepositController::class);
+        Route::resource('deposit', DepositController::class, ['except' => 'create']);
         Route::post('generateDeposit', [DepositController::class, 'generateDeposit']);
         ////////////////////////
         Route::get('payment/create/{id?}/{model?}', [
@@ -218,7 +218,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'uses' => 'App\Http\Controllers\SettingController@show'
         ]);
 
-        Route::resource('setting', SettingController::class, ['except' => 'show', 'create']);
+        Route::resource('setting', SettingController::class, ['except' => ['create', 'show']]);
         Route::get('system', [SettingController::class, 'systemsetting'])->name('setting.system');
         Route::post('update-systemsetting}', [SettingController::class, 'updateSystemSettings']);
 

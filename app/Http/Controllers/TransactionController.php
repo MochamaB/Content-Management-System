@@ -32,6 +32,10 @@ class TransactionController extends Controller
 
     public function index()
     {
+
+
+        return View('admin.accounting.transaction');
+
     }
 
   

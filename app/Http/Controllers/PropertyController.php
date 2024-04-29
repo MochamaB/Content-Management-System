@@ -139,6 +139,8 @@ class PropertyController extends Controller
             'Utilities',
             'Meter Readings',
             'Tickets',
+            'Deposits',
+            'Expenses',
             'Settings'
             //    'Maintenance',
             //    'Financials',
@@ -170,6 +172,17 @@ class PropertyController extends Controller
         $tickets = $property->tickets;
         //   $unitController = new UnitController();
            $requestTableData = $this->tableViewDataService->getTicketData($tickets);
+
+            /// DATA FOR EXPENSES TAB
+         $expenses = $property->expenses;
+         // dd($payments);
+          $expenseTableData = $this->tableViewDataService->getExpenseData($expenses);
+
+          
+          /// DATA FOR Deposit TAB
+          $deposit = $property->deposits;
+          // dd($payments);
+           $depositTableData = $this->tableViewDataService->getDepositData($deposit);
     
          //5. SETTINGS
          $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure
@@ -209,6 +222,10 @@ class PropertyController extends Controller
             }elseif ($title === 'Tickets') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $requestTableData,'controller' => ['ticket']], 
                 compact('amenities', 'allamenities','id'))->render();
+            }elseif ($title === 'Deposits') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $depositTableData, 'controller' => ['deposit']], compact('id','model'))->render();
+            }elseif ($title === 'Expenses') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $expenseTableData, 'controller' => ['expense']], compact('id','model'))->render();
             }elseif ($title === 'Settings') {
                 $tabContents[] = View('admin.CRUD.tabs_horizontal_show', ['tabTitles' => $settingTableData['tabTitles'], 'tabContents' => $settingTableData['tabContents'],'controller' => ['setting']], 
                 compact('amenities', 'allamenities','model','id'))->render();
