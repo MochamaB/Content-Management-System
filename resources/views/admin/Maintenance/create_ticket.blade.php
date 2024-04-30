@@ -7,39 +7,21 @@
    
     <form method="POST" action="{{ url('ticket') }}" class="myForm" novalidate>
         @csrf
-        @if ($property)
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label">Property Name</label>
-                <select name="property_id" id="property_id" class="formcontrol2 property_id" placeholder="Select" required readonly>
-                    <option value="{{$property->id}}">{{$property->property_name}}</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label class="label">Property Name</label>
+            <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required readonly>
+                <option value="{{$property->id}}">{{$property->property_name}}</option>
+            </select>
         </div>
-        @else
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label">Select Property<span class="requiredlabel">*</span></label>
-                <select name="property_id" id="property_id" class="formcontrol2 property_id" placeholder="Select" required>
-                    <option value=""> 'Select Property'</option>
-                    @foreach($properties as $item)
-                    <option value="{{ $item->id }}">{{ $item->property_name }}</option>
-                    @endforeach
-                </select>
 
-            </div>
+        @if($model === 'units')
+        <div class="form-group">
+            <label class="label">Unit Number</label>
+            <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required readonly>
+                <option value="{{$unit->id}}">{{$unit->unit_number}}</option>
+            </select>
         </div>
         @endif
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="label"> Select Unit <span class="">(OPTIONAL)</span></label>
-                <select name="unit_id" id="" class="formcontrol2 unit_id" placeholder="Select">
-
-                    <option value="">Select Property first</option>
-
-                </select>
-            </div>
-        </div>
         @foreach($fields as $field => $attributes)
         <div class="col-md-6">
             <div class="form-group">

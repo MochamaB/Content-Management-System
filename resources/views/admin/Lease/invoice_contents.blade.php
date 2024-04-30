@@ -101,59 +101,46 @@
         </tbody>
     </table></br>
     <!------- FOURTH LEVEL PAYMENT DETAILS AND TOTALS-->
-    <table class="table">
-        <tbody>
-            <tr>
-                <td>
-                    <h4><b>Payment Methods </b></h4>
-                    <p>The following methods are available.</p>
-                    @foreach($PaymentMethod as $item)
-                    @if($item->name !== 'Cash')
-                    <h6>{{ $item->name }}</h6>
-                    <ul>  @if(stripos($item->name, 'paybill') === false)
-                        <li><strong>Account Number:</strong> {{ $item->account_number }}</li>
-                        <li><strong>Account Name:</strong> {{ $item->account_name }}</li>
-                        @else
-                        <li><strong>Paybill Number:</strong> {{ $item->account_number }}</li>
-                        <li><strong>Paybill Number:</strong> <span style="color:blue; font-weight:700;">{{$invoice->id}}-{{$invoice->referenceno}}</span></li>
-                        @endif
-                    </ul>
-                  
-                    @endif
-                    @endforeach
 
-                </td>
-                <td class="align-top">
-                    <h4><b>Totals </b></h4>
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr style="height:45px;">
-                                <td>Sub Total Amount</td>
-                                <td class="text-center">{{ $sitesettings->site_currency }} {{$invoice->totalamount}}</td>
-                            </tr>
-                            <tr style="height:45px;">
-                                <td>Tax & Discounts</td>
-                                <td class="text-center">{{ $sitesettings->site_currency }} 0 </td>
-                            </tr>
-                            <tr style="height:45px;">
-                                <td>Other Charges</td>
-                                <td class="text-center">{{ $sitesettings->site_currency }} 0 </td>
-                            </tr>
-                            <tr style="height:45px;">
-                                <td class="text-bold-800" style="font-size:18px;font-weight:700">Total Due</td>
-
-                                <td class="text-bold-800 text-center" style="font-size:18px;font-weight:700">{{ $sitesettings->site_currency }} {{$invoice->totalamount}} </td>
-
-                            </tr>
-                        </tbody>
-                    </table>
-                
-                </td>
-
-
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
+    <div class="col-md-6 mt-3">
+    <h4><b>Payment Methods </b></h4>
+        <div class="d-flex justify-content-start">
+            <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
+            <span> </span>
+        </div>
+        <div class="d-flex justify-content-start">
+            <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
+            <span> </span>
+        </div>
+        <div class="d-flex justify-content-start">
+            <p class="text-muted me-3" style="font-size:16px;font-weight:600"> </p>
+            <span> </span>
+        </div>
+        <div class="d-flex justify-content-start mt-3">
+            <h4 class="me-3" style="font-weight:700"> </h4>
+            <h4 class="text-success" style="font-weight:700"> </h4>
+        </div>
+    </div>
+    <div class="col-md-6 mt-3">
+        <div class="d-flex justify-content-end">
+            <p class="text-muted me-3" style="font-size:15px;font-weight:600">Sub total Amount :</p>
+            <span>{{ $sitesettings->site_currency }} @currency($invoice->totalamount)</span>
+        </div>
+        <div class="d-flex justify-content-end">
+            <p class="text-muted me-3" style="font-size:15px;font-weight:600">Tax & Discounts:</p>
+            <span>{{ $sitesettings->site_currency }} 0 </span>
+        </div>
+        <div class="d-flex justify-content-end">
+            <p class="text-muted me-3" style="font-size:16px;font-weight:600">Other Charges:</p>
+            <span>{{ $sitesettings->site_currency }} 0 </span>
+        </div>
+        <div class="d-flex justify-content-end mt-3">
+            <h4 class="me-3" style="font-weight:700">Total:</h4>
+            <h4 class="text-error" style="font-weight:700">{{ $sitesettings->site_currency }} @currency($invoice->totalamount)</h4>
+        </div>
+    </div>
+    </div>
     <!------- FOOTER-->
     <hr>
 

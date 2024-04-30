@@ -39,8 +39,8 @@ class InvoiceGeneratedNotification extends Notification
         $this->transactions = $transactions;
         $this->groupedInvoiceItems = $groupedInvoiceItems;
         $this->openingBalance = $openingBalance;
-        $this->subject = $this->invoice->type . ' Invoice';
-        $this->heading =  'New '.$this->invoice->type.' Invoice';
+        $this->subject = $this->invoice->name . ' Invoice '.\Carbon\Carbon::parse($this->invoice->created_at)->format('d M Y');
+        $this->heading =  'New '.$this->invoice->name.' Invoice';
 
     }
 
@@ -76,7 +76,7 @@ class InvoiceGeneratedNotification extends Notification
       
         return (new MailMessage)
             ->view(
-                'email.statement_template',
+                'email.statement',
                 ['user' => $this->user, 
                 'invoice' => $this->invoice, 
                 'transactions' => $this->transactions, 

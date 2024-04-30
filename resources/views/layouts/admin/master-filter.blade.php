@@ -50,9 +50,9 @@
 
         <div class="row">
 
-            @if (isset($filterdata))
+            @if (isset($filterdata) && ($filter['filtertype'] === 'advanced'))
             @foreach($filterdata as $key => $filter)
-            @if ($filter['filtertype'] === 'advanced')
+           
             <div class="col-md-3" style="padding:0px 5px 0px 8px;">
                 <div class="form-group" style="margin-bottom: 0.5rem;">
 
@@ -103,7 +103,7 @@
 
                 </div>
             </div>
-            @endif
+          
             @endforeach
             <div class="col-md-3 ms-auto text-end" style="padding:35px 10px 0px 10px">
                 <button type="submit" class="btn btn-primary btn-lg text-white mt-0 me-0 nextbutton">Apply Filter</button>

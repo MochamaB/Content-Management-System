@@ -76,7 +76,7 @@ class PaymentNotification extends Notification
             ->view(
                 'email.template',
                 ['user' => $this->user,'data'=> $this->data,'linkmessage' => $this->linkmessage,'heading' =>$this->heading])
-                    ->subject($this->payment->model->type.' Receipt')
+                    ->subject($this->payment->model->name.' Receipt')
                     ->attachData($paymentpdf->output(), $paymentfilename);
     }
 

@@ -46,7 +46,7 @@ class InvoiceService
     {
         return Unitcharge::where('recurring_charge', 'Yes')
             ->where('parent_id', null)
-       //     ->whereMonth('nextdate', now()->month)
+            //     ->whereMonth('nextdate', now()->month)
             ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
             })
@@ -54,17 +54,8 @@ class InvoiceService
     }
     public function chargesForInvoiceGeneration()
     {
-        ///1. GET UNITS WITH RECURRING CHARGE
-      //  $unitcharges = Unitcharge::where('recurring_charge', 'Yes')
-       //     ->where('parent_id', null)
-       //     ->whereMonth('nextdate', now()->month)
-       //     ->whereHas('unit.lease', function ($query) {
-       //         $query->where('status', 'Active');
-       //     })
-       //     ->get();
 
-            $unitcharges = $this->getUnitCharges();
-
+        $unitcharges = $this->getUnitCharges();
 
         foreach ($unitcharges as $unitcharge) {
             //1. Create invoice items from invoice service app/Services/InvoiceService
@@ -110,63 +101,56 @@ class InvoiceService
         $this->updateDueDateAction->handle($invoice);
 
         //6. Create Transactions for ledger
-        $this->recordTransactionAction->invoiceCharges($invoice, $unitcharge);
+        $this->recordTransactionAction->transaction($invoice, $unitcharge);
 
         //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
-        $user = $invoice->model;
-        $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
-        $sixMonths = now()->subMonths(6);
-        $transactions = Transaction::where('created_at', '>=', $sixMonths)
-            ->where('unit_id', $invoice->unit_id)
-            ->where('unitcharge_id', $unitchargeId)
-            ->get();
-        $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
-        $openingBalance = $this->calculateOpeningBalance($invoice);
-   
-        $user->notify(new InvoiceGeneratedNotification($invoice, $user,$transactions,$groupedInvoiceItems,$openingBalance));
-        // SendInvoiceEmailJob::dispatch($invoice, $user);
+
+        //  $sendManyEmails = $this->InvoiceEmail($invoice);
+
+        SendInvoiceEmailJob::dispatch($invoice);
 
 
         return $invoice;
-        //   }
     }
 
-    ///////2. GET OENING BALANCE OF THE INVOICE
+    ///////2. GET OPENING BALANCE OF THE INVOICE
     public function calculateOpeningBalance(Invoice $invoice)
     {
         // Get the date 6 months ago from today
         $sixMonthsAgo = now()->subMonths(6);
-  
+
         // Calculate the sum of invoice amounts
         $invoiceAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
             ->where('unit_id', $invoice->unit_id)
             ->where('charge_name', $invoice->type)
             ->where('transactionable_type', 'App\Models\Invoice')
             ->sum('amount');
-  
+
         // Calculate the sum of payment amounts
         $paymentAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
             ->where('unit_id', $invoice->unit_id)
             ->where('charge_name', $invoice->type)
             ->where('transactionable_type', 'App\Models\Payment')
             ->sum('amount');
-  
+
         // Calculate the opening balance
         $openingBalance = $invoiceAmount - $paymentAmount;
-  
+
         return $openingBalance;
     }
+
 
     ///3. CHECK IF INVOICE EXISTS
     private function invoiceExists(Unitcharge $unitcharge)
     {
-        $today = Carbon::now();
-        $invoicenodate =  Carbon::parse($unitcharge->nextdate)->format('ym');
-        $unitnumber = Unit::where('id', $unitcharge->unit_id)->value('unit_number');
-        $referenceno = $invoicenodate . $unitnumber;
 
+        $doc = 'INV-';
+        $propertynumber = 'P' . str_pad($unitcharge->property_id, 2, '0', STR_PAD_LEFT);
+        $unitnumber = $unitcharge->unit_id ?? 'N';
+        $date = Carbon::parse($unitcharge->nextdate)->format('ymd');
+        $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
         return Invoice::where('referenceno', $referenceno)
-            ->where('type', $unitcharge->charge_name)
+            ->where('name', $unitcharge->charge_name)
             ->first();
     }
 
@@ -174,10 +158,13 @@ class InvoiceService
     private function getInvoiceHeaderData($unitcharge)
     {
         //$today = Carbon::now();
-        $invoicenodate =  Carbon::parse($unitcharge->nextdate)->format('ym');
-        $unitnumber = Unit::where('id', $unitcharge->unit_id)->first();
         $userId = Lease::where('unit_id', $unitcharge->unit_id)->first();
         $user = User::class;
+        $doc = 'INV-';
+        $propertynumber = 'P' . str_pad($unitcharge->property_id, 2, '0', STR_PAD_LEFT);
+        $unitnumber = $unitcharge->unit_id ?? 'N';
+        $date = Carbon::parse($unitcharge->nextdate)->format('ymd');
+        $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
 
         return [
             'property_id' => $unitcharge->property_id,
@@ -185,7 +172,7 @@ class InvoiceService
             'unitcharge_id' => $unitcharge->id,
             'model_type' => $user, ///This has plymorphism because an invoice can also be sent to a vendor.
             'model_id' => $userId->user_id,
-            'referenceno' => $invoicenodate . $unitnumber->unit_number,
+            'referenceno' => $referenceno,
             'name' => $unitcharge->charge_name,
             'totalamount' => null,
             'status' => 'unpaid',
@@ -226,7 +213,7 @@ class InvoiceService
             'invoice_id' => $invoice->id,
             'unitcharge_id' => $unitcharge->id,
             'chartofaccount_id' => $unitcharge->chartofaccounts_id,
-            'description' =>$unitcharge->charge_name,
+            'description' => $unitcharge->charge_name,
             'amount' => $amount,
         ]);
 
@@ -240,14 +227,14 @@ class InvoiceService
                 if ($childcharge->charge_type === 'units') {
                     $nextdateFormatted = Carbon::parse($childcharge->nextdate)->format('Y-m-d');
                     $updatedFormatted = Carbon::parse($childcharge->updated_at ?? Carbon::now())->format('Y-m-d');
-        
+
                     $amount = 0.00;
                     $meterReadings = MeterReading::where('unit_id', $childcharge->unit_id)
                         ->where('unitcharge_id', $childcharge->id)
                         ->where('startdate', '>=', $updatedFormatted) // Check readings after updated_at
                         ->where('startdate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
                         ->get();
-        
+
                     foreach ($meterReadings as $reading) {
                         // Calculate the amount based on meter readings and assign it to $amount
                         $amount = $reading->amount;
@@ -260,10 +247,25 @@ class InvoiceService
                     'invoice_id' => $invoice->id,
                     'unitcharge_id' => $childcharge->id,
                     'chartofaccount_id' => $childcharge->chartofaccounts_id,
-                    'description' =>$childcharge->charge_name,
+                    'description' => $childcharge->charge_name,
                     'amount' => $amount,
                 ]);
             }
         }
+    }
+
+    public function invoiceEmail($invoice)
+    {
+        $user = $invoice->model;
+        $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
+        $sixMonths = now()->subMonths(6);
+        $transactions = Transaction::where('created_at', '>=', $sixMonths)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('unitcharge_id', $unitchargeId)
+            ->get();
+        $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
+        $openingBalance = $this->calculateOpeningBalance($invoice);
+
+        $user->notify(new InvoiceGeneratedNotification($invoice, $user, $transactions, $groupedInvoiceItems, $openingBalance));
     }
 }

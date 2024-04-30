@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use App\Models\Ticket;
+use App\Models\Unit;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorCategory;
@@ -16,6 +17,7 @@ use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Services\TableViewDataService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Models\Role as ModelsRole;
@@ -72,15 +74,20 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id = null)
+    public function create($id = null,$model = null)
     {
-        $property = Property::find($id);
-        $properties = Property::all();
+        if ($model === 'properties') {
+            $property = Property::find($id);
+            $unit = $property->units;
+        } elseif ($model === 'units') {
+            $unit = Unit::find($id);
+            $property = Property::where('id', $unit->property->id)->first();
+        }
         $viewData = $this->formData($this->model);
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.maintenance.create_request', compact('id', 'property', 'properties'), $viewData);
+        return View('admin.maintenance.create_ticket', compact('id', 'property', 'unit','model'), $viewData);
     }
 
     /**
@@ -108,7 +115,13 @@ class TicketController extends Controller
         //        $query->whereIn('name', ['staff', 'tenant']);
         //     })->get();
         $loggeduser = User::find($ticketData->user_id);
-        $loggeduser->notify(new TicketNotification($user, $ticketData));
+        try {
+            $loggeduser->notify(new TicketNotification($user, $ticketData));
+        } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+            Log::error('Failed to send ticket notification: ' . $e->getMessage());
+        }
+       
 
         //   foreach ($attachedUsers as $individualUser) {
         //       $individualUser->notify(new AdminTicketNotification($individualUser, $ticketData));

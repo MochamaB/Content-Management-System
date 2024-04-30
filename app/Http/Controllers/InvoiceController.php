@@ -205,8 +205,9 @@ class InvoiceController extends Controller
         //  return $pdf->download('invoice12.pdf');
         //   return $pdf->stream('invoice.pdf');
 
-        $user = $invoice->model;
-        $user->notify(new InvoiceGeneratedNotification($invoice, $user));
+     //   $user = $invoice->model;
+     //   $user->notify(new InvoiceGeneratedNotification($invoice, $user));
+        $this->invoiceService->invoiceEmail($invoice);
         return redirect()->back()->with('status', 'Sucess Invoice Reminder Sent to the tenant.');
     }
 

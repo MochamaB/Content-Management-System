@@ -188,7 +188,7 @@ class LeaseController extends Controller
         $request->validate([
             'leaseagreement' => 'required|mimes:csv,txt,pdf|max:2048',
         ]);
-        
+
         ///1. SAVE LEASE DETAILS
         $leasedetails = $request->session()->get('wizard_lease');
         if (!empty($leasedetails)) {
@@ -236,8 +236,7 @@ class LeaseController extends Controller
             $depositchargeModel->save();
 
             //  Generate Payment Voucher and Transactions
-           $this->DepositService->generateDeposit($depositchargeModel,$user);
-
+            $this->DepositService->generateDeposit($depositchargeModel, $user);
         }
 
         //6. SAVE UTILITY CHARGES
@@ -252,25 +251,25 @@ class LeaseController extends Controller
         $propertyId = $leasedetails->property_id;
         $unit->users()->attach($user, ['property_id' => $propertyId]);
 
-         //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
-         $user = User::find($lease->user_id);
-         // Redirect to the lease.create route with a success message
-         $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
- 
+        //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
+        $user = User::find($lease->user_id);
+        // Redirect to the lease.create route with a success message
+        $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
+
 
         //8. UPLOAD LEASE AGREEMENT
-      //  $unit
+        //  $unit
         //    ->addMediaFromRequest('leaseagreement')
-         //   ->withProperties(['unit_id' => $unit->id, 'property_id' => $propertyId])
-         //   ->toMediaCollection('Lease-Agreement');
+        //   ->withProperties(['unit_id' => $unit->id, 'property_id' => $propertyId])
+        //   ->toMediaCollection('Lease-Agreement');
         $this->uploadMediaAction->handle($unit, 'leaseagreement', 'Lease-Agreement', $request);
 
-        
 
-       
+
+
         //10. CREATE SETTING FOR THE DUEDATE
         //pass the lease instance to the action
-       // $this->updateDueDateAction->duedate($lease);
+        // $this->updateDueDateAction->duedate($lease);
 
         //11. FORGET SESSION DATA
         $request->session()->forget('wizard_lease');
@@ -318,16 +317,28 @@ class LeaseController extends Controller
 
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
-      //  dd($unit->invoices);
+        //  dd($unit->invoices);
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
 
         $payments = $unit->payments;
         // dd($payments);
-         $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
+        $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
         $meterReadings = $unit->meterReadings;
         $MeterReadingsTableData = $this->tableViewDataService->getMeterReadingsData($meterReadings);
+        /// DATA FOR TICKETS TAB
+        $tickets = $unit->tickets;
+        // dd($payments);
+        $ticketTableData = $this->tableViewDataService->getTicketData($tickets);
+
+        ///DATA FOR FILES //////
+        $collections = ['picture', 'pdf', 'collection3'];
+        $files = $unit->getMedia('Lease-Agreement');
+        //   dd($files);
+        $mediaTableData = $this->tableViewDataService->getMediaData($files);
         $id = $unit;
+        $model = 'units';
+
 
         $tabTitles = collect([
             'Summary',
@@ -335,7 +346,7 @@ class LeaseController extends Controller
             'Invoices',
             'Payments',
             'Meter Readings',
-            'Maintenance Tasks',
+            'Tickets',
             'Files',
         ]);
         $tabContents = [];
@@ -343,21 +354,17 @@ class LeaseController extends Controller
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.CRUD.summary', compact('properties', 'lease'))->render();
             } elseif ($title === 'Charges and Utilities') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']])->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']], compact('id', 'model'))->render();
             } elseif ($title === 'Invoices') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
+                $tabContents[] = View('admin.CRUD.table', ['data' => $invoiceTableData, 'controller' => ['invoice']])->render();
             } elseif ($title === 'Payments') {
-                $tabContents[] = View('admin.CRUD.index_show',['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
+                $tabContents[] = View('admin.CRUD.table', ['data' => $paymentTableData, 'controller' => ['payment']])->render();
             } elseif ($title === 'Meter Readings') {
-                $tabContents[] = View(
-                    'admin.CRUD.index_show',
-                    ['tableData' => $MeterReadingsTableData, 'controller' => ['meter-reading']],
-                    compact('id')
-                )->render();
-            } elseif ($title === 'Maintenance Tasks') {
-                $tabContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities'))->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $MeterReadingsTableData, 'controller' => ['meter-reading']], compact('id', 'model'))->render();
+            } elseif ($title === 'Tickets') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $ticketTableData, 'controller' => ['ticket']], compact('id', 'model'))->render();
             } elseif ($title === 'Files') {
-                $tabContents[] = View('wizard.lease.leaseagreement')->render();
+                $tabContents[] =  View('admin.CRUD.index_show', ['tableData' => $mediaTableData, 'controller' => ['']], compact('id'))->render();
             }
         }
 
@@ -564,7 +571,7 @@ class LeaseController extends Controller
 
         if (!empty($request->input('splitcharge_name'))) {
             foreach ($request->input('splitcharge_name') as $index => $chargeName) {
-             //   dd($request->input("splitcharge_type.{$index}"));
+                //   dd($request->input("splitcharge_type.{$index}"));
                 $splitRentCharge = [
                     'property_id' => $rentcharge->property_id,
                     'unit_id' => $rentcharge->unit_id,
@@ -634,7 +641,7 @@ class LeaseController extends Controller
     {
         $utilityCharges = [];
         if (!empty($request->input('charge_name'))) {
-           
+
 
             foreach ($request->input('charge_name') as $index => $chargeName) {
 

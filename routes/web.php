@@ -176,10 +176,10 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('vendor-category', VendorCategoryController::class);
         Route::resource('vendors', VendorController::class);
 
-        Route::get('ticket/create/{id?}', [
+        Route::get('ticket/create/{id?}/{model?}', [
             'as' => 'ticket.create',
             'uses' => 'App\Http\Controllers\TicketController@create'
-        ]);
+        ])->middleware('check.create.variables');
         Route::resource('ticket', TicketController::class, ['except' => 'create']);
         Route::get('ticket/assign/{id}', [TicketController::class, 'assign'])->name('ticket.assign');
         Route::put('update-assign/{id}', [TicketController::class, 'updateassign']);
