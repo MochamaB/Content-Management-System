@@ -105,8 +105,7 @@ class InvoiceService
 
         //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
 
-        //  $sendManyEmails = $this->InvoiceEmail($invoice);
-
+       
         SendInvoiceEmailJob::dispatch($invoice);
 
 
@@ -146,7 +145,7 @@ class InvoiceService
 
         $doc = 'INV-';
         $propertynumber = 'P' . str_pad($unitcharge->property_id, 2, '0', STR_PAD_LEFT);
-        $unitnumber = $unitcharge->unit_id ?? 'N';
+        $unitnumber = $unitcharge->unit->unit_number ?? 'N';
         $date = Carbon::parse($unitcharge->nextdate)->format('ymd');
         $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
         return Invoice::where('referenceno', $referenceno)
@@ -256,6 +255,8 @@ class InvoiceService
 
     public function invoiceEmail($invoice)
     {
+        
+        
         $user = $invoice->model;
         $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
         $sixMonths = now()->subMonths(6);
@@ -266,6 +267,6 @@ class InvoiceService
         $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
         $openingBalance = $this->calculateOpeningBalance($invoice);
 
-        $user->notify(new InvoiceGeneratedNotification($invoice, $user, $transactions, $groupedInvoiceItems, $openingBalance));
+        $user->notify(new InvoiceGeneratedNotification($invoice, $user, $openingBalance));
     }
 }

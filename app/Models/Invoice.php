@@ -145,4 +145,19 @@ class Invoice extends Model
 
         return $query;
     }
+
+    //// for the email view
+    public function getTransactions()
+    {
+        $unitchargeId = $this->invoiceItems->pluck('unitcharge_id')->first();
+        $sixMonths = now()->subMonths(6);
+        return Transaction::where('created_at', '>=', $sixMonths)
+            ->where('unit_id', $this->unit_id)
+            ->where('unitcharge_id', $unitchargeId)
+            ->get();
+    }
+    public function getGroupedInvoiceItems()
+    {
+        return $this->getTransactions()->groupBy('unitcharge_id');
+    }
 }

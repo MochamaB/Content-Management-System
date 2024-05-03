@@ -84,7 +84,10 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Amount<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control" name="rate" value="{{$lease->unit->rent ?? ''}}" required>
+                    <div class="input-group">
+                        <span class="input-group-text spanmoney">{{$sitesettings->site_currency}}</span>
+                        <input type="number" class="form-control money" name="rate" value="{{$lease->unit->rent ?? ''}}" required>
+                    </div>
                 </div>
             </div>
 

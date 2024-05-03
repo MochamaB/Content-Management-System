@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Transaction;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,11 +22,19 @@ class SendInvoiceEmailJob implements ShouldQueue
      */
 
      protected $invoice;
+     protected $user;
+     protected $transactions;
+     protected $groupedInvoiceItems;
+     protected $openingBalance;
 
-     public function __construct($invoice)
-     {
-         $this->invoice = $invoice;
-     }
+     public function __construct($invoice, $user, $transactions, $groupedInvoiceItems, $openingBalance)
+    {
+        $this->invoice = $invoice;
+        $this->user = $user;
+        $this->transactions = $transactions;
+        $this->groupedInvoiceItems = $groupedInvoiceItems;
+        $this->openingBalance = $openingBalance;
+    }
 
     /**
      * Execute the job.
@@ -34,17 +43,6 @@ class SendInvoiceEmailJob implements ShouldQueue
      */
     public function handle()
     {
-        /$user = $this->invoice->model;
-        $unitchargeId = $this->invoice->invoiceItems->pluck('unitcharge_id')->first();
-        $sixMonths = now()->subMonths(6);
-        $transactions = Transaction::where('created_at', '>=', $sixMonths)
-            ->where('unit_id', $this->invoice->unit_id)
-            ->where('unitcharge_id', $unitchargeId)
-            ->get();
-        $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
-        $openingBalance = $this->calculateOpeningBalance($this->invoice); // You would need to move this method to this job or a separate service
-
-        $notification = new InvoiceGeneratedNotification($this->invoice, $user, $transactions, $groupedInvoiceItems, $openingBalance);
-        $user->notify($notification);
+        $this->user->notify(new InvoiceGeneratedNotification($this->invoice, $this->user, $this->transactions, $this->groupedInvoiceItems, $this->openingBalance));
     }
 }

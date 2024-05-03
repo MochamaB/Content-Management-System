@@ -141,17 +141,24 @@ $(document).ready(function() {
       })
       .on('blur', function() {
         var value = $(this).val();
-        $(this).attr('type', '');
+        $(this).attr('type', 'text');
         if (value !== '') {
           $(this).val((+value).toLocaleString());
         } else {
           $(this).val('');
         }
       });
+
+    // If the input field already has a value when the page loads, format it
+    var initialValue = $(this).val();
+    if (initialValue !== '') {
+      $(this).attr('type', 'text');
+      $(this).val((+initialValue).toLocaleString());
+    }
   });
 
-// Add this event listener to remove the commas
-$('form').on('submit', function() {
+  // Add this event listener to remove the commas
+  $('form').on('submit', function() {
     $('input.money, input[name="amount[]"], input[name="amount"]').each(function() {
       var value = $(this).val();
       if (value !== '') {

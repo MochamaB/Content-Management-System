@@ -181,10 +181,10 @@ class TableViewDataService
 
             $row = [
                 'id' => $item->id,
-                $invoiceStatus . '</br></br> INV#: ' . $item->id . '-' . $item->referenceno,
+                $invoiceStatus . '</br></br>' . $item->referenceno . '-' . $item->id,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Issue Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
-                $item->type,
+                $item->name,
                 $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
                 $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ',') . $receipttext . '' . $paymentLinks,
                 $balanceStatus . '  ' . $payLink,

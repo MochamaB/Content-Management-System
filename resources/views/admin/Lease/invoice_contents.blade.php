@@ -26,7 +26,7 @@
                         </li>
                         <li><b>INV#: {{$invoice->id}}-{{$invoice->referenceno}}</b></li>
                         <li style="color:red; font-weight:700;font-size:14px">TOTAL DUE</li>
-                        <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} {{$invoice->totalamount}}</li>
+                        <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} @currency($invoice->totalamount)</li>
                     </ul>
                 </td>
             </tr>
@@ -93,8 +93,8 @@
                             <ul>
                                 @endif
                 </td>
-                <td class="text-center">{{$item->amount}} </td>
-                <td class="text-center"> {{$item->amount}}</td>
+                <td class="text-center">@currency($item->amount) </td>
+                <td class="text-center"> @currency($item->amount) </td>
 
             </tr>
             @endforeach

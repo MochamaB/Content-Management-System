@@ -26,6 +26,7 @@ use App\Services\DepositService;
 use App\Services\InvoiceService;
 use App\Services\TableViewDataService;
 use App\Actions\UploadMediaAction;
+use Illuminate\Support\Facades\Log;
 
 class LeaseController extends Controller
 {
@@ -254,7 +255,12 @@ class LeaseController extends Controller
         //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
         $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
-        $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
+        try {
+            $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
+        } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+            Log::error('Failed to send payment notification: ' . $e->getMessage());
+        }
 
 
         //8. UPLOAD LEASE AGREEMENT

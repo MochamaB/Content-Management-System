@@ -73,7 +73,10 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label class="label">Amount<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control" name="rate" value="{{$depositcharge->rate ?? $lease->unit->security_deposit ?? ''}}" required>
+                    <div class="input-group">
+                        <span class="input-group-text spanmoney">{{$sitesettings->site_currency}}</span>
+                        <input type="number" class="form-control money" name="rate" value="{{$depositcharge->rate ?? $lease->unit->security_deposit ?? ''}}" required>
+                    </div>
                 </div>
             </div>
 
@@ -88,28 +91,28 @@
 
 
         </div><br />
-        
+
         @include('admin.CRUD.wizardbuttons')
     </form>
-    </div>
-    @elseif(($routeParts[1] === 'edit'))
-    <h4 style="text-transform: capitalize;">Edit Security Deposit &nbsp;
-        @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
-        <a href="" class="editLink">Edit</a>
-    </h4>
-    @endif
-    <hr>
+</div>
+@elseif(($routeParts[1] === 'edit'))
+<h4 style="text-transform: capitalize;">Edit Security Deposit &nbsp;
+    @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
+    <a href="" class="editLink">Edit</a>
+</h4>
+@endif
+<hr>
 
 
 
-    @endif
-    <script>
+@endif
+<script>
     $(document).ready(function() {
         // Check if $depositcharge is not null
-         // Check the initial value of $depositcharge
-         let depositcharge = '{{ $depositcharge ?? 0 }}';
+        // Check the initial value of $depositcharge
+        let depositcharge = '{{ $depositcharge ?? 0 }}';
 
-     //    alert(depositcharge);
+        //    alert(depositcharge);
 
         if (depositcharge != 0) {
             $('#depositinfo').show();
