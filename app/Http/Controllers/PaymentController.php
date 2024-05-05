@@ -124,24 +124,25 @@ class PaymentController extends Controller
         $validatedData = $request->validate($validationRules);
         $instanceId = $request->input('instanceId');
         $user = Auth::user();
+        $payment = null;
+
      //   dd($request->model);
         switch ($request->model) {
             case 'Expense':
                 $model = Expense::find($instanceId);
-                $this->paymentService->generatePayment($model, $validatedData);
+                $payment = $this->paymentService->generatePayment($model, $validatedData);
                 break;
             case 'Deposit':
                 $model = Deposit::find($instanceId);
-                $this->paymentService->generatePayment($model, $validatedData);
+                $payment = $this->paymentService->generatePayment($model, $validatedData);
                 break;
             default:
                 $model = Invoice::find($instanceId);
-                $this->paymentService->generatePayment($model, $validatedData);
+                $payment = $this->paymentService->generatePayment($model, $validatedData);
                 break; // or handle this case differently
         }
 
-        $previousUrl = Session::get('previousUrl');
-        return redirect($previousUrl)->with('status', 'Payment Added Successfully');
+        return redirect()->route('payment.show', ['id' => $payment->id])->with('status', 'Payment Added Successfully');
     }
 
     /**

@@ -162,7 +162,7 @@ class InvoiceController extends Controller
             if ($title === 'Overview') {
                 $tabContents[] = View('admin.lease.invoice_view', compact('invoice','PaymentMethod'))->render();
             } elseif ($title === 'Account Statement') {
-                $tabContents[] = View('admin.lease.statement_view', compact('invoice', 'groupedInvoiceItems', 'transactions', 'openingBalance'))->render();
+                $tabContents[] = View('admin.lease.statement_view', compact('invoice', 'transactions', 'openingBalance'))->render();
             }
         }
 
@@ -178,14 +178,14 @@ class InvoiceController extends Controller
         // Calculate the sum of invoice amounts
         $invoiceAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
             ->where('unit_id', $invoice->unit_id)
-            ->where('charge_name', $invoice->type)
+            ->where('charge_name', $invoice->name)
             ->where('transactionable_type', 'App\Models\Invoice')
             ->sum('amount');
 
         // Calculate the sum of payment amounts
         $paymentAmount = Transaction::where('created_at', '<', $sixMonthsAgo)
             ->where('unit_id', $invoice->unit_id)
-            ->where('charge_name', $invoice->type)
+            ->where('charge_name', $invoice->name)
             ->where('transactionable_type', 'App\Models\Payment')
             ->sum('amount');
 

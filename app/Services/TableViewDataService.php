@@ -386,10 +386,22 @@ class TableViewDataService
             // If the current charge has child charges, add them to the charge name
             if ($item->childrencharge->isNotEmpty()) {
                 foreach ($item->childrencharge as $child) {
-                    $charge_name .= ' <br><i class=" mdi mdi-subdirectory-arrow-right mdi-24px text-primary">' . $child->charge_name . '</li>';
-                    $charge_cycle .= ' <br></br><li class="text-primary">' . $child->charge_cycle . '</li>';
-                    $charge_type .= ' <br></br><li class="text-primary">' . $child->charge_type . '</li>';
-                    $rate .= ' <br></br><li class="text-primary">' . $child->rate . '</li>';
+                    $charge_name .= ' <div>
+                                        <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
+                                        <span class="text-muted me-3">' . $child->charge_name . '</span>
+                                    </div>';
+                    $charge_cycle .= ' <div>
+                                            <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
+                                            <span class="text-muted me-3">' . $child->charge_cycle . '</span>
+                                        </div>';
+                    $charge_type .= ' <div>
+                                        <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
+                                        <span class="text-muted me-3">' . $child->charge_type . '</span>
+                                    </div>';
+                    $rate .= ' <div>
+                                    <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
+                                    <span class="text-muted me-3">' . $this->sitesettings->site_currency . ' ' . number_format($child->rate, 0, '.', ',') . '</span>
+                                </div>';
                 }
             }
             $row = [
@@ -860,7 +872,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFNO', 'STATUS | DUEDATE', 'NAME','AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
+        $headers = ['REFNO', 'STATUS | DUEDATE', 'NAME', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {

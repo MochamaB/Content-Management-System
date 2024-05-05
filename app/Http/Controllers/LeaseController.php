@@ -140,8 +140,10 @@ class LeaseController extends Controller
         $rentcharge = $request->session()->get('wizard_rentcharge');
         $splitRentcharges = $request->session()->get('wizard_splitRentcharges');
         $depositcharge = $request->session()->get('wizard_depositcharge');
-        $account = Chartofaccount::whereIn('account_type', ['Income', 'Liability'])->get();
+        $account = Chartofaccount::whereIn('account_type', ['Income'])->get();
         $accounts = $account->groupBy('account_type');
+        $depositaccount = Chartofaccount::whereIn('account_type',['Liability'])->get();
+        $depositaccounts = $depositaccount->groupBy('account_type');
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
         $sessioncharges = $request->session()->get('wizard_utilityCharges');
 
@@ -167,7 +169,7 @@ class LeaseController extends Controller
             } elseif ($title === 'Rent') {
                 $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges'))->render();
             } elseif ($title === 'Security Deposit') {
-                $stepContents[] = View('wizard.lease.deposit', compact('accounts', 'lease', 'depositcharge'))->render();
+                $stepContents[] = View('wizard.lease.deposit', compact('depositaccounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Utilities') {
                 $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges'))->render();
             } elseif ($title === 'Lease Agreement') {
@@ -219,7 +221,7 @@ class LeaseController extends Controller
         }
 
         ///4. SAVE SPLITRENTCHARGE
-        $splitRentCharges = $request->session()->get('splitRentcharges');
+        $splitRentCharges = $request->session()->get('wizard_splitRentcharges');
         if (!empty($splitRentCharges)) {
             foreach ($splitRentCharges as &$splitRentCharge) {
                 $splitRentCharge['parent_id'] = $newRentChargeId;

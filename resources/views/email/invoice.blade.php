@@ -249,8 +249,8 @@
                                 <ul>
                                     @endif
                     </td>
-                    <td class="text-center">@currency($item->amount) </td>
-                    <td class="text-center"> @currency($item->amount) </td>
+                    <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
+                    <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
 
                 </tr>
                 @endforeach
@@ -300,9 +300,8 @@
     </div>
     <div class="footer">
 
-        <i style="color:#1F3BB3">Powered By <b>Bridgtech Properties</b> Admin.<i>
-                <a href="www.bridgetech.co.ke" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">
-                    Unsubscribe</a> from these alerts.
+        <i style="color:#1F3BB3">Powered By<a href="http://www.bridgetech.co.ke" target="_blank"> <b>Bridgtech Properties</b></a> Admin.<i>
+                
     </div>
 </body>
 

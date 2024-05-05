@@ -78,7 +78,7 @@
             <tr style="height:35px;">
                 <td class="text-center">{{$key+1}}</td>
                 <td class="text-center" style="text-transform: capitalize;">
-                    {{$item->charge_name}} Charge
+                    {{$item->description}} Charge
                     <!--- METER READINGS -->
                     @if($item->unitcharge->charge_type == 'units')
                     @php
@@ -93,8 +93,8 @@
                             <ul>
                                 @endif
                 </td>
-                <td class="text-center">@currency($item->amount) </td>
-                <td class="text-center"> @currency($item->amount) </td>
+                <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
+                <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
 
             </tr>
             @endforeach

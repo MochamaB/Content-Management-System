@@ -121,13 +121,6 @@
           </table></br>
           <!------- FOURTH LEVEL PAYMENT DETAILS AND TOTALS-->
           <!------- FOOTER-->
-          <hr>
-
-          <div class="col-md-12" style="text-align:center;">
-               <h6>Terms & Condition</h6>
-               <p>Refer to the terms and conditions on Lease agreement.</p>
-               <p><a href="www.bridgetech.co.ke">POWERED BY BRIDGE PROPERTIES</a></p>
-          </div>
-
+          
      </div>
 </div>

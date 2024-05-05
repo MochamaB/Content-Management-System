@@ -34,6 +34,11 @@ class RecordTransactionAction
             $items = $model->getItems;
        
         foreach ($items as $item) {
+            //// In model payment make sure transactions have the same unitcharge_id
+            if ($model instanceof Payment) {
+                $chargeid = PaymentItems::where('payment_id', $model->id)->first();
+            } 
+           
             $account = Chartofaccount::where('id', $item->chartofaccount_id)->first();
             $transactionType = TransactionType::where('model',$modelName)
                 ->where('account_type', $item->accounts->account_type)
@@ -67,8 +72,8 @@ class RecordTransactionAction
             $transaction = Transaction::create([
                 'property_id' => $model->property_id,
                 'unit_id' => $model->unit_id ?? null,
-                'unitcharge_id' =>  $unitcharge->id ?? null,
-                'charge_name' => $item->charge_name ?? $model->name,
+                'unitcharge_id' =>  $unitcharge->id ?? $chargeid->unitcharge_id ??  null,
+                'charge_name' => $item->charge_name ??$item->description ?? $model->name,
                 'transactionable_id' => $model->id,
                 'transactionable_type' => $class, ///Model Name Invoice
                 'description' => $account->account_name, ///Description of the charge

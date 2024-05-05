@@ -12,8 +12,7 @@ use Illuminate\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 
-class PaymentNotification extends Notification 
-//implements ShouldQueue
+class PaymentNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $payment;

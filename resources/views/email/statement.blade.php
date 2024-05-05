@@ -84,7 +84,7 @@
                 </tr>
                 <!-- Second Section -->
                 <tr style="border-top: 1px solid grey;">
-                <td style="border:none">
+                    <td style="border:none">
                         <h4 style="text-align:left;"><b>STATEMENT TO</b></h4>
                         <ul style="list-style-type: none; padding: 0; text-align: left;">
                             <li><b>PROPERTY:</b> {{$invoice->property->property_name}}</li>
@@ -96,7 +96,7 @@
                     </td>
                     <td style="border: none;"></td>
                     <td style="border: none;">
-                    <ul style="list-style-type: none; padding: 0; text-align: left;">
+                        <ul style="list-style-type: none; padding: 0; text-align: left;">
                             <li><b>STATEMENT DURATION:</b></li>
                             <li><i>(Last 6 Months)</i></li>
                             <li></li>
@@ -172,11 +172,9 @@
         <!-- Footer -->
     </div>
     <div class="footer">
-        
-    <i style="color:#1F3BB3">Powered By <b>Bridgtech Properties</b> Admin.<i>
-                                        <a href="www.bridgetech.co.ke" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; color: #999; text-decoration: underline; margin: 0;">
-                                        Unsubscribe</a> from these alerts.
-        </div>
+
+        <i style="color:#1F3BB3">Powered By<a href="http://www.bridgetech.co.ke" target="_blank"> <b>Bridgtech Properties</b></a> Admin.<i>
+    </div>
 </body>
 
 </html>
