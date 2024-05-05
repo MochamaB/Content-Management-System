@@ -399,7 +399,7 @@ class TableViewDataService
                 $charge_type,
                 $rate,
                 $item->recurring_charge,
-                \Carbon\Carbon::parse($item->updated_at)->format('d M Y'),
+                \Carbon\Carbon::parse($item->updated_at)->format('Y-m-d'),
                 $nextDateFormatted,
 
             ];

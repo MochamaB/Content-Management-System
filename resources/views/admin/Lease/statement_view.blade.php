@@ -74,7 +74,7 @@
                          <td class="text-center"> Opening Balance</td>
                          <td class="text-center">{{ $sitesettings->site_currency }}.</td>
                          <td class="text-center">{{ $sitesettings->site_currency }}.</td>
-                         <td class="text-center">{{ $sitesettings->site_currency }}.{{ $openingBalance}}</td>
+                         <td class="text-center">{{ $sitesettings->site_currency }}.@currency($openingBalance)</td>
 
                     </tr>
                     @php
@@ -93,7 +93,7 @@
                          $balance += $item->amount;
                          $totalInvoices += $item->amount;
                          @endphp
-                         <td class="text-center">{{ $sitesettings->site_currency }}.{{ $item->amount}}</td>
+                         <td class="text-center">{{ $sitesettings->site_currency }}.@currency($item->amount)</td>
                          <td class="text-center"> - </td>
                          @elseif($item->transactionable_type ==='App\Models\Payment')
                          @php
@@ -101,9 +101,9 @@
                          $totalPayments += $item->amount;
                          @endphp
                          <td class="text-center"> - </td>
-                         <td class="text-center">{{ $sitesettings->site_currency }}.{{ $item->amount}}</td>
+                         <td class="text-center">{{ $sitesettings->site_currency }}.@currency($item->amount)</td>
                          @endif
-                         <td class="text-center">{{ $sitesettings->site_currency }}. {{ $balance }}</td>
+                         <td class="text-center">{{ $sitesettings->site_currency }}. @currency($balance)</td>
                     </tr>
                     @endforeach
                </tbody>
@@ -112,9 +112,9 @@
                          <td class="text-center">  </td>
                          <td class="text-center"> - </td>
                          <td class="text-center"> <b>TOTALS</b></td>
-                         <td class="text-center"><b>{{ $sitesettings->site_currency }}. {{ $totalInvoices }}</b></td>
-                         <td class="text-center"><b>{{ $sitesettings->site_currency }}. {{ $totalPayments }}</b></td>
-                         <td class="text-center"><b>{{ $sitesettings->site_currency }}. {{ $balance }}</b></td>
+                         <td class="text-center"><b>{{ $sitesettings->site_currency }}. @currency($totalInvoices)</b></td>
+                         <td class="text-center"><b>{{ $sitesettings->site_currency }}. @currency($totalPayments)</b></td>
+                         <td class="text-center"><b>{{ $sitesettings->site_currency }}. @currency($balance)</b></td>
 
                     </tr>
                </tfooter>

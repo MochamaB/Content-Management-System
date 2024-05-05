@@ -87,6 +87,11 @@ class Unitcharge extends Model
     {
         return $this->hasMany(MeterReading::class, 'unitcharge_id');
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'unitcharge_id');
+    }
 //
  //   public function lease()
   //  {

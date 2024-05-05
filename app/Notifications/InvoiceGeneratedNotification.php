@@ -13,8 +13,7 @@ use App\Services\TableViewDataService;
 use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
 
-class InvoiceGeneratedNotification extends Notification 
-//implements ShouldQueue
+class InvoiceGeneratedNotification extends Notification implements ShouldQueue
 //implements ShouldQueue
 {
     use Queueable;
@@ -24,6 +23,7 @@ class InvoiceGeneratedNotification extends Notification
     protected $openingBalance;
     protected $subject;
     protected $heading;
+    protected $view;
 
 
     /**
@@ -31,15 +31,14 @@ class InvoiceGeneratedNotification extends Notification
      *
      * @return void
      */
-    public function __construct($invoice, $user, $openingBalance)
+    public function __construct($invoice, $user, $view)
     {
 
         $this->invoice = $invoice;
         $this->user = $user;
-
-        $this->openingBalance = $openingBalance;
         $this->subject = $this->invoice->name . ' Invoice ' . \Carbon\Carbon::parse($this->invoice->created_at)->format('d M Y');
         $this->heading =  'New ' . $this->invoice->name . ' Invoice';
+        $this->view = $view; 
     }
 
     /**
@@ -62,29 +61,19 @@ class InvoiceGeneratedNotification extends Notification
     public function toMail($notifiable)
     {
 
-        $transactions = $this->invoice->getTransactions();
-        $groupedInvoiceItems = $this->invoice->getGroupedInvoiceItems();
-
-        // Dump the variables
-   // dd($transactions, $groupedInvoiceItems, $this->openingBalance);
         $invoicepdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
         // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
         // Create a filename using invoice values
-        $referenceno = $this->invoice->id . "-" . $this->invoice->referenceno;
-        $invoicefilename = $this->invoice->type . ' - ' . $referenceno . ' ' . $this->invoice->unit->unit_number . ' invoice.pdf';
-
+        $referenceno = $this->invoice->referenceno;
+        $invoicefilename = $referenceno. ' invoice.pdf';
 
 
 
         return (new MailMessage)
             ->view(
-                'email.statement',
+                'email.invoicenotification',
                 [
-                    'user' => $this->user,
-                    'invoice' => $this->invoice,
-                    'transactions' => $transactions,
-                    'groupedInvoiceItems' => $groupedInvoiceItems,
-                    'openingBalance' =>  $this->openingBalance
+                    'viewContent' => $this->view,
                 ]
             )
             ->subject($this->subject)

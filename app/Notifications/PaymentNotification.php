@@ -34,7 +34,7 @@ class PaymentNotification extends Notification
         $this->payment = $payment;
         $this->user = $user;
         $this->company = WebsiteSetting::pluck('company_name')->first();
-        $this->subject = $this->payment->model->type.' Receipt';
+        $this->subject = $this->payment->model->name.' Receipt';
         $this->heading =  'New '.$this->payment->model->type.' Payment';
         $this->linkmessage = 'Go To Site';
        

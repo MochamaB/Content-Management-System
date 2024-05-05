@@ -757,12 +757,16 @@ select:focus {
 
 /*--------------- badges */
 .badge {
+  display: inline-block;
   border-radius: 20px;
   font-size: 12.5px;
   line-height: 19px;
   padding: 0 10px 0;
   font-weight: 900;
   text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
 }
 
 .badge:hover {

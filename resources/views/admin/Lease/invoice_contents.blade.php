@@ -22,9 +22,9 @@
                 <td class="text-left">
                     <ul class="ml-4 px-3 list-unstyled">
                         <li>
-                            <h3 style="text-transform: uppercase;"> {{$invoice->type}} INVOICE</h3>
+                            <h3 style="text-transform: uppercase;"> {{$invoice->name}} INVOICE</h3>
                         </li>
-                        <li><b>INV#: {{$invoice->id}}-{{$invoice->referenceno}}</b></li>
+                        <li><b>{{$invoice->referenceno}}</b></li>
                         <li style="color:red; font-weight:700;font-size:14px">TOTAL DUE</li>
                         <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} @currency($invoice->totalamount)</li>
                     </ul>
@@ -142,12 +142,6 @@
     </div>
     </div>
     <!------- FOOTER-->
-    <hr>
-
-    <div class="col-md-12" style="text-align:center;">
-        <h6>Terms & Condition</h6>
-        <p>Refer to the terms and conditions on Lease agreement.</p>
-        <p><a href="www.bridgetech.co.ke">POWERED BY BRIDGE PROPERTIES</a></p>
-    </div>
+    
 
 </div>

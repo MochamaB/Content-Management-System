@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice</title>
+    <title>Deposit</title>
     <style>
         /* Inline styles */
         body {
@@ -176,78 +176,65 @@
                         </ul>
                     </td>
                     <td style="border: none;">
-                        <ul style="list-style-type: none; padding: 0; text-align: left;">
-                            <li>
-                                <h3 style="text-transform: uppercase;"> {{$invoice->name}} INVOICE</h3>
-                            </li>
-                            <li><b>{{$invoice->referenceno}}</b></li>
-                            <li style="color:red; font-weight:700;font-size:14px">TOTAL DUE</li>
-                            <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} @currency($invoice->totalamount)</li>
-                        </ul>
+                    <ul class="ml-4 px-3 list-unstyled">
+                                <li>
+                                    <h3 style="text-transform: uppercase;"> {{$deposit->name}}</h3>
+                                </li>
+                                <li><b>{{$deposit->referenceno}} - {{$deposit->id}}</b></li>
+                                <li style="color:red; font-weight:700;font-size:14px">TOTAL RECEIVED</li>
+                                <li style="color:red; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} @currency($deposit->totalamount)</li>
+                            </ul>
                     </td>
                 </tr>
                 <!-- Second Section -->
                 <tr style="border-top: 1px solid grey;">
                     <td style="border:none">
                         <h4 style="text-align:left;"><b>BILL TO</b></h4>
-                        <ul style="list-style-type: none; padding: 0; text-align: left;">
-                            <li><b>PROPERTY:</b> {{$invoice->property->property_name}}</li>
-                            <li><b>UNIT NUMBER:</b> {{$invoice->unit->unit_number}}</li>
-                            <li><b>NAME:</b> {{$invoice->model->firstname}} {{$invoice->model->lastname}}</li>
-                            <li><b>EMAIL:</b> {{$invoice->model->email}}</li>
-                            <li><b>PHONE NO:</b> {{$invoice->model->phonenumber}}</li>
-                        </ul>
+                        <ul class="ml-2 px-3 list-unstyled">
+                                    <li><b>PROPERTY:</b> {{$deposit->property->property_name}}</li>
+                                    <li><b>UNIT NUMBER:</b> {{$payment->unit->unit_number ?? 'NONE'}}</li>
+                                    <li><b>NAME:</b> {{$deposit->model->name}}
+                                        {{$deposit->model->firstname}} {{$deposit->model->lastname}}
+                                    </li>
+                                    <li><b>EMAIL:</b> {{$deposit->model->email}}</li>
+                                    <li><b>PHONE NO:</b> {{$deposit->model->phonenumber}}</li>
+
+                                </ul>
                     </td>
                     <td style="border: none;"></td>
                     <td style="border: none;">
-                        <ul style="list-style-type: none; padding: 0; text-align: left;">
-                            <li><b>INVOICE DATE:</b> {{\Carbon\Carbon::parse($invoice->created_at)->format('d M Y')}}</li>
-                            <li><b>DUE DATE:</b> {{\Carbon\Carbon::parse($invoice->duedate)->format('d M Y')}}</li>
-                            <li></br></li>
-                            @if( $invoice->status == 'paid' )
-                            <div class="badge badge-active" style="display: inline-block;"> PAID</div> <!------Status -->
-                            @elseif( $invoice->status == 'overpaid' )
-                            <div class="badge badge-information" style="display: inline-block;"> OVER PAID</div>
-                            @elseif ( $invoice->status == 'partially_paid' )
-                            <div class="badge badge-warning" style="display: inline-block;"> PARTIALLY PAID</div>
-                            @elseif ( $invoice->status == 'unpaid' )
-                            <div class="badge badge-error" style="display: inline-block;">UNPAID </div>
-                            @endif
-                        </ul>
+                    <ul class="ml-2 px-3 list-unstyled">
+                                <li><b>PAYMENT DATE:</b> {{\Carbon\Carbon::parse($deposit->created_at)->format('d M Y')}}</li>
+                                <li><b>PAID DATE:</b> {{\Carbon\Carbon::parse($deposit->duedate)->format('d M Y')}}</li>
+                                <li></br></li>
+                                @if( $deposit->status == 'paid' )
+                                <div style="background-color:green;font-size:17px" class="badge badge-opacity-warning"> PAID</div> <!------Status -->
+                                @elseif( $deposit->status == 'unpaid' )
+                                <div class="badge badge-error">UNPAID</div>
+                                @endif
+
+                            </ul>
                     </td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- Third Level Invoice Items -->
+        <!-- Third Level deposit Items -->
         <table>
             <thead>
                 <tr>
-                    <th>No.</th>
-                    <th class="text-center">Description </th>
-                    <th class="text-center">Amount Due </th>
-                    <th class="text-center">Total Due</th>
+                <th>No.</th>
+                        <th class="text-center">Description </th>
+                        <th class="text-center">Amount Paid </th>
+                        <th class="text-center">Total Paid</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($invoice->invoiceItems as $key=> $item)
+                @foreach($deposit->getItems as $key=> $item)
                 <tr style="height:35px;">
                     <td class="text-center">{{$key+1}}</td>
                     <td class="text-center" style="text-transform: capitalize;">
                         {{$item->description}} Charge
-                        <!--- METER READINGS -->
-                        @if($item->unitcharge->charge_type == 'units')
-                        @php
-                        $meterReadings = $item->meterReadings()
-                        ->whereDate('created_at', '>=', $invoice->created_at)
-                        ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
-                            ->first();
-                            @endphp
-                            <ul class="list-unstyled text-left">
-                                <li><i>Current Reading: {{$meterReadings->currentreading ?? ' 0'}} Units</i> </li>
-                                <li><i>Last Reading: {{$meterReadings->lastreading ?? ' 0'}} Units</i> </li>
-                                <ul>
-                                    @endif
                     </td>
                     <td class="text-center">@currency($item->amount) </td>
                     <td class="text-center"> @currency($item->amount) </td>
@@ -273,7 +260,7 @@
                         <ul style="list-style-type: none; padding: 0; text-align: right;">
                             <li>
                                 <span class="text-muted me-3" style="font-size:15px;font-weight:600; display: inline;">Sub total Amount :</span>
-                                <span style="display: inline;">{{ $sitesettings->site_currency }} @currency($invoice->totalamount)</span>
+                                <span style="display: inline;">{{ $sitesettings->site_currency }} @currency($deposit->totalamount)</span>
                             </li>
                             <br>
                             <li>
@@ -286,7 +273,7 @@
                             </li><br>
                             <li>
                                 <span class="me-3" style="font-size:17px;font-weight:700; display: inline;">Total:</span>
-                                <span class="text-error" style="font-size:17px;font-weight:700; display: inline;">{{ $sitesettings->site_currency }} @currency($invoice->totalamount)</span>
+                                <span class="text-error" style="font-size:17px;font-weight:700; display: inline;">{{ $sitesettings->site_currency }} @currency($deposit->totalamount)</span>
                             </li>
 
                         </ul>

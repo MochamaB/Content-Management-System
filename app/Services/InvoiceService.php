@@ -20,8 +20,8 @@ use App\Actions\RecordTransactionAction;
 use App\Jobs\SendInvoiceEmailJob;
 use App\Models\Transaction;
 use App\Notifications\InvoiceGeneratedNotification;
-
-
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\View;
 
 class InvoiceService
 {
@@ -46,10 +46,13 @@ class InvoiceService
     {
         return Unitcharge::where('recurring_charge', 'Yes')
             ->where('parent_id', null)
-            //     ->whereMonth('nextdate', now()->month)
+              //   ->whereMonth('nextdate', now()->month)
             ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
             })
+         //   ->whereDoesntHave('invoices', function ($query) {
+         //       $query->whereMonth('created_at', now()->month);
+         //   })
             ->get();
     }
     public function chargesForInvoiceGeneration()
@@ -66,6 +69,7 @@ class InvoiceService
     public function generateInvoice(Unitcharge $unitcharge)
     {
         $invoiceExists = $this->invoiceExists($unitcharge);
+       
         // Check if an invoice already exists for the given month, unit, and charge name
         if ($invoiceExists) {
             // Invoice already exists, skip and continue to the next Unitcharge record
@@ -105,8 +109,8 @@ class InvoiceService
 
         //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
 
-       
-        SendInvoiceEmailJob::dispatch($invoice);
+       $this->invoiceEmail($invoice);
+     //   SendInvoiceEmailJob::dispatch($invoice);
 
 
         return $invoice;
@@ -143,13 +147,11 @@ class InvoiceService
     private function invoiceExists(Unitcharge $unitcharge)
     {
 
-        $doc = 'INV-';
-        $propertynumber = 'P' . str_pad($unitcharge->property_id, 2, '0', STR_PAD_LEFT);
-        $unitnumber = $unitcharge->unit->unit_number ?? 'N';
-        $date = Carbon::parse($unitcharge->nextdate)->format('ymd');
-        $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
-        return Invoice::where('referenceno', $referenceno)
-            ->where('name', $unitcharge->charge_name)
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+        
+        return Invoice::where('unitcharge_id', $unitcharge->id)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->first();
     }
 
@@ -161,7 +163,7 @@ class InvoiceService
         $user = User::class;
         $doc = 'INV-';
         $propertynumber = 'P' . str_pad($unitcharge->property_id, 2, '0', STR_PAD_LEFT);
-        $unitnumber = $unitcharge->unit_id ?? 'N';
+        $unitnumber = $unitcharge->unit->unit_number ?? 'N';
         $date = Carbon::parse($unitcharge->nextdate)->format('ymd');
         $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
 
@@ -267,6 +269,23 @@ class InvoiceService
         $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
         $openingBalance = $this->calculateOpeningBalance($invoice);
 
-        $user->notify(new InvoiceGeneratedNotification($invoice, $user, $openingBalance));
+        $viewContent = View::make('email.statement', [
+            'user' => $user,
+            'invoice' => $invoice,
+            'transactions' => $transactions,
+            'groupedInvoiceItems' => $groupedInvoiceItems,
+            'openingBalance' => $openingBalance
+        ])->render();
+
+        try {
+            $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
+        } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+            Log::error('Failed to send payment notification: ' . $e->getMessage());
+        }
+
+       
     }
+
+    
 }

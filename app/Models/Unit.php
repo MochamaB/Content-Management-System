@@ -38,13 +38,13 @@ class Unit extends Model implements HasMedia
         'property_id' => ['label' => 'Property Name', 'inputType' => 'select', 'required' => true, 'readonly' => true],
         'unit_type' => ['label' => 'Type', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'unit_number' => ['label' => 'Unit Number', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
-        'rent' => ['label' => 'Market Rent', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
-        'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'number', 'required' => false, 'readonly' => true],
+        'rent' => ['label' => 'Market Rent', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
+        'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
         'size' => ['label' => 'Size (Sqm)', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
         'bathrooms' => ['label' => 'No of Bathrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
         'bedrooms' => ['label' => 'No of Bedrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
         'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' => false, 'readonly' => ''],
-        'selling_price' => ['label' => 'Selling Price', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
+        'selling_price' => ['label' => 'Selling Price', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
 
         // Add more fields as needed
     ];

@@ -57,7 +57,7 @@
                                 @if( $deposit->status == 'paid' )
                                 <div style="background-color:green;font-size:17px" class="badge badge-opacity-warning"> PAID</div> <!------Status -->
                                 @elseif( $deposit->status == 'unpaid' )
-                                <div class="badge badge-warning">PAYABLE</div>
+                                <div class="badge badge-error">UNPAID</div>
                                 @endif
 
                             </ul>
@@ -77,73 +77,67 @@
                     </tr>
                 </thead>
                 <tbody>
-                  
-                    <tr style="height:35px;">
-                        <td class="text-center">1.</td>
-                        <td class="text-center" style="text-transform: capitalize;">
-                            {{$deposit->name}} Charge
 
-                        </td>
-                        <td class="text-center">@currency($deposit->totalamount) </td>
-                        <td class="text-center"> @currency($deposit->totalamount)</td>
+                @foreach($deposit->getItems as $key=> $item)
+                <tr style="height:35px;">
+                    <td class="text-center">{{$key+1}}</td>
+                    <td class="text-center" style="text-transform: capitalize;">
+                        {{$item->description}} Charge
+                    </td>
+                    <td class="text-center">@currency($item->amount) </td>
+                    <td class="text-center"> @currency($item->amount) </td>
 
-                    </tr>
-                    
+                </tr>
+                @endforeach
+
                 </tbody>
             </table></br>
+          
             <!------- FOURTH LEVEL PAYMENT DETAILS AND TOTALS-->
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <td>
-                            <h4><b>Deposit Receipt </b></h4>
-                            <p>This receipt serves as proof of payment made to the company.</p>
 
-                            <h6>.</h6>
-                            <ul>
+            <div class="row">
+                <div class="col-md-6 mt-3">
+                    <h4><b>Deposit Receipt </b></h4>
+                    <p>This receipt serves as proof of payment made to the company.</p>
 
-                            </ul>
-
-                        </td>
-                        <td class="align-top">
-                            <h4><b>Totals </b></h4>
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr style="height:45px;">
-                                        <td>Sub Total Amount</td>
-                                        <td class="text-center">{{ $sitesettings->site_currency }}. @currency($deposit->totalamount)</td>
-                                    </tr>
-                                    <tr style="height:45px;">
-                                        <td>Tax & Discounts</td>
-                                        <td class="text-center">{{ $sitesettings->site_currency }} 0 </td>
-                                    </tr>
-                                    <tr style="height:45px;">
-                                        <td>Other Charges</td>
-                                        <td class="text-center">{{ $sitesettings->site_currency }} 0 </td>
-                                    </tr>
-                                    <tr style="height:45px;">
-                                        <td class="text-bold-800" style="font-size:18px;font-weight:700">Total PAID</td>
-
-                                        <td class="text-bold-800 text-center" style="font-size:18px;font-weight:700">{{ $sitesettings->site_currency }} @currency($deposit->totalamount) </td>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                        </td>
-
-
-                    </tr>
-                </tbody>
-            </table>
-            <!------- FOOTER-->
-            <hr>
-
-            <div class="col-md-12" style="text-align:center;">
-                <h6>Terms & Condition</h6>
-                <p>Refer to the terms and conditions on Lease agreement.</p>
-                <p><a href="www.bridgetech.co.ke">POWERED BY BRIDGE PROPERTIES</a></p>
+                    <div class="d-flex justify-content-start">
+                        <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
+                        <span> </span>
+                    </div>
+                    <div class="d-flex justify-content-start">
+                        <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
+                        <span> </span>
+                    </div>
+                    <div class="d-flex justify-content-start">
+                        <p class="text-muted me-3" style="font-size:16px;font-weight:600"> </p>
+                        <span> </span>
+                    </div>
+                    <div class="d-flex justify-content-start mt-3">
+                        <h4 class="me-3" style="font-weight:700"> </h4>
+                        <h4 class="text-success" style="font-weight:700"> </h4>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <div class="d-flex justify-content-end">
+                        <p class="text-muted me-3" style="font-size:15px;font-weight:600">Sub total Amount :</p>
+                        <span>{{ $sitesettings->site_currency }} @currency($deposit->totalamount)</span>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="text-muted me-3" style="font-size:15px;font-weight:600">Tax & Discounts:</p>
+                        <span>{{ $sitesettings->site_currency }} 0 </span>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <p class="text-muted me-3" style="font-size:16px;font-weight:600">Other Charges:</p>
+                        <span>{{ $sitesettings->site_currency }} 0 </span>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <h4 class="me-3" style="font-weight:700">Total:</h4>
+                        <h4 class="text-error" style="font-weight:700">{{ $sitesettings->site_currency }} @currency($deposit->totalamount)</h4>
+                    </div>
+                </div>
             </div>
+            <!------- FOOTER-->
+
 
         </div>
 

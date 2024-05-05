@@ -287,4 +287,15 @@ Route::get('/notificationview', function () {
       ->toMail($user->user);
 });
 
+Route::get('/invoiceview', function () {
+    $user = User::find(1);
+   $tenant = User::find(1);
+   $payment = Payment::find(1);
+   $invoice = Invoice::find(1);
+
+
+
+   return View('email.invoice',compact('invoice'));
+});
+
 require __DIR__ . '/auth.php';
