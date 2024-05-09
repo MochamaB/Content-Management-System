@@ -22,9 +22,9 @@
                 <td class="text-left">
                     <ul class="ml-4 px-3 list-unstyled">
                         <li>
-                            <h3 style="text-transform: uppercase;"> RECEIPT</h3>
+                            <h3 style="text-transform: uppercase;"> {{$payment->model->name}} RECEIPT</h3>
                         </li>
-                        <li><b>{{$payment->referenceno}}</b></li>
+                        <li><b>{{$payment->referenceno}} - #{{$payment->id}}</b></li>
                         <li style="color:green; font-weight:700;font-size:14px">TOTAL PAID</li>
                         <li style="color:green; font-weight:700;font-size:20px"> {{ $sitesettings->site_currency }} @currency($payment->totalamount)</li>
                     </ul>
@@ -33,7 +33,7 @@
             <!------ SECOND SECTION DETAILS -->
             <tr>
                 <td></br>
-                    <h4="text-muted"><b>PAYMENT TO</b></h4>
+                    <h4="text-muted"><b>PAYMENT TO / FROM</b></h4>
                         <ul class="ml-2 px-3 list-unstyled">
                             <li><b>PROPERTY:</b> {{$payment->property->property_name}}</li>
                             <li><b>UNIT NUMBER:</b> {{$payment->unit->unit_number ?? 'NONE'}}</li>
@@ -88,19 +88,23 @@
 
         <div class="mt-3">
             <div class="d-flex justify-content-end">
-                <p class="text-muted me-3" style="font-size:15px;font-weight:600">Sub total Amount :</p>
-                <span>{{ $sitesettings->site_currency }} @currency($payment->totalamount)</span>
+                <p class="text-muted me-3" style="font-size:15px;font-weight:600">{{$payment->model->name }} Amount Due :</p>
+                <span>{{ $sitesettings->site_currency }} @currency($payment->model->totalamount)</span>
+            </div>
+            <div class="d-flex justify-content-end">
+                <p class="text-muted me-3" style="font-size:16px;font-weight:600">Amount Paid:</p>
+                <span>{{ $sitesettings->site_currency }} @currency($payment->totalamount) </span>
             </div>
             <div class="d-flex justify-content-end">
                 <p class="text-muted me-3" style="font-size:15px;font-weight:600">Tax & Discounts:</p>
                 <span>{{ $sitesettings->site_currency }} 0 </span>
             </div>
             <div class="d-flex justify-content-end">
-                <p class="text-muted me-3" style="font-size:16px;font-weight:600">Other Charges:</p>
-                <span>{{ $sitesettings->site_currency }} 0 </span>
+                <p class="text-muted me-3" style="font-size:16px;font-weight:600">Balance:</p>
+                <span>{{ $sitesettings->site_currency }} @currency($payment->model->totalamount - $payment->totalamount) </span>
             </div>
             <div class="d-flex justify-content-end mt-3">
-                <h4 class="me-3" style="font-weight:700">Total:</h4>
+                <h4 class="me-3" style="font-weight:700">Total Paid:</h4>
                 <h4 class="text-success" style="font-weight:700">{{ $sitesettings->site_currency }} @currency($payment->totalamount)</h4>
             </div>
         </div>

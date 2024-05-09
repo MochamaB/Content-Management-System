@@ -147,10 +147,10 @@ class TableViewDataService
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information">Add Payment</a>';
             } elseif ($totalPaid < $item->totalamount) {
                 $status = 'partially_paid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information">Add Payment</a>';
             } elseif ($totalPaid > $item->totalamount) {
                 $status = 'over_paid';
             } elseif ($totalPaid == $item->totalamount) {
@@ -162,8 +162,8 @@ class TableViewDataService
             }
 
             $statusClass = $statusClasses[$status] ?? 'secondary';
-            $invoiceStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
-            $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
+            $invoiceStatus = '  <span class="badge badge-' . $statusClass . '">' . $status . '</span>';
+            $balanceStatus = '  <span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
             if (!empty($item->payments)) {
                 $receipttext = '</br><span class="text-muted" style="margin-top:5px;font-weight:500;"> Receipts</span>';
             } else {
@@ -181,13 +181,13 @@ class TableViewDataService
 
             $row = [
                 'id' => $item->id,
-                $invoiceStatus . '</br></br>' . $item->referenceno . '-' . $item->id,
+                $invoiceStatus . '</br></br>' . $item->referenceno,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Issue Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->name,
                 $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
                 $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ',') . $receipttext . '' . $paymentLinks,
-                $balanceStatus . '  ' . $payLink,
+                $balanceStatus . ' </br>' . $payLink,
 
 
             ];
@@ -325,7 +325,7 @@ class TableViewDataService
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $row = [
                 'id' => $item->id,
-                'RCPT#: ' . $item->id . '-' . $item->referenceno,
+                $item->referenceno. ' - #' . $item->id ,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Paid on Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 class_basename($item->model),

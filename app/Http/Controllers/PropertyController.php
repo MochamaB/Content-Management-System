@@ -45,7 +45,7 @@ class PropertyController extends Controller
     {
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
-        $tablevalues = Property::ApplyFilters($filters)->get();
+        $tablevalues = Property::with('units','propertyType')->ApplyFilters($filters)->get();
         //   $tablevalues = Property::withUserUnits()->get();
         $viewData = $this->formData($this->model);
      //   $cardData = $this->cardData($this->model);

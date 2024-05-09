@@ -273,6 +273,7 @@ Route::post('closewizard/{routePart}', [SettingController::class, 'closewizard']
 
 ///Send Email
 Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoice']);
+Route::get('/payment/{payment}/sendmail', [PaymentController::class, 'sendPayment']);
 //Route::get('notification', [NotificationController::class, 'index']);
 
 //////View Your email notification
@@ -287,15 +288,15 @@ Route::get('/notificationview', function () {
       ->toMail($user->user);
 });
 
-Route::get('/invoiceview', function () {
+Route::get('/paymentview', function () {
     $user = User::find(1);
    $tenant = User::find(1);
-   $payment = Payment::find(1);
+   $payment = Payment::find(2);
    $invoice = Invoice::find(1);
 
 
 
-   return View('email.invoice',compact('invoice'));
+   return View('email.payment',compact('payment'));
 });
 
 require __DIR__ . '/auth.php';

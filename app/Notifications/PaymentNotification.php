@@ -16,6 +16,7 @@ class PaymentNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $payment;
+    protected $view;
     protected $user;
     protected $subject;
     protected $heading;
@@ -28,23 +29,17 @@ class PaymentNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($payment,$user)
+    public function __construct($payment, $user, $view)
     {
         $this->payment = $payment;
         $this->user = $user;
         $this->company = WebsiteSetting::pluck('company_name')->first();
-        $this->subject = $this->payment->model->name.' Receipt';
-        $this->heading =  'New '.$this->payment->model->type.' Payment';
+        $this->subject = $this->payment->model->name . ' Receipt' . \Carbon\Carbon::parse($this->payment->created_at)->format('d M Y');
+        $this->heading =  'New ' . $this->payment->model->type . ' Payment';
         $this->linkmessage = 'Go To Site';
-       
+        $this->view = $view;
+
         $paymentdate = Carbon::parse($this->payment->created)->format('Y-m-d');
-        $this->data = ([
-            "line 1" => "Please find attached Receipt Ref Number  ".$this->payment->referenceno,
-            "line 2" => $this->payment->model->type." Charge was paid on ".$paymentdate,
-            "line 3" => "Login to the portal to get your account statement",
-            "action" => "payment/".$this->payment->id,
-            "line 4" => "",
-        ]);
     }
 
 
@@ -56,7 +51,7 @@ class PaymentNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail','database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -68,15 +63,18 @@ class PaymentNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $paymentpdf = PDF::loadView('email.payment', ['payment' => $this->payment]);
-        $paymentfilename = $this->payment->referenceno.' '.$this->payment->unit->unit_number.' receipt.pdf';
-       // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
+        $paymentfilename = $this->payment->referenceno . ' ' . $this->payment->unit->unit_number . ' receipt.pdf';
+        // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
         // Create a filename using invoice values
         return (new MailMessage)
             ->view(
-                'email.template',
-                ['user' => $this->user,'data'=> $this->data,'linkmessage' => $this->linkmessage,'heading' =>$this->heading])
-                    ->subject($this->payment->model->name.' Receipt')
-                    ->attachData($paymentpdf->output(), $paymentfilename);
+                'email.invoicenotification',
+                [
+                    'viewContent' => $this->view,
+                ]
+            )
+            ->subject($this->payment->model->name . ' Receipt')
+            ->attachData($paymentpdf->output(), $paymentfilename);
     }
 
     /**

@@ -8,6 +8,7 @@
         data-search-align="left" 
         data-sort-order="asc" 
         data-search="true" 
+        data-mobile-responsive="true"
         data-sticky-header="true" 
         data-pagination="true" 
         data-page-list="[100, 200, 250, 500, ALL]" 
@@ -30,7 +31,7 @@
                 @foreach(array_slice($row, 2) as $cell)
                 <td style="text-transform: capitalize;padding-left: 15px; padding-right:15px;">{!! $cell !!}</td>
                 @endforeach
-                <td>
+                <td style="padding-left: 15px; padding-right:15px;">
                     <!-- SHOW BUTTON -->
                     <a href="{{url($controller[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-eye mdi-24px text-dark"></i></a>
                     <!-- EDIT BUTTON -->

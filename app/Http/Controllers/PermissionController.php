@@ -27,7 +27,7 @@ class PermissionController extends Controller
      }
     public function index()
     {
-        $tablevalues = Permission::orderby('name','ASC')->get();
+        $tablevalues = Permission::with('roles')->orderBy('name', 'ASC')->get();
         $mainfilter = Permission::pluck('name')->map(function ($name) {
             return explode('.', $name)[0];
         })->unique()->toArray();

@@ -10,6 +10,7 @@
             </div>
             <div class="card-body">
                 <a href="" onclick="printDiv('printMe')" class="btn btn-warning btn-lg text-white"><i class="icon-printer" style="color:white"></i> Print to PDF</a>
+                <a href="{{ url('payment/'.$payment->id.'/sendmail') }}" class="btn btn-primary btn-lg text-white "><i class="ti-email"></i>Send Reminder Email</a>
             </div>
         </div>
 

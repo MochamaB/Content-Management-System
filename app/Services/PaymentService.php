@@ -17,8 +17,7 @@ use App\Notifications\PaymentNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use \Illuminate\Support\Facades\Log;
-
-
+use Illuminate\Support\Facades\View;
 
 class PaymentService
 {
@@ -60,13 +59,7 @@ class PaymentService
         $this->recordTransactionAction->transaction($payment);
 
         //5. Send Email/Notification to the Tenant containing the receipt.
-        $user = $payment->model->model;
-        try {
-            $user->notify(new PaymentNotification($payment, $user));
-        } catch (\Exception $e) {
-            // Log the error or perform any necessary actions
-            Log::error('Failed to send payment notification: ' . $e->getMessage());
-        }
+        $this->paymentEmail($payment);
 
 
         return $payment;
@@ -129,19 +122,25 @@ class PaymentService
         }
     }
 
-    /////////Pay for expenses
-    public function generateExpensePayment(Model $model, $validatedData)
+    /////////Send Email
+    public function paymentEmail($payment)
     {
-        $user = Auth::user();
-        $payment = new Payment();
-        $payment->fill($validatedData);
-        $payment->received_by = $user->email;
-        $payment->save();
-        //2. Create Transactions for ledger
-        $this->recordTransactionAction->payexpenses($payment, $model);
-
-        //3. Send Email/Notification to the Tenant containing the receipt.
+        
+        
         $user = $payment->model->model;
-        $user->notify(new PaymentNotification($payment, $user));
+        
+
+        $viewContent = View::make('email.payment', [
+            'payment' => $payment,
+        ])->render();
+           
+     //   try {
+            $user->notify(new PaymentNotification($payment, $user,$viewContent));
+     //   } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+     //       Log::error('Failed to send payment notification: ' . $e->getMessage());
+     //   }
+
+       
     }
 }

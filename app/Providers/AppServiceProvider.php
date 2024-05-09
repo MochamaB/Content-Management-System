@@ -81,6 +81,7 @@ class AppServiceProvider extends ServiceProvider
             $routeParts = explode('.', $routeName);
             $urlParts = explode('/', url()->current());
             $currentUrl = url()->current();
+            $user = auth()->user();
             $sitesettings = WebsiteSetting::first();
             $view->with([
                 'routeName' => $routeName,
@@ -88,6 +89,7 @@ class AppServiceProvider extends ServiceProvider
                 'urlParts' => $urlParts,
                 'currentUrl' => $currentUrl,
                 'sitesettings' => $sitesettings,
+                'user'=>$user,
             ]);
         });
         view()->composer('layouts.admin.master-filter', function ($view) {
@@ -120,20 +122,12 @@ class AppServiceProvider extends ServiceProvider
 
         /////////ADMIN//////////////////////////////
 
-        view()->composer('layouts.admin.adminheader', function ($view) {
-            // Get the authenticated user, assuming you are using the default 'auth' guard
-            $user = auth()->user();
-            $sitesettings = WebsiteSetting::first();
-            // Pass the authenticated user data to the 'layouts.admin' view
-            $view->with([
-                'user' => $user, 'sitesettings' => $sitesettings
-            ]);
-        });
+        
 
         view()->composer('layouts.admin.adminnavbar', function ($view) {
             // Get the authenticated user, assuming you are using the default 'auth' guard
             $user = auth()->user();
-            $sitesettings = WebsiteSetting::first();
+          
 
             if (Gate::allows('view-all', $user) || Gate::allows('admin', $user)) {
                 $notifications = Notification::all();
@@ -143,7 +137,7 @@ class AppServiceProvider extends ServiceProvider
             }
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([
-                'user' => $user, 'sitesettings' => $sitesettings,
+                'user' => $user, 
                 'unreadNotifications' => $unreadNotifications
             ]);
         });
@@ -231,6 +225,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         ////////////////// EMAIL //////////////////////////
+        /*
         view()->composer('email.template', function ($view) {
             $sitesettings = WebsiteSetting::first();
             $view->with(['sitesettings' => $sitesettings]);
@@ -248,5 +243,6 @@ class AppServiceProvider extends ServiceProvider
                 'user' => $user, 'sitesettings' => $sitesettings
             ]);
         });
+        */
     }
 }

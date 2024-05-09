@@ -311,6 +311,11 @@
 
 }
 
+.header {
+  position: sticky;
+  top: 0;
+}
+
 .formcontrol2.is-invalid {
   border-color: #dc3545;
   /* Red border color for invalid inputs */
@@ -1028,7 +1033,35 @@ a .badge:hover {
   font-size: 48px;
 }
 
+.bootstrap-table .fixed-table-container .table thead th .both {
+  background-image: url("data:image/svg+xml; charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100' fill='%23000000' opacity='0.56'%3E%3Cpolygon points='50,10 70,45 30,45'/%3E%3Cpolygon points='30,55 70,55 50,90' /%3E%3C/svg%3E");
+    background-size: 1.1875rem, 1.1875rem;
+}
+.bootstrap-table .fixed-table-container .table thead th .asc {
+  background-image: url("data:image/svg+xml; charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23000000' opacity='0.69'%3E%3Cpolygon points='50,10 70,45 30,45'/%3E%3C/svg%3E");
+  background-size: 1.1875rem, 1.1875rem;
+}
+
+.bootstrap-table .fixed-table-container .table thead th .desc {
+  background-image: url("data:image/svg+xml; charset=utf8, %3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23000000' opacity='0.69'%3E%3Cpolygon points='30,55 70,55 50,90' /%3E%3C/svg%3E");
+  background-size: 1.1875rem, 1.1875rem;
+} /* IE10 & 11 want URL encoded open and close characters */
+
+.bootstrap-table .fixed-table-container .table tbody tr .card-view {
+  display: flex;
+  padding: 8px;
+}
+.bootstrap-table .fixed-table-container .table tbody tr .card-view .card-view-title {
+  font-weight: 700;
+  display: inline-block;
+  min-width: 35%;
+  width: auto !important;
+  text-align: left !important;
+  word-wrap: break-word;
+}
+
 /*------------------------ Responsiveness ----------------------------------------------------------  */
+/* SCreen size under 991px(Tablet) */
 
 @media screen and (max-width: 991px) {
 
@@ -1081,6 +1114,14 @@ a .badge:hover {
     width: calc(100% - 180px);
     height: 97px;
   }
+
+/* Screen size under 576(phone) */
+  @media (max-width: 576px) {
+    .contwrapper {
+        border: none;
+        padding: 0;
+    }
+}
 
 
 

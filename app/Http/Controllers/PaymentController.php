@@ -184,22 +184,19 @@ class PaymentController extends Controller
         //
     }
 
-    public function sendemail()
+    public function sendPayment(Payment $payment)
     {
+        //  $invoice->load('property');
+        //    dd($invoice);
+        //  return View('email.invoice',compact('invoice'));
+        //   $pdf = PDF::loadView('email.invoice', compact('invoice'));
+        //  return $pdf->download('invoice12.pdf');
+        //   return $pdf->stream('invoice.pdf');
 
-        $invoiceId = '1';
-        $model = Invoice::find($invoiceId);
-
-        $items = $model->getItems;
-        //   dd($items);
-        $validationRules = Payment::$validation;
-        $validatedData = $request->validate($validationRules);
-
-        //   dd($validatedData);
-        $this->paymentService->generatePayment($model, $validatedData);
-
-        $previousUrl = Session::get('previousUrl');
-        return redirect($previousUrl)->with('status', 'Payment Added Successfully');
+     //   $user = $invoice->model;
+     //   $user->notify(new InvoiceGeneratedNotification($invoice, $user));
+        $this->paymentService->paymentEmail($payment);
+        return redirect()->back()->with('status', 'Sucess Payment receipt Sent.');
     }
 
     /**
