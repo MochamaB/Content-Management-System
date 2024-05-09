@@ -115,7 +115,7 @@ class ExpenseController extends Controller
         $this->expenseService->generateExpense(null,null,$validatedData,$formreferenceno,$request);
 
         $previousUrl = Session::get('previousUrl');
-        if ($previousUrl) {
+        if ($previousUrl && $unitnumber) {
             return redirect($previousUrl)->with('status', 'Your Expense has been saved successfully');
         } else {
             return redirect('expense/')->with('status', ' Expense Added Successfully');

@@ -1,5 +1,18 @@
 <div class="col-md-12">
-    <table id="table" data-toggle="table" data-icon-size="sm" data-buttons-class="primary" data-toolbar-align="right" data-buttons-align="left" data-search-align="left" data-sort-order="asc" data-sticky-header="true" data-page-list="[100, 200, 250, 500, ALL]" data-page-size="100" data-show-footer="false" data-side-pagination="client" class="table table-bordered">
+    <table id="table" data-toggle="table" 
+        data-icon-size="sm" 
+        data-buttons-class="primary" 
+        data-toolbar-align="right" 
+        data-buttons-align="left" 
+        data-search-align="left" 
+        data-sort-order="asc" 
+        data-mobile-responsive="true"
+        data-sticky-header="true" 
+        data-page-list="[100, 200, 250, 500, ALL]"
+        data-page-size="100" 
+        data-show-footer="false" 
+        data-side-pagination="client"
+        class="table table-bordered">
         <thead>
             <tr>
                 <th class="text-center"></th>

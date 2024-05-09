@@ -1,59 +1,7 @@
 @extends('layouts.admin.admin')
 
 @section('content')
-<style>
-    @media screen and (max-width: 600px) {
-  table {
-    border: 0;
-  }
 
-  table caption {
-    font-size: 1.3em;
-  }
-  
-  table thead {
-    border: none;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
-  }
-  
-  table tr {
-    border-bottom: 3px solid #ddd;
-    display: block;
-    margin-bottom: .625em;
-  }
-  
-  table td {
-    border-bottom: 1px solid #ddd;
-    display: block;
-    font-size: .8em;
-    text-align: right;
-  }
-  
-  table td::before {
-    /*
-    * aria-label has no advantage, it won't be read inside a table
-    content: attr(aria-label);
-    */
-    content: attr(data-label);
-    float: left;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  
-  table td:last-child {
-    border-bottom: 0;
-  }
-}
-
-
-
-</style>
 
 <div class=" contwrapper">
 
@@ -72,7 +20,21 @@
             </div>
         </div>
         <div class="col-md-10">
-            <table id="table" data-toggle="table" data-icon-size="sm" data-buttons-class="primary" data-toolbar-align="right" data-buttons-align="left" data-search-align="left" data-sort-order="asc" data-sticky-header="true" data-page-list="[100, 200, 250, 500, ALL]" data-page-size="100" data-show-footer="false" data-side-pagination="client" class="table table-bordered">
+            <table id="table" 
+            data-toggle="table" 
+            data-icon-size="sm" 
+            data-buttons-class="primary" 
+            data-toolbar-align="right" 
+            data-buttons-align="left" 
+            data-search-align="left" 
+            data-mobile-responsive="true"
+            data-sort-order="asc"
+            data-sticky-header="true" 
+            data-page-list="[100, 200, 250, 500, ALL]" 
+            data-page-size="100" 
+            data-show-footer="false" 
+            data-side-pagination="client" 
+            class="table table-bordered">
                 <thead>
                     <tr>
 
@@ -90,11 +52,11 @@
                         @php
                         $latestread = $item->meterReading->last();
                         @endphp
-                        <td data-label="UNIT" id='' class="text-center" style="background-color:#dae3fa;">
+                        <td class="text-center" style="padding:0px">
                             <input type="hidden" class="" name="unit_id[]" id='' value="{{ $item->unit_id}}" readonly>
                             {{$item->unit->unit_number}}
                         </td>
-                        <td data-label="CHARGE" id='' class="text-center" style="background-color:#dae3fa;">
+                        <td class="text-center"style="padding:0px">
                             <input type="hidden" name="unitcharge_id[]" value="{{ $item->id }}">
                             {{$item->charge_name}}
                         </td>
@@ -102,17 +64,17 @@
                         <td data-label="DATE LAST READING" class="text-center" style="padding:0px">
                             <input type="date" class="form-control" name="startdate[]" id='startdate' value="{{ $latestread->startdate ?? old('startdate_' . $key) ?? now()->toDateString() }}" readonly>
                         </td>
-                        <td data-label="PREVIOUS READING" class="text-center" style="padding:0px">
+                        <td  class="text-center" style="padding:0px">
                             <input type="number" class="form-control @error('lastreading.' . $key) is-invalid @enderror" name="lastreading[]" id='' value="{{$latestread->currentreading ?? 0.00 }}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
                             @error('reading')
                             <div class="invalid-feedback">Error</div>
                             @enderror
                         </td>
-                        <td data-label="DATE OF READING" class="text-center" style="padding:0px">
-                            <input type="date" class="form-control @error('enddate.' . $key) is-invalid @enderror" name="enddate[]" id="enddate" value="{{ old('enddate.' . $key) ??  now()->toDateString() }}" style="border:none" required>
+                        <td  class="text-center" style="padding:0px">
+                            <input type="date" class="form-control @error('enddate.' . $key) is-invalid @enderror" name="enddate[]" id="enddate" value="{{ old('enddate.' . $key) ??  now()->toDateString() }}" required>
                         </td>
-                        <td data-label="CURRENT READING" class="text-center" style="padding:0px">
-                            <input type="number" class="form-control" name="currentreading[]" id="currentreading" value="{{ old('currentreading.' . $key)}}" style="border:none" required>
+                        <td  class="text-center" style="padding:0px">
+                            <input type="number" class="form-control" name="currentreading[]" id="currentreading" value="{{ old('currentreading.' . $key)}}"required>
                             <input type="hidden" name="rate_at_reading[]" value="{{ $item->rate }}">
                         </td>
                     </tr>

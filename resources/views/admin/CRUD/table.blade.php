@@ -27,11 +27,11 @@
         <tbody>
             @foreach($data['rows'] as $key => $row)
             <tr>
-                <td style="padding-left: 15px;padding-right:15px;"><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
+                <td style=""><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
                 @foreach(array_slice($row, 2) as $cell)
-                <td style="text-transform: capitalize;padding-left: 15px; padding-right:15px;">{!! $cell !!}</td>
+                <td style="text-transform: capitalize; ">{!! $cell !!}</td>
                 @endforeach
-                <td style="padding-left: 15px; padding-right:15px;">
+                <td style="padding-right:15px;">
                     <!-- SHOW BUTTON -->
                     <a href="{{url($controller[0].'/'.$row['id'])}}" class=""  data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-eye mdi-24px text-dark"></i></a>
                     <!-- EDIT BUTTON -->
