@@ -31,11 +31,11 @@
         <label class="label">Role Name<span class="requiredlabel">*</span></label>
         <h5>
                     <small class="text-muted">
-                    {{ $user->roles->first()->name ?? '' }}
+                    {{ $editUser->roles->first()->name ?? '' }}
                     </small>
                 </h5>
         <select name="role" id="role" class="formcontrol2" required>
-            <option value=" {{ $user->roles->first()->id  ?? ''}}"> {{ $user->roles->first()->name ?? '' }}</option>
+            <option value=" {{ $user->roles->first()->id  ?? ''}}"> {{ $editUser->roles->first()->name ?? '' }}</option>
             @foreach($roles as $item)
             <option value="{{$item->id ?? ''}}">{{$item->name ?? ''}}</option>
             @endforeach

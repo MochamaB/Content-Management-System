@@ -49,7 +49,7 @@
                 <label class="label">Profile Picture</label>
                 <h5>
                             <small class="text-muted">
-                            {{ $user->profilepicture }}
+                            {{ $editUser->profilepicture }}
                             </small>
                         </h5>
                     <input type="file" name="profilepicture" value="{{$user->profilepicture }}" class="form-control" id="logo" /></br>
@@ -62,7 +62,7 @@
                         <label class="label">First Name<span class="requiredlabel">*</span></label>
                         <h5>
                             <small class="text-muted">
-                            {{ $user->firstname }}
+                            {{ $editUser->firstname }}
                             </small>
                         </h5>
                         <input type="text" name="firstname" id="name" class="form-control" value="{{ $user->firstname }}" required />
@@ -74,7 +74,7 @@
                         <label class="label">Last Name<span class="requiredlabel">*</span></label>
                         <h5>
                             <small class="text-muted">
-                            {{ $user->lastname }}
+                            {{ $editUser->lastname }}
                             </small>
                         </h5>
                         <input type="text" name="lastname" id="name" class="form-control" value=" {{ $user->lastname }}" required />
@@ -85,7 +85,7 @@
                         <label class="label">Email<span class="requiredlabel">*</span></label>
                         <h5>
                             <small class="text-muted">
-                            {{ $user->email }}
+                            {{ $editUser->email }}
                             </small>
                         </h5>
                         <input type="text" name="email" id="name" class="form-control" value=" {{ $user->email }}" required />
@@ -96,7 +96,7 @@
                         <label class="label">Phone Number<span class="requiredlabel">*</span></label>
                         <h5>
                             <small class="text-muted">
-                            {{ $user->phonenumber }}
+                            {{ $editUser->phonenumber }}
                             </small>
                         </h5>
                         <input type="tel" name="phonenumber" id="name" class="form-control" value=" {{ $user->phonenumber }}" required />

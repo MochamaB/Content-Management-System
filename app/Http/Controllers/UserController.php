@@ -252,13 +252,15 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($user)
     {
+        
+        $showUser = User::with('units.invoices')->findOrFail($user);
         //1. GET PAGE HEADINGS FOR SHOW PAGE
         $pageheadings = collect([
-            '0' => $user->email,
-            '1' => $user->firstname,
-            '2' => $user->lastname,
+            '0' => $showUser->email,
+            '1' => $showUser->firstname,
+            '2' => $showUser->lastname,
         ]);
 
         //2. GET THE TITLES FOR THE TABS
@@ -274,11 +276,15 @@ class UserController extends Controller
         ]);
 
         /// DATA FOR INVOICES TAB
-        $invoices = Invoice::all();
+        $invoices = $showUser->units->flatMap(function ($unit) {
+            return $unit->invoices;
+        });
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($invoices);
 
         /// DATA FOR PAYMENTS TAB
-        $payments = Payment::all();
+        $payments = $showUser->units->flatMap(function ($unit) {
+            return $unit->payments;
+        });
         $paymentTableData = $this->tableViewDataService->getPaymentData($payments);
 
         //3. LOAD THE PAGES FOR THE TABS
@@ -293,7 +299,7 @@ class UserController extends Controller
             }
         }
 
-        return View('admin.user.user_profile', compact('pageheadings', 'tabTitles', 'tabContents', 'user'));
+        return View('admin.user.user_profile', compact('pageheadings', 'tabTitles', 'tabContents', 'showUser'));
     }
 
     /**
@@ -304,18 +310,18 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $loggeduser = Auth::user();
+        $editUser = $user;
         $roles = Role::all();
-        $userRole = $user->roles->pluck('name');
-        $assignedproperties = $user->units->pluck('id')->toArray();
-
+        $userRole = $editUser->roles->pluck('name');
+        $assignedproperties = $editUser->units->pluck('id')->toArray();
+       
         //// Role of user being edited
         //   $savedRole = Role::where('id', $userRole)->first();
 
         $pageheadings = collect([
-            '0' => $user->email,
-            '1' => $user->firstname,
-            '2' => $user->lastname,
+            '0' => $editUser->email,
+            '1' => $editUser->firstname,
+            '2' => $editUser->lastname,
         ]);
         $propertyaccess = Property::with('units')->get();
         $assignedUnits = User::role($userRole)->with('units')->get()->pluck('units')->flatten()->pluck('id')->toArray();
@@ -334,17 +340,17 @@ class UserController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Roles') {
-                $tabContents[] = View('admin.user.user_roles', compact('roles', 'user', 'userRole'))->render();
+                $tabContents[] = View('admin.user.user_roles', compact('roles', 'editUser', 'userRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $tabContents[] = View('admin.user.user_contactinfo', compact('user'))->render();
+                $tabContents[] = View('admin.user.user_contactinfo', compact('editUser'))->render();
             } elseif ($title === 'Login Access') {
-                $tabContents[] = View('admin.user.user_logins', compact('user'))->render();
+                $tabContents[] = View('admin.user.user_logins', compact('editUser'))->render();
             } elseif ($title === 'Property Access') {
                 $tabContents[] = View('admin.user.user_property', compact('userRole', 'propertyaccess', 'assignedproperties', 'assignedUnits'))->render();
             }
         }
 
-        return View('admin.user.user', compact('pageheadings', 'tabTitles', 'tabContents', 'user'));
+        return View('admin.user.user', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**

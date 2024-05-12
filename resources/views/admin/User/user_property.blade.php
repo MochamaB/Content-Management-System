@@ -63,6 +63,9 @@
 </h4>
 @endif
 <hr>
+@if(stripos($userRole, 'Tenant') !== false)
+    @include('layouts.admin.nodata', ['message' => 'You have to create or delete a lease to assign or remove units to Tenants'])
+@else
 
 <div id="accordion" class="propertyacess">
 
@@ -115,7 +118,7 @@
 <div class="col-md-6">
     <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="">Edit Property Acess</button>
 </div>
-
+@endif
 
 
 @endif
