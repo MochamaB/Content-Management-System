@@ -221,7 +221,7 @@ class PropertyController extends Controller
                 compact('amenities', 'allamenities','id','model'))->render();
             }elseif ($title === 'Tickets') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $requestTableData,'controller' => ['ticket']], 
-                compact('amenities', 'allamenities','id'))->render();
+                compact('amenities', 'allamenities','id','model'))->render();
             }elseif ($title === 'Deposits') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $depositTableData, 'controller' => ['deposit']], compact('id','model'))->render();
             }elseif ($title === 'Expenses') {

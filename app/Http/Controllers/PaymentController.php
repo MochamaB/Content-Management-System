@@ -142,7 +142,7 @@ class PaymentController extends Controller
                 break; // or handle this case differently
         }
 
-        return redirect()->route('payment.show', ['id' => $payment->id])->with('status', 'Payment Added Successfully');
+        return redirect()->route('payment.index')->with('status', 'Payment Added Successfully');
     }
 
     /**

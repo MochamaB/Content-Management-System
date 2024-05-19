@@ -58,11 +58,11 @@ class Ticket extends Model implements HasMedia
 
             case 'category':
                 return [
-                    'complaint' => 'Complaint',
-                    'inquiry' => 'General Inquiry',
-                    'maintenance' => 'Maintenance Request',
-                    'feedback' => 'Feedback or Suggestion',
-                    'other' => 'Other'
+                    'Complaint' => 'Complaint',
+                    'Inquiry' => 'General Inquiry',
+                    'Maintenance' => 'Maintenance Request',
+                    'Feedback' => 'Feedback or Suggestion',
+                    'Other' => 'Other'
                 ];
             case 'priority':
                 return [
@@ -100,6 +100,10 @@ class Ticket extends Model implements HasMedia
     }
     public function workorderExpenses()
     {
-        return $this->hasMany(WorkorderExpense::class);
+        return $this->hasMany(WorkorderExpense::class, 'ticket_id');
+    }
+    public function getItems()
+    {
+        return $this->hasMany(WorkorderExpense::class, 'ticket_id');
     }
 }

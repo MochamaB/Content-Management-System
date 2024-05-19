@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorCategory;
 use App\Notifications\TicketWorkOrderNotification;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Spatie\Permission\Models\Role as ModelsRole;
 
@@ -43,7 +44,16 @@ class WorkOrderController extends Controller
     public function create($id)
     {
         $user = Auth::user();
-        $tickets = Ticket::find($id);
+        $tickets = Ticket::with('assigned')->find($id);
+
+        if (is_null($tickets->assigned)) {
+            return redirect()->back()->with('statuserror', ' First assign this ticket to create work orders.');
+        }
+
+        $statuses = ['completed', 'closed', 'cancelled'];
+        if (in_array($tickets->status, $statuses)) {
+            return redirect()->back()->with('statuserror', ' Change status to in-progress to add a workorder.');
+        }
         $modelrequests = Ticket::find($id);
         $vendorcategory = VendorCategory::all();
         $vendorcategories = $vendorcategory->groupBy('vendor_category');
@@ -78,11 +88,16 @@ class WorkOrderController extends Controller
         $workOrder->save();
 
         //// send Notification
-        $ticket = Ticket::find($workOrder->id);
-        $assigneduser = User::find($workOrder->user_id);
-        $ticketuser = User::find($ticket->user_id);
-        $users = [$assigneduser, $ticketuser]; // Array of users to notify
-        Notification::send($users, new TicketWorkOrderNotification($users, $ticket, $workOrder));
+        $workOrder->load('ticket.user');
+        $assignedUser = $workOrder->user;
+        $ticketUser = $workOrder->ticket->user;
+        $users = [$assignedUser, $ticketUser]; // Array of users to notify
+        try {
+            Notification::send($users, new TicketWorkOrderNotification($users, $workOrder->ticket, $workOrder));
+        } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+            Log::error('Failed to send payment notification: ' . $e->getMessage());
+        }
 
         $previousUrl = Session::get('previousUrl');
         if ($previousUrl) {
@@ -129,6 +144,10 @@ class WorkOrderController extends Controller
     public function expense($id)
     {
         $ticket = Ticket::find($id);
+        $statuses = ['completed', 'closed', 'cancelled'];
+        if (in_array($ticket->status, $statuses)) {
+            return redirect()->back()->with('statuserror', ' Change status to in-progress to add a workorder.');
+        }
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
         return View('admin.maintenance.expense', compact('ticket'));
     }

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chartofaccount;
 use App\Models\Property;
 use App\Models\Ticket;
 use App\Models\Unit;
+use App\Models\Unitcharge;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorCategory;
@@ -22,7 +24,8 @@ use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Contracts\Role;
 use Spatie\Permission\Models\Role as ModelsRole;
 use Spatie\Permission\Traits\HasRoles;
-
+use App\Services\InvoiceService;
+use App\Services\ExpenseService;
 class TicketController extends Controller
 {
     /**
@@ -34,8 +37,11 @@ class TicketController extends Controller
     protected $controller;
     protected $model;
     private $tableViewDataService;
+    private $invoiceService;
+    private $expenseService;
 
-    public function __construct(TableViewDataService $tableViewDataService)
+    public function __construct(TableViewDataService $tableViewDataService,InvoiceService $invoiceService,
+    ExpenseService $expenseService)
     {
         $this->model = Ticket::class;
         $this->controller = collect([
@@ -43,6 +49,8 @@ class TicketController extends Controller
             '1' => 'Ticket',
         ]);
         $this->tableViewDataService = $tableViewDataService;
+        $this->invoiceService = $invoiceService;
+        $this->expenseService = $expenseService;
     }
     public function index()
     {
@@ -74,7 +82,7 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id = null,$model = null)
+    public function create($id = null, $model = null)
     {
         if ($model === 'properties') {
             $property = Property::find($id);
@@ -87,7 +95,7 @@ class TicketController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.maintenance.create_ticket', compact('id', 'property', 'unit','model'), $viewData);
+        return View('admin.maintenance.create_ticket', compact('id', 'property', 'unit', 'model'), $viewData);
     }
 
     /**
@@ -121,7 +129,7 @@ class TicketController extends Controller
             // Log the error or perform any necessary actions
             Log::error('Failed to send ticket notification: ' . $e->getMessage());
         }
-       
+
 
         //   foreach ($attachedUsers as $individualUser) {
         //       $individualUser->notify(new AdminTicketNotification($individualUser, $ticketData));
@@ -144,7 +152,7 @@ class TicketController extends Controller
     public function show($id)
     {
         //  dd($id);
-        $tickets = Ticket::find($id);
+        $tickets = Ticket::with('workorders', 'workorderExpenses', 'assigned')->find($id);
         $workorders = $tickets->workorders;
         //   $unit->load('property', 'unitSupervisors');
         $pageheadings = collect([
@@ -158,7 +166,11 @@ class TicketController extends Controller
         $workorderexpenses = $tickets->workorderExpenses;
         $expensestableData = $this->tableViewDataService->getWorkOrderExpenseData($workorderexpenses, false);
 
+        $incomeAccount = Chartofaccount::whereIn('account_type', ['Income'])->get();
+        $incomeAccounts = $incomeAccount->groupBy('account_type');
 
+        $expenseAccount = Chartofaccount::whereIn('account_type', ['Expenses'])->get();
+        $expenseAccounts = $expenseAccount->groupBy('account_type');
 
         //   $requestTableData = $this->tableViewDataService->getTicketData($modelrequests);
 
@@ -171,7 +183,7 @@ class TicketController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.maintenance.summary_request', $viewData, compact('tickets'))->render();
+                $tabContents[] = View('admin.maintenance.summary_request', $viewData, compact('tickets', 'incomeAccounts', 'expenseAccounts'))->render();
             } elseif ($title === 'Work Order') {
                 $tabContents[] = View('admin.maintenance.workorder', compact('tickets', 'workorders'))->render();
             } elseif ($title === 'Expenses') {
@@ -234,12 +246,9 @@ class TicketController extends Controller
         $user->notify(new TicketAssignNotification($user, $ticket));
 
         ///Create a charge when ticket is completed.
-        $previousUrl = Session::get('previousUrl');
-        if ($previousUrl) {
-            return redirect($previousUrl)->with('status', 'Ticket has been assigned successfully');
-        } else {
-            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
-        }
+      
+            return redirect('ticket/'.$ticket->id)->with('status', $this->controller['1'] . ' Edited Successfully');
+        
     }
     /**
      * Update the specified resource in storage.
@@ -252,21 +261,21 @@ class TicketController extends Controller
     {
 
         // dd($request->all());
-        $modelrequests = Ticket::find($id);
-        $modelrequests->fill($request->all());
-        $modelrequests->update();
+        $ticket = Ticket::find($id);
+        $ticket->fill($request->all());
+        $ticket->update();
 
-        ///Send email on update or Assign
-        if ($request->assigned_id) {
+        /// When thre ticket is marked as completed
+        /// If charge is to tenant create unit charge and generate invoice
+        if ($request->chartofaccount_id && $request->charged_to === 'tenant') {
+            $this->createCharge($ticket);
+        }else if($request->chartofaccount_id && $request->charged_to === 'property'){
+            $this->expenseService->generateExpense($ticket,null,null,null,null);
         }
-
+        
         ///Create a charge when ticket is completed.
-        $previousUrl = Session::get('previousUrl');
-        if ($previousUrl) {
-            return redirect($previousUrl)->with('status', 'Your request has been sent successfully');
-        } else {
-            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
-        }
+        return redirect()->back()->with('status','The ticket has been edited successfully');
+        
     }
 
     /**
@@ -278,5 +287,31 @@ class TicketController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function createCharge(Ticket $ticket)
+    {
+        $unitcharge = Unitcharge::create([
+            'property_id' => $ticket->property_id,
+            'unit_id' => $ticket->unit_id ?? 0,
+            'chartofaccounts_id' => $ticket->chartofaccount_id,
+            'charge_name' => $ticket->category,
+            'charge_cycle' => 'once', ///Charge cycle is same to the rent cycle
+            'charge_type' => 'fixed',
+            'rate' =>$ticket->totalamount,
+            'parent_id' => null, ///Add temporary uniqueid
+            'recurring_charge' => 'no',
+            'startdate' => now(),
+            'nextdate' =>  null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->invoiceService->generateInvoice($unitcharge,$ticket);
+    }
+
+    public function createExpense()
+    {
+
     }
 }

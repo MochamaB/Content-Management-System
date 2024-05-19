@@ -50,7 +50,7 @@ class UnitChargeController extends Controller
     public function index(Request $request)
     {
         $filters = $request->except(['tab','_token','_method']);
-        $unitChargeData = $this->model::with('property', 'unit')->applyFilters($filters)->get();
+        $unitChargeData = $this->model::with('property', 'unit')->whereNull('parent_id')->applyFilters($filters)->get();
         $filterdata = $this->filterService->getUnitChargeFilters($request);
       //  $mainfilter =  $this->model::pluck('charge_type')->toArray();
         $viewData = $this->formData($this->model);

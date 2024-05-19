@@ -34,7 +34,7 @@ class ExpenseService
         $this->uploadMediaAction = $uploadMediaAction;
     }
 
-    public function generateExpense(Model $model = null, User $user = null, $validatedData = null, $formreferenceno = null,$request =null)
+    public function generateExpense($model = null, User $user = null, $validatedData = null, $formreferenceno = null,$request =null)
     {
 
 
@@ -49,12 +49,15 @@ class ExpenseService
 
             
         /////3. UPLOAD RECEIPT ///////////////////
+        
         if($expense->unit_id === null){
             $model = Property::find($expense->property_id);
         }else{
             $model = Unit::find($expense->unit_id);
         }
+        if($request){
         $this->uploadMediaAction->handle($model, 'receipt', 'Receipt', $request);
+        }
 
         //4. Update Total Amount in Payment Header
             $this->calculateTotalAmountAction->total($expense);
@@ -63,6 +66,7 @@ class ExpenseService
 
 
             $this->recordTransactionAction->transaction($expense);
+            
 
         return $expense;
     }
@@ -92,16 +96,16 @@ class ExpenseService
             $unitnumber = $model->unit_id ?? 'N';
             $date = Carbon::now()->format('ymd');
             $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
-            $usermodelname = get_class($user);
+            $modelname = get_class($model);
 
             return [
                 'property_id' => $model->property_id,
-                'unit_id' => $model->unit_id,
+                'unit_id' => $model->unit_id ?? 0,
                 'unitcharge_id' => $model->unit_id ?? null,
-                'model_type' => 'App\\Models\\Vendor',
-                'model_id' => $user->id,
+                'model_type' => $modelname,
+                'model_id' => $model->id,
                 'referenceno' => $referenceno,
-                'name' => $model->charge_name, ///Generated from securityexpense
+                'name' => $model->charge_name ?? $model->category, ///Generated from securityexpense
                 'totalamount' => null,
                 'status' => 'unpaid',
                 'duedate' => null,
@@ -132,15 +136,15 @@ class ExpenseService
             
         } else {
             // Get items from the model (e.g., invoices)
-            $items = $model->getItems();
+            $items = $model->getItems;
 
             // Create expense items from the model items
             foreach ($items as $item) {
                 $expenseItem = new ExpenseItems([
                     'expense_id' => $expense->id,
                     'unitcharge_id' => $model->unitcharge_id ?? null,
-                    'chartofaccount_id' => $item->chartofaccounts_id,
-                    'description' => $item->charge_name,
+                    'chartofaccount_id' => $item->chartofaccounts_id ?? $model->chartofaccount_id,
+                    'description' => $item->charge_name ?? $item->item,
                     'amount' => $item->amount,
                 ]);
                 $expenseItem->save();

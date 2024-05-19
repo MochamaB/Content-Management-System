@@ -78,7 +78,7 @@
             <tr style="height:35px;">
                 <td class="text-center">{{$key+1}}</td>
                 <td class="text-center" style="text-transform: capitalize;">
-                    {{$item->description}} Charge
+                    {{$item->description}} 
                     <!--- METER READINGS -->
                     @if($item->unitcharge->charge_type == 'units')
                     @php

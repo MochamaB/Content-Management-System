@@ -79,13 +79,14 @@ class ExpenseController extends Controller
         } elseif ($model === 'units') {
             $unit = Unit::find($id);
             $property = Property::where('id', $unit->property->id)->first();
+            Session::flash('previousUrl', request()->server('HTTP_REFERER'));
         }
         $account = Chartofaccount::whereIn('account_type', ['Expenses'])->get();
         $accounts = $account->groupBy('account_type');
         $vendors = Vendor::all();
 
 
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+       
 
         return View('admin.accounting.create_expenses', compact('id', 'property', 'unit', 'accounts','model','vendors'));
         //
@@ -128,9 +129,22 @@ class ExpenseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Expense $expense)
     {
-        //
+        $pageheadings = collect([
+            '0' => $expense->name,
+            '1' => $expense->referenceno,
+            '2' => $expense->status,
+        ]);
+        $instance = $expense;
+
+        $property = Property::find($expense->property_id);
+        $unit = $property->units;
+        $account = Chartofaccount::whereIn('account_type', ['Expenses'])->get();
+        $accounts = $account->groupBy('account_type');
+        $vendors = Vendor::all();
+
+        return View('admin.accounting.edit_expense', compact('pageheadings','instance','property', 'unit', 'accounts','vendors'));
     }
 
     /**
@@ -139,8 +153,22 @@ class ExpenseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Expense $expense)
     {
+        $pageheadings = collect([
+            '0' => $expense->name,
+            '1' => $expense->referenceno,
+            '2' => $expense->status,
+        ]);
+        $instance = $expense;
+
+        $property = Property::with('units')->find($expense->property_id);
+        $unit = $property->units;
+        $account = Chartofaccount::whereIn('account_type', ['Expenses'])->get();
+        $accounts = $account->groupBy('account_type');
+        $vendors = Vendor::all();
+
+        return View('admin.accounting.edit_expense', compact('pageheadings','instance','property', 'unit', 'accounts','vendors'));
         //
     }
 

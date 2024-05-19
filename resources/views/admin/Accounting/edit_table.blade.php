@@ -1,33 +1,28 @@
 <div class="col-md-12">
-    <table id="table" data-toggle="table" 
-        data-icon-size="sm" 
-        data-buttons-class="primary" 
-        data-toolbar-align="right" 
-        data-buttons-align="left" 
-        data-search-align="left" 
-        data-sort-order="asc" 
-        data-mobile-responsive="true"
-        data-sticky-header="true" 
-        data-page-list="[100, 200, 250, 500, ALL]"
-        data-page-size="100" 
-        data-show-footer="false" 
-        data-side-pagination="client"
-        class="table table-bordered">
+    <table id="table" data-toggle="table" data-icon-size="sm" data-buttons-class="primary" data-toolbar-align="right" data-buttons-align="left" data-search-align="left" data-sort-order="asc" data-mobile-responsive="true" data-sticky-header="true" data-page-list="[100, 200, 250, 500, ALL]" data-page-size="100" data-show-footer="false" data-side-pagination="client" class="table table-bordered">
         <thead>
             <tr>
                 <th class="text-center"></th>
                 <th class="text-center">ACCOUNT</th>
                 <th class="text-center">DESCRIPTION</th>
                 <th class="text-center">AMOUNT</th>
+                @if( $routeParts[1] === 'edit')
                 <th class="text-center">ACTION</th>
+                @endif
             </tr>
         </thead>
         <tbody>
+            @foreach($instance->getItems as $key=> $instanceItems)
             <tr style="height:35px;">
-                <td>1.</td>
+                <td>{{$key+1}}</td>
                 <td class="text-center" style="padding:0px">
+                    <h5>
+                        <small class="text-muted" style="text-transform: capitalize;">
+                            {{ $instanceItems->accounts->account_name}}
+                        </small>
+                    </h5>
                     <select name="chartofaccount_id[]" id="chartofaccount_id" class="formcontrol2" placeholder="Select" required>
-                        <option value="">Select Account</option>
+                        <option value="{{$instanceItems->accounts->id}}">{{$instanceItems->accounts->account_name}}</option>
                         @foreach($accounts as $accounttype => $account)
                         <optgroup label="{{ $accounttype }}">
                             @foreach($account as $item)
@@ -38,27 +33,37 @@
                     </select>
                 </td>
                 <td class="text-center" style="padding:0px">
-                    <input type="text" class="form-control " name="description[]" value="" required>
+                    <h5>
+                        <small class="text-muted" style="text-transform: capitalize;">
+                            {{ $instanceItems->description}}
+                        </small>
+                    </h5>
+                    <input type="text" class="form-control " name="description[]" value=" {{ $instanceItems->description}}" required>
                 </td>
                 <td id='' class="text-center" style="padding:0px">
                     <div style="position: relative;">
                         <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                         </span>
-                        <input type="number" class="form-control money" name="amount[]" value="" placeholder="0" style="text-align: left; padding-left: 45px;" required>
+                        <small class="text-muted" style="text-transform: capitalize;">
+                            {{ $instanceItems->amount}}
+                        </small>
+                        <input type="text" class="form-control money" name="amount[]" value=" {{ $instanceItems->amount}}" placeholder=" {{ $instanceItems->amount}}" style="text-align: left; padding-left: 45px;" required>
                     </div>
                 </td>
+                @if( $routeParts[1] === 'edit')
                 <td class="text-center" style="background-color:#fff;padding-right:20px">
                     <h5><a class=" split_rent" id="addexpense"><i class="menu-icon mdi mdi-plus-circle"> Add Item </a></i>
                     </h5>
                 </td>
+                @endif
 
 
             </tr>
-
+            @endforeach
         </tbody>
     </table>
 
-  
+
 </div>
 <script>
     $(document).ready(function() {

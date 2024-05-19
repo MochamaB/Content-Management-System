@@ -66,7 +66,7 @@ class InvoiceService
         }
     }
 
-    public function generateInvoice(Unitcharge $unitcharge)
+    public function generateInvoice(Unitcharge $unitcharge,$model = null)
     {
         $invoiceExists = $this->invoiceExists($unitcharge);
        
@@ -86,11 +86,11 @@ class InvoiceService
         $invoice = $this->createInvoice($invoiceData);
 
         //2. Create invoice items
-        $this->createInvoiceItems($invoice, $unitcharge);
+        $this->createInvoiceItems($invoice, $unitcharge, $model);
 
         //3. Update Total Amount in Invoice Header
         $this->calculateTotalAmountAction->handle($invoice);
-
+            
         //4. Update Next Date in the Unitcharge
         $this->updateNextDateAction->invoicenextdate($unitcharge);
         //// Child Charges
@@ -112,7 +112,7 @@ class InvoiceService
        $this->invoiceEmail($invoice);
      //   SendInvoiceEmailJob::dispatch($invoice);
 
-
+            
         return $invoice;
     }
 
@@ -188,7 +188,7 @@ class InvoiceService
 
 
 
-    private function createInvoiceItems($invoice, $unitcharge)
+    private function createInvoiceItems($invoice, $unitcharge, $model = null)
     {
         if ($unitcharge->charge_type === 'units') {
             $nextdateFormatted = Carbon::parse($unitcharge->nextdate)->format('Y-m-d');
@@ -209,6 +209,22 @@ class InvoiceService
             // If charge_type is not 'units', use the unitcharge rate as the amount
             $amount = $unitcharge->rate;
         }
+
+        if($model)
+        {
+            $items = $model->getItems;
+          
+            // Create expense items from the model items
+            foreach ($items as $item) {
+                InvoiceItems::create([
+                    'invoice_id' => $invoice->id,
+                    'unitcharge_id' => $unitcharge->id,
+                    'chartofaccount_id' => $unitcharge->chartofaccounts_id,
+                    'description' => $item->item,
+                    'amount' => $item->amount,
+                ]);
+            }
+        }else{
         // Create invoice items
         InvoiceItems::create([
             'invoice_id' => $invoice->id,
@@ -217,6 +233,7 @@ class InvoiceService
             'description' => $unitcharge->charge_name,
             'amount' => $amount,
         ]);
+        }
 
         // Create invoice items for child charges
         $childcharges = Unitcharge::where('parent_id', $unitcharge->id)->get();
