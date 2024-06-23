@@ -38,7 +38,7 @@
         });
     });
 </script>
-@if((count($routeParts) > 1) && ($routeParts[1] === 'edit') || $routeParts[1] === 'show' )
+@if((count($routeParts) > 1) && ($routeParts[1] === 'edit') || $routeParts[1] === 'show' || $routeParts[0] === 'system-setting' )
 
 <script>
     $(document).ready(function() {

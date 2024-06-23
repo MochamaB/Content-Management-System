@@ -49,11 +49,11 @@
                     <div class="form-group">
                         <select name="status" id="status" class="formcontrol2 " placeholder="Select">
                             <option value="">Select Status</option>
-                            <option value="in Progress">In Progress</option>
+                            <option value="in progress">In Progress</option>
                             <option value="overDue">Over Due</option>
                             <option value="completed">Completed</option>
-                            <option value="completed">Cancelled</option>
-                            <option value="completed">Closed</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="closed">Closed</option>
                         </select>
                     </div>
                 </div>

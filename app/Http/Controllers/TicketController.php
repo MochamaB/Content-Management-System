@@ -26,6 +26,7 @@ use Spatie\Permission\Models\Role as ModelsRole;
 use Spatie\Permission\Traits\HasRoles;
 use App\Services\InvoiceService;
 use App\Services\ExpenseService;
+use App\Services\FilterService;
 class TicketController extends Controller
 {
     /**
@@ -39,9 +40,11 @@ class TicketController extends Controller
     private $tableViewDataService;
     private $invoiceService;
     private $expenseService;
+    private $filterService;
+
 
     public function __construct(TableViewDataService $tableViewDataService,InvoiceService $invoiceService,
-    ExpenseService $expenseService)
+    ExpenseService $expenseService, FilterService $filterService)
     {
         $this->model = Ticket::class;
         $this->controller = collect([
@@ -51,17 +54,18 @@ class TicketController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->invoiceService = $invoiceService;
         $this->expenseService = $expenseService;
+        $this->filterService = $filterService;
     }
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-
+        $filters = $request->except(['tab','_token','_method']);
         if ($user->hasRole('Tenant')) {
-            $tickets = $user->tickets;
+            $tickets = $user->tickets->applyFilters($filters)->get();
         } else {
-            $tickets = Ticket::all();
+            $tickets = Ticket::applyFilters($filters)->get();
         }
-
+        $filterdata = $this->filterService->getUnitChargeFilters($request);
         $mainfilter =  Ticket::pluck('category')->toArray();
         //   $filterData = $this->filterData($this->model);
         $controller = $this->controller;
@@ -69,7 +73,7 @@ class TicketController extends Controller
 
         return View(
             'admin.CRUD.form',
-            compact('mainfilter', 'tableData', 'controller'),
+            compact('filterdata', 'tableData', 'controller'),
             //  $filterData,
             [
                 //   'cardData' => $cardData,

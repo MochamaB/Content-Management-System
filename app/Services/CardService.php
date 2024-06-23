@@ -10,6 +10,7 @@ use App\Models\Property;
 use App\Models\Unit;
 use App\Models\Unitcharge;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
@@ -18,13 +19,22 @@ class CardService
     /////// DASHBOARD CARDS
     public function topCard($properties, $units)
     {
+         // Get the start and end dates of the current month
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
         $propertyCount = $properties->count();
         $unitCount = $units->count();
-        $invoices =  $units->flatMap(function ($units) {
-            return $units->invoices;
+        // Filter invoices for the current month and sum their total amount
+        $invoices = $units->flatMap(function ($unit) use ($startOfMonth, $endOfMonth) {
+            return $unit->invoices->filter(function ($invoice) use ($startOfMonth, $endOfMonth) {
+                return $invoice->created_at >= $startOfMonth && $invoice->created_at <= $endOfMonth;
+            });
         })->sum('totalamount');
-        $payments = $units->flatMap(function ($units) {
-            return $units->payments;
+       // Filter payments for the current month and sum their total amount
+        $payments = $units->flatMap(function ($unit) use ($startOfMonth, $endOfMonth) {
+            return $unit->payments->filter(function ($payment) use ($startOfMonth, $endOfMonth) {
+                return $payment->created_at >= $startOfMonth && $payment->created_at <= $endOfMonth;
+            });
         })->sum('totalamount');
         $balance = $invoices - $payments;
         //   $invoicepaid =  $invoices->filter(function ($invoice) {
@@ -36,8 +46,8 @@ class CardService
         $cards =  [
             'propertyCount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'pecentage' => '', 'links' => '/property'],
             'unitCount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'pecentage' => '', 'links' => '/unit'],
-            'invoices' => ['title' => 'Total Invoiced', 'value' => '', 'amount' => $payments, 'pecentage' => '', 'links' => '/invoice'],
-            'balance' => ['title' => 'Balance Not Paid', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
+            'invoices' => ['title' => 'Invoiced This Month', 'value' => '', 'amount' => $invoices, 'pecentage' => '', 'links' => '/invoice'],
+            'balance' => ['title' => 'Balance This Month', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
         ];
         return $cards;
     }
@@ -85,7 +95,7 @@ class CardService
         //  $paymentCount = $invoicePayments->sum('payments_count');
         // Define the columns for the unit report
         $cards =  [
-            'invoicecount' => ['title' => 'Total Invoices', 'value' => $invoiceCount, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'invoicecount' => ['title' => 'Total Invoices This Month', 'value' => $invoiceCount, 'amount' => '', 'pecentage' => '', 'links' => ''],
             'amountinvoiced' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'pecentage' => '', 'links' => ''],
             'invoicepaid' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $invoicepaid, 'pecentage' => '', 'links' => ''],
             'balance' => ['title' => 'Balance Not Paid', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => ''],

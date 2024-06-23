@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -74,6 +75,26 @@ class Ticket extends Model implements HasMedia
         }
     }
 
+    public function scopeApplyFilters($query, $filters)
+    {
+        
+        foreach ($filters as $column => $value) {
+            if (!empty($value)) {
+                if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+                    $query->whereBetween('created_at', [$filters['from_date'], $filters['to_date']]);
+                } else {
+                    // Use where on the other columns
+                    $query->where($column, $value);
+                }
+            }
+        }
+       // Add default filter for the last two months
+       if (empty($filters['from_date']) && empty($filters['to_date'])) {
+        $query->where("created_at", ">", Carbon::now()->subMonths(4));
+    }
+
+        return $query;
+    }
 
     public function property()
     {

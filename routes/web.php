@@ -222,6 +222,10 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::get('system', [SettingController::class, 'systemsetting'])->name('setting.system');
         Route::post('update-systemsetting}', [SettingController::class, 'updateSystemSettings']);
 
+        Route::put('system-setting/update', [
+            'as' => 'system-setting.update',
+            'uses' => 'App\Http\Controllers\SystemSettingController@update'
+        ]);
         Route::resource('system-setting', SystemSettingController::class);
     }); 
 

@@ -111,7 +111,7 @@ class FilterService
         $propertyId = $request->property_id;
         if ($propertyId) {
             $units = Unit::where('property_id', $propertyId)->pluck('unit_number', 'id')->toArray();
-        }else {
+        } else {
             // If property_id is not provided, fetch all units
             $units = Unit::pluck('unit_number', 'id')->toArray();
         }
@@ -163,12 +163,12 @@ class FilterService
 
     public function getUnitChargeFilters(Request $request)
     {
-       
+
         $properties = Property::pluck('property_name', 'id')->toArray();
         $propertyId = $request->property_id;
         if ($propertyId) {
             $units = Unit::where('property_id', $propertyId)->pluck('unit_number', 'id')->toArray();
-        }else {
+        } else {
             // If property_id is not provided, fetch all units
             $units = Unit::pluck('unit_number', 'id')->toArray();
         }
@@ -185,6 +185,40 @@ class FilterService
             'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select', 'filtertype' => 'main'],
             'charge_cycle' => ['label' => 'Charge Frequency', 'values' => $chargecycle, 'inputType' => 'select', 'filtertype' => 'advanced'],
             'charge_type' => ['label' => 'Charge Type', 'values' => $type, 'inputType' => 'select', 'filtertype' => 'advanced'],
+        ];
+    }
+
+    public function getTicketFilters(Request $request)
+    {
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        $propertyId = $request->property_id;
+        if ($propertyId) {
+            $units = Unit::where('property_id', $propertyId)->pluck('unit_number', 'id')->toArray();
+        } else {
+            // If property_id is not provided, fetch all units
+            $units = Unit::pluck('unit_number', 'id')->toArray();
+        }
+        $status = [
+            'completed' => 'Completed',
+            'New' => 'New',
+            'overdue' => 'Over Due',
+            'in progress' => 'In Progress',
+            'closed' => 'Closed',
+            'cancelled' => 'Cancelled',
+            'Assigned' => 'Assigned',
+        ];
+        $priority = [
+            'critical' => 'Critical',
+            'high' => 'High',
+            'normal' => 'Normal',
+            'low' => 'Low',
+        ];
+        // Define the columns for the unit report
+        return [
+            'property_id' => ['label' => 'Properties', 'values' => $properties,'inputType' => 'select', 'filtertype' => 'main'],
+            'unit_id' => ['label' => 'Units', 'values' => $units,'inputType' => 'select', 'filtertype' => 'main'],
+            'status' => ['label' => 'Status', 'values' => $status,'inputType' => 'select', 'filtertype' => 'main'],
+            'priority' => ['label' => 'priority', 'values' => $priority,'inputType' => 'select', 'filtertype' => 'main'],
         ];
     }
 }
