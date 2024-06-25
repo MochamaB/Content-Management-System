@@ -1,21 +1,56 @@
 <div class=" table-responsive" id="dataTable">
+<style>
+ .fixed-table-toolbar .columns-right {
+        float: right !important;
+        margin-left: 0px;
+    }
+
+    .fixed-table-toolbar .export .btn {
+        padding: 10px 10px;
+     
+    }
+
+    .fixed-table-toolbar .export .btn i {
+        margin-right: 5px;
+    }
+    .fixed-table-toolbar .export .btn::before {
+    content: "Export"; /* Replace with your desired text */
+    font-weight: 700;
+    display: inline-block;
+    margin-right: 5px; /* Adjust spacing as needed */
+}
+</style>
+
+    
     <table id="table" 
-        data-toggle="table" 
-        data-icon-size="sm" 
-        data-buttons-class="primary" 
-        data-toolbar-align="right" 
-        data-buttons-align="left" 
-        data-search-align="left" 
-        data-sort-order="asc" 
-        data-search="true" 
+    data-toggle="table"
+        data-icon-size="sm"
+        data-buttons-class="outline-primary" 
+        data-toolbar-align="right"
+        data-buttons-align="right"
+        data-search-align="left"
+        data-sort-order="asc"
+        data-search="true"
         data-mobile-responsive="true"
-        data-sticky-header="true" 
-        data-pagination="true" 
-        data-page-list="[100, 200, 250, 500, ALL]" 
-        data-page-size="100" 
-        data-show-footer="false" 
-        data-side-pagination="client" 
+        data-sticky-header="true"
+        data-pagination="true"
+        data-page-list="[100, 200, 250, 500, ALL]"
+        data-page-size="100"
+        data-show-footer="false"
+        data-side-pagination="client"
         data-show-export="true"
+        data-export-types="['json','xml','csv','txt','sql','excel']"
+        data-export-text=" Export Data"
+        data-export-options='{
+            "fileName": "exported-data",
+            "ignoreColumn": ["state"]
+             "exportOptions": {
+                "formatExportButton": function(button) {
+                    return "<button class=\"btn btn-primary btn-sm\" type=\"button\">" +
+                           "<i class=\"fas fa-download\"></i> Export Data</button>";
+                }
+            }
+        }'
         class="table table-bordered">
         <thead>
             <tr>
@@ -72,4 +107,19 @@
             @endforeach
         </tbody>
     </table>
+    <script>
+$(document).ready(function() {
+    $('#table').bootstrapTable({
+    showExport: true,
+    exportOptions: {
+        formatExportButton: function (button) {
+            return '<button class="btn btn-primary btn-sm" type="button">' +
+                   '<i class="fas fa-download"></i> Export Data</button>';
+        }
+    }
+    // ... other options
+});
+});
+
+</script>
 </div>

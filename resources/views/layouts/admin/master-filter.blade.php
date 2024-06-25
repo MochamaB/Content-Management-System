@@ -40,7 +40,7 @@
 <div class="col-md-2 " style="padding-top:0px">
 
     <button class="btn btn-warning btn-lg text-white" id="filter" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-        <i class="fas fa-plus" id="collapseIcon"></i> Advanced Filter <i class="fas fa-times" id="expandIcon" style="display: none;"></i>
+    <i class="fa fa-filter"></i></i> Advanced Filter <i class="fa-solid fa-plus" id="expandIcon" style="display: none;"></i>
     </button>
 </div>
 

@@ -16,7 +16,7 @@ trait FilterableScope
             $query->whereBetween('created_at', [$fromDate, $toDate]);
         } elseif (empty($fromDate) && empty($toDate)) {
             // Add default filter for the last four months
-            $query->where("created_at", ">", Carbon::now()->subMonths(1));
+            $query->where("created_at", ">", Carbon::now()->subMonths(6));
         }
 
         // Apply filters for other columns

@@ -52,9 +52,9 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://http://bridgeproperties/'),
+    'url' => env('APP_URL', NULL),
 
-    'asset_url' => env('ASSET_URL', 'http://bridgeproperties/'),
+    'asset_url' => env('ASSET_URL', NULL),
 
     /*
     |--------------------------------------------------------------------------

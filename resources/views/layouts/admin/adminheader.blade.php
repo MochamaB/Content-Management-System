@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="{{ url('styles/admin/vendors/feather/feather.css') }}">
   <link rel="stylesheet" href="{{ url('styles/admin/vendors/mdi/css/materialdesignicons.min.css') }}">
   <link rel="stylesheet" href="{{ url('styles/admin/vendors/ti-icons/css/themify-icons.css') }}">
+  <link rel="stylesheet" href="{{ url('styles/admin/vendors/font-awesome/css/font-awesome.min.css') }}">
   <link rel="stylesheet" href="{{ url('styles/admin/vendors/typicons/typicons.css') }}">
   <link rel="stylesheet" href="{{ url('styles/admin/vendors/simple-line-icons/css/simple-line-icons.css') }}">
   <link rel="stylesheet" href="{{ url('styles/admin/vendors/css/vendor.bundle.base.css') }}">
@@ -22,11 +23,15 @@
 
 
   <!--- Plugins for bootstrap table--------->
-  <link rel="stylesheet" href="{{ url('styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
   <script src="{{ url('styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
   <script src="{{ url('styles/admin/css/vertical-layout-light/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js') }}"></script>
   <script src="{{ url('styles/admin/css/vertical-layout-light/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.css') }}"></script>
   <script src="{{ url('styles/admin/css/vertical-layout-light/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.js') }}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
+  <script src="{{ url('styles/admin/css/vertical-layout-light/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js') }}"></script>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- End plugin css for this page -->
   <!-- inject:css -->
