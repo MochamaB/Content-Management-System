@@ -31,6 +31,7 @@ use App\Scopes\UserScope;
 use App\Services\FilterService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -51,6 +52,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+      //  URL::forceScheme('https');
 
         Schema::defaultStringLength(191);
         // Apply the UserAccessScope to specific models
@@ -133,7 +136,8 @@ class AppServiceProvider extends ServiceProvider
                 $notifications = Notification::all();
                 $unreadNotifications = $notifications->where('read_at', null);
             } else {
-                $unreadNotifications = $user->unreadNotifications;
+                $unreadNotifications = $user->unreadNotifications ?? collect();
+              //  $unreadNotifications = $unreadNotifications->where('read_at', null);
             }
             // Pass the authenticated user data to the 'layouts.admin' view
             $view->with([

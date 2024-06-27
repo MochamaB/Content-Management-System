@@ -20,7 +20,7 @@ class CreateInvoicesTable extends Migration
             $table->unsignedBigInteger('unitcharge_id')->nullable()->index();
             $table->string('model_type'); // Who the voucher goes to E.g., "User", "Vendor"
             $table->unsignedBigInteger('model_id'); // ID of the specific model instance
-            $table->string('referenceno');
+            $table->string('referenceno')->nullable();
             $table->string('name');
             $table->decimal('totalamount')->nullable();
             $table->string('status');

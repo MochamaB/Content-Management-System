@@ -46,7 +46,8 @@
       @include('layouts.admin.notification')
 
       @php
-      $avatarUrl = Auth::user()->getFirstMediaUrl('avatar');
+      $user = Auth::user();
+      $avatarUrl = $user ? $user->getFirstMediaUrl('avatar') : null;
       $avatarUrl = empty($avatarUrl) ? 'uploads/images/avatar.png' : $avatarUrl;
       @endphp
       <li class="nav-item dropdown  user-dropdown">
@@ -56,8 +57,8 @@
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
           <div class="dropdown-header text-center">
             <img class="img-thumbnail rounded-circle" src="{{  url($avatarUrl) }}" alt="Profile image">
-            <p class="mb-1 mt-3 font-weight-semibold">{{ Auth::user()->firstname }} {{ Auth::user()->lastname }}</p>
-            <p class="fw-light text-muted mb-0">{{ Auth::user()->email }}</p>
+            <p class="mb-1 mt-3 font-weight-semibold">{{ Auth::user()->firstname ?? '' }} {{ Auth::user()->lastname ?? '' }}</p>
+            <p class="fw-light text-muted mb-0">{{ Auth::user()->email ?? '' }}</p>
           </div>
           <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
           <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>

@@ -40,6 +40,7 @@ use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\VendorCategoryController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\MpesaSTKPUSHController;
 ////Test Email View////////////
 use App\Models\MeterReading;
 use App\Models\User;
@@ -256,6 +257,15 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
     });
 
+         //<!-------------------------------- MPESA Module ---------------------------------------------->////
+         Route::group(['groupName' => 'MPESA'], function () {
+            Route::get('mpesa-payment/{id}', [MpesaSTKPUSHController::class, 'MpesaPayment'])->name('mpesa.view');
+            Route::post('/v1/mpesatest/stk/push', [MpesaSTKPUSHController::class, 'STKPush'])->name('mpesa.initiate');
+            // Mpesa STK Push Callback Route
+            Route::post('v1/confirm', [MpesaSTKPUSHController::class, 'STKConfirm'])->name('mpesa.confirm');
+    
+        });
+
      //<!-------------------------------- Other Module ---------------------------------------------->////
 
     Route::group(['groupName' => 'Other'], function () {
@@ -273,6 +283,8 @@ Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmete
 Route::post('api/fetch-propertyMeterReading', [MeterReadingController::class, 'fetchpropertyMeterReading']);
 Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits']);
 Route::post('closewizard/{routePart}', [SettingController::class, 'closewizard'])->name('closewizard');
+
+
 
 
 ///Send Email

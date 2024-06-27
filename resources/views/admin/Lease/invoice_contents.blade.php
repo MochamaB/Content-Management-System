@@ -105,22 +105,20 @@
     <div class="row">
     <div class="col-md-6 mt-3">
     <h4><b>Payment Methods </b></h4>
+        @foreach($PaymentMethod as $key=> $item)
         <div class="d-flex justify-content-start">
             <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
-            <span> </span>
+            @if($item->name == 'M-PESA')
+            <span>{{$key+1}}. {{$item->name}} - 
+            <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="table">
+                <i class="ti-money"></i>Click to Pay Now</a>
+            </span>
+            @else
+            <span>{{$key+1}}. {{$item->name}} </span>
+            @endif
         </div>
-        <div class="d-flex justify-content-start">
-            <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
-            <span> </span>
-        </div>
-        <div class="d-flex justify-content-start">
-            <p class="text-muted me-3" style="font-size:16px;font-weight:600"> </p>
-            <span> </span>
-        </div>
-        <div class="d-flex justify-content-start mt-3">
-            <h4 class="me-3" style="font-weight:700"> </h4>
-            <h4 class="text-success" style="font-weight:700"> </h4>
-        </div>
+        @endforeach
+       
     </div>
     <div class="col-md-6 mt-3">
         <div class="d-flex justify-content-end">

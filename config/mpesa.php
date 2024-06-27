@@ -20,13 +20,13 @@ return [
         |The Lipa na Mpesa Online Passkey
         |------------------------------------------
         */
-    'passkey' => env('SAFARICOM_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'),
+    'passkey' => env('SAFARICOM_PASSKEY'),
 
     /*-----------------------------------------
         |The Lipa na Mpesa Online ShortCode
         |------------------------------------------
         */
-    'shortcode' => env('MPESA_BUSINESS_SHORTCODE', '174379'),
+    'shortcode' => env('MPESA_BUSINESS_SHORTCODE'),
 
     /*-----------------------------------------
         |The Mpesa Initator Name

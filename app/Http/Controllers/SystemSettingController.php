@@ -40,6 +40,7 @@ class SystemSettingController extends Controller
             'Mail' => ['MAIL_'],
             'AWS' => ['AWS_'],
             'Pusher' => ['PUSHER_','MIX_PUSHER'],
+            'MPESA' => ['MPESA_','SAFARICOM_'],
             // Add more groups as needed
         ];
 
