@@ -8,7 +8,7 @@
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "*",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^7.8",
         "iankumu/mpesa": "^1.3",
         "laravel-arcanist/arcanist": "^0.8.0",
         "laravel-notification-channels/africastalking": "^5.1",

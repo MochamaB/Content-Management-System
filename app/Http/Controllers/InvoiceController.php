@@ -8,6 +8,7 @@ use App\Models\PaymentMethod;
 use App\Models\Unitcharge;
 use App\Models\Unit;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Services\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
@@ -244,5 +245,39 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         //
+    }
+
+    public function invoicemail()
+    {
+        $user = User::find(1); // Get a user to test the notification
+        $invoice = Invoice::find(1); // Get an invoice to test the notification
+
+         /// Data for the Account Statement
+         $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
+         //    dd($unitchargeIds);
+         $sixMonths = now()->subMonths(6);
+         $transactions = Transaction::where('created_at', '>=', $sixMonths)
+             ->where('unit_id', $invoice->unit_id)
+             ->where('unitcharge_id', $unitchargeId)
+             ->get();
+         $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
+ 
+         ////Opening Balance
+         $openingBalance = $this->calculateOpeningBalance($invoice);
+ 
+         //// Data for the Payment Methods
+         $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
+
+        return View('email.statement', [
+        'user' => $user,
+        'invoice' => $invoice,
+        'transactions' => $transactions, // Pass an empty collection or fetch actual transactions
+        'groupedInvoiceItems' => $groupedInvoiceItems, // Pass an empty collection or fetch actual grouped items
+        'openingBalance' => $openingBalance,
+        'PaymentMethod' => $PaymentMethod, // Pass a default value or calculate the opening balance
+    ]);
+
+    // Return the notification view
+  //  return (new InvoiceGeneratedNotification($invoice, $user, $viewContent))->toMail($user);
     }
 }

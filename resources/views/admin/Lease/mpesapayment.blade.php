@@ -11,13 +11,15 @@
     }
 </style>
 <div class="container">
+
     <div class="row">
         <div class="col-md-4">
             <img class="logo" src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'resources/uploads/images/noimage.jpg' }}" alt="Logo">
 
         </div>
         <div class="col-md-4">
-            <ul style="list-style-type: none; padding: 0; text-align: left;">
+
+            <ul style="list-style-type: none; display: table; margin: 0 auto; text-align: left;">
                 <li><b>COMPANY:</b> {{$sitesettings->company_name }}</li>
                 <li><b>LOCATION:</b> {{ $sitesettings->company_location}}</li>
                 <li><b>EMAIL:</b> {{ $sitesettings->company_email }}</li>
@@ -25,11 +27,12 @@
             </ul>
         </div>
         <div class="col-md-4">
-            <img class="logo" src="{{ asset('uploads/M-PESA.png') }}" style="height:100px;width:200px; margin-bottom:30px;">
+            <img class="logo" src="{{ asset('uploads/M-PESA.png') }}" style="height:100px;width:220px; margin-bottom:30px;">
 
         </div>
     </div>
     <hr><br />
+
     <div class="row">
         <!------- - ROW 1 -->
         <div class="col-md-6" style="border-right: 2px solid #dee2e6;padding-right:30px">
@@ -49,6 +52,13 @@
         </div>
         <!------- - ROW 2 -->
         <div class="col-md-6">
+            <!---- Page Loader ------------->
+
+            <!-- Success Message -->
+            <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
             @php
             $amountPaid = $invoice->payments->sum(function ($payment) {
             return $payment->paymentItems->sum('amount');
@@ -56,11 +66,12 @@
             $amountdue = $invoice->totalamount - $amountPaid;
 
             @endphp
+
             <h4>Pay Using M-Pesa Express</h4>
-            <form method="POST" action="{{ route('mpesa.initiate') }}" class="myForm" novalidate>
+            <form method="POST" id="initiatepaymentForm" action="{{ route('mpesa.initiate') }}" class="myForm" novalidate>
                 @csrf
                 <ul class="ml-2 px-3 list-unstyled">
-                    <li>1. Confirm or <a href="" class="editLink"> Edit</a> the phone number and the amount that you are paying.
+                    <li>1. Confirm or <a href="" style="font-size: 15px; font-weight:600" class="editLink"> Edit</a> the phone number and the amount that you are paying.
                     </li>
                     <div class="form-group">
                         <label class="label"> Phone Number<span class="requiredlabel">*</span></label>
@@ -75,7 +86,7 @@
                         <label class="label"> Amount Due<span class="requiredlabel">*</span></label>
                         <h5>
                             <small class="text-muted" style="text-transform: capitalize;">
-                            {{ $sitesettings->site_currency }}. {{$amountdue}}
+                                {{ $sitesettings->site_currency }}. {{$amountdue}}
                             </small>
                         </h5>
                         <div style="position: relative;">
@@ -86,6 +97,7 @@
                         </div>
                     </div>
                     <input type="hidden" class="form-control" name="account_number" value="{{$invoice->referenceno ?? ''}}" required>
+                    <input type="hidden" name="account_number" value="{{$invoice->referenceno ?? ''}}" required>
                     <div class="col-md-6">
                         <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Initiate Payment</button>
                     </div><br />
@@ -107,40 +119,129 @@
                 <li>6. Enter your MPESA PIN and send</li>
                 <li>7. You will receive a confirmation from MPESA</li>
             </ul>
-
+            <hr>
+            <form method="POST" id="paymentForm" action="{{ route('mpesa.paymentconfirm') }}" class="myForm" novalidate>
+                @csrf
+                <input type="text" id="transactionIdInput" name="transaction_id" value="">
+                <div class="col-md-6 mt-3">
+                    <button type="submit" id="checkStatusBtn" class="btn btn-primary btn-lg text-white mb-0 me-0" style="display: block;">Complete Payment</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <script>
-  $(document).ready(function() {
-    // Elements
-    const $editLink = $(".editLink");
-    const $editFields = $(".form-control");
-    const $Display = $(".text-muted");
-    const $currency = $(".currency");
-   
-   
-    // Hide edit fields and "Make Changes" button on page load
-    $editFields.hide();
-    $currency.hide();
+    $(document).ready(function() {
+        // Elements
+        const $editLink = $(".editLink");
+        const $editFields = $(".form-control");
+        const $Display = $(".text-muted");
+        const $currency = $(".currency");
 
-    // "Edit" link click event
-    // "Edit" link click event
-    $editLink.on("click", function(event) {
-      event.preventDefault();
-      // Toggle edit fields and buttons visibility
-      $editFields.toggle();
-      $Display.toggle();
-      $currency.toggle();
-      // Toggle "Edit" link text between "Edit" and "Cancel"
-      
+
+        // Hide edit fields and "Make Changes" button on page load
+        $editFields.hide();
+        $currency.hide();
+
+        // "Edit" link click event
+        // "Edit" link click event
+        $editLink.on("click", function(event) {
+            event.preventDefault();
+            // Toggle edit fields and buttons visibility
+            $editFields.toggle();
+            $Display.toggle();
+            $currency.toggle();
+            // Toggle "Edit" link text between "Edit" and "Cancel"
+
+        });
+
+        // You can add logic for "Save" and "Cancel" buttons here if needed
+        // For example, you can handle form submission to update the data in the database
     });
-
-    // You can add logic for "Save" and "Cancel" buttons here if needed
-    // For example, you can handle form submission to update the data in the database
-  });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('initiatepaymentForm');
+        const formpayment = document.getElementById('paymentForm');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const transactionIdInput = document.getElementById('transactionIdInput');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Show loader
+            loadingOverlay.style.display = 'block';
+
+            // Hide any existing messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            axios.post(this.action, new FormData(this))
+                .then(function(response) {
+                    loadingOverlay.style.display = 'none';
+                    if (response.data.success) {
+                        successMessage.textContent = response.data.message;
+                        successMessage.style.display = 'block';
+                        transactionIdInput.value = response.data.transaction_id;
+                
+                        // You can start checking payment status here if needed
+                        // checkPaymentStatus(response.data.transaction_id);
+                    } else {
+                        errorMessage.textContent = response.data.message || 'An error occurred';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(function(error) {
+                    loadingOverlay.style.display = 'none';
+                    errorMessage.textContent = 'Failed to initiate payment';
+                    errorMessage.style.display = 'block';
+                });
+        });
+        /*
+        formpayment.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!transactionIdInput.value) {
+                        errorMessage.textContent = 'No payment has been initiated';
+                        errorMessage.style.display = 'block';
+                        return;
+                    }
+            // Show loader
+            loadingOverlay.style.display = 'block';
+
+            // Hide any existing messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            axios.post(this.action, new FormData(this))
+                .then(function(response) {
+                    loadingOverlay.style.display = 'none';
+                    if (response.data.success) {
+                        successMessage.textContent = response.data.message;
+                        successMessage.style.display = 'block';
+                       
+                    } else {
+                        errorMessage.textContent = response.data.message || 'An error occurred';
+                        errorMessage.style.display = 'block';
+                    }
+                })
+                .catch(function(error) {
+                    loadingOverlay.style.display = 'none';
+                    errorMessage.textContent = 'Failed to complete payment';
+                    errorMessage.style.display = 'block';
+                });
+
+
+
+        });
+        */
+
+    });
+</script>
+
 
 
 @endsection

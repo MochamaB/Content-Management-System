@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('mpesa_s_t_k_s', function (Blueprint $table) {
             $table->id()->index();
+            $table->string('referenceno');
             $table->string('result_desc')->nullable();
             $table->string('result_code')->nullable();
             $table->string('merchant_request_id')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->string('mpesa_receipt_number')->nullable();
             $table->string('transaction_date')->nullable();
             $table->string('phonenumber')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

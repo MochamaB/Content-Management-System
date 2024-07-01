@@ -8,7 +8,7 @@
      <div id="progress-bar"></div>
  </div>
   <!---- Page Loader ------------->
-    <div id="loading-overlay">
+    <div id="loading-overlay" style="display: none;">>
         <div class="loader"></div>
     </div>
 

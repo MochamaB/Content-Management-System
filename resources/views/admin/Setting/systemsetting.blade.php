@@ -29,7 +29,7 @@
         </div>
         @endforeach
         <div class="col-md-4">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;" id="submitBtn">Edit System Settings</button>
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" style="text-transform: capitalize;" id="submitBtn">Edit System Settings</button>
         </div>
     </form>
 

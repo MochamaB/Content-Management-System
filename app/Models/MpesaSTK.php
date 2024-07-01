@@ -11,4 +11,7 @@ class MpesaSTK extends Model
 
     protected $guarded = [];
     protected $table = 'mpesa_s_t_k_s';
+
+    
+    
 }

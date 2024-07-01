@@ -29,6 +29,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DepositController;
+use App\Http\Controllers\MpesaSTKPUSHController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
@@ -40,7 +41,7 @@ use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\VendorCategoryController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkOrderController;
-use App\Http\Controllers\MpesaSTKPUSHController;
+
 ////Test Email View////////////
 use App\Models\MeterReading;
 use App\Models\User;
@@ -257,14 +258,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
     });
 
-         //<!-------------------------------- MPESA Module ---------------------------------------------->////
-         Route::group(['groupName' => 'MPESA'], function () {
-            Route::get('mpesa-payment/{id}', [MpesaSTKPUSHController::class, 'MpesaPayment'])->name('mpesa.view');
-            Route::post('/v1/mpesatest/stk/push', [MpesaSTKPUSHController::class, 'STKPush'])->name('mpesa.initiate');
-            // Mpesa STK Push Callback Route
-            Route::post('v1/confirm', [MpesaSTKPUSHController::class, 'STKConfirm'])->name('mpesa.confirm');
-    
-        });
+    Route::get('mpesa-payment/{id}', [MpesaSTKPUSHController::class, 'MpesaPayment'])->name('mpesa.view');
 
      //<!-------------------------------- Other Module ---------------------------------------------->////
 
@@ -291,7 +285,7 @@ Route::post('closewizard/{routePart}', [SettingController::class, 'closewizard']
 Route::get('/invoice/{invoice}/sendmail', [InvoiceController::class, 'sendInvoice']);
 Route::get('/payment/{payment}/sendmail', [PaymentController::class, 'sendPayment']);
 //Route::get('notification', [NotificationController::class, 'index']);
-
+Route::get('/invoicemail', [InvoiceController::class, 'invoicemail']);
 //////View Your email notification
 
 Route::get('/notificationview', function () {
@@ -304,7 +298,7 @@ Route::get('/notificationview', function () {
       ->toMail($user->user);
 });
 
-Route::get('/paymentview', function () {
+Route::get('/invoiceview', function () {
     $user = User::find(1);
    $tenant = User::find(1);
    $payment = Payment::find(2);

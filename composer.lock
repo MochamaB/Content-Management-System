@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf57d8bcd80e2d79a1c4313db49ce747",
+    "content-hash": "cb4226899fd2ef9d1b666ceada14cb14",
     "packages": [
         {
             "name": "africastalking/africastalking",

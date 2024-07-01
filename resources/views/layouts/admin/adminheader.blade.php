@@ -84,7 +84,7 @@
 }
 </style>
 
-<!--
+
   <style>
     #loading-overlay {
     position: fixed;
@@ -130,5 +130,5 @@
       }
     }
   </style>
-  -->
+  
 </head>
