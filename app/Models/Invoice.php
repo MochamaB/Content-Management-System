@@ -10,7 +10,7 @@ use App\Traits\FilterableScope;
 
 class Invoice extends Model
 {
-    use HasFactory,FilterableScope;
+    use HasFactory, FilterableScope;
     protected $table = 'invoices';
     protected $fillable = [
         'property_id',
@@ -127,7 +127,7 @@ class Invoice extends Model
 
     public function scopeApplyFilters($query, $filters)
     {
-        
+
         foreach ($filters as $column => $value) {
             if (!empty($value)) {
                 if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
@@ -138,10 +138,10 @@ class Invoice extends Model
                 }
             }
         }
-       // Add default filter for the last two months
-       if (empty($filters['from_date']) && empty($filters['to_date'])) {
-        $query->where("created_at", ">", Carbon::now()->subMonths(4));
-    }
+        // Add default filter for the last two months
+        if (empty($filters['from_date']) && empty($filters['to_date'])) {
+            $query->where("created_at", ">", Carbon::now()->subMonths(4));
+        }
 
         return $query;
     }
@@ -159,5 +159,31 @@ class Invoice extends Model
     public function getGroupedInvoiceItems()
     {
         return $this->getTransactions()->groupBy('unitcharge_id');
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($invoice) {
+            // Get the last expense ID
+            $lastInvoice = Invoice::latest('id')->first();
+            $lastId = $lastInvoice ? $lastInvoice->id + 1 : 1; // Increment the last ID or start from 1
+
+            // Determine the length of the invoice ID
+            $IdLength = strlen((string) $lastId);
+
+            // Determine how many zeros to pad
+            $paddingLength = max(0, 3 - $IdLength);
+            $Id = str_repeat('0', $paddingLength) . $lastId;
+
+            // Construct the reference number
+            $doc = 'INV-';
+            $propertyNumber = 'P' . str_pad($invoice->property_id, 2, '0', STR_PAD_LEFT);
+            $unit = Unit::find($invoice->unit_id);
+            $unitNumber = $unit ? $unit->unit_number : 'N';
+
+            // Assign the reference number to the expense model
+            $invoice->referenceno = $doc . '-' . $Id . '-' . $propertyNumber . $unitNumber;
+        });
     }
 }

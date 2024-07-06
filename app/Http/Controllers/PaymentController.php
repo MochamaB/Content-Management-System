@@ -79,21 +79,12 @@ class PaymentController extends Controller
         switch ($model) {
             case 'Expense':
                 $instance = Expense::find($id); // replace with actual logic to load an Expense
-                $doc = 'EXP-';
-                $propertynumber =  'P' . str_pad($instance->property->id, 2, '0', STR_PAD_LEFT);
-                $unitnumber =$instance->unit->unit_number ?? 'N';
                 break;
             case 'Deposit':
                 $instance = Deposit::find($id); 
-                $doc = 'DEP-';
-                $propertynumber =  'P' . str_pad($instance->property->id, 2, '0', STR_PAD_LEFT);
-                $unitnumber =$instance->unit->unit_number ?? 'N';
                 break;
             default:
                 $instance = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
-                $doc = 'INV-';
-                $propertynumber =  'P' . str_pad($instance->property->id, 2, '0', STR_PAD_LEFT);
-                $unitnumber =$instance->unit->unit_number ?? 'N';
                 break; // or handle this case differently
         }
 
@@ -103,7 +94,8 @@ class PaymentController extends Controller
         ///REFERENCE NO
         $date = Carbon::now()->format('ymd');
        
-        $referenceno = $doc.$propertynumber.$unitnumber.'-'.$date;
+       // Use the reference number from the instance
+        $referenceno = $instance->referenceno;
 
 
 

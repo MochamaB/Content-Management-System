@@ -126,7 +126,19 @@ class PropertyController extends Controller
     public function show(Property $property)
     {
         ////VARIABLES FOR CRUD TEMPLATES
-       
+         // Eager load relationships
+        $property->load([
+            'amenities',
+            'units',
+            'utilities',
+            'meterReadings',
+            'tickets',
+            'expenses',
+            'deposits',
+            'settings',
+            'propertyType'
+        ]);
+        
         $pageheadings = collect([
             '0' => $property->property_name,
             '1' => $property->property_streetname,
@@ -152,12 +164,10 @@ class PropertyController extends Controller
         //1. AMENITIES
         $amenities = $property->amenities;
         $allamenities = Amenity::all();
+        $totalExpenses = $property->expenses->sum('totalamount');
         //2. UNITS
         $units = $property->units;
-     //   $unitController = new UnitController();
         $unitTableData = $this->tableViewDataService->getUnitData($units);
-     //   $unitTableData = $unitController->getUnitData($units);
-      //  $mainfilter = $unitController->index()->getData()['mainfilter'];
         //3.UTILITIES
         $utilities = $property->utilities;
         $utilityController = new UtilityController();
@@ -165,18 +175,15 @@ class PropertyController extends Controller
 
          ///4. METER READINGS
          $readings = $property->meterReadings;
-         //   $unitController = new UnitController();
-            $meterReadingTableData = $this->tableViewDataService->getMeterReadingsData($readings);
+        $meterReadingTableData = $this->tableViewDataService->getMeterReadingsData($readings);
 
-        ///4. REQUESTS
+        ///5. REQUESTS/TICKETS
         $tickets = $property->tickets;
-        //   $unitController = new UnitController();
-           $requestTableData = $this->tableViewDataService->getTicketData($tickets);
+        $requestTableData = $this->tableViewDataService->getTicketData($tickets);
 
             /// DATA FOR EXPENSES TAB
          $expenses = $property->expenses;
-         // dd($payments);
-          $expenseTableData = $this->tableViewDataService->getExpenseData($expenses);
+         $expenseTableData = $this->tableViewDataService->getExpenseData($expenses);
 
           
           /// DATA FOR Deposit TAB
@@ -209,7 +216,7 @@ class PropertyController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities','specialvalue'))->render();
+                $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities','specialvalue','property'))->render();
             } elseif ($title === 'Units') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();

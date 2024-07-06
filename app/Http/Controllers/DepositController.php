@@ -115,18 +115,13 @@ class DepositController extends Controller
     public function store(Request $request)
     {
          ////REFRENCE NO <DOCUMENT><PROPERTYNO><UNITNUMBER><DATE><ID>
-         $doc = 'DEP-';
-         $propertynumber = 'P' . str_pad($request->property_id, 2, '0', STR_PAD_LEFT);
-         $unitnumber = $request->unit_id ?? 'N';
-         $date = Carbon::now()->format('ymd');
-        
-         $formreferenceno = $doc.$propertynumber.$unitnumber.'-'.$date;
+       
  
          //// INSERT DATA TO THE PAYMENT VOUCHER
          $validationRules = Deposit::$validation;
          $validatedData = $request->validate($validationRules);
 
-         $this->depositService->generateDeposit(null,null,$validatedData,$formreferenceno);
+         $this->depositService->generateDeposit(null,null,$validatedData);
  
          return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
          /*

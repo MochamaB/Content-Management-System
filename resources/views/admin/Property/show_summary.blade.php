@@ -1,55 +1,68 @@
 <div class="row">
     <div class="col-md-7">
-    <div class=" contwrapper">
-   
-    @include('admin.CRUD.edit')
+        <div class=" contwrapper">
 
-    <hr>
-    <h4 style="text-transform: capitalize;">Amenities 
-    </h4>
-    @if($amenities->isEmpty())
-                <h5>
-                    <small class="text-muted">
-                        No Amenities added
-                    </small>
-                </h5>
-                @else
-                <div class="form-group">
-                    <div class="form-check">
-                        @foreach($amenities as $item)
-                        <label class="form-check-label label">
-                            
-                           - {{ $item->amenity_name }}
-                        </label>
-                        @endforeach
-                    </div>
+            @include('admin.CRUD.edit')
+
+            <hr>
+            <h4 style="text-transform: capitalize;">Amenities
+            </h4>
+            @if($amenities->isEmpty())
+            <h5>
+                <small class="text-muted">
+                    No Amenities added
+                </small>
+            </h5>
+            @else
+            <div class="form-group">
+                <div class="form-check">
+                    @foreach($amenities as $item)
+                    <label class="form-check-label label">
+
+                        - {{ $item->amenity_name }}
+                    </label>
+                    @endforeach
                 </div>
-                @endif
-                <button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0" data-toggle="modal" data-target="#exampleModal">
-                    Add Amenities
-                </button>
+            </div>
+            @endif
+            <button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0" data-toggle="modal" data-target="#exampleModal">
+                Add Amenities
+            </button>
 
 
 
-    
+
+        </div>
+
     </div>
 
-    </div>
 
 
 
 
-
-    <div class="col-md-5" >
+    <div class="col-md-5">
         <div class=" contwrapper" style="background-color: #dfebf3;border: 1px solid #7fafd0;">
 
-            <h4><b> Balances</b>
+            <h4><b>Financials & Balances</b>
             </h4>
             <hr>
-            <h5>Pre-payments:</h5>
-            <h5>Total Invoices:</h5>
-            <h5>Total Invoice Amount:</h5>
-            <h5>Total Paid Amount:</h5>
+            <div style="display: flex; justify-content: space-between;">
+                <span><b>Deposits and Pre-payments:</b></span>
+                <span>{{ $sitesettings->site_currency }} @currency($property->deposits->sum('totalamount'))</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span><b>Total Invoice Amount:</b></span>
+                <span>{{ $sitesettings->site_currency }} @currency($property->invoices->sum('totalamount'))</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span><b>Total Expenses:</b></span>
+                <span>{{ $sitesettings->site_currency }} @currency($property->expenses->sum('totalamount'))</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span><b>Total Payments:</b></span>
+                <span>{{ $sitesettings->site_currency }} @currency($property->payments->sum('totalamount'))</span>
+            </div>
+          
 
 
         </div>

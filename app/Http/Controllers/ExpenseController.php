@@ -102,18 +102,14 @@ class ExpenseController extends Controller
     {
 
         ////REFRENCE NO
-         $doc = 'EXP-';
-         $propertynumber = 'P' . str_pad($request->property_id, 2, '0', STR_PAD_LEFT);
+       
          $unitnumber = $request->unit_id ?? 'N';
-         $date = Carbon::now()->format('ymd');
         
-         $formreferenceno  = $doc.$propertynumber.$unitnumber.'-'.$date;
-
         //// INSERT DATA TO THE UNITCHARGE
         $validationRules = Expense::$validation;
         $validatedData = $request->validate($validationRules);
 
-        $this->expenseService->generateExpense(null,null,$validatedData,$formreferenceno,$request);
+        $this->expenseService->generateExpense(null,null,$validatedData,$request);
 
         $previousUrl = Session::get('previousUrl');
         if ($previousUrl && $unitnumber) {

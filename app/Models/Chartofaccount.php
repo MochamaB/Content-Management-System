@@ -53,4 +53,9 @@ class Chartofaccount extends Model
                 return [];
         }
     }
+
+    public function utilities()
+    {
+        return $this->hasMany(Utility::class);
+    }
 }

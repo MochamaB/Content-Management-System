@@ -82,20 +82,21 @@ class AppServiceProvider extends ServiceProvider
             return "<?= number_format($expression, 0, '.', ','); ?>";
         });
 
+      // Query Website Settings once
+      $websitesettings = WebsiteSetting::first();
         /////////// GLOBAL VIEW COMPOSERS
-        view()->composer('*', function ($view) {
+        view()->composer('*', function ($view)  use ($websitesettings) {
             $routeName = Route::currentRouteName();
             $routeParts = explode('.', $routeName);
             $urlParts = explode('/', url()->current());
             $currentUrl = url()->current();
             $user = auth()->user();
-            $sitesettings = WebsiteSetting::first();
             $view->with([
                 'routeName' => $routeName,
                 'routeParts' => $routeParts,
                 'urlParts' => $urlParts,
                 'currentUrl' => $currentUrl,
-                'sitesettings' => $sitesettings,
+                'sitesettings' => $websitesettings,
                 'user'=>$user,
             ]);
         });
@@ -105,13 +106,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
         //////////////  FRONT END/////////////
-        view()->composer('layouts.client.navbar', function ($view) {
-            $sitesettings = WebsiteSetting::first();
-            $view->with(['sitesettings' => $sitesettings]);
+        view()->composer('layouts.client.navbar', function ($view)  use ($websitesettings) {
+            $view->with(['sitesettings' => $websitesettings]);
         });
-        view()->composer('layouts.client.footer', function ($view) {
-            $sitesettings = WebsiteSetting::first();
-            $view->with(['sitesettings' => $sitesettings]);
+        view()->composer('layouts.client.footer', function ($view)   use ($websitesettings){
+            $view->with(['sitesettings' => $websitesettings]);
         });
 
         view()->composer('client.slider', function ($view) {
@@ -135,7 +134,6 @@ class AppServiceProvider extends ServiceProvider
             // Get the authenticated user, assuming you are using the default 'auth' guard
             $user = auth()->user();
           
-
             if (Gate::allows('view-all', $user) || Gate::allows('admin', $user)) {
                 $notifications = Notification::all();
                 $unreadNotifications = $notifications->where('read_at', null);
@@ -232,25 +230,6 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
 
-        ////////////////// EMAIL //////////////////////////
-        /*
-        view()->composer('email.template', function ($view) {
-            $sitesettings = WebsiteSetting::first();
-            $view->with(['sitesettings' => $sitesettings]);
-        });
-        view()->composer('email.emailtemplate', function ($view) {
-            $sitesettings = WebsiteSetting::first();
-            $view->with(['sitesettings' => $sitesettings]);
-        });
-        view()->composer('admin.lease.document_view', function ($view) {
-            // Get the authenticated user, assuming you are using the default 'auth' guard
-            $user = auth()->user();
-            $sitesettings = WebsiteSetting::first();
-            // Pass the authenticated user data to the 'layouts.admin' view
-            $view->with([
-                'user' => $user, 'sitesettings' => $sitesettings
-            ]);
-        });
-        */
+        
     }
 }

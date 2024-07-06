@@ -19,7 +19,7 @@ use App\Services\FilterService;
 use App\Services\CardService;
 use App\Models\WebsiteSetting;
 use App\Traits\FormDataTrait;
-
+use Illuminate\Support\Facades\Session;
 
 class InvoiceController extends Controller
 {
@@ -91,8 +91,11 @@ class InvoiceController extends Controller
 
 
         $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata, true);
+        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
         return View('admin.lease.invoice', ['tableData' => $tableData, 'controller' => ['unitcharge']]);
     }
+
+    
 
     /**
      * Store a newly created resource in storage.

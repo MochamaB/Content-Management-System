@@ -294,8 +294,10 @@ Route::get('/notificationview', function () {
    $payment = Payment::find(1);
 
 
-   return (new PaymentNotification($payment, $tenant))
-      ->toMail($user->user);
+  // Render the email template
+  $viewContent = view('email.payment', compact('payment'))->render();
+
+  return $viewContent;
 });
 
 Route::get('/invoiceview', function () {

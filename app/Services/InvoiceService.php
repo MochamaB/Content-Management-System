@@ -18,6 +18,7 @@ use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
 use App\Jobs\SendInvoiceEmailJob;
+use App\Models\PaymentMethod;
 use App\Models\Transaction;
 use App\Notifications\InvoiceGeneratedNotification;
 use Illuminate\Support\Facades\Log;
@@ -46,13 +47,13 @@ class InvoiceService
     {
         return Unitcharge::where('recurring_charge', 'Yes')
             ->where('parent_id', null)
-              //   ->whereMonth('nextdate', now()->month)
+            //   ->whereMonth('nextdate', now()->month)
             ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
             })
-         //   ->whereDoesntHave('invoices', function ($query) {
-         //       $query->whereMonth('created_at', now()->month);
-         //   })
+            //   ->whereDoesntHave('invoices', function ($query) {
+            //       $query->whereMonth('created_at', now()->month);
+            //   })
             ->get();
     }
     public function chargesForInvoiceGeneration()
@@ -66,10 +67,10 @@ class InvoiceService
         }
     }
 
-    public function generateInvoice(Unitcharge $unitcharge,$model = null)
+    public function generateInvoice(Unitcharge $unitcharge, $model = null)
     {
         $invoiceExists = $this->invoiceExists($unitcharge);
-       
+
         // Check if an invoice already exists for the given month, unit, and charge name
         if ($invoiceExists) {
             // Invoice already exists, skip and continue to the next Unitcharge record
@@ -90,7 +91,7 @@ class InvoiceService
 
         //3. Update Total Amount in Invoice Header
         $this->calculateTotalAmountAction->handle($invoice);
-            
+
         //4. Update Next Date in the Unitcharge
         $this->updateNextDateAction->invoicenextdate($unitcharge);
         //// Child Charges
@@ -109,10 +110,10 @@ class InvoiceService
 
         //7. Dispatch a job to send Email/Notification to the Tenant containing the invoice.
 
-       $this->invoiceEmail($invoice);
-     //   SendInvoiceEmailJob::dispatch($invoice);
+        $this->invoiceEmail($invoice);
+        //   SendInvoiceEmailJob::dispatch($invoice);
 
-            
+
         return $invoice;
     }
 
@@ -149,7 +150,7 @@ class InvoiceService
 
         $startOfMonth = now()->startOfMonth();
         $endOfMonth = now()->endOfMonth();
-        
+
         return Invoice::where('unitcharge_id', $unitcharge->id)
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
             ->first();
@@ -165,7 +166,7 @@ class InvoiceService
         $propertynumber = 'P' . str_pad($unitcharge->property_id, 2, '0', STR_PAD_LEFT);
         $unitnumber = $unitcharge->unit->unit_number ?? 'N';
         $date = Carbon::parse($unitcharge->nextdate)->format('ymd');
-        $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
+        //  $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
 
         return [
             'property_id' => $unitcharge->property_id,
@@ -173,7 +174,6 @@ class InvoiceService
             'unitcharge_id' => $unitcharge->id,
             'model_type' => $user, ///This has plymorphism because an invoice can also be sent to a vendor.
             'model_id' => $userId->user_id,
-            'referenceno' => $referenceno,
             'name' => $unitcharge->charge_name,
             'totalamount' => null,
             'status' => 'unpaid',
@@ -198,22 +198,22 @@ class InvoiceService
             $meterReadings = MeterReading::where('unit_id', $unitcharge->unit_id)
                 ->where('unitcharge_id', $unitcharge->id)
                 ->where('startdate', '>=', $updatedFormatted) // Check readings after updated_at
-                ->where('startdate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
+                ->where('enddate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
                 ->get();
 
             foreach ($meterReadings as $reading) {
                 // Calculate the amount based on meter readings and assign it to $amount
-                $amount = $reading->amount;
+                // Accumulate the amount from each reading
+                $amount += $reading->amount;
             }
         } else {
             // If charge_type is not 'units', use the unitcharge rate as the amount
             $amount = $unitcharge->rate;
         }
 
-        if($model)
-        {
+        if ($model) {
             $items = $model->getItems;
-          
+
             // Create expense items from the model items
             foreach ($items as $item) {
                 InvoiceItems::create([
@@ -224,15 +224,16 @@ class InvoiceService
                     'amount' => $item->amount,
                 ]);
             }
-        }else{
-        // Create invoice items
-        InvoiceItems::create([
-            'invoice_id' => $invoice->id,
-            'unitcharge_id' => $unitcharge->id,
-            'chartofaccount_id' => $unitcharge->chartofaccounts_id,
-            'description' => $unitcharge->charge_name,
-            'amount' => $amount,
-        ]);
+            /// For models without children items but need invoice e.g Maintenance
+        } else {
+            // Create invoice items
+            InvoiceItems::create([
+                'invoice_id' => $invoice->id,
+                'unitcharge_id' => $unitcharge->id,
+                'chartofaccount_id' => $unitcharge->chartofaccounts_id,
+                'description' => $unitcharge->charge_name,
+                'amount' => $amount,
+            ]);
         }
 
         // Create invoice items for child charges
@@ -255,7 +256,7 @@ class InvoiceService
 
                     foreach ($meterReadings as $reading) {
                         // Calculate the amount based on meter readings and assign it to $amount
-                        $amount = $reading->amount;
+                        $amount += $reading->amount;
                     }
                 } else {
                     // If charge_type is not 'units', use the unitcharge rate as the amount
@@ -274,8 +275,8 @@ class InvoiceService
 
     public function invoiceEmail($invoice)
     {
-        
-        
+
+
         $user = $invoice->model;
         $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
         $sixMonths = now()->subMonths(6);
@@ -285,13 +286,15 @@ class InvoiceService
             ->get();
         $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
         $openingBalance = $this->calculateOpeningBalance($invoice);
-
+          //// Data for the Payment Methods
+        $PaymentMethod = PaymentMethod::where('property_id',$invoice->property_id)->get();
         $viewContent = View::make('email.statement', [
             'user' => $user,
             'invoice' => $invoice,
             'transactions' => $transactions,
             'groupedInvoiceItems' => $groupedInvoiceItems,
-            'openingBalance' => $openingBalance
+            'openingBalance' => $openingBalance,
+            'PaymentMethod' => $PaymentMethod,
         ])->render();
 
         try {
@@ -300,9 +303,5 @@ class InvoiceService
             // Log the error or perform any necessary actions
             Log::error('Failed to send payment notification: ' . $e->getMessage());
         }
-
-       
     }
-
-    
 }

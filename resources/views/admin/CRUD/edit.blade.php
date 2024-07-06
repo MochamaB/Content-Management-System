@@ -44,7 +44,13 @@
             <!---- GROUP SELECT ------------->
             @elseif($attributes['inputType'] === 'selectgroup')
             <select class="formcontrol2" id="{{ $field }}" name="{{ $field }}">
-                <option value="{{ $actualvalues->$field }}">{{ $actualvalues->$field }}</option>
+                <option value="{{ $actualvalues->$field }}">
+                @if($specialvalue !== null && $specialvalue->has($field))
+                    {{ $specialvalue[$field] }}
+                    @else
+                    {{ $actualvalues->$field }}
+                    @endif
+                </option>
                 @foreach ($data[$field] as $groupLabel => $options)
                 <optgroup label="{{ $groupLabel }}">
                 @foreach ($options as $id => $option)

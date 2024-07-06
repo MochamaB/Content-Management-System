@@ -110,8 +110,8 @@
             <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
             @if($item->name == 'M-PESA')
             <span>{{$key+1}}. {{$item->name}} - 
-            <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="table">
-                <i class="ti-money"></i>Click to Pay Now</a>
+            <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="btn btn-warning btn-lg text-white mb-0 me-0">
+                <i class="ti-money"></i>Pay Now</a>
             </span>
             @else
             <span>{{$key+1}}. {{$item->name}} </span>

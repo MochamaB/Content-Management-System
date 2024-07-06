@@ -85,6 +85,7 @@
         </tbody>
     </table>
     <!------- FOURTH LEVEL PAYMENT DETAILS AND TOTALS-->
+    
 
         <div class="mt-3">
             <div class="d-flex justify-content-end">
@@ -99,10 +100,7 @@
                 <p class="text-muted me-3" style="font-size:15px;font-weight:600">Tax & Discounts:</p>
                 <span>{{ $sitesettings->site_currency }} 0 </span>
             </div>
-            <div class="d-flex justify-content-end">
-                <p class="text-muted me-3" style="font-size:16px;font-weight:600">Balance:</p>
-                <span>{{ $sitesettings->site_currency }} @currency($payment->model->totalamount - $payment->totalamount) </span>
-            </div>
+           
             <div class="d-flex justify-content-end mt-3">
                 <h4 class="me-3" style="font-weight:700">Total Paid:</h4>
                 <h4 class="text-success" style="font-weight:700">{{ $sitesettings->site_currency }} @currency($payment->totalamount)</h4>

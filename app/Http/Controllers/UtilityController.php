@@ -129,9 +129,14 @@ class UtilityController extends Controller
      */
     public function edit(Utility $utility)
     {
-        // dd($utility);
+        $utility->load('property','accounts');
+        
+        $specialvalue = collect([
+            'property_id' => $utility->property->property_name, // Use a string for the controller name
+            'chartofaccounts_id' => $utility->accounts->account_name,
+        ]);
 
-        $viewData = $this->formData($this->model, $utility);
+        $viewData = $this->formData($this->model, $utility, $specialvalue);
 
         return View('admin.CRUD.form', $viewData);
     }

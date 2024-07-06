@@ -14,15 +14,39 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Services\PaymentService;
 
 class MpesaSTKPUSHController extends Controller
 {
     public $result_code = 1;
     public $result_desc = 'An Error Occured';
+    protected $controller;
+    protected $model;
+    private $paymentService;
+
+    public function __construct(PaymentService $paymentService = null)
+    {
+        $this->model = MpesaSTK::class;
+        $this->controller = collect([
+            '0' => 'mpesaSTK', // Use a string for the controller name
+            '1' => ' MPESA',
+        ]);
+
+        $this->paymentService = $paymentService;
+    }
 
     public function MpesaPayment($id)
     {
         $invoice = Invoice::find($id);
+
+        $amountPaid = $invoice->payments->sum(function ($payment) {
+            return $payment->paymentItems->sum('amount');
+        });
+        $amountdue = $invoice->totalamount - $amountPaid;
+        if ($amountdue <= 0) {
+            return redirect()->back()->with('statuserror', 'Invoice has already been fully paid');
+        }
+
         $MpesaCode = PaymentMethod::where('property_id', $invoice->property_id)
             ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
             ->pluck('account_number')
@@ -153,59 +177,65 @@ class MpesaSTKPUSHController extends Controller
 
     public function STKConfirm(Request $request)
     {
-        Log::info('M-Pesa Callback received: ' . json_encode($request->all()));
 
-        $callbackData = $request->Body['stkCallback'] ?? null;
+        // Log the entire request for debugging
+        Log::info('MPESA STK Callback received: ' . json_encode($request->all()));
 
-        if (!$callbackData) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid callback data']);
+        // Validate the request
+        $callbackData = $request->all();
+
+        if (!isset($callbackData['Body']['stkCallback'])) {
+            Log::error('Invalid STK Callback data received');
+            return response()->json(['success' => false, 'message' => 'Invalid callback data'], 400);
         }
 
-        $resultCode = $callbackData['ResultCode'];
-        $resultDesc = $callbackData['ResultDesc'];
-        $merchantRequestID = $callbackData['MerchantRequestID'];
-        $checkoutRequestID = $callbackData['CheckoutRequestID'];
+        $resultCode = $callbackData['Body']['stkCallback']['ResultCode'];
+        $resultDesc = $callbackData['Body']['stkCallback']['ResultDesc'];
+        $merchantRequestID = $callbackData['Body']['stkCallback']['MerchantRequestID'];
+        $checkoutRequestID = $callbackData['Body']['stkCallback']['CheckoutRequestID'];
 
+        // Find the corresponding transaction
         $transaction = MpesaSTK::where('merchant_request_id', $merchantRequestID)
             ->where('checkout_request_id', $checkoutRequestID)
             ->first();
 
         if (!$transaction) {
-            return response()->json(['status' => 'error', 'message' => 'Transaction not found']);
+            Log::error('Transaction not found for MerchantRequestID: ' . $merchantRequestID);
+            return response()->json(['success' => false, 'message' => 'Transaction not found'], 404);
         }
 
+        // Update the transaction status
         if ($resultCode == 0) {
             // Transaction was successful
-            $amount = $callbackData['CallbackMetadata']['Item'][0]['Value'] ?? null;
-            $mpesaReceiptNumber = $callbackData['CallbackMetadata']['Item'][1]['Value'] ?? null;
-            $transactionDate = $callbackData['CallbackMetadata']['Item'][3]['Value'] ?? null;
-            $phoneNumber = $callbackData['CallbackMetadata']['Item'][4]['Value'] ?? null;
+            $transaction->result_code = $resultCode;
+            $transaction->status = 'completed';
+            $transaction->result_desc = $resultDesc;
 
-            $transaction->update([
-                'result_desc' => $resultDesc,
-                'result_code' => $resultCode,
-                'amount' => $amount,
-                'mpesa_receipt_number' => $mpesaReceiptNumber,
-                'transaction_date' => $transactionDate,
-                'phone_number' => $phoneNumber,
-                'status' => 'completed',
-            ]);
+            // Extract additional details if needed
+            if (isset($callbackData['Body']['stkCallback']['CallbackMetadata'])) {
+                $metadata = collect($callbackData['Body']['stkCallback']['CallbackMetadata']['Item']);
 
-            // Mark invoice as paid
-            //   $paymentService = new PaymentService();
-            //   $paymentService->markInvoiceAsPaid($transaction->invoice_id, $amount, $mpesaReceiptNumber);
+
+                $transaction->mpesa_receipt_number = $metadata->firstWhere('Name', 'MpesaReceiptNumber')['Value'] ?? null;
+                $transaction->transaction_date = $metadata->firstWhere('Name', 'TransactionDate')['Value'] ?? null;
+                // Add any other fields you want to save
+            }
         } else {
             // Transaction failed
-            $transaction->update([
-                'status' => 'failed',
-                'result_desc' => $resultDesc,
-                'result_code' => $resultCode,
-            ]);
+            $transaction->status = 'failed';
+            $transaction->result_desc = $resultDesc;
         }
 
-        return response()->json(['status' => 'success']);
-    }
+        $transaction->save();
 
+        // You can add additional logic here, such as notifying the user or updating other parts of your system
+
+        // Always respond with a success to acknowledge receipt of the callback
+        return response()->json([
+            'success' => true,
+            'message' => 'Callback processed successfully'
+        ]);
+    }
 
     public function checkPaymentStatus(Request $request)
     {
@@ -224,7 +254,6 @@ class MpesaSTKPUSHController extends Controller
             'CheckoutRequestID' => $transaction->checkout_request_id
         ];
 
-
         try {
             $response = $client->post($url, [
                 'headers' => [
@@ -235,6 +264,7 @@ class MpesaSTKPUSHController extends Controller
             ]);
             $responseBody = $response->getBody()->getContents();
             $result = json_decode($responseBody, true);
+
             // Log the full request and response for debugging
             Log::debug('M-Pesa API Request', [
                 'url' => $url,
@@ -242,55 +272,74 @@ class MpesaSTKPUSHController extends Controller
                 'headers' => $response->getHeaders()
             ]);
 
-
             Log::debug('M-Pesa API Response', [
                 'status' => $response->getStatusCode(),
                 'body' => $result
             ]);
 
-            //   $result = json_decode($responseBody, true);
-
-
-            if ($response->getStatusCode() == 200) {
-                // Update the transaction status based on the response
+            // Check if ResultCode exists in the response
+            if (isset($result['ResultCode'])) {
                 $transaction->result_code = $result['ResultCode'];
-                $transaction->result_desc = $result['ResultDesc'];
-                if ($result['ResultCode'] == 0) {
+                $transaction->result_desc = $result['ResultDesc'] ?? 'No description provided';
 
-                    $transaction->status = 'completed';
-
-                    // The MpesaReceiptNumber and TransactionDate might be available in some responses
-                    $transaction->mpesa_receipt_number = $result['MpesaReceiptNumber'] ?? null;
-                    $transaction->transaction_date = $result['TransactionDate'] ?? null;
-                } elseif ($result['ResultCode'] == 1032) {
-                    $transaction->status = 'pending';
-                } else {
-                    $transaction->status = 'failed';
+                switch ($result['ResultCode']) {
+                    case 0:
+                        $transaction->status = 'completed';
+                        $success = true;
+                        $message = 'Payment has been received';
+                        break;
+                    case 1:
+                        $transaction->status = 'insufficient_funds';
+                        $success = false;
+                        $message = 'You have insufficient funds to complete this payment';
+                        break;
+                    case 1032:
+                        $transaction->status = 'cancelled';
+                        $success = false;
+                        $message = 'You cancelled the payment transaction';
+                        break;
+                    case 1037:
+                        $transaction->status = 'timeout';
+                        $success = false;
+                        $message = 'The transaction has timed out';
+                        break;
+                    default:
+                        $transaction->status = 'failed';
+                        $success = false;
+                        $message = 'The payment has failed. Try again';
+                        break;
                 }
 
                 $transaction->save();
 
-                
-                return response()->json([
-                    'status' => $result['ResultCode'] == 0 ? 'completed' : 'failed',
-                    'message' => $result['ResultDesc'],
-                    'data' => $result  // Include full response data for debugging
-                ]);
+                // Return error if transaction is not completed
+                if ($transaction->status !== 'completed') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'data' => $result
+                    ]);
+                } else {
+                    $model = Invoice::where('referenceno', $transaction->referenceno)->firstOrFail();
+                    $payment = $this->paymentService->generatePayment($model, null, $transaction);
+                    return response()->json([
+                        'success' => true,
+                        'message' => $message,
+                        'transaction_id' => $transaction->id,
+                        'data' => $result  // Include full response data for debugging
+                    ]);
+                }
             } else {
-                // Log the error response
-                Log::error('M-Pesa API Error Response', [
-                    'status' => $response->getStatusCode(),
-                    'body' => $responseBody
+                // If ResultCode is not in the response, consider it an error
+                Log::error('M-Pesa API Error: ResultCode not found in response', [
+                    'response' => $result
                 ]);
 
                 return response()->json([
-                    'status' => 'error',
-                    'message' => 'Failed to check status',
-                    'error_details' => [
-                        'status_code' => $response->getStatusCode(),
-                        'response_body' => $result
-                    ]
-                ], $response->getStatusCode());
+                    'success' => false,
+                    'message' => 'Invalid response from MPESA API',
+                    'data' => $result
+                ], 400);
             }
         } catch (RequestException $e) {
             // Log any exceptions
@@ -300,7 +349,7 @@ class MpesaSTKPUSHController extends Controller
             ]);
 
             return response()->json([
-                'status' => 'error',
+                'success' => false,
                 'message' => 'An error occurred while checking the payment status',
                 'error_details' => [
                     'exception_message' => $e->getMessage(),
@@ -308,5 +357,24 @@ class MpesaSTKPUSHController extends Controller
                 ]
             ], 500);
         }
+    }
+
+    public function paymentConfirm(Request $request)
+    {
+
+        $transaction = MpesaSTK::findOrFail($request->transactionid2);
+        //Find the invoice
+        if ($transaction->status !== 'completed') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Transaction is not completed'
+            ], 400);
+        }
+        if ($transaction->mpesa_receipt_number == 'null') {
+            $transaction->mpesa_receipt_number = $request->mpesa_receipt_number;
+            $transaction->save;
+        }
+        $model = Invoice::where('referenceno', $transaction->referenceno)->firstOrFail();
+        $payment = $this->paymentService->generatePayment($model, null, $transaction);
     }
 }

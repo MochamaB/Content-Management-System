@@ -3,14 +3,14 @@
 
 @include('layouts.admin.adminheader')
 <body>
-  
 <div id="progress-container">
      <div id="progress-bar"></div>
  </div>
   <!---- Page Loader ------------->
-    <div id="loading-overlay" style="display: none;">>
+    <div id="loading-overlay" style="display:none;">
         <div class="loader"></div>
     </div>
+
 
   <div class="container-scroller">
 

@@ -29,11 +29,11 @@ class DepositService
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
     }
 
-    public function generateDeposit(Model $model = null, User $user = null, $validatedData = null, $formreferenceno = null)
+    public function generateDeposit(Model $model = null, User $user = null, $validatedData = null)
     {
 
 
-        $DepositData = $this->getDepositHeaderData($model, $user, $validatedData, $formreferenceno);
+        $DepositData = $this->getDepositHeaderData($model, $user, $validatedData);
 
         //1. Create Deposit Header Data
        
@@ -59,7 +59,7 @@ class DepositService
 
 
     //////2. GET DATA FOR VOUCHER HEADER DATA
-    private function getDepositHeaderData($model, $user, $validatedData, $formreferenceno)
+    private function getDepositHeaderData($model, $user, $validatedData)
     {
         if (!is_null($validatedData)) {
             return [
@@ -68,7 +68,6 @@ class DepositService
                 'unitcharge_id' => null,
                 'model_type' => $validatedData['model_type'],
                 'model_id' => $validatedData['model_id'],
-                'referenceno' => $formreferenceno,
                 'name' => $validatedData['name'], ///Generated from securitydeposit
                 'totalamount' => null,
                 'status' => 'unpaid',
@@ -88,7 +87,6 @@ class DepositService
                 'unitcharge_id' => $model->unit_id ?? null,
                 'model_type' => 'App\\Models\\User',
                 'model_id' => $user->id,
-                'referenceno' => $referenceno,
                 'name' => $model->charge_name, ///Generated from securitydeposit
                 'totalamount' => null,
                 'status' => 'unpaid',

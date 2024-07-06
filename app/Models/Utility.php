@@ -78,4 +78,8 @@ class Utility extends Model
     {
         return $this->morphMany(Setting::class, 'settingable');
     }
+    public function accounts()
+    {
+        return $this->belongsTo(Chartofaccount::class, 'chartofaccounts_id');
+    }
 }

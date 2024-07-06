@@ -1,7 +1,6 @@
-
 <div class="row">
     <div class="col-md-9">
-    @include('admin.lease.invoice_contents')
+        @include('admin.lease.invoice_contents')
     </div>
     <div class="col-md-3">
         <div class="card">
@@ -9,8 +8,10 @@
                 <h4>ACTIONS</h4>
             </div>
             <div class="card-body">
-            <a href="{{route('payment.create', ['id' => $invoice->id])}}" class="btn btn-success btn-lg text-white"><i class="ti-money"></i>Add Payment</a>
+                @if( Auth::user()->can('payment.create') || Auth::user()->id === 1)
+                <a href="{{route('payment.create', ['id' => $invoice->id])}}" class="btn btn-success btn-lg text-white"><i class="ti-money"></i>Record Payment</a>
                 <a href="{{ url('invoice/'.$invoice->id.'/sendmail') }}" class="btn btn-primary btn-lg text-white "><i class="ti-email"></i>Send Reminder Email</a>
+                @endif
                 <a href="" onclick="printDiv('printMe')" class="btn btn-warning btn-lg text-white"><i class="icon-printer" style="color:white"></i> Print to PDF</a>
             </div>
         </div>

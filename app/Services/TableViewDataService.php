@@ -147,10 +147,10 @@ class TableViewDataService
 
             if ($item->payments->isEmpty()) {
                 $status = 'unpaid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information">Add Payment</a>';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information mt-2">Record Payment</a>';
             } elseif ($totalPaid < $item->totalamount) {
                 $status = 'partially_paid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information">Add Payment</a>';
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information mt-2">Record Payment</a>';
             } elseif ($totalPaid > $item->totalamount) {
                 $status = 'over_paid';
             } elseif ($totalPaid == $item->totalamount) {
@@ -325,7 +325,7 @@ class TableViewDataService
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $row = [
                 'id' => $item->id,
-                $item->referenceno. ' - #' . $item->id ,
+                $item->referenceno . ' - #' . $item->id,
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Paid on Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 class_basename($item->model),
@@ -369,6 +369,22 @@ class TableViewDataService
         ];
 
         foreach ($unitchargedata as $item) {
+            $MeterReadingLink = ''; // Initialize $MeterReadingLink here
+            $nextdateFormatted = Carbon::parse($item->nextdate)->format('Y-m-d');
+            $updatedFormatted = Carbon::parse($item->updated_at ?? Carbon::now())->format('Y-m-d');
+            if ($item->charge_type == 'units') {
+                // Use the relationship to check for meter readings
+                $checkMeterReadings = $item->meterReading()
+                    ->where('startdate', '>=', $updatedFormatted)
+                    ->where('enddate', '<=', $nextdateFormatted)
+                    ->exists();
+                if (!$checkMeterReadings) {
+                    $MeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $item->unit_id, 'model' => 'units']) . '" class="badge badge-warning mt-2">Add Reading</a>';
+                } else {
+                    $MeterReadingLink = '<a href="" class="badge badge-information mt-2">Reading Added</a>';
+                }
+            }
+
             $nextDateFormatted = empty($item->nextdate) ? 'Charged Once' : Carbon::parse($item->nextdate)->format('Y-m-d');
             $charge_name = $item->charge_name;
             $charge_cycle = $item->charge_cycle;
@@ -378,14 +394,25 @@ class TableViewDataService
             } else {
                 $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',') . ' <i>Per Unit</i>';
             }
-            $recurring_charge = $item->recurring_charge;
-            $updated_at = \Carbon\Carbon::parse($item->updated_at)->format('d M Y');
-            $unit = $item->unit->unit_number;
-            $property = $item->property->property_name;
-
+            $recurring_charge = $item->recurring_charge . '<br/>' . $MeterReadingLink;
             // If the current charge has child charges, add them to the charge name
             if ($item->childrencharge->isNotEmpty()) {
                 foreach ($item->childrencharge as $child) {
+
+                    if ($child->charge_type == 'units') {
+                        $childCheckMeterReadings = $child->meterReading()
+                            ->where('startdate', '>=', $updatedFormatted)
+                            ->where('enddate', '<=', $nextdateFormatted)
+                            ->exists();
+                        if (!$childCheckMeterReadings) {
+                            $childMeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $child->unit_id, 'model' => 'units']) . '" class="badge badge-warning mt-2">Add Reading</a>';
+                        } else {
+                            $childMeterReadingLink = '<a href="" class="badge badge-information mt-2">Reading Added</a>';
+                        }
+                    } else {
+                        // Handle cases where $child->charge_type is not 'units'
+                        $childMeterReadingLink = ''; // or any other appropriate handling
+                    }
                     $charge_name .= ' <div>
                                         <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
                                         <span class="text-muted me-3">' . $child->charge_name . '</span>
@@ -402,6 +429,10 @@ class TableViewDataService
                                     <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
                                     <span class="text-muted me-3">' . $this->sitesettings->site_currency . ' ' . number_format($child->rate, 0, '.', ',') . '</span>
                                 </div>';
+                    $recurring_charge .= ' <div>
+                                <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>'
+                        . $childMeterReadingLink . '
+                            </div>';
                 }
             }
             $row = [
@@ -410,7 +441,7 @@ class TableViewDataService
                 $charge_cycle,
                 $charge_type,
                 $rate,
-                $item->recurring_charge,
+                $recurring_charge,
                 \Carbon\Carbon::parse($item->updated_at)->format('Y-m-d'),
                 $nextDateFormatted,
 

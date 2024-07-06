@@ -34,11 +34,11 @@ class ExpenseService
         $this->uploadMediaAction = $uploadMediaAction;
     }
 
-    public function generateExpense($model = null, User $user = null, $validatedData = null, $formreferenceno = null,$request =null)
+    public function generateExpense($model = null, User $user = null, $validatedData = null,$request =null)
     {
 
 
-        $ExpenseData = $this->getExpenseHeaderData($model, $user, $validatedData, $formreferenceno);
+        $ExpenseData = $this->getExpenseHeaderData($model, $user, $validatedData);
 
         //1. Create Expense Header Data
        
@@ -75,7 +75,7 @@ class ExpenseService
 
 
     //////2. GET DATA FOR VOUCHER HEADER DATA
-    private function getExpenseHeaderData($model, $user, $validatedData, $formreferenceno)
+    private function getExpenseHeaderData($model, $user, $validatedData)
     {
         if (!is_null($validatedData)) {
             return [
@@ -84,7 +84,6 @@ class ExpenseService
                 'unitcharge_id' => null,
                 'model_type' => $validatedData['model_type'],
                 'model_id' => $validatedData['model_id'],
-                'referenceno' => $formreferenceno,
                 'name' => $validatedData['name'], ///Generated from securityexpense
                 'totalamount' => null,
                 'status' => 'unpaid',
@@ -104,7 +103,6 @@ class ExpenseService
                 'unitcharge_id' => $model->unit_id ?? null,
                 'model_type' => $modelname,
                 'model_id' => $model->id,
-                'referenceno' => $referenceno,
                 'name' => $model->charge_name ?? $model->category, ///Generated from securityexpense
                 'totalamount' => null,
                 'status' => 'unpaid',

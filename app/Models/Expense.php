@@ -72,4 +72,33 @@ class Expense extends Model
     {
         return $this->hasMany(ExpenseItems::class);
     }
+
+    // Define creating event to generate reference number
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($expense) {
+            // Get the last expense ID
+            $lastExpense = Expense::latest('id')->first();
+            $lastId = $lastExpense ? $lastExpense->id + 1 : 1; // Increment the last ID or start from 1
+
+           // Determine the length of the invoice ID
+           $IdLength = strlen((string) $lastId);
+
+           // Determine how many zeros to pad
+           $paddingLength = max(0, 3 - $IdLength);
+           $Id = str_repeat('0', $paddingLength) . $lastId;
+
+            // Construct the reference number
+            $doc = 'EXP-';
+            $propertyNumber = 'P' . str_pad($expense->property_id, 2, '0', STR_PAD_LEFT);
+            $unit = Unit::find($expense->unit_id);
+            $unitNumber = $unit ? $unit->unit_number : 'N';
+            $date = now()->format('ymd');
+
+            // Assign the reference number to the expense model
+            $expense->referenceno = $doc . '-' . $Id . '-' . $propertyNumber . $unitNumber;
+        });
+    }
 }

@@ -42,9 +42,9 @@ class Deposit extends Model
         return $this->morphTo();
     }
     public function property()
-      {
-          return $this->belongsTo(Property::class,'property_id');
-      }
+    {
+        return $this->belongsTo(Property::class, 'property_id');
+    }
 
     public function unit()
     {
@@ -69,10 +69,37 @@ class Deposit extends Model
     {
         return $this->morphMany(Payment::class, 'model');
     }
-  
+
     public function getItems()
     {
         return $this->hasMany(DepositItems::class);
     }
-}
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($deposit) {
+            // Get the last expense ID
+            $lastDeposit = Deposit::latest('id')->first();
+            $lastId = $lastDeposit ? $lastDeposit->id + 1 : 1; // Increment the last ID or start from 1
+
+           // Determine the length of the invoice ID
+           $IdLength = strlen((string) $lastId);
+
+           // Determine how many zeros to pad
+           $paddingLength = max(0, 3 - $IdLength);
+           $Id = str_repeat('0', $paddingLength) . $lastId;
+
+            // Construct the reference number
+            $doc = 'DEP-';
+            $propertyNumber = 'P' . str_pad($deposit->property_id, 2, '0', STR_PAD_LEFT);
+            // Load the unit model using the unit_id
+            $unit = Unit::find($deposit->unit_id);
+            $unitNumber = $unit ? $unit->unit_number : 'N';
+
+            // Assign the reference number to the expense model
+            $deposit->referenceno = $doc . '-' . $Id . '-' . $propertyNumber . $unitNumber;
+        });
+    }
+}

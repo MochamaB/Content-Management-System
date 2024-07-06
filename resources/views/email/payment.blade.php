@@ -168,10 +168,7 @@
                                 <span class="text-muted me-3" style="font-size:15px;font-weight:600; display: inline;">Tax & Discounts :</span>
                                 <span style="display: inline;">{{ $sitesettings->site_currency }} 0</span>
                             </li><br>
-                            <li>
-                                <span class="text-muted me-3" style="font-size:15px;font-weight:600; display: inline;">Balance:</span>
-                                <span style="display: inline;">{{ $sitesettings->site_currency }} @currency($payment->model->totalamount - $payment->totalamount)</span>
-                            </li><br>
+                           
                             <li>
                                 <span class="me-3" style="font-size:17px;font-weight:700; display: inline;">Total Paid:</span>
                                 <span class="text-error" style="font-size:17px;font-weight:700;color:green; display: inline;">{{ $sitesettings->site_currency }} @currency($payment->totalamount)</span>

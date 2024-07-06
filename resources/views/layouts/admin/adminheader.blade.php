@@ -42,82 +42,50 @@
   <!-- endinject -->
   <link rel="shortcut icon" href="images/favicon.png" />
   <!-- FOR THE PROGRESS BAR  -->
-  <!-- NProgress CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css">
-<!-- NProgress JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
-<script>
-    // Show NProgress when the page is loading
-    document.addEventListener('readystatechange', function() {
-        if (document.readyState === 'loading') {
-            NProgress.start();
-        } else if (document.readyState === 'interactive' || document.readyState === 'complete') {
-            NProgress.done();
-        }
-    });
-
-    // Show NProgress for AJAX requests
-    $(document).ajaxStart(function() {
-        NProgress.start();
-    }).ajaxStop(function() {
-        NProgress.done();
-    });
-</script>
-
-<style>
-  #progress-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    z-index: 9999;
-    overflow: hidden;
-    background-color: transparent;
-}
-
-#progress-bar {
-    width: 0%;
-    height: 100%;
-    background-color: #ffaf00; /* Yellow color */
-    transition: width 0.3s ease-in-out;
-}
-</style>
 
 
   <style>
+    #progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      z-index: 9999;
+      overflow: hidden;
+      background-color: transparent;
+    }
+
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background-color: #ffaf00;
+      /* Yellow color */
+      transition: width 0.3s ease-in-out;
+    }
+
+
     #loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+    }
+
     .loader {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       border: 16px solid #f3f3f3;
       border-radius: 50%;
       border-top: 16px solid #3498db;
       width: 120px;
       height: 120px;
-      -webkit-animation: spin 2s linear infinite;
-      /* Safari */
       animation: spin 2s linear infinite;
-    }
-
-    /* Safari */
-    @-webkit-keyframes spin {
-      0% {
-        -webkit-transform: rotate(0deg);
-      }
-
-      100% {
-        -webkit-transform: rotate(360deg);
-      }
     }
 
     @keyframes spin {
@@ -130,5 +98,5 @@
       }
     }
   </style>
-  
+
 </head>

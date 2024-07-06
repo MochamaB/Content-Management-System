@@ -29,9 +29,10 @@ class MeterReadingController extends Controller
     private $tableViewDataService;
     private $filterService;
 
-    public function __construct(TableViewDataService $tableViewDataService,
-    FilterService $filterService)
-    {
+    public function __construct(
+        TableViewDataService $tableViewDataService,
+        FilterService $filterService
+    ) {
         $this->model = MeterReading::class;
 
         $this->controller = collect([
@@ -46,7 +47,7 @@ class MeterReadingController extends Controller
     public function index(Request $request)
     {
 
-        $filters = $request->except(['tab','_token','_method']);
+        $filters = $request->except(['tab', '_token', '_method']);
         $meterReadings = MeterReading::applyFilters($filters)->get();
         $mainfilter =  $this->model::pluck('unit_id')->toArray();
         $filterdata = $this->filterService->getMeterReadingsFilters();
@@ -54,7 +55,7 @@ class MeterReadingController extends Controller
         $tableData = $this->tableViewDataService->getMeterReadingsData($meterReadings, true);
         return View(
             'admin.CRUD.form',
-            compact('mainfilter', 'tableData', 'controller','filterdata'),
+            compact('mainfilter', 'tableData', 'controller', 'filterdata'),
             //  $viewData,
             [
                 //     'cardData' => $cardData,
@@ -84,7 +85,6 @@ class MeterReadingController extends Controller
                 ->get()
                 ->groupBy('charge_name');
             $meterReading = MeterReading::where('property_id', $property->id)->get();
-           
         } elseif ($model === 'units') {
             $unit = Unit::find($id);
             $property = Property::where('id', $unit->property->id)->first();
@@ -103,7 +103,7 @@ class MeterReadingController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.property.create_meterreading', compact('id', 'model', 'property', 'unit', 'unitcharge', 'meterReading','charges'));
+        return View('admin.property.create_meterreading', compact('id', 'model', 'property', 'unit', 'unitcharge', 'meterReading', 'charges'));
     }
 
 
@@ -120,7 +120,6 @@ class MeterReadingController extends Controller
         } elseif ($request->model === 'units') {
             return $this->storeUnit($request);
         }
-
     }
 
     /**
@@ -139,22 +138,22 @@ class MeterReadingController extends Controller
             if ($reading <= $lastreading[$key]) {
                 return redirect()->back()->withInput()->with('statuserror', 'Current Reading must be greater than the Previous Reading.');
             }
-    
+
             if (strtotime($endDates[$key]) <= strtotime($startDates[$key])) {
                 return redirect()->back()->withInput()->with('statuserror', 'End date of Reading period must be greater than the Date of last reading.');
             }
         }
 
         $loggeduser = Auth::user();
-         $meterReadings = [];
-         if (!empty($request->input('unitcharge_id'))) {
+        $meterReadings = [];
+        if (!empty($request->input('unitcharge_id'))) {
             foreach ($request->input('unitcharge_id') as $index => $reading) {
                 $rateatreading = $request->input("rate_at_reading.{$index}");
                 $currentReading = $request->input("currentreading.{$index}");
                 $lastReading = $request->input("lastreading.{$index}");
                 $readingDifference = $currentReading - $lastReading;
                 $amount = $readingDifference * $rateatreading;
-                
+
                 $meterReading = [
                     'property_id' => $request->property_id,
                     'unit_id' => $request->input("unit_id.{$index}"),
@@ -175,7 +174,6 @@ class MeterReadingController extends Controller
         }
         MeterReading::insert($meterReadings);
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
-
     }
 
     protected function storeUnit(Request $request)
@@ -201,8 +199,11 @@ class MeterReadingController extends Controller
         $meterReading->save();
 
         $previousUrl = Session::get('previousUrl');
-        return redirect($previousUrl)->with('status', 'Meter Reading Entered Successfully');
-
+        if (!$previousUrl) {
+            return redirect($previousUrl)->with('status', 'Meter Reading Entered Successfully');
+        } else {
+            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+        }
     }
     public function show(MeterReading $meterReading)
     {

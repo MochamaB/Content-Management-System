@@ -9,7 +9,28 @@
         padding-left: 1rem;
         font-size: 0.89rem;
     }
+
+    .separator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+
+    .separator hr {
+        flex: 1;
+        border: none;
+        border-top: 1px solid #000;
+        margin: 0 10px;
+    }
+
+    .separator span {
+        font-weight: bold;
+        font-size: 18px;
+        color: #000;
+    }
 </style>
+
 <div class="container">
 
     <div class="row">
@@ -52,7 +73,6 @@
         </div>
         <!------- - ROW 2 -->
         <div class="col-md-6">
-            <!---- Page Loader ------------->
 
             <!-- Success Message -->
             <div id="successMessage" class="alert alert-success" style="display: none;"></div>
@@ -66,8 +86,11 @@
             $amountdue = $invoice->totalamount - $amountPaid;
 
             @endphp
-
-            <h4>Pay Using M-Pesa Express</h4>
+            <div class="separator">
+                <hr>
+                <span>PAY USING M-PESA EXPRESS</span>
+                <hr>
+            </div>
             <form method="POST" id="initiatepaymentForm" action="{{ route('mpesa.initiate') }}" class="myForm" novalidate>
                 @csrf
                 <ul class="ml-2 px-3 list-unstyled">
@@ -80,7 +103,7 @@
                                 {{$invoice->model->phonenumber ?? ''}}
                             </small>
                         </h5>
-                        <input type="tel" class="form-control" id="phonenumber" name="phonenumber" value="{{$invoice->model->phonenumber ?? ''}}" required>
+                        <input type="tel" class="form-control formhide" id="phonenumber" name="phonenumber" value="{{$invoice->model->phonenumber ?? ''}}" required>
                     </div>
                     <div class="form-group">
                         <label class="label"> Amount Due<span class="requiredlabel">*</span></label>
@@ -93,7 +116,7 @@
 
                             <span class="currency" style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                             </span>
-                            <input type="text" class="form-control" name="amount" id="amount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px;">
+                            <input type="text" class="form-control formhide" name="amount" id="amount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px;">
                         </div>
                     </div>
                     <input type="hidden" class="form-control" name="account_number" value="{{$invoice->referenceno ?? ''}}" required>
@@ -104,12 +127,17 @@
                     <li>2. You will receive a prompt on your phone with payment details.</li>
                     <li>3. Enter your M-PESA PIN and click OK</li>
                     <li>4. You will recieve a confirmation message from M-PESA</li>
-
                 </ul>
+                <p style="font-size:15px">After you receive a successful reply from M-PESA, click the button at the bottom to check or complete transaction.
+                </p>
             </form>
-            <hr>
+          
             <br />
-            <h4>Pay Using Paybill Menu</h4>
+            <div class="separator">
+                <hr>
+                <span>OR PAYBILL MENU</span>
+                <hr>
+            </div>
             <ul class="ml-2 px-3 list-unstyled">
                 <li>1. Go to Mpesa Menu on your phone</li>
                 <li>2. Select Paybill Option</li>
@@ -119,14 +147,19 @@
                 <li>6. Enter your MPESA PIN and send</li>
                 <li>7. You will receive a confirmation from MPESA</li>
             </ul>
-            <hr>
-            <form method="POST" id="paymentForm" action="{{ route('mpesa.paymentconfirm') }}" class="myForm" novalidate>
+           
+            <br />
+           
+                <hr>
+                <form method="POST" id="checkpayment" action="{{ route('mpesa.checkStatus') }}" class="myForm" novalidate>
                 @csrf
-                <input type="text" id="transactionIdInput" name="transaction_id" value="">
+               
+                <input type="hidden" id="transactionIdInput" name="transaction_id" value="">
                 <div class="col-md-6 mt-3">
-                    <button type="submit" id="checkStatusBtn" class="btn btn-primary btn-lg text-white mb-0 me-0" style="display: block;">Complete Payment</button>
+                    <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Check / Complete Payment</button>
                 </div>
             </form>
+          
         </div>
     </div>
 </div>
@@ -135,7 +168,7 @@
     $(document).ready(function() {
         // Elements
         const $editLink = $(".editLink");
-        const $editFields = $(".form-control");
+        const $editFields = $(".formhide");
         const $Display = $(".text-muted");
         const $currency = $(".currency");
 
@@ -164,11 +197,14 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('initiatepaymentForm');
-        const formpayment = document.getElementById('paymentForm');
+        const checkpayment = document.getElementById('checkpayment');
+        const paymentForm = document.getElementById('paymentForm');
         const loadingOverlay = document.getElementById('loading-overlay');
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
         const transactionIdInput = document.getElementById('transactionIdInput');
+        const transactionIdInput2 = document.getElementById('transactionIdInput2');
+        const mpesaReceiptNumber = document.getElementById('mpesaReceiptNumber');
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -183,15 +219,18 @@
             axios.post(this.action, new FormData(this))
                 .then(function(response) {
                     loadingOverlay.style.display = 'none';
+
                     if (response.data.success) {
-                        successMessage.textContent = response.data.message;
+                        successMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Success! </strong>' + response.data.message;
                         successMessage.style.display = 'block';
                         transactionIdInput.value = response.data.transaction_id;
-                
+                        transactionIdInput2.value = response.data.transaction_id;
+
+
                         // You can start checking payment status here if needed
                         // checkPaymentStatus(response.data.transaction_id);
                     } else {
-                        errorMessage.textContent = response.data.message || 'An error occurred';
+                        errorMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Error! </strong>' + response.data.message || 'An error occurred';
                         errorMessage.style.display = 'block';
                     }
                 })
@@ -201,14 +240,14 @@
                     errorMessage.style.display = 'block';
                 });
         });
-        /*
-        formpayment.addEventListener('submit', function(e) {
+
+        checkpayment.addEventListener('submit', function(e) {
             e.preventDefault();
             if (!transactionIdInput.value) {
-                        errorMessage.textContent = 'No payment has been initiated';
-                        errorMessage.style.display = 'block';
-                        return;
-                    }
+                errorMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Error! </strong> No payment has been initiated';
+                errorMessage.style.display = 'block';
+                return;
+            }
             // Show loader
             loadingOverlay.style.display = 'block';
 
@@ -220,27 +259,28 @@
                 .then(function(response) {
                     loadingOverlay.style.display = 'none';
                     if (response.data.success) {
-                        successMessage.textContent = response.data.message;
+                        successMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Success! </strong>' + response.data.message;
                         successMessage.style.display = 'block';
-                       
+                     
+
                     } else {
-                        errorMessage.textContent = response.data.message || 'An error occurred';
+                        errorMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Error! </strong>' + response.data.message || 'An error occurred';
                         errorMessage.style.display = 'block';
                     }
                 })
                 .catch(function(error) {
                     loadingOverlay.style.display = 'none';
-                    errorMessage.textContent = 'Failed to complete payment';
+                    errorMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Error! </strong> Failed to complete payment';
                     errorMessage.style.display = 'block';
                 });
 
 
 
         });
-        */
 
     });
 </script>
+
 
 
 

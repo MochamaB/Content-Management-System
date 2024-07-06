@@ -43,10 +43,10 @@ class CalculateInvoiceTotalAmountAction
             ->where('payment_id', $payment->id)
             ->sum('amount');
 
-        // Update the totalamount field in the invoice header
+        // Update the totalamount field in the payment header
         $payment->update(['totalamount' => $totalAmount]);
 
-        ///get the corresponding invoice or voucher
+        ///get the corresponding invoice, expense or deposit
         $refinvoice =$payment->model;
             ////Update Status /////
         if ($totalAmount < $refinvoice->totalamount) {

@@ -1,13 +1,5 @@
-<!---- Page loader 
-<script>
-    document.onreadystatechange = function() {
-        var loadingOverlay = document.getElementById("loading-overlay");
-        if (document.readyState === "complete") {
-            loadingOverlay.setAttribute("hidden", true);
-        }
-    };
-</script>
------>
+
+
 <script>
   (function($) {
     'use strict';

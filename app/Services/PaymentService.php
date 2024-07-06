@@ -12,6 +12,7 @@ use App\Actions\RecordTransactionAction;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentItems;
+use App\Models\PaymentMethod;
 use App\Notifications\InvoiceGeneratedNotification;
 use App\Notifications\PaymentNotification;
 use Illuminate\Database\Eloquent\Model;
@@ -40,17 +41,17 @@ class PaymentService
     }
 
 
-    public function generatePayment(Model $model, $validatedData)
+    public function generatePayment(Model $model, $validatedData = null, $mpesaTransaction = null)
     {
 
-        $paymentData = $this->getPaymentHeaderData($model, $validatedData);
+        $paymentData = $this->getPaymentHeaderData($model, $validatedData,$mpesaTransaction);
 
 
         //1. Create Payment Header Data
         $payment = $this->createPayment($paymentData);
 
         //2. Create Payment items
-        $this->createPaymentItems($model, $payment, $validatedData);
+        $this->createPaymentItems($model, $payment, $validatedData,$mpesaTransaction);
 
         //3. Update Total Amount in Payment Header
         $this->calculateTotalAmountAction->payment($payment, $model);
@@ -69,29 +70,47 @@ class PaymentService
 
 
     //////4. GET DATA FOR PAYMENT HEADER DATA
-    private function getPaymentHeaderData($model, $validatedData)
+    private function getPaymentHeaderData($model, $validatedData,$mpesaTransaction)
     {
-        ////REFRENCE NO
-
-        $referenceno = $validatedData['referenceno'];
         $className = get_class($model);
         $user = Auth::user();
-        $paymentCode = $validatedData['payment_code'];
-        $paymentMethod = $validatedData['payment_method_id'];
+        ////REFRENCE NO
+        if (!is_null($validatedData)) {
+            $referenceno = $validatedData['referenceno'];
+            $paymentCode = $validatedData['payment_code'];
+            $paymentMethod = $validatedData['payment_method_id'];
 
-        return [
-            'property_id' => $model->property_id,
-            'unit_id' => $model->unit_id,
-            'model_type' => $className, ///This has plymorphism because payment can be an invoice,expense or voucher
-            'model_id' => $model->id,
-            'referenceno' => $referenceno,
-            'payment_method_id' => $paymentMethod,
-            'payment_code' => $paymentCode,
-            'totalamount' =>  null,
-            'received_by' => $user->email,
-            'reviewed_by' => null,
-            'invoicedate' => $model->created_at,
-        ];
+            return [
+                'property_id' => $model->property_id,
+                'unit_id' => $model->unit_id,
+                'model_type' => $className, ///This has plymorphism because payment can be an invoice,expense or voucher
+                'model_id' => $model->id,
+                'referenceno' => $model->referenceno,
+                'payment_method_id' => $paymentMethod,
+                'payment_code' => $paymentCode,
+                'totalamount' =>  null,
+                'received_by' => $user->email,
+                'reviewed_by' => null,
+                'invoicedate' => $model->created_at,
+            ];
+        } else if (!is_null($mpesaTransaction)) {
+            $mpesa = PaymentMethod::where('property_id',$model->property_id)
+                    ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
+                    ->first();
+            return [
+                'property_id' => $model->property_id,
+                'unit_id' => $model->unit_id,
+                'model_type' => $className, ///This has plymorphism because payment can be an invoice,expense or voucher
+                'model_id' => $model->id,
+                'referenceno' => $model->referenceno,
+                'payment_method_id' => $mpesa->id,
+                'payment_code' => $mpesaTransaction->mpesa_receipt_number,
+                'totalamount' =>  null,
+                'received_by' => $user->email ?? $model->model->email,
+                'reviewed_by' => null,
+                'invoicedate' => $model->created_at,
+            ];
+        }
     }
 
     private function createPayment($data)
@@ -101,12 +120,12 @@ class PaymentService
 
 
 
-    private function createPaymentItems($model, $payment, $validatedData)
+    private function createPaymentItems($model, $payment, $validatedData,$mpesaTransaction)
     {
         // Create Payment items
         $items = $model->getItems;
 
-        $perPaymentAmounts = $validatedData['amount'];
+        $perPaymentAmounts = $validatedData['amount'] ?? $mpesaTransaction->amount;
 
         foreach ($items as $key => $item) {
             // Get the corresponding amount
@@ -125,22 +144,22 @@ class PaymentService
     /////////Send Email
     public function paymentEmail($payment)
     {
-        
-        
+
+
         $user = $payment->model->model;
-        
+
 
         $viewContent = View::make('email.payment', [
             'payment' => $payment,
         ])->render();
-           
-     //   try {
-            $user->notify(new PaymentNotification($payment, $user,$viewContent));
-     //   } catch (\Exception $e) {
-            // Log the error or perform any necessary actions
-     //       Log::error('Failed to send payment notification: ' . $e->getMessage());
-     //   }
 
-       
+        //   try {
+        $user->notify(new PaymentNotification($payment, $user, $viewContent));
+        //   } catch (\Exception $e) {
+        // Log the error or perform any necessary actions
+        //       Log::error('Failed to send payment notification: ' . $e->getMessage());
+        //   }
+
+
     }
 }
