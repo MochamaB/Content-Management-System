@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Models\Invoice;
 
 
-class PaymentService
+class MpesaService
 {
    
 }

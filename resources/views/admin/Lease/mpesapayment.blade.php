@@ -131,7 +131,7 @@
                 <p style="font-size:15px">After you receive a successful reply from M-PESA, click the button at the bottom to check or complete transaction.
                 </p>
             </form>
-          
+
             <br />
             <div class="separator">
                 <hr>
@@ -147,19 +147,19 @@
                 <li>6. Enter your MPESA PIN and send</li>
                 <li>7. You will receive a confirmation from MPESA</li>
             </ul>
-           
+
             <br />
-           
-                <hr>
-                <form method="POST" id="checkpayment" action="{{ route('mpesa.checkStatus') }}" class="myForm" novalidate>
+
+            <hr>
+            <form method="POST" id="checkpayment" action="{{ route('mpesa.checkStatus') }}" class="myForm" novalidate>
                 @csrf
-               
+
                 <input type="hidden" id="transactionIdInput" name="transaction_id" value="">
                 <div class="col-md-6 mt-3">
                     <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Check / Complete Payment</button>
                 </div>
             </form>
-          
+
         </div>
     </div>
 </div>
@@ -261,7 +261,10 @@
                     if (response.data.success) {
                         successMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Success! </strong>' + response.data.message;
                         successMessage.style.display = 'block';
-                     
+                        // Redirect to mpesareceipt with the payment ID
+                        const paymentId = response.data.payment_id;
+                        window.location.href = `/mpesareceipt/${paymentId}`;
+
 
                     } else {
                         errorMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Error! </strong>' + response.data.message || 'An error occurred';

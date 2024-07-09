@@ -83,7 +83,11 @@ class AppServiceProvider extends ServiceProvider
         });
 
       // Query Website Settings once
-      $websitesettings = WebsiteSetting::first();
+      
+      if (Schema::hasTable('website_settings')) {
+        // Fetch the website settings once and share with all views
+        $websitesettings = WebsiteSetting::first();
+      
         /////////// GLOBAL VIEW COMPOSERS
         view()->composer('*', function ($view)  use ($websitesettings) {
             $routeName = Route::currentRouteName();
@@ -100,10 +104,7 @@ class AppServiceProvider extends ServiceProvider
                 'user'=>$user,
             ]);
         });
-        view()->composer('layouts.admin.master-filter', function ($view) {
-            $defaultfilter = (new FilterService())->getDefaultFilters();
-            $view->with('defaultfilter', $defaultfilter);
-        });
+      
 
         //////////////  FRONT END/////////////
         view()->composer('layouts.client.navbar', function ($view)  use ($websitesettings) {
@@ -112,6 +113,7 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('layouts.client.footer', function ($view)   use ($websitesettings){
             $view->with(['sitesettings' => $websitesettings]);
         });
+    }
 
         view()->composer('client.slider', function ($view) {
             $slider = Slider::all();
@@ -124,7 +126,10 @@ class AppServiceProvider extends ServiceProvider
             $view->with(['testimonial' => $testimonial]);
         });
 
-
+        view()->composer('layouts.admin.master-filter', function ($view) {
+            $defaultfilter = (new FilterService())->getDefaultFilters();
+            $view->with('defaultfilter', $defaultfilter);
+        });
 
         /////////ADMIN//////////////////////////////
 

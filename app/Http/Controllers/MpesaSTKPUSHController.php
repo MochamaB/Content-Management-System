@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Mpesa\STKPush;
 use App\Models\MpesaSTK;
+use App\Models\Payment;
 use App\Models\PaymentMethod;
 use Iankumu\Mpesa\Facades\Mpesa;
 use Illuminate\Http\Request;
@@ -326,6 +327,7 @@ class MpesaSTKPUSHController extends Controller
                         'success' => true,
                         'message' => $message,
                         'transaction_id' => $transaction->id,
+                        'payment_id' => $payment->id, // Include payment ID
                         'data' => $result  // Include full response data for debugging
                     ]);
                 }
@@ -376,5 +378,13 @@ class MpesaSTKPUSHController extends Controller
         }
         $model = Invoice::where('referenceno', $transaction->referenceno)->firstOrFail();
         $payment = $this->paymentService->generatePayment($model, null, $transaction);
+    }
+
+    public function receipt($id)
+    {
+        $id = 1;
+        $payment = Payment::find($id);
+        return View('email.payment', compact('payment'));
+
     }
 }

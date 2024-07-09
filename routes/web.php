@@ -278,6 +278,7 @@ Route::post('api/fetch-propertyMeterReading', [MeterReadingController::class, 'f
 Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits']);
 Route::post('closewizard/{routePart}', [SettingController::class, 'closewizard'])->name('closewizard');
 
+Route::get('mpesareceipt/{payment}', [MpesaSTKPUSHController::class, 'Receipt'])->name('mpesa.receipt');
 
 
 
