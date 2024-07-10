@@ -92,7 +92,7 @@ class InvoiceController extends Controller
 
         $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata, true);
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.lease.invoice', ['tableData' => $tableData, 'controller' => ['unitcharge']]);
+        return View('admin.Lease.invoice', ['tableData' => $tableData, 'controller' => ['unitcharge']]);
     }
 
     
@@ -164,9 +164,9 @@ class InvoiceController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Overview') {
-                $tabContents[] = View('admin.lease.invoice_view', compact('invoice','PaymentMethod'))->render();
+                $tabContents[] = View('admin.Lease.invoice_view', compact('invoice','PaymentMethod'))->render();
             } elseif ($title === 'Account Statement') {
-                $tabContents[] = View('admin.lease.statement_view', compact('invoice', 'transactions', 'openingBalance'))->render();
+                $tabContents[] = View('admin.Lease.statement_view', compact('invoice', 'transactions', 'openingBalance'))->render();
             }
         }
 

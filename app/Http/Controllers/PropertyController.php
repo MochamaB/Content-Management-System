@@ -216,7 +216,7 @@ class PropertyController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.property.show_' . $title, $viewData, compact('amenities', 'allamenities','specialvalue','property'))->render();
+                $tabContents[] = View('admin.Property.show_' . $title, $viewData, compact('amenities', 'allamenities','specialvalue','property'))->render();
             } elseif ($title === 'Units') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();

@@ -88,7 +88,7 @@ class ExpenseController extends Controller
 
        
 
-        return View('admin.accounting.create_expenses', compact('id', 'property', 'unit', 'accounts','model','vendors'));
+        return View('admin.Accounting.create_expenses', compact('id', 'property', 'unit', 'accounts','model','vendors'));
         //
     }
 
@@ -140,7 +140,7 @@ class ExpenseController extends Controller
         $accounts = $account->groupBy('account_type');
         $vendors = Vendor::all();
 
-        return View('admin.accounting.edit_expense', compact('pageheadings','instance','property', 'unit', 'accounts','vendors'));
+        return View('admin.Accounting.edit_expense', compact('pageheadings','instance','property', 'unit', 'accounts','vendors'));
     }
 
     /**
@@ -164,7 +164,7 @@ class ExpenseController extends Controller
         $accounts = $account->groupBy('account_type');
         $vendors = Vendor::all();
 
-        return View('admin.accounting.edit_expense', compact('pageheadings','instance','property', 'unit', 'accounts','vendors'));
+        return View('admin.Accounting.edit_expense', compact('pageheadings','instance','property', 'unit', 'accounts','vendors'));
         //
     }
 

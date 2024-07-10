@@ -98,7 +98,7 @@ class MediaController extends Controller
         
     
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.media.create_media', compact('model'));
+        return View('admin.Media.create_media', compact('model'));
         
     }
 

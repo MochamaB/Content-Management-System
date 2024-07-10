@@ -68,7 +68,7 @@ class WorkOrderController extends Controller
         //  })->get();
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.maintenance.create_workorder', compact('tickets', 'vendorcategory', 'vendors', 'users'));
+        return View('admin.Maintenance.create_workorder', compact('tickets', 'vendorcategory', 'vendors', 'users'));
     }
 
     /**
@@ -149,7 +149,7 @@ class WorkOrderController extends Controller
             return redirect()->back()->with('statuserror', ' Change status to in-progress to add a workorder.');
         }
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.maintenance.expense', compact('ticket'));
+        return View('admin.Maintenance.expense', compact('ticket'));
     }
 
     public function postexpense(Request $request)

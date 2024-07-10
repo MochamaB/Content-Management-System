@@ -187,9 +187,9 @@ class TicketController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.maintenance.summary_request', $viewData, compact('tickets', 'incomeAccounts', 'expenseAccounts'))->render();
+                $tabContents[] = View('admin.Maintenance.summary_request', $viewData, compact('tickets', 'incomeAccounts', 'expenseAccounts'))->render();
             } elseif ($title === 'Work Order') {
-                $tabContents[] = View('admin.maintenance.workorder', compact('tickets', 'workorders'))->render();
+                $tabContents[] = View('admin.Maintenance.workorder', compact('tickets', 'workorders'))->render();
             } elseif ($title === 'Expenses') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $expensestableData, 'controller' => ['workorder-expense']], compact('id'));
             }
@@ -225,7 +225,7 @@ class TicketController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.maintenance.assign', compact('vendorcategories', 'modelrequests', 'vendors', 'users'));
+        return View('admin.Maintenance.assign', compact('vendorcategories', 'modelrequests', 'vendors', 'users'));
     }
 
     public function updateassign(Request $request, $id)

@@ -103,7 +103,7 @@ class MeterReadingController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.property.create_meterreading', compact('id', 'model', 'property', 'unit', 'unitcharge', 'meterReading', 'charges'));
+        return View('admin.Property.create_meterreading', compact('id', 'model', 'property', 'unit', 'unitcharge', 'meterReading', 'charges'));
     }
 
 

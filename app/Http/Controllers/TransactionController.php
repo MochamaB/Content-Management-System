@@ -34,7 +34,7 @@ class TransactionController extends Controller
     {
 
 
-        return View('admin.accounting.transaction');
+        return View('admin.Accounting.transaction');
 
     }
 
@@ -43,7 +43,7 @@ class TransactionController extends Controller
    
     public function create()
     {
-        return View('admin.lease.transaction');
+        return View('admin.Lease.transaction');
     }
 
     /**

@@ -17,9 +17,9 @@
         </div>
     </div>
     @if ($routeParts[1] === 'email' && count($routeParts) === 2)
-        @include('admin.communication.email_summary')
+        @include('admin.Communication.email_summary')
      @else
-     @include('admin.communication.email_details')
+     @include('admin.Communication.email_details')
         @endif
 </div>
     @endsection

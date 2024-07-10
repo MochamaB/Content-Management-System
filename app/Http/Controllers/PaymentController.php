@@ -100,7 +100,7 @@ class PaymentController extends Controller
 
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.lease.payment', compact('PaymentMethod', 'instance', 'className', 'referenceno', 'model'));
+        return View('admin.Lease.payment', compact('PaymentMethod', 'instance', 'className', 'referenceno', 'model'));
     }
 
     /**

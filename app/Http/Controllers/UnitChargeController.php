@@ -80,7 +80,7 @@ class UnitChargeController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts','model'));
+        return View('admin.Lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts','model'));
     }
 
     /**
@@ -168,7 +168,7 @@ class UnitChargeController extends Controller
         $accounts = $account->groupBy('account_type');
 
         session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.lease.charges', compact('pageheadings', 'accounts', 'lease', 'rentcharge', 'splitRentcharges', 'unitcharge'));
+        return View('admin.Lease.charges', compact('pageheadings', 'accounts', 'lease', 'rentcharge', 'splitRentcharges', 'unitcharge'));
     }
 
     /**

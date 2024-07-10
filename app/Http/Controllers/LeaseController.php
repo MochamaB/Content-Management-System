@@ -399,7 +399,7 @@ class LeaseController extends Controller
         ]);
 
 
-        return View('admin.lease.lease', compact('pageheadings', 'properties', 'lease'));
+        return View('admin.Lease.lease', compact('pageheadings', 'properties', 'lease'));
     }
 
     /**

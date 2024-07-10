@@ -86,7 +86,7 @@ class DepositController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.accounting.create_Deposit', compact('id', 'property', 'unit','account', 'accounts','model','vendors','users'));
+        return View('admin.Accounting.create_Deposit', compact('id', 'property', 'unit','account', 'accounts','model','vendors','users'));
         //
     }
 
@@ -152,7 +152,7 @@ class DepositController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Overview') {
-                $tabContents[] = View('admin.lease.deposit_view', compact('deposit'))->render();
+                $tabContents[] = View('admin.Lease.deposit_view', compact('deposit'))->render();
             } 
         }
 

@@ -133,13 +133,13 @@ class UserController extends Controller
         $stepContents = [];
         foreach ($steps as $title) {
             if ($title === 'Roles') {
-                $stepContents[] = View('admin.user.user_roles', compact('roles', 'savedRole'))->render();
+                $stepContents[] = View('admin.User.user_roles', compact('roles', 'savedRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $stepContents[] = View('admin.user.user_contactinfo', compact('user'))->render();
+                $stepContents[] = View('admin.User.user_contactinfo', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $stepContents[] = View('admin.user.user_property', compact('propertyaccess', 'savedRole', 'assignedUnits'))->render();
+                $stepContents[] = View('admin.User.user_property', compact('propertyaccess', 'savedRole', 'assignedUnits'))->render();
             } elseif ($title === 'Review Details') {
-                $stepContents[] = View('admin.user.user_reviewdetails', compact('propertyaccess', 'savedRole', 'assignedUnits'))->render();
+                $stepContents[] = View('admin.User.user_reviewdetails', compact('propertyaccess', 'savedRole', 'assignedUnits'))->render();
             }
         }
 
@@ -295,11 +295,11 @@ class UserController extends Controller
             } elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.User.user_tabs', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
             } elseif ($title === 'Vouchers') {
-                $tabContents[] = View('admin.user.test')->render();
+                $tabContents[] = View('admin.User.test')->render();
             }
         }
 
-        return View('admin.user.user_profile', compact('pageheadings', 'tabTitles', 'tabContents', 'showUser'));
+        return View('admin.User.user_profile', compact('pageheadings', 'tabTitles', 'tabContents', 'showUser'));
     }
 
     /**
@@ -340,13 +340,13 @@ class UserController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Roles') {
-                $tabContents[] = View('admin.user.user_roles', compact('roles', 'editUser', 'userRole'))->render();
+                $tabContents[] = View('admin.User.user_roles', compact('roles', 'editUser', 'userRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $tabContents[] = View('admin.user.user_contactinfo', compact('editUser'))->render();
+                $tabContents[] = View('admin.User.user_contactinfo', compact('editUser'))->render();
             } elseif ($title === 'Login Access') {
-                $tabContents[] = View('admin.user.user_logins', compact('editUser'))->render();
+                $tabContents[] = View('admin.User.user_logins', compact('editUser'))->render();
             } elseif ($title === 'Property Access') {
-                $tabContents[] = View('admin.user.user_property', compact('userRole', 'propertyaccess', 'assignedproperties', 'assignedUnits'))->render();
+                $tabContents[] = View('admin.User.user_property', compact('userRole', 'propertyaccess', 'assignedproperties', 'assignedUnits'))->render();
             }
         }
 

@@ -72,7 +72,7 @@
         </div>
         <input type="hidden" class="form-control" id="status" name="status" value="unpaid" required readonly>
         <hr>
-        @include('admin.accounting.create_table')
+        @include('admin.Accounting.create_table')
         <hr>
         <div class="col-md-6">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Add Deposit</button>
