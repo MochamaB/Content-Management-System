@@ -231,9 +231,9 @@ class UnitController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.Property.unit_' . $title, $unitEditData, compact('unit', 'unitdetails'))->render();
+                $tabContents[] = View('admin.Property.unit_summary', $unitEditData, compact('unit', 'unitdetails'))->render();
             }elseif ($title === 'Users') {
-                $tabContents[] = View('admin.Property.unit_' . $title, ['data' => $tableData], compact('unit'))->render();
+                $tabContents[] = View('admin.Property.unit_users', ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges') {
                 $tabContents[] = view('admin.CRUD.index_show',['tableData' => $unitChargeTableData,'controller' => ['unitcharge']], compact('id','model'));
             }elseif ($title === 'Invoices') {
