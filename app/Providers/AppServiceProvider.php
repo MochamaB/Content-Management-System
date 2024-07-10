@@ -107,12 +107,7 @@ class AppServiceProvider extends ServiceProvider
       
 
         //////////////  FRONT END/////////////
-        view()->composer('layouts.client.navbar', function ($view)  use ($websitesettings) {
-            $view->with(['sitesettings' => $websitesettings]);
-        });
-        view()->composer('layouts.client.footer', function ($view)   use ($websitesettings){
-            $view->with(['sitesettings' => $websitesettings]);
-        });
+       
     }
 
         view()->composer('client.slider', function ($view) {

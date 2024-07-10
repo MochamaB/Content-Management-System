@@ -23,7 +23,7 @@ use App\Http\Controllers\LeaseController;
 use App\Http\Controllers\MeterReadingController;
 use App\Http\Controllers\TenantDetailsController;
 use App\Http\Controllers\UnitChargeController;
-use App\Http\Controllers\utilityController;
+use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\PropertyTypeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MediaController;
