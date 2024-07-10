@@ -177,7 +177,7 @@ class LeaseController extends Controller
             }
         }
 
-        return View('admin.lease.lease', compact('steps', 'stepContents', 'activetab'));
+        return View('admin.Lease.lease', compact('steps', 'stepContents', 'activetab'));
     }
 
     /**

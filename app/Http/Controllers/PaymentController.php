@@ -159,7 +159,7 @@ class PaymentController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Overview') {
-                $tabContents[] = View('admin.lease.payment_view', compact('payment'))->render();
+                $tabContents[] = View('admin.Lease.payment_view', compact('payment'))->render();
             }
         }
         return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));

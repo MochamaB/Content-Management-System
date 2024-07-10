@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-md-9">
 
-        @include('admin.lease.payment_contents')
+        @include('admin.Lease.payment_contents')
     </div>
     <div class="col-md-3">
         <div class="card">
