@@ -886,7 +886,7 @@ class TableViewDataService
 
         foreach ($tabTitles as $title) {
             if ($title === 'Global Settings') {
-                $tabContents[] = View('admin.setting.global_settings', compact('setting', 'globalSettings'))->render();
+                $tabContents[] = View('admin.Setting.global_settings', compact('setting', 'globalSettings'))->render();
             } elseif ($title === 'Overrides') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $settingsTableData, 'controller' => ['setting']], compact('id'))->render();
             }

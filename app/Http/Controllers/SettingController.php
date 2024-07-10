@@ -57,7 +57,7 @@ class SettingController extends Controller
             ->unique('model_type')
             ->groupBy('model_type');
 
-        return View('admin.setting.index', compact('settings'));
+        return View('admin.Setting.index', compact('settings'));
     }
 
     /**
@@ -79,7 +79,7 @@ class SettingController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.setting.create', compact('name', 'setting', 'options'));
+        return View('admin.Setting.create', compact('name', 'setting', 'options'));
     }
 
     /**

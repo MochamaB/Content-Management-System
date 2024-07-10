@@ -69,7 +69,7 @@ class PermissionController extends Controller
         $submodule =  Permission::pluck('submodule')->unique()->toArray();
         $action =  Permission::pluck('action')->unique()->toArray();
 
-        return View('admin.setting.permission',compact('module','submodule','action'));
+        return View('admin.Setting.permission',compact('module','submodule','action'));
     }
 
     /**
@@ -118,7 +118,7 @@ class PermissionController extends Controller
         $module =  Permission::pluck('module')->unique()->toArray();
         $submodule =  Permission::pluck('submodule')->unique()->toArray();
         $action =  Permission::pluck('action')->unique()->toArray();
-        return view('admin.setting.permission', [
+        return view('admin.Setting.permission', [
             'permission' => $permission,
             'module' =>$module,
             'submodule' =>$submodule,

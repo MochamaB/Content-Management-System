@@ -28,7 +28,7 @@ trait SettingTrait
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Global Settings') {
-                $tabContents[] = view('admin.setting.global_settings', compact('setting', 'globalSettings'))->render();
+                $tabContents[] = view('admin.Setting.global_settings', compact('setting', 'globalSettings'))->render();
             } elseif ($title === 'Overrides') {
                 $tabContents[] = view('admin.CRUD.index_show', ['tableData' => $settingsTableData, 'controller' => ['setting']])->render();
             }

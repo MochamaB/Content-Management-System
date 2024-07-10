@@ -15,7 +15,7 @@ class WebsiteSettingController extends Controller
     public function index()
     {
         $sitesettings = WebsiteSetting::first();
-        return View('admin.setting.websitesetting_index', compact('sitesettings'));
+        return View('admin.Setting.websitesetting_index', compact('sitesettings'));
     }
 
 
@@ -26,7 +26,7 @@ class WebsiteSettingController extends Controller
      */
     public function create()
     {
-        return View('admin.setting.websitesetting_create');
+        return View('admin.Setting.websitesetting_create');
     }
 
     /**
