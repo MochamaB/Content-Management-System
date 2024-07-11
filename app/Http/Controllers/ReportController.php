@@ -27,7 +27,7 @@ class ReportController extends Controller
     {
         $reports = Report::all()->groupBy('module');
         // dd($reports);
-        return view('admin.report.index', compact('reports'));
+        return view('admin.Report.index', compact('reports'));
     }
 
     /**
@@ -87,7 +87,7 @@ class ReportController extends Controller
      //   $filterView = $this->getFilterView($filterdata);
         //    dd($data);
 
-        return view('admin.report.show', compact('report', 'columns', 'data','filterdata','filters','pageheadings'));
+        return view('admin.Report.show', compact('report', 'columns', 'data','filterdata','filters','pageheadings'));
     }
 
 
