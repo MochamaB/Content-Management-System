@@ -99,7 +99,7 @@ class TicketController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.maintenance.create_ticket', compact('id', 'property', 'unit', 'model'), $viewData);
+        return View('admin.Maintenance.create_ticket', compact('id', 'property', 'unit', 'model'), $viewData);
     }
 
     /**
