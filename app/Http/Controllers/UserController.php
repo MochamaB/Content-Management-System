@@ -350,7 +350,7 @@ class UserController extends Controller
             }
         }
 
-        return View('admin.user.user', compact('pageheadings', 'tabTitles', 'tabContents'));
+        return View('admin.User.user', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**
