@@ -109,7 +109,7 @@
 
         </div>
         <hr>
-        @include('admin.accounting.edit_table')
+        @include('admin.Accounting.edit_table')
         <hr>
         <div class="col-md-6">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Add Expense</button>
