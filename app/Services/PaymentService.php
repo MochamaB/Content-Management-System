@@ -40,7 +40,7 @@ class PaymentService
         $this->recordTransactionAction = $recordTransactionAction;
     }
 
-
+    ///////// ALLOCATED PAYMENTS /////////////////////
     public function generatePayment(Model $model, $validatedData = null, $mpesaTransaction = null)
     {
 
@@ -69,6 +69,7 @@ class PaymentService
 
 
 
+
     //////4. GET DATA FOR PAYMENT HEADER DATA
     private function getPaymentHeaderData($model, $validatedData,$mpesaTransaction)
     {
@@ -89,6 +90,7 @@ class PaymentService
                 'payment_method_id' => $paymentMethod,
                 'payment_code' => $paymentCode,
                 'totalamount' =>  null,
+                'status' =>  'allocated',
                 'received_by' => $user->email,
                 'reviewed_by' => null,
                 'invoicedate' => $model->created_at,
@@ -139,6 +141,35 @@ class PaymentService
                 'amount' => $amount,
             ]);
         }
+    }
+
+    ///////UNALLOCATED PAYMENTS /////////////////////
+    public function unallocatedPayment($transaction = null)
+    {
+
+
+    }
+
+    private function getUnallocatedPaymentHeaderData($transaction)
+    {
+        
+            $mpesa = PaymentMethod::where('property_id',$model->property_id)
+                    ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
+                    ->first();
+            return [
+                'property_id' => $model->property_id,
+                'unit_id' => $model->unit_id,
+                'model_type' => $className, ///This has plymorphism because payment can be an invoice,expense or voucher
+                'model_id' => $model->id,
+                'referenceno' => $model->referenceno,
+                'payment_method_id' => $mpesa->id,
+                'payment_code' => $mpesaTransaction->mpesa_receipt_number,
+                'totalamount' =>  null,
+                'received_by' => $user->email ?? $model->model->email,
+                'reviewed_by' => null,
+                'invoicedate' => $model->created_at,
+            ];
+        
     }
 
     /////////Send Email

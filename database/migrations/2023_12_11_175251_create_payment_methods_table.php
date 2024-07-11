@@ -17,9 +17,8 @@ return new class extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->string('name');
-            $table->string('account_number');
-            $table->string('account_name');
-            $table->string('provider');
+            $table->string('type')->nullable();
+            $table->boolean('is_active')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payment_types');
+        Schema::dropIfExists('payment_methods');
     }
 };

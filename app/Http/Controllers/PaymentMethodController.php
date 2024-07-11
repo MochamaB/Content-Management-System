@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaymentMethod;
+use App\Models\PaymentMethodConfig;
+use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
 
@@ -34,7 +36,7 @@ class PaymentMethodController extends Controller
 
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['PROPERTY','NAME', 'ACCOUNT NAME', 'ACCOUNT NUMBER', 'PROVIDER', 'ACTIONS'],
+            'headers' => ['PROPERTY','NAME', 'TYPE','ACTIONS'],
             'rows' => [],
         ];
 
@@ -43,9 +45,8 @@ class PaymentMethodController extends Controller
                 'id' => $item->id,
                 $item->property->property_name,
                 $item->name,
-                $item->account_name,
-                $item->account_number,
-                $item->provider,
+                $item->type,
+               
             ];
         }
 
@@ -69,9 +70,9 @@ class PaymentMethodController extends Controller
      */
     public function create()
     {
-        $viewData = $this->formData($this->model);
+        $property = Property::all();
 
-        return View('admin.CRUD.form', $viewData);
+        return View('admin.Accounting.create_paymentmethod',compact('property'));
     }
 
     /**
@@ -85,16 +86,32 @@ class PaymentMethodController extends Controller
         //// Data Entry validation/////////////
         if (PaymentMethod::where('name', $request->name)
             ->where('property_id', $request->property_id)
-            ->where('account_number', $request->account_number)
+            ->where('type', $request->type)
             ->exists()
         ) {
-            return redirect()->back()->with('statuserror', 'Payment method Already in system.');
+            return redirect()->back()->with('statuserror', 'Payment Type for the property already in system.');
         }
         $validationRules = PaymentMethod::$validation;
         $validatedData = $request->validate($validationRules);
         $PaymentMethod = new PaymentMethod;
         $PaymentMethod->fill($validatedData);
+        $PaymentMethod->is_active = 1;
         $PaymentMethod->save();
+
+          // Create the PaymentMethodConfig if applicable
+          if ($request->name === 'bank' || $request->name === 'm-pesa') {
+            PaymentMethodConfig::create([
+                'payment_method_id' => $PaymentMethod->id,
+                'account_number' => $request->account_number,
+                'bank_name' => $request->bank_name,
+                'branch_name' => $request->branch_name,
+                'mpesa_shortcode' => $request->mpesa_shortcode,
+                'mpesa_account_number' => $request->mpesa_account_number,
+                'consumer_key' => $request->consumer_key,
+                'consumer_secret' => $request->consumer_secret,
+                'passkey' => $request->passkey,
+            ]);
+        }
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
     }
@@ -118,14 +135,16 @@ class PaymentMethodController extends Controller
      */
     public function edit(PaymentMethod $PaymentMethod)
     {
-        $viewData = $this->formData($this->model, $PaymentMethod);
+       
         $pageheadings = collect([
             '0' => $PaymentMethod->name,
             '1' => $PaymentMethod->account_name,
             '2' => $PaymentMethod->account_number,
         ]);
+        $paymentMethod = PaymentMethod::findOrFail($PaymentMethod->id);
+        $paymentMethodConfig = PaymentMethodConfig::where('payment_method_id', $PaymentMethod->id)->first();
+        return view('admin.Accounting.edit_paymentmethod', compact('paymentMethod', 'paymentMethodConfig'));
 
-        return View('admin.CRUD.form', compact('pageheadings'), $viewData);
     }
 
     /**
@@ -137,10 +156,19 @@ class PaymentMethodController extends Controller
      */
     public function update(PaymentMethod $PaymentMethod,Request $request)
     {
-        $validationRules = PaymentMethod::$validation;
-        $validatedData = $request->validate($validationRules);
-        $PaymentMethod->fill($validatedData);
+        $request->validate(PaymentMethod::$validation);
+
+        // Fill and update the PaymentMethod
+        $PaymentMethod->fill($request->all());
+        $PaymentMethod->is_active = $request->has('is_active') ? $request->is_active : true;
         $PaymentMethod->update();
+
+         // Update or create the PaymentMethodConfig if applicable
+         if ($request->name === 'bank' || $request->name === 'm-pesa') {
+            $paymentMethodConfig = PaymentMethodConfig::firstOrNew(['payment_method_id' => $PaymentMethod->id]);
+            $paymentMethodConfig->fill($request->all());
+            $paymentMethodConfig->save();
+        } 
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }

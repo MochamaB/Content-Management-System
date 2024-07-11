@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <input type="hidden" class="form-control" name="account_number" value="{{$invoice->referenceno ?? ''}}" required>
-                    <input type="hidden" name="account_number" value="{{$invoice->referenceno ?? ''}}" required>
+                    <input type="hidden" name="mpesaCode" value="{{ $mpesaCode ?? Config::get('mpesa.shortcode') ?? '' }}" required>
                     <div class="col-md-6">
                         <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Initiate Payment</button>
                     </div><br />

@@ -20,7 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->unsignedBigInteger('unitcharge_id')->nullable()->index(); ///unitcharge_id,
             $table->string('charge_name');
             $table->unsignedBigInteger('transactionable_id');   ////id value of the model
-            $table->string('transactionable_type'); ///Name of the Model, Invoice,Voucher, Expense,
+            $table->string('transactionable_type'); ///Name of the Model, Invoice,Voucher, Expense,payments,
             $table->string('description');
             $table->unsignedBigInteger('debitaccount_id');
             $table->unsignedBigInteger('creditaccount_id');

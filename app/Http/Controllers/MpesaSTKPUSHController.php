@@ -43,36 +43,24 @@ class MpesaSTKPUSHController extends Controller
         $amountPaid = $invoice->payments->sum(function ($payment) {
             return $payment->paymentItems->sum('amount');
         });
+
         $amountdue = $invoice->totalamount - $amountPaid;
         if ($amountdue <= 0) {
             return redirect()->back()->with('statuserror', 'Invoice has already been fully paid');
         }
 
-        $MpesaCode = PaymentMethod::where('property_id', $invoice->property_id)
+        $mpesaCode = PaymentMethod::where('property_id', $invoice->property_id)
             ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
             ->pluck('account_number')
             ->first();
         //   dd($shortcode);
-        return View('admin.Lease.mpesapayment', compact('invoice'));
+        return View('admin.Lease.mpesapayment', compact('invoice','mpesaCode'));
     }
 
 
     public function STKPush(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'amount' => 'required|numeric|min:1',
-            'phonenumber' => 'required|string|min:10',
-        ], [
-            'amount.required' => 'Amount is required.',
-            'amount.numeric' => 'Amount must be a number.',
-            'amount.min' => 'Amount must be more than zero.',
-            'phonenumber.required' => 'Phone number is required.',
-            'phonenumber.string' => 'Phone number must be a string.',
-            'phonenumber.min' => 'Phone number must be at least 10 characters.',
-        ]);
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput()->with('statuserror', 'Check Validation Errors');
-        }
+       
         $amount = $request->input('amount');
         $phoneno = $request->input('phonenumber');
         // Check if the phone number starts with 0 and replace it with 254
@@ -80,6 +68,7 @@ class MpesaSTKPUSHController extends Controller
             $phoneno = '254' . substr($phoneno, 1);
         }
         $account_number = $request->input('account_number');
+        $mpesaCode = $request->input('mpesaCode');
 
         $client = new Client([
             'verify' => false // This disables SSL verification
@@ -100,7 +89,7 @@ class MpesaSTKPUSHController extends Controller
                         'TransactionType' => 'CustomerPayBillOnline',
                         'Amount' => $amount,
                         'PartyA' => 254708374149,
-                        'PartyB' => Config::get('mpesa.shortcode'),
+                        'PartyB' => $mpesaCode,
                         'PhoneNumber' => $phoneno,
                         'CallBackURL' => Config::get('mpesa.callback_url'),
                         'AccountReference' => $account_number,
@@ -322,7 +311,9 @@ class MpesaSTKPUSHController extends Controller
                     ]);
                 } else {
                     $model = Invoice::where('referenceno', $transaction->referenceno)->firstOrFail();
+                    if ($model) {
                     $payment = $this->paymentService->generatePayment($model, null, $transaction);
+                    }
                     return response()->json([
                         'success' => true,
                         'message' => $message,

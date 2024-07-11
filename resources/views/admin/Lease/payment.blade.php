@@ -42,7 +42,7 @@
                 <select name="payment_method_id" id="payment_method_id" class="formcontrol2" placeholder="Select" required>
                     <option value="">Select Payment Method</option>
                     @foreach($PaymentMethod as $item)
-                    <option value="{{$item->id}}">{{$item->name}}</option>
+                    <option value="{{$item->id}}">{{ucwords($item->name)}}</option>
                     @endforeach
                 </select>
             </div>

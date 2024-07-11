@@ -17,13 +17,14 @@ return new class extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->nullable()->index();
-            $table->string('model_type'); // What payment is for - Invoices,Deposit,Maintenance,Subscription
-            $table->unsignedBigInteger('model_id'); // ID of the specific model instance
-            $table->string('referenceno');
+            $table->string('model_type')->nullable(); // What payment is for - Invoices,Deposit,Maintenance,Subscription
+            $table->unsignedBigInteger('model_id')->nullable(); // ID of the specific model instance
+            $table->string('referenceno')->nullable();
             $table->unsignedBigInteger('payment_method_id');
  	        $table->string('payment_code')->nullable();
             $table->decimal('totalamount')->nullable();
-            $table->string('received_by');
+            $table->enum('status', ['allocated', 'unallocated',])->nullable();
+            $table->string('received_by')->nullable();
             $table->string('reviewed_by')->nullable();
             $table->timestamp("invoicedate")->nullable();
  

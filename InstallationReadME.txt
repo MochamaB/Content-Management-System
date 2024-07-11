@@ -1,12 +1,18 @@
 Composer install
 cp .env.example .env
+<------------- Configs ---------------------->
 Change DB Name in .env file
 change sync to QUEUE_CONNECTION=database in .env file
+
+<!-------- IF running a new DB --------------->
 Run php artisan queue:table  --Generate the jobs table for the message queue.
 php artisan notifications:table -- Notifictions table ---if not generated
 php artisan migrate
 php artisan permission:create-permission-routes
 php artisan db:seed  --individual php artisan db:seed --class=UserSeeder
+
+
+<!-------  Run on alll new instances -------->
 php artisan schedule-monitor:sync  ---Add all tasks to spatie monitor 
 php artisan storage:link -- create link for spatie media library
 
