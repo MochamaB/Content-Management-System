@@ -86,7 +86,7 @@ class DepositController extends Controller
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
-        return View('admin.Accounting.create_Deposit', compact('id', 'property', 'unit','account', 'accounts','model','vendors','users'));
+        return View('admin.Accounting.create_deposit', compact('id', 'property', 'unit','account', 'accounts','model','vendors','users'));
         //
     }
 
