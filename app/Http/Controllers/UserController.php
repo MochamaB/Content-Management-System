@@ -143,7 +143,7 @@ class UserController extends Controller
             }
         }
 
-        return View('admin.user.user', compact('steps', 'stepContents', 'activetab'));
+        return View('admin.User.user', compact('steps', 'stepContents', 'activetab'));
     }
 
     public function roleuser(Request $request)
