@@ -48,9 +48,10 @@
                 </h5>
                 <select name="type" id="type" class="formcontrol2" placeholder="Select" required readonly>
                     <option value="cash" {{ $paymentMethod->type == 'cash' ? 'selected' : '' }}>Cash</option>
-                    <option value="cheque" {{ $paymentMethod->type == 'cheque' ? 'selected' : '' }}>Cheque</option>
-                    <option value="mpesa" {{ $paymentMethod->name == 'mpesa' ? 'selected' : '' }}>M-PESA</option>
-                    <option value="airtel-money" {{ $paymentMethod->name == 'airtel-money' ? 'selected' : '' }}>Airtel-Money</option>
+                    <option value="bank_transfer" {{ $paymentMethod->type == 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
+                    <option value="direct_payment" {{ $paymentMethod->type == 'direct_payment' ? 'selected' : '' }}>Direct Payment</option>
+                    <option value="paybill" {{ $paymentMethod->type == 'paybill' ? 'selected' : '' }}>Paybill</option>
+                    <option value="till" {{ $paymentMethod->type == 'till' ? 'selected' : '' }}>Till Number</option>
                 </select>
             </div>
         </div>
@@ -112,24 +113,11 @@
             <br />
             <div class="separator">
                 <hr>
-                <span>BANK PAYMENT CONFIGURATION</span>
+                <span>MPESA PAYMENT CONFIGURATION</span>
                 <hr>
             </div>
             <div class="row">
-            <div class="col-md-6">
-                    <div class="form-group">
-                        <label class="label">M-PESA Type</label>
-                        <h5>
-                            <small class="text-muted" style="text-transform: capitalize;">
-                                {{ $paymentMethodConfig->mpesa_type }}
-                            </small>
-                        </h5>
-                        <select name="mpesa_type" class="formcontrol2">
-                            <option value="paybill" {{ ($paymentMethodConfig->mpesa_type ?? '') == 'paybill' ? 'selected' : '' }}>Paybill</option>
-                            <option value="till" {{ ($paymentMethodConfig->mpesa_type ?? '') == 'till' ? 'selected' : '' }}>Till Number</option>
-                        </select>
-                    </div>
-                </div>
+            
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="label">M-PESA Shortcode</label>
@@ -139,6 +127,17 @@
                             </small>
                         </h5>
                         <input type="text" name="mpesa_shortcode" class="formcontrol2" value="{{ $paymentMethodConfig->mpesa_shortcode ?? '' }}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="label">Account Number</label>
+                        <h5>
+                            <small class="text-muted" style="text-transform: capitalize;">
+                                {{ $paymentMethodConfig->mpesa_account_number }}
+                            </small>
+                        </h5>
+                        <input type="text" name="mpesa_account_number" class="formcontrol2" value="{{ $paymentMethodConfig->mpesa_account_number ?? '' }}">
                     </div>
                 </div>
 

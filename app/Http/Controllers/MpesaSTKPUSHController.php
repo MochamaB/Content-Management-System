@@ -24,6 +24,7 @@ class MpesaSTKPUSHController extends Controller
     protected $controller;
     protected $model;
     private $paymentService;
+    protected $paymentMethod;
 
     public function __construct(PaymentService $paymentService = null)
     {
@@ -36,6 +37,8 @@ class MpesaSTKPUSHController extends Controller
         $this->paymentService = $paymentService;
     }
 
+    
+
     public function MpesaPayment($id)
     {
         $invoice = Invoice::find($id);
@@ -43,24 +46,20 @@ class MpesaSTKPUSHController extends Controller
         $amountPaid = $invoice->payments->sum(function ($payment) {
             return $payment->paymentItems->sum('amount');
         });
-
         $amountdue = $invoice->totalamount - $amountPaid;
         if ($amountdue <= 0) {
             return redirect()->back()->with('statuserror', 'Invoice has already been fully paid');
         }
 
-        $mpesaCode = PaymentMethod::where('property_id', $invoice->property_id)
-            ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
-            ->pluck('account_number')
-            ->first();
+       
         //   dd($shortcode);
-        return View('admin.Lease.mpesapayment', compact('invoice','mpesaCode'));
+        return View('admin.Lease.mpesapayment', compact('invoice'));
     }
 
 
     public function STKPush(Request $request)
     {
-       
+        
         $amount = $request->input('amount');
         $phoneno = $request->input('phonenumber');
         // Check if the phone number starts with 0 and replace it with 254
@@ -68,14 +67,28 @@ class MpesaSTKPUSHController extends Controller
             $phoneno = '254' . substr($phoneno, 1);
         }
         $account_number = $request->input('account_number');
-        $mpesaCode = $request->input('mpesaCode');
+        $invoice_id = $request->input('invoice_id');
+        $paymentMethod = $this->getPaymentMethod($invoice_id);
 
+        //// Configurations for the stk call /////
+        $businessShortCode = $paymentMethod && $paymentMethod->config ? $paymentMethod->config->mpesa_shortcode : Config::get('mpesa.shortcode');
+        $accountReference = null;
+        $transactionType = null;
+        if ($paymentMethod) {
+            if ($paymentMethod->type == 'paybill') {
+                $accountReference = $paymentMethod->config ? $paymentMethod->config->mpesa_account_number : $account_number;
+                $transactionType = 'CustomerPayBillOnline';
+            } elseif ($paymentMethod->type == 'till') {
+                $accountReference = null; // Explicitly set to null for till type
+                $transactionType = 'CustomerBuyGoodsOnline';
+            }
+        }
         $client = new Client([
             'verify' => false // This disables SSL verification
         ]);
         try {
             $timestamp = $this->getTimestamp();
-            $password = $this->generatePassword($timestamp);
+            $password = $this->generatePassword($invoice_id);
 
             $response = $client->post(
                 Config::get('mpesa.environment') === 'sandbox'
@@ -83,20 +96,20 @@ class MpesaSTKPUSHController extends Controller
                     : 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
                 [
                     'json' => [
-                        'BusinessShortCode' => Config::get('mpesa.shortcode'),
+                        'BusinessShortCode' => $businessShortCode,
                         'Password' => $password,
                         'Timestamp' => $timestamp,
-                        'TransactionType' => 'CustomerPayBillOnline',
+                        'TransactionType' => $transactionType,
                         'Amount' => $amount,
-                        'PartyA' => 254708374149,
-                        'PartyB' => $mpesaCode,
+                        'PartyA' => $phoneno,
+                        'PartyB' => $businessShortCode,
                         'PhoneNumber' => $phoneno,
                         'CallBackURL' => Config::get('mpesa.callback_url'),
-                        'AccountReference' => $account_number,
+                        'AccountReference' => $accountReference,
                         'TransactionDesc' => 'Test STK Push'
                     ],
                     'headers' => [
-                        'Authorization' => 'Bearer ' . $this->generateAccessToken(),
+                        'Authorization' => 'Bearer ' . $this->generateAccessToken($invoice_id),
                         'Accept' => 'application/json',
                     ]
                 ]
@@ -132,10 +145,12 @@ class MpesaSTKPUSHController extends Controller
             ], 500);
         }
     }
-    private function generateAccessToken()
+    private function generateAccessToken($invoice_id)
     {
-        $consumer_key = Config::get('mpesa.mpesa_consumer_key');
-        $consumer_secret = Config::get('mpesa.mpesa_consumer_secret');
+        $paymentMethod = $this->getPaymentMethod($invoice_id);
+
+        $consumer_key = $paymentMethod ? $paymentMethod->config->consumer_key : Config::get('mpesa.mpesa_consumer_key');
+        $consumer_secret = $paymentMethod ? $paymentMethod->config->consumer_secret : Config::get('mpesa.mpesa_consumer_secret');
         $credentials = base64_encode($consumer_key . ':' . $consumer_secret);
         $url = Config::get('mpesa.environment') === 'sandbox'
             ? 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
@@ -152,10 +167,12 @@ class MpesaSTKPUSHController extends Controller
         $result = json_decode($result);
         return $result->access_token;
     }
-    private function generatePassword()
+    private function generatePassword($invoice_id)
     {
-        $shortcode = Config::get('mpesa.shortcode');
-        $passkey = Config::get('mpesa.passkey');
+        $paymentMethod = $this->getPaymentMethod($invoice_id);
+
+        $shortcode = $paymentMethod->config ? $paymentMethod->config->mpesa_shortcode :  Config::get('mpesa.shortcode');
+        $passkey = $paymentMethod->config ? $paymentMethod->config->passkey :  Config::get('mpesa.passkey');
         $timestamp = $this->getTimestamp();
         return base64_encode($shortcode . $passkey . $timestamp);
     }
@@ -229,9 +246,10 @@ class MpesaSTKPUSHController extends Controller
 
     public function checkPaymentStatus(Request $request)
     {
+        $invoice_id = $request->input('invoice_id');
         $transactionId = $request->input('transaction_id');
         $transaction = MpesaSTK::findOrFail($transactionId);
-        $accessToken = $this->generateAccessToken();
+        $accessToken = $this->generateAccessToken($invoice_id);
 
         $url = "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query";
         $client = new Client([
@@ -239,7 +257,7 @@ class MpesaSTKPUSHController extends Controller
         ]);
         $requestData = [
             'BusinessShortCode' => config('mpesa.shortcode'),
-            'Password' => $this->generatePassword(),
+            'Password' => $this->generatePassword($invoice_id),
             'Timestamp' => $this->getTimestamp(),
             'CheckoutRequestID' => $transaction->checkout_request_id
         ];
@@ -310,10 +328,12 @@ class MpesaSTKPUSHController extends Controller
                         'data' => $result
                     ]);
                 } else {
+                    // check if the referenceno
                     $model = Invoice::where('referenceno', $transaction->referenceno)->firstOrFail();
-                    if ($model) {
-                    $payment = $this->paymentService->generatePayment($model, null, $transaction);
+                    if($model){
+                        $payment = $this->paymentService->generatePayment($model, null, $transaction);
                     }
+                  
                     return response()->json([
                         'success' => true,
                         'message' => $message,
@@ -377,5 +397,19 @@ class MpesaSTKPUSHController extends Controller
         $payment = Payment::find($id);
         return View('email.payment', compact('payment'));
 
+    }
+
+    protected function getPaymentMethod($invoice_id)
+    {
+        if (!$this->paymentMethod) {
+            $invoice = Invoice::findOrFail($invoice_id);
+            
+            $this->paymentMethod = PaymentMethod::where('property_id', $invoice->property_id)
+                ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
+                ->with('config')
+                ->first();
+        }
+        
+        return $this->paymentMethod;
     }
 }

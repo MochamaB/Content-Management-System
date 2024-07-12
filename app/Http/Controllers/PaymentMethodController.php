@@ -83,10 +83,9 @@ class PaymentMethodController extends Controller
      */
     public function store(Request $request)
     {
-        //// Data Entry validation/////////////
+        //// Data Entry validation. Allow only one payment name e.,g M-PESA/////////////
         if (PaymentMethod::where('name', $request->name)
             ->where('property_id', $request->property_id)
-            ->where('type', $request->type)
             ->exists()
         ) {
             return redirect()->back()->with('statuserror', 'Payment Type for the property already in system.');

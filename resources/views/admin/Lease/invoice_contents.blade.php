@@ -106,9 +106,9 @@
     <div class="col-md-6 mt-3">
     <h4><b>Payment Methods </b></h4>
         @foreach($PaymentMethod as $key=> $item)
-        <div class="d-flex justify-content-start">
+        <div class="d-flex justify-content-start" style="text-transform: capitalize;">
             <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
-            @if($item->name == 'M-PESA')
+            @if($item->name == 'm-pesa')
             <span>{{$key+1}}. {{$item->name}} - 
             <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="btn btn-warning btn-lg text-white mb-0 me-0">
                 <i class="ti-money"></i>Pay Now</a>

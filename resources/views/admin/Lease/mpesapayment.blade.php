@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <input type="hidden" class="form-control" name="account_number" value="{{$invoice->referenceno ?? ''}}" required>
-                    <input type="hidden" name="mpesaCode" value="{{ $mpesaCode ?? Config::get('mpesa.shortcode') ?? '' }}" required>
+                    <input type="hidden" name="invoice_id" value="{{ $invoice->id}}" required>
                     <div class="col-md-6">
                         <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Initiate Payment</button>
                     </div><br />
@@ -155,6 +155,7 @@
                 @csrf
 
                 <input type="hidden" id="transactionIdInput" name="transaction_id" value="">
+                <input type="hidden" name="invoice_id" value="{{ $invoice->id}}" required>
                 <div class="col-md-6 mt-3">
                     <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Check / Complete Payment</button>
                 </div>
@@ -203,7 +204,6 @@
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
         const transactionIdInput = document.getElementById('transactionIdInput');
-        const transactionIdInput2 = document.getElementById('transactionIdInput2');
         const mpesaReceiptNumber = document.getElementById('mpesaReceiptNumber');
 
         form.addEventListener('submit', function(e) {
@@ -219,12 +219,11 @@
             axios.post(this.action, new FormData(this))
                 .then(function(response) {
                     loadingOverlay.style.display = 'none';
-
+                    console.log(response); // Log the response for debugging
                     if (response.data.success) {
                         successMessage.innerHTML = '<i class="menu-icon mdi mdi-alert-circle mdi-24px"></i> <strong>Success! </strong>' + response.data.message;
                         successMessage.style.display = 'block';
                         transactionIdInput.value = response.data.transaction_id;
-                        transactionIdInput2.value = response.data.transaction_id;
 
 
                         // You can start checking payment status here if needed
@@ -236,6 +235,7 @@
                 })
                 .catch(function(error) {
                     loadingOverlay.style.display = 'none';
+                    console.error(error); // Log the error for debugging
                     errorMessage.textContent = 'Failed to initiate payment';
                     errorMessage.style.display = 'block';
                 });

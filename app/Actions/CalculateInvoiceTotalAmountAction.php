@@ -39,13 +39,9 @@ class CalculateInvoiceTotalAmountAction
     public function payment(Payment $payment)
     {
         // Calculate the total amount for the given invoice
-        $totalAmount = DB::table('payment_items')
-            ->where('payment_id', $payment->id)
-            ->sum('amount');
+        $totalAmount = $payment->totalamount;
 
-        // Update the totalamount field in the payment header
-        $payment->update(['totalamount' => $totalAmount]);
-
+      
         ///get the corresponding invoice, expense or deposit
         $refinvoice =$payment->model;
             ////Update Status /////
