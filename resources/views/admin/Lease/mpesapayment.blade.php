@@ -80,9 +80,7 @@
             <!-- Error Message -->
             <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
             @php
-            $amountPaid = $invoice->payments->sum(function ($payment) {
-            return $payment->paymentItems->sum('amount');
-            });
+            $amountPaid =$invoice->payments->sum('amount');
             $amountdue = $invoice->totalamount - $amountPaid;
 
             @endphp

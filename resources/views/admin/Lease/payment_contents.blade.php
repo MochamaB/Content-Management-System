@@ -69,18 +69,18 @@
         </thead>
         <tbody>
 
-            @foreach($payment->paymentItems as $key=> $item)
+          
             <tr style="height:35px;">
-                <td class="text-center">{{$key+1}}</td>
+                <td class="text-center">1.</td>
                 <td class="text-center" style="text-transform: capitalize;">
-                    {{$item->charge_name ?? $item->description}}
+                    {{$payment->model->name  ?? $payment->model->description}}
 
                 </td>
-                <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
-                <td class="text-center"> {{ $sitesettings->site_currency }} @currency($item->amount)</td>
+                <td class="text-center">{{ $sitesettings->site_currency }} @currency($payment->totalamount) </td>
+                <td class="text-center"> {{ $sitesettings->site_currency }} @currency($payment->totalamount)</td>
 
             </tr>
-            @endforeach
+            
 
         </tbody>
     </table>

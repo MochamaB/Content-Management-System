@@ -51,13 +51,13 @@ class PaymentService
         $payment = $this->createPayment($paymentData);
 
         //2. Create Payment items
-        $this->createPaymentItems($model, $payment, $validatedData,$mpesaTransaction);
+      //  $this->createPaymentItems($model, $payment, $validatedData,$mpesaTransaction);
 
         //3. Update Total Amount in Payment Header
-        $this->calculateTotalAmountAction->payment($payment, $model);
+      //  $this->calculateTotalAmountAction->payment($payment, $model);
 
         //4. Create Transactions for ledger
-        $this->recordTransactionAction->transaction($payment);
+        $this->recordTransactionAction->payments($payment,$model);
 
         //5. Send Email/Notification to the Tenant containing the receipt.
         $this->paymentEmail($payment);
@@ -81,7 +81,7 @@ class PaymentService
             $referenceno = $validatedData['referenceno'];
             $paymentCode = $validatedData['payment_code'];
             $paymentMethod = $validatedData['payment_method_id'];
-            $amount = $validatedData['amount'];
+            $totalamount = $validatedData['totalamount'];
 
             return [
                 'property_id' => $model->property_id,
@@ -91,7 +91,7 @@ class PaymentService
                 'referenceno' => $model->referenceno,
                 'payment_method_id' => $paymentMethod,
                 'payment_code' => $paymentCode,
-                'totalamount' =>  $amount,
+                'totalamount' =>  $totalamount,
                 'received_by' => $user->email,
                 'reviewed_by' => null,
                 'invoicedate' => $model->created_at,

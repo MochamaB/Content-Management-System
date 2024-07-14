@@ -15,10 +15,6 @@ class Payment extends Model
         'model_type',
         'model_id',
         'referenceno',
-        'unitcharge_id',
-        'chartofaccount_id',
-        'charge_name',
-        'description',
         'payment_method_id',
         'payment_code',
         'totalamount',
@@ -36,8 +32,8 @@ class Payment extends Model
         'referenceno' => 'nullable',
         'payment_method_id' => 'required',
         'payment_code' => 'nullable|unique:payments',
-        'amount' => 'nullable',
         'totalamount' => 'nullable',
+      
     ];
 
     /////Polymorphic Relationship (Payment can belong to an Invoice or Voucher or Charge)

@@ -71,37 +71,34 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($instance->getItems as $key=> $item)
+
                     <tr style="height:35px;">
-                        <td class="text-center" style="background-color:#dae3fa;">{{$key+1}}</td>
+                        <td class="text-center" style="background-color:#dae3fa;">1.</td>
                         <td class="text-center" style="text-transform: capitalize;background-color:#dae3fa;">
-                            {{$item->charge_name ?? $item->description}} Charge
+                            {{$instance->charge_name ?? $instance->description}} Charge
                         </td>
-                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. @currency($item->amount) </td>
+                        <td class="text-center" style="background-color:#dae3fa;">{{ $sitesettings->site_currency }}. @currency($instance->totalamount) </td>
                         <td class="text-center" style="background-color:#dae3fa;">
                             @foreach ($instance->payments as $payment)
-                            @foreach ($payment->paymentItems as $paymentItem)
-                            @if ($paymentItem->unitcharge_id === $item->unitcharge_id)
-                            {{ $sitesettings->site_currency }}.@currency($paymentItem->amount)</br>
-                            @endif
+                            {{ $sitesettings->site_currency }}.@currency($payment->totalamount)</br>
                             @endforeach
-                            @endforeach
+
                         </td>
                         <td class="text-center" style="padding:0px">
                             <div style="position: relative;">
                                 @php
-                                $amountdue = $item->amount - $instance->payments->sum(function ($payment) use ($item) {
-                                return $payment->paymentItems->where('unitcharge_id', $item->unitcharge_id)->sum('amount'); })
+                                $amountPaid =$instance->payments->sum('amount');
+                                $amountdue = $instance->totalamount - $amountPaid;
 
                                 @endphp
                                 <span style="position: absolute; left: 10px; top: 51%; transform: translateY(-50%);">{{ $sitesettings->site_currency }}.
                                 </span>
-                                <input type="text" class="form-control" name="amount[]" id="amount" value="{{$amountdue}}" style="text-align: left; padding-left: 45px; border:none">
+                                <input type="text" class="form-control" name="totalamount" id="" value="{{$amountdue}}" style="text-align: left; padding-left: 45px; border:none">
                             </div>
 
                         </td>
                     </tr>
-                    @endforeach
+
                 </tbody>
             </table>
         </div></br>
@@ -113,7 +110,7 @@
         </div>
 
     </form>
-    
+
 </div>
 
 @endsection
