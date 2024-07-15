@@ -125,6 +125,11 @@ class Invoice extends Model
         return $this->morphMany(Payment::class, 'model');
     }
 
+    public function paymentMethod()
+    {
+        return $this->hasOne(PaymentMethod::class, 'property_id', 'property_id');
+    }
+
     public function scopeApplyFilters($query, $filters)
     {
 

@@ -50,10 +50,13 @@ class MpesaSTKPUSHController extends Controller
         if ($amountdue <= 0) {
             return redirect()->back()->with('statuserror', 'Invoice has already been fully paid');
         }
+        $paymentMethod = $this->getPaymentMethod($invoice->id);
+        
+       
 
        
         //   dd($shortcode);
-        return View('admin.Lease.mpesapayment', compact('invoice'));
+        return View('admin.Lease.mpesapayment', compact('invoice','paymentMethod'));
     }
 
 
@@ -71,12 +74,12 @@ class MpesaSTKPUSHController extends Controller
         $paymentMethod = $this->getPaymentMethod($invoice_id);
 
         //// Configurations for the stk call /////
-        $businessShortCode = $paymentMethod && $paymentMethod->config ? $paymentMethod->config->mpesa_shortcode : Config::get('mpesa.shortcode');
+        $businessShortCode = $paymentMethod->config->mpesa_shortcode ?? Config::get('mpesa.shortcode');
         $accountReference = null;
         $transactionType = null;
         if ($paymentMethod) {
             if ($paymentMethod->type == 'paybill') {
-                $accountReference = $paymentMethod->config ? $paymentMethod->config->mpesa_account_number : $account_number;
+                $accountReference = $paymentMethod->config->mpesa_account_number ?? $account_number;
                 $transactionType = 'CustomerPayBillOnline';
             } elseif ($paymentMethod->type == 'till') {
                 $accountReference = null; // Explicitly set to null for till type
@@ -149,8 +152,8 @@ class MpesaSTKPUSHController extends Controller
     {
         $paymentMethod = $this->getPaymentMethod($invoice_id);
 
-        $consumer_key = $paymentMethod ? $paymentMethod->config->consumer_key : Config::get('mpesa.mpesa_consumer_key');
-        $consumer_secret = $paymentMethod ? $paymentMethod->config->consumer_secret : Config::get('mpesa.mpesa_consumer_secret');
+        $consumer_key = $paymentMethod->config->consumer_key ?? Config::get('mpesa.mpesa_consumer_key');
+        $consumer_secret = $paymentMethod->config->consumer_secret ?? Config::get('mpesa.mpesa_consumer_secret');
         $credentials = base64_encode($consumer_key . ':' . $consumer_secret);
         $url = Config::get('mpesa.environment') === 'sandbox'
             ? 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
@@ -171,8 +174,8 @@ class MpesaSTKPUSHController extends Controller
     {
         $paymentMethod = $this->getPaymentMethod($invoice_id);
 
-        $shortcode = $paymentMethod->config ? $paymentMethod->config->mpesa_shortcode :  Config::get('mpesa.shortcode');
-        $passkey = $paymentMethod->config ? $paymentMethod->config->passkey :  Config::get('mpesa.passkey');
+        $shortcode = $paymentMethod->config->mpesa_shortcode ??  Config::get('mpesa.shortcode');
+        $passkey = $paymentMethod->config->passkey ??  Config::get('mpesa.passkey');
         $timestamp = $this->getTimestamp();
         return base64_encode($shortcode . $passkey . $timestamp);
     }
@@ -250,13 +253,17 @@ class MpesaSTKPUSHController extends Controller
         $transactionId = $request->input('transaction_id');
         $transaction = MpesaSTK::findOrFail($transactionId);
         $accessToken = $this->generateAccessToken($invoice_id);
+        $paymentMethod = $this->getPaymentMethod($invoice_id);
 
-        $url = "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query";
+        $url = Config::get('mpesa.environment') === 'sandbox'
+            ? 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query'
+            : 'https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query';
+
         $client = new Client([
             'verify' => false // This disables SSL verification
         ]);
         $requestData = [
-            'BusinessShortCode' => config('mpesa.shortcode'),
+            'BusinessShortCode' => $paymentMethod->config->mpesa_shortcode ?? config('mpesa.shortcode'),
             'Password' => $this->generatePassword($invoice_id),
             'Timestamp' => $this->getTimestamp(),
             'CheckoutRequestID' => $transaction->checkout_request_id
@@ -393,7 +400,7 @@ class MpesaSTKPUSHController extends Controller
 
     public function receipt($id)
     {
-        $id = 1;
+      //  $id = 1;
         $payment = Payment::find($id);
         return View('email.payment', compact('payment'));
 

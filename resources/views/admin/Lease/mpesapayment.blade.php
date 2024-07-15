@@ -53,7 +53,7 @@
         </div>
     </div>
     <hr><br />
-
+   
     <div class="row">
         <!------- - ROW 1 -->
         <div class="col-md-6" style="border-right: 2px solid #dee2e6;padding-right:30px">
@@ -139,8 +139,8 @@
             <ul class="ml-2 px-3 list-unstyled">
                 <li>1. Go to Mpesa Menu on your phone</li>
                 <li>2. Select Paybill Option</li>
-                <li>3. Enter the Business Number <b>{{ env('MPESA_BUSINESS_SHORTCODE');}}</b></li>
-                <li>4. Enter Account Number <b>{{$invoice->referenceno}}</b></li>
+                <li>3. Enter the Business Number <b>{{$paymentMethod->config->mpesa_shortcode ?? env('MPESA_BUSINESS_SHORTCODE');}}</b></li>
+                <li>4. Enter Account Number <b>{{$paymentMethod->config->mpesa_account_number ?? $invoice->referenceno}}</b></li>
                 <li>5. Enter the Amount <b>{{$amountdue}}</b></li>
                 <li>6. Enter your MPESA PIN and send</li>
                 <li>7. You will receive a confirmation from MPESA</li>

@@ -69,8 +69,8 @@ class TransactionTypeSeeder extends Seeder
                 'description' => 'Payment of  rent invoice',
                 'model' => 'Payment',
                 'account_type' => 'Income',
-                'debitaccount_id' => '2',
-                'creditaccount_id' => '1',
+                'debitaccount_id' => '1',
+                'creditaccount_id' => '2',
             ],
         ];
 

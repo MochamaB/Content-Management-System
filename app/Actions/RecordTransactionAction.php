@@ -109,87 +109,70 @@ class RecordTransactionAction
         ////1.GET MODEL CLASS AND MODEL NAME
         $class = get_class($model);
         $modelName = class_basename($model);
+        $paymentModelName = class_basename($payment);
+
+        /////2.  GET MODEL ITEMS
+
         // For other models (like Invoice), get the items as before
-        $firstModelItem = $model->getItems()->first();
-        $chartOfAccountsId = $firstModelItem->chartofaccount_id;
-        $transactionType = TransactionType::where('model', $modelName)
-            ->where('account_type', $firstModelItem->accounts->account_type)
-            ->first();
+        $items = $model->getItems;
+        $firstItem = $items->first();
 
-        $debitAccountId = null;
-        $creditAccountId = null;
-        if ($transactionType) {
-            /* Check if the debit account type matches the account type of the $item->chartofaccount_id
-                - if it matches then use the account for the particular transaction 
-                else use the default for the account type in transaction table */
+        $remainingAmount = $payment->totalamount;
 
-            if ($transactionType->debit->account_type === $firstModelItem->accounts->account_type) {
-                $debitAccountId = $firstModelItem->chartofaccount_id;
-            } else {
-                // Use the debit account ID from the transaction type table
+        foreach ($items as $item) {
+
+
+            $transactionType = TransactionType::where('model', $paymentModelName)
+                ->where('account_type', $item->accounts->account_type)
+                ->first();
+
+            $debitAccountId = null;
+            $creditAccountId = null;
+            if ($transactionType) {
                 $debitAccountId = $transactionType->debitaccount_id;
-            }
 
-            /* Check if the credit account type matches the account type of the $item->chartofaccount_id
-                - if it matches then use the account for the particular transaction 
-                else use the default for the account type in transaction table */
-            if ($transactionType->credit->account_type === $firstModelItem->accounts->account_type) {
-                $creditAccountId = $firstModelItem->chartofaccount_id;
-            } else {
-                // Use the credit account ID from the transaction type
                 $creditAccountId = $transactionType->creditaccount_id;
             }
-        }
-        /*
-        switch ($modelName) {
-            case 'Expense':
-                $debitaccount_id = '';
-                $creditaccount_id = '';
+            // Calculate the amount to apply to this item
+            $amountToApply = min($remainingAmount, $item->amount);
+
+
+            $transaction = Transaction::create([
+                'property_id' => $payment->property_id,
+                'unit_id' => $payment->unit_id ?? null,
+                'unitcharge_id' =>  $firstItem->unitcharge_id ??  null,
+                'charge_name' => $item->charge_name ?? $item->description ?? $model->name,
+                'transactionable_id' => $payment->id,
+                'transactionable_type' => get_class($payment), ///Model Name Invoice
+                'description' => $item->accounts->account_name . ' Payment', ///Description of the charge
+                'debitaccount_id' => $debitAccountId, ///Increase the Income Accounts
+                'creditaccount_id' => $creditAccountId, /// Decrease the Accounts Payable that was increased wehn invoices
+                'amount' => $amountToApply,
+            ]);
+            // Record ledger entry for debit
+            LedgerEntry::create([
+                'property_id' => $transaction->property_id,
+                'unit_id' => $transaction->unit_id,
+                'chartofaccount_id' => $debitAccountId,
+                'transaction_id' => $transaction->id,
+                'amount' => $transaction->amount,
+                'entry_type' => 'debit',
+            ]);
+
+            // Record ledger entry for credit
+            LedgerEntry::create([
+                'property_id' => $transaction->property_id,
+                'unit_id' => $transaction->unit_id,
+                'chartofaccount_id' => $creditAccountId, // Change this to the appropriate account ID
+                'transaction_id' => $transaction->id,
+                'amount' => $transaction->amount,
+                'entry_type' => 'credit',
+            ]);
+            $remainingAmount -= $amountToApply;
+            if ($remainingAmount <= 0) {
                 break;
-            case 'Deposit':
-                $debitaccount_id = '';
-                $creditaccount_id = '';
-                break;
-            default:
-            $debitaccount_id = '';
-            $creditaccount_id = '';
-                break; // or handle this case differently
+            }
         }
-                */
-
-
-
-        $transaction = Transaction::create([
-            'property_id' => $model->property_id,
-            'unit_id' => $model->unit_id ?? null,
-            'unitcharge_id' =>  $firstModelItem->unitcharge_id ??  null,
-            'charge_name' => $model->name,
-            'transactionable_id' => $model->id,
-            'transactionable_type' => $class, ///Model Name Invoice
-            'description' => $modelName, ///Description of the charge
-            'debitaccount_id' => $debitAccountId, ///Increase the Income Accounts
-            'creditaccount_id' => $creditAccountId, /// Decrease the Accounts Payable that was increased wehn invoices
-            'amount' => $payment->totalamount,
-        ]);
-        // Record ledger entry for debit
-        LedgerEntry::create([
-            'property_id' => $transaction->property_id,
-            'unit_id' => $transaction->unit_id,
-            'chartofaccount_id' => $debitAccountId,
-            'transaction_id' => $transaction->id,
-            'amount' => $transaction->amount,
-            'entry_type' => 'debit',
-        ]);
-
-        // Record ledger entry for credit
-        LedgerEntry::create([
-            'property_id' => $transaction->property_id,
-            'unit_id' => $transaction->unit_id,
-            'chartofaccount_id' => $creditAccountId, // Change this to the appropriate account ID
-            'transaction_id' => $transaction->id,
-            'amount' => $transaction->amount,
-            'entry_type' => 'credit',
-        ]);
     }
 
     public function deposit(Model $model, Unitcharge $unitcharge = null)
