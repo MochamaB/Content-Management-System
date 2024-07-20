@@ -24,6 +24,7 @@ use App\Actions\UploadMediaAction;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Services\TableViewDataService;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -240,7 +241,13 @@ class UserController extends Controller
         $request->session()->forget('properties');
 
         //6. SEND NEW USER A WELCOME EMAIL
-        $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
+        try {
+            $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
+               } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+                   Log::error('Failed to send payment notification: ' . $e->getMessage());
+               }
+     
 
 
         return redirect('user')->with('status', 'User Added Successfully');
@@ -398,7 +405,13 @@ class UserController extends Controller
         $user->units()->detach();   /////// Remove assigned units
         $user->removeRole($role);
         $user->delete();   //// Delete User          //////// Remove Role
-        $user->notify(new UserDeletedNotification($user)); ////// Send Email for deletion.
+        try {
+            $user->notify(new UserDeletedNotification($user)); ////// Send Email for deletion.
+               } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+                   Log::error('Failed to senduser deleted notification: ' . $e->getMessage());
+               }
+     
 
         return redirect()->back()->with('status', 'User deleted successfully.');
     }

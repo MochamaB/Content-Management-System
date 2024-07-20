@@ -44,20 +44,20 @@ class PaymentService
     public function generatePayment(Model $model, $validatedData = null, $mpesaTransaction = null)
     {
 
-        $paymentData = $this->getPaymentHeaderData($model, $validatedData,$mpesaTransaction);
+        $paymentData = $this->getPaymentHeaderData($model, $validatedData, $mpesaTransaction);
 
 
         //1. Create Payment Header Data
         $payment = $this->createPayment($paymentData);
 
         //2. Create Payment items
-      //  $this->createPaymentItems($model, $payment, $validatedData,$mpesaTransaction);
+        //  $this->createPaymentItems($model, $payment, $validatedData,$mpesaTransaction);
 
         //3. Update Total Amount in Payment Header
-      //  $this->calculateTotalAmountAction->payment($payment, $model);
+        //  $this->calculateTotalAmountAction->payment($payment, $model);
 
         //4. Create Transactions for ledger
-        $this->recordTransactionAction->payments($payment,$model);
+        $this->recordTransactionAction->payments($payment, $model);
 
         //5. Send Email/Notification to the Tenant containing the receipt.
         $this->paymentEmail($payment);
@@ -66,13 +66,13 @@ class PaymentService
         return $payment;
     }
 
-    
+
 
 
 
 
     //////4. GET DATA FOR PAYMENT HEADER DATA
-    private function getPaymentHeaderData($model, $validatedData,$mpesaTransaction)
+    private function getPaymentHeaderData($model, $validatedData, $mpesaTransaction)
     {
         $className = get_class($model);
         $user = Auth::user();
@@ -97,9 +97,9 @@ class PaymentService
                 'invoicedate' => $model->created_at,
             ];
         } else if (!is_null($mpesaTransaction)) {
-            $mpesa = PaymentMethod::where('property_id',$model->property_id)
-                    ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
-                    ->first();
+            $mpesa = PaymentMethod::where('property_id', $model->property_id)
+                ->whereRaw('LOWER(name) LIKE ?', ['%m%pesa%'])
+                ->first();
             return [
                 'property_id' => $model->property_id,
                 'unit_id' => $model->unit_id,
@@ -123,7 +123,7 @@ class PaymentService
 
 
 
-    private function createPaymentItems($model, $payment, $validatedData,$mpesaTransaction)
+    private function createPaymentItems($model, $payment, $validatedData, $mpesaTransaction)
     {
         // Create Payment items
         $items = $model->getItems;
@@ -156,13 +156,11 @@ class PaymentService
             'payment' => $payment,
         ])->render();
 
-        //   try {
-        $user->notify(new PaymentNotification($payment, $user, $viewContent));
-        //   } catch (\Exception $e) {
-        // Log the error or perform any necessary actions
-        //       Log::error('Failed to send payment notification: ' . $e->getMessage());
-        //   }
-
-
+        try {
+            $user->notify(new PaymentNotification($payment, $user, $viewContent));
+        } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+            Log::error('Failed to send payment notification: ' . $e->getMessage());
+        }
     }
 }

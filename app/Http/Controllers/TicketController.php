@@ -247,7 +247,13 @@ class TicketController extends Controller
         } else {
             $user = Vendor::find($request->assigned_id);
         }
-        $user->notify(new TicketAssignNotification($user, $ticket));
+        try {
+            $user->notify(new TicketAssignNotification($user, $ticket));
+        } catch (\Exception $e) {
+            // Log the error or perform any necessary actions
+            Log::error('Failed to send payment notification: ' . $e->getMessage());
+        }
+       
 
         ///Create a charge when ticket is completed.
       

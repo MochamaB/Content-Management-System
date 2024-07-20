@@ -7,26 +7,26 @@
 <div class="col-md-8">
     <div class="form-group">
         <label class="label">First Name<span class="requiredlabel">*</span></label>
-        <input type="text" name="firstname" id="name" class="form-control" value="{{$user->firstname ?? old('firstname') }}" required />
+        <input type="text" name="firstname" id="name" class="form-control" value="{{old('firstname') ?? '' }}" required />
     </div>
 </div>
 
 <div class="col-md-8">
     <div class="form-group">
         <label class="label">Last Name<span class="requiredlabel">*</span></label>
-        <input type="text" name="lastname" id="name" class="form-control" value="{{$user->lastname ?? old('lastname') }}" required />
+        <input type="text" name="lastname" id="name" class="form-control" value="{{old('lastname') ?? '' }}" required />
     </div>
 </div>
 <div class="col-md-8">
     <div class="form-group">
         <label class="label">Email<span class="requiredlabel">*</span></label>
-        <input type="text" name="email" id="name" class="form-control" value="{{$user->email ?? old('email') }}" required />
+        <input type="text" name="email" id="name" class="form-control" value="{{ old('email') ?? '' }}" required />
     </div>
 </div>
 <div class="col-md-8">
     <div class="form-group">
         <label class="label">Phone Number<span class="requiredlabel">*</span></label>
-        <input type="tel" name="phonenumber" id="name" class="form-control" value="{{$user->phonenumber ?? old('phonenumber') }}" required />
+        <input type="tel" name="phonenumber" id="name" class="form-control" value="{{old('phonenumber') ?? '' }}" required />
 
         <input type="hidden" name="idnumber" id="name" class="form-control" value="00000000" required />
         <input type="hidden" name="password" id="name" class="form-control" value="property123" required />
