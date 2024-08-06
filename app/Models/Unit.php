@@ -40,9 +40,9 @@ class Unit extends Model implements HasMedia
         'unit_number' => ['label' => 'Unit Number', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'rent' => ['label' => 'Market Rent', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
         'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
-        'size' => ['label' => 'Size (Sqm)', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
         'bathrooms' => ['label' => 'No of Bathrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
         'bedrooms' => ['label' => 'No of Bedrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
+        'size' => ['label' => 'Size (Sqm)', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
         'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' => false, 'readonly' => ''],
         'selling_price' => ['label' => 'Selling Price', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
 
