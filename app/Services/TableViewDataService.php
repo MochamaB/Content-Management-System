@@ -970,4 +970,36 @@ class TableViewDataService
 
         return $tableData;
     }
+
+    public function getPaymentMethodData($PaymentMethoddata, $extraColumns = false)
+    {
+         /// TABLE DATA ///////////////////////////
+
+         $headers = ['NAME', 'TYPE', 'ACTIONS'];
+
+         // If $Extra columns is true, insert 'Unit Details' at position 3
+         if ($extraColumns) {
+            array_splice($headers, 0, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($PaymentMethoddata as $item) {
+            $row = [
+                'id' => $item->id,
+                $item->name,
+                $item->type,
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 1, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
 }

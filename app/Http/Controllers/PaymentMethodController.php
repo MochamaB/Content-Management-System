@@ -7,6 +7,7 @@ use App\Models\PaymentMethodConfig;
 use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
+use App\Services\TableViewDataService;
 
 class PaymentMethodController extends Controller
 {
@@ -19,15 +20,17 @@ class PaymentMethodController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    private $tableViewDataService;
 
 
-    public function __construct()
+    public function __construct(TableViewDataService $tableViewDataService,)
     {
         $this->model = PaymentMethod::class;
         $this->controller = collect([
             '0' => 'payment-method', // Use a string for the controller name
             '1' => ' Payment Method',
         ]);
+        $this->tableViewDataService = $tableViewDataService;
     }
     public function getPaymentMethodData($PaymentMethoddata)
     {
@@ -58,7 +61,7 @@ class PaymentMethodController extends Controller
         $mainfilter =  $this->model::distinct()->pluck('name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
-        $tableData = $this->getPaymentMethodData($PaymentMethoddata);
+        $tableData = $this->tableViewDataService->getPaymentMethodData($PaymentMethoddata, true);
 
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
     }
@@ -68,11 +71,17 @@ class PaymentMethodController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($id = null, $model = null)
     {
-        $property = Property::all();
+        if ($model === 'properties') {
+            $property = Property::find($id);
 
-        return View('admin.Accounting.create_paymentmethod',compact('property'));
+        } else {
+            $property = Property::all();
+        }
+      
+
+        return View('admin.Accounting.create_paymentmethod',compact('property','model'));
     }
 
     /**

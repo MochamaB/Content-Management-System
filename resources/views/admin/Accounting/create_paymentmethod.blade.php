@@ -15,12 +15,18 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Property Name <span class="requiredlabel">*</span></label>
+                @if($model === 'properties')
+                <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required readonly>
+                    <option value="{{$property->id}}">{{$property->property_name}}</option>
+                </select>
+                @else
                 <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required>
                     <option value=""> -- Select Apartment ---</option>
                     @foreach($property as $item)
                     <option value="{{$item->id}}">{{$item->property_name}}</option>
                     @endforeach
                 </select>
+                @endif
             </div>
         </div>
         <div class="col-md-6">

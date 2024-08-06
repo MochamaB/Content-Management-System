@@ -147,6 +147,10 @@ class Property extends Model implements HasMedia
     {
         return $this->hasMany(Payment::class);
     }
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
 
     public function tickets()
     {

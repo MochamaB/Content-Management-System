@@ -137,7 +137,7 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="label">Date of Last Reading<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control" name="startdate" id="startdate" value="{{ $meterReading->enddate ?? old('startdate') ?? now()->toDateString()}}" required readonly>
+                    <input type="text" class="form-control" name="startdate" id="startdate" value="{{ $meterReading->enddate ?? old('startdate') ?? now()->toDateString()}}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
                 </div>
             </div>
             <div class="col-md-5">

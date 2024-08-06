@@ -131,6 +131,7 @@ class PropertyController extends Controller
             'amenities',
             'units',
             'utilities',
+            'paymentMethods',
             'meterReadings',
             'tickets',
             'expenses',
@@ -149,6 +150,7 @@ class PropertyController extends Controller
             'Summary',
             'Units',
             'Utilities',
+            'Payment Methods',
             'Meter Readings',
             'Tickets',
             'Deposits',
@@ -172,6 +174,10 @@ class PropertyController extends Controller
         $utilities = $property->utilities;
         $utilityController = new UtilityController();
         $utilityTableData = $utilityController->getUtilitiesData($utilities);
+
+        // PAYMENT METHODS
+        $paymentMethods = $property->paymentMethods;
+        $paymentMethodTableData = $this->tableViewDataService->getPaymentMethodData($paymentMethods);
 
          ///4. METER READINGS
          $readings = $property->meterReadings;
@@ -223,6 +229,9 @@ class PropertyController extends Controller
             } elseif ($title === 'Utilities') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $utilityTableData,'controller' => ['utility']], 
                 compact('amenities', 'allamenities'))->render();
+            }elseif ($title === 'Payment Methods') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $paymentMethodTableData,'controller' => ['payment-method']], 
+                compact('id', 'model'))->render();
             }elseif ($title === 'Meter Readings') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $meterReadingTableData,'controller' => ['meter-reading']], 
                 compact('amenities', 'allamenities','id','model'))->render();

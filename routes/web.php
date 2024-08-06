@@ -94,6 +94,11 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 //<!-------------------------------- Accounting Module ---------------------------------------------->////
     Route::group(['groupName' => 'Accounting'], function () {
         Route::resource('chartofaccount', ChartOfAccountController::class);
+
+        Route::get('payment-method/create/{id?}/{model?}', [
+            'as' => 'payment-method.create',
+            'uses' => 'App\Http\Controllers\PaymentMethodController@create'
+        ]);
         Route::resource('payment-method', PaymentMethodController::class);
         Route::resource('transaction', TransactionController::class);
         Route::resource('general-ledger', GeneralLedgerController::class);
@@ -123,7 +128,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         ///////////////
         Route::get('unitcharge/create/{id?}/{model?}', [
             'as' => 'unitcharge.create',
-            'uses' => 'App\Http\Controllers\UnitchargeController@create'
+            'uses' => 'App\Http\Controllers\UnitChargeController@create'
         ])->middleware('check.create.variables');
         Route::resource('unitcharge', UnitChargeController::class, ['except' => 'create']);
         /////////////////
