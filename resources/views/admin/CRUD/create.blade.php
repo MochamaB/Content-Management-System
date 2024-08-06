@@ -20,7 +20,7 @@
 
                 </option>
                 @foreach ($data[$field] as $key => $value)
-                <option value="{{ $key }}">{{ $value }}</option>
+                <option value="{{ $key }}" {{ old($field) == $key ? 'selected' : '' }}>{{ $value }}</option>
                 @endforeach
 
             </select>

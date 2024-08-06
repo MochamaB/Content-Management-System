@@ -54,7 +54,7 @@ class Unit extends Model implements HasMedia
         'unit_number' => 'required',
         'rent' => 'nullable|numeric',
         'security_deposit' => 'nullable|numeric',
-        'size' => 'required|numeric',
+        'size' => 'nullable|numeric',
         'bathrooms' => 'required|numeric',
         'bedrooms' => 'required|numeric',
         'description' => 'nullable',
