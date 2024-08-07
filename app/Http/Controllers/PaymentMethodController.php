@@ -57,6 +57,8 @@ class PaymentMethodController extends Controller
     }
     public function index()
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $PaymentMethoddata = $this->model::all();
         $mainfilter =  $this->model::distinct()->pluck('name')->toArray();
         $viewData = $this->formData($this->model);
@@ -80,7 +82,9 @@ class PaymentMethodController extends Controller
             $property = Property::all();
         }
       
-
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
         return View('admin.Accounting.create_paymentmethod',compact('property','model'));
     }
 
@@ -97,7 +101,7 @@ class PaymentMethodController extends Controller
             ->where('property_id', $request->property_id)
             ->exists()
         ) {
-            return redirect()->back()->with('statuserror', 'Payment Type for the property already in system.');
+            return redirect()->back()->withInput()->with('statuserror', 'Payment Type for the property already in system.');
         }
         $validationRules = PaymentMethod::$validation;
         $validatedData = $request->validate($validationRules);
@@ -121,7 +125,10 @@ class PaymentMethodController extends Controller
             ]);
         }
 
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+        //// Redirect From Session ///
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
     }
 
     /**

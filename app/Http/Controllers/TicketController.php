@@ -97,7 +97,9 @@ class TicketController extends Controller
         }
         $viewData = $this->formData($this->model);
 
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
         return View('admin.Maintenance.create_ticket', compact('id', 'property', 'unit', 'model'), $viewData);
     }
@@ -139,12 +141,9 @@ class TicketController extends Controller
         //       $individualUser->notify(new AdminTicketNotification($individualUser, $ticketData));
         //    }
 
-        $previousUrl = Session::get('previousUrl');
-        if ($previousUrl) {
-            return redirect($previousUrl)->with('status', 'Your request has been sent successfully');
-        } else {
-            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
-        }
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+         
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
     }
 
     /**

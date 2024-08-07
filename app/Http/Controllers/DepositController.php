@@ -48,6 +48,8 @@ class DepositController extends Controller
     }
     public function index(Request $request)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
         $depositdata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
@@ -84,7 +86,9 @@ class DepositController extends Controller
         $users = $user->filterUsers();
 
 
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
         return View('admin.Accounting.create_deposit', compact('id', 'property', 'unit','account', 'accounts','model','vendors','users'));
         //
@@ -123,14 +127,10 @@ class DepositController extends Controller
 
          $this->depositService->generateDeposit(null,null,$validatedData);
  
-         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
-         /*
-        $previousUrl = Session::get('previousUrl');
-        if ($previousUrl) {
-            return redirect($previousUrl)->with('status', 'Your Expense has been saved successfully');
-        } else {
-            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
-        }*/
+         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+         
+         return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
+         
     }
 
     /**

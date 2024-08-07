@@ -15,6 +15,7 @@ use App\Services\CardService;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 
+
 class UnitController extends Controller
 {
     /**
@@ -68,6 +69,8 @@ class UnitController extends Controller
 
     public function index(Request $request, $property = null)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $unitdata = $this->model::with('property','lease')->applyFilters($filters)->get();
         $filterdata = $this->filterService->getUnitFilters();
@@ -91,8 +94,12 @@ class UnitController extends Controller
      */
     public function create()
     {
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
         $viewData = $this->formData($this->model);
-
+       
+     
         return View('admin.CRUD.form', $viewData);
     }
 
@@ -108,7 +115,7 @@ class UnitController extends Controller
         if (Unit::where('unit_number', $request->unit_number)
                  ->where('property_id', $request->property_id)
                 ->exists())  {
-            return redirect()->back()->with('statuserror', 'Unit Number Already in system.');
+            return redirect()->back()->withInput()->with('statuserror', 'Unit Number Already in system.');
         } 
         $validationRules = Unit::$validation;
         $validatedData = $request->validate($validationRules);
@@ -126,7 +133,9 @@ class UnitController extends Controller
             $unit->users()->attach($user, ['property_id' => $propertyId]);
         }
 
-            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+         
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
         
     }
 
@@ -138,6 +147,8 @@ class UnitController extends Controller
      */
     public function show(Unit $unit)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
      //   $unit->load('property', 'unitSupervisors');
         $pageheadings = collect([
             '0' => $unit->unit_number,
@@ -272,6 +283,9 @@ class UnitController extends Controller
         $viewData = $this->formData($this->model, $unit, $specialvalue);
         $unitEditData = compact('specialvalue');
 
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
 
         return View('admin.CRUD.form', $viewData);
@@ -288,8 +302,8 @@ class UnitController extends Controller
     {
         $unit->update($request->all());
        
-
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**

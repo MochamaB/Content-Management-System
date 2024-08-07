@@ -56,6 +56,8 @@ class ExpenseController extends Controller
 
     public function index(Request $request)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
         $expensedata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
@@ -85,7 +87,9 @@ class ExpenseController extends Controller
         $accounts = $account->groupBy('account_type');
         $vendors = Vendor::all();
 
-
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
        
 
         return View('admin.Accounting.create_expenses', compact('id', 'property', 'unit', 'accounts','model','vendors'));
@@ -111,12 +115,10 @@ class ExpenseController extends Controller
 
         $this->expenseService->generateExpense(null,null,$validatedData,$request);
 
-        $previousUrl = Session::get('previousUrl');
-        if ($previousUrl && $unitnumber) {
-            return redirect($previousUrl)->with('status', 'Your Expense has been saved successfully');
-        } else {
-            return redirect('expense/')->with('status', ' Expense Added Successfully');
-        }
+        
+        $redirectUrl = session()->pull('previousUrl','expense/');
+         
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
     }
 
     /**
@@ -163,6 +165,9 @@ class ExpenseController extends Controller
         $account = Chartofaccount::whereIn('account_type', ['Expenses'])->get();
         $accounts = $account->groupBy('account_type');
         $vendors = Vendor::all();
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
         return View('admin.Accounting.edit_expense', compact('pageheadings','instance','property', 'unit', 'accounts','vendors'));
         //

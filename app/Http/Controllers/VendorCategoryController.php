@@ -111,9 +111,10 @@ class VendorCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(VendorCategory $vendorcategory)
+    public function edit(VendorCategory $vendorCategory)
     {
-        $viewData = $this->formData($this->model,$vendorcategory,);
+      //  dd($vendorCategory);
+        $viewData = $this->formData($this->model,$vendorCategory,);
         
         return View('admin.CRUD.form',$viewData);
     }
@@ -125,17 +126,19 @@ class VendorCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, VendorCategory $vendorcategory)
+    public function update(Request $request, VendorCategory $vendorCategory)
     {
         $validatedData = $request->validate([
             'vendor_type' => 'required',
             'vendor_category' => 'required',
            
         ]);
-        $vendorcategory = VendorCategory:: find($vendorcategory);
-        $vendorcategory->fill($validatedData);
-        $vendorcategory->update();
+      //  dd($vendorCategory);
+        // Fill the model with validated data
+        $vendorCategory->fill($validatedData);
 
+        // Save the updated model to the database
+        $vendorCategory->save();
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 

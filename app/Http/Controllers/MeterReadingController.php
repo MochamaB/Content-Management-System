@@ -46,7 +46,8 @@ class MeterReadingController extends Controller
 
     public function index(Request $request)
     {
-
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab', '_token', '_method']);
         $meterReadings = MeterReading::applyFilters($filters)->get();
         $mainfilter =  $this->model::pluck('unit_id')->toArray();
@@ -101,7 +102,10 @@ class MeterReadingController extends Controller
 
         //   dd($latestReading);
 
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+      ///SESSION /////
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
         return View('admin.Property.create_meterreading', compact('id', 'model', 'property', 'unit', 'unitcharge', 'meterReading', 'charges'));
     }
@@ -173,7 +177,8 @@ class MeterReadingController extends Controller
             }
         }
         MeterReading::insert($meterReadings);
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
     }
 
     protected function storeUnit(Request $request)
@@ -198,12 +203,8 @@ class MeterReadingController extends Controller
         $meterReading->recorded_by = $loggeduser->email;
         $meterReading->save();
 
-        $previousUrl = Session::get('previousUrl');
-        if (!$previousUrl) {
-            return redirect($previousUrl)->with('status', 'Meter Reading Entered Successfully');
-        } else {
-            return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
-        }
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
     }
     public function show(MeterReading $meterReading)
     {

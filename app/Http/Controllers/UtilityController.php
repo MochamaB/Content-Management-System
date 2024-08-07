@@ -62,6 +62,8 @@ class UtilityController extends Controller
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         $tableData = $this->getUtilitiesData($utilitiesdata);
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
 
         return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
     }
@@ -73,6 +75,10 @@ class UtilityController extends Controller
      */
     public function create()
     {
+        //// Sets the session previous url to return to where create was initiated from
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
         $viewData = $this->formData($this->model);
 
         return View('admin.CRUD.form', $viewData);
@@ -89,7 +95,7 @@ class UtilityController extends Controller
         if (Utility::where('utility_name', $request->get('utility_name'))
             ->where('property_id', $request->get('property_id'))->exists()
         ) {
-            return redirect()->back()->with('statuserror', 'The Utility is already attached to the property');
+            return redirect()->back()->withInput()->with('statuserror', 'The Utility is already attached to the property');
         }
 
         $validatedData = $request->validate([
@@ -103,7 +109,9 @@ class UtilityController extends Controller
         $utility->fill($validatedData);
         $utility->save();
 
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Added Successfully');
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
     }
 
     /**
@@ -129,6 +137,10 @@ class UtilityController extends Controller
      */
     public function edit(Utility $utility)
     {
+         //// Sets the session previous url to return to where edit was initiated from
+         if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
         $utility->load('property','accounts');
         
         $specialvalue = collect([
@@ -160,8 +172,8 @@ class UtilityController extends Controller
         $utility = Utility::find($utility->id);
         $utility->fill($validatedData);
         $utility->update();
-
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**

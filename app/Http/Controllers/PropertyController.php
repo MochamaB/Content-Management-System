@@ -43,6 +43,8 @@ class PropertyController extends Controller
 
     public function index(Request $request)
     {
+        // Clear previousUrl if navigating to a new  method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
         $tablevalues = Property::with('units','propertyType')->ApplyFilters($filters)->get();
@@ -125,6 +127,8 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         ////VARIABLES FOR CRUD TEMPLATES
          // Eager load relationships
         $property->load([
@@ -216,7 +220,7 @@ class PropertyController extends Controller
             '1' => ' Unit',
         ]);
         $viewData = $this->formData($this->model, $property,$specialvalue);
-       
+        
         //  $unitviewData = $result['unitviewData'];
         // Render the Blade views for each tab content
         $tabContents = [];
