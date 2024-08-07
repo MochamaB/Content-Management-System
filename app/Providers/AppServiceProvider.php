@@ -78,8 +78,13 @@ class AppServiceProvider extends ServiceProvider
 
         Utility::addGlobalScope(new UtilityAccessScope);
 
+        /// Format all amounts to thousands
         Blade::directive('currency', function ($expression) {
             return "<?= number_format($expression, 0, '.', ','); ?>";
+        });
+        //Format all dates to YYYY/MMM/DD
+        Blade::directive('formatDate', function ($expression) {
+            return "<?php echo ($expression) ? date('Y-m-d', strtotime($expression)) : ''; ?>";
         });
 
       // Query Website Settings once

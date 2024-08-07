@@ -19,7 +19,7 @@
     </div>
     <div class="col-md-6">
         <div class="form-group">
-            <label class="label"> Select Unit<span class="requiredlabel">*</span></label>
+            <label class="label"> Select Unit</label>
             <select name="unit_id" id="" class="formcontrol2 unit_id" placeholder="Select" required>
 
                 <option value=""></option>

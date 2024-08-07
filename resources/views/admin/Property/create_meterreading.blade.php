@@ -62,7 +62,8 @@
                         </td>
 
                         <td data-label="DATE LAST READING" class="text-center" style="padding:0px">
-                            <input type="date" class="form-control" name="startdate[]" id='startdate' value="{{ $latestread->startdate ?? old('startdate_' . $key) ?? now()->toDateString() }}" readonly>
+                            <input type="date" class="form-control" name="startdate[]" id='startdate' value="{{ $latestread->enddate ?? old('startdate_' . $key) ?? now()->toDateString() }}" 
+                            {{ $latestread ? 'readonly' : '' }}>
                         </td>
                         <td  class="text-center" style="padding:0px">
                             <input type="number" class="form-control @error('lastreading.' . $key) is-invalid @enderror" name="lastreading[]" id='' value="{{$latestread->currentreading ?? 0.00 }}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
@@ -137,13 +138,14 @@
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="label">Date of Last Reading<span class="requiredlabel">*</span></label>
-                    <input type="text" class="form-control" name="startdate" id="startdate" value="{{ $meterReading->enddate ?? old('startdate') ?? now()->toDateString()}}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
+                    <input type="date" class="form-control" name="startdate" id="startdate" value="{{ $meterReading->enddate ?? old('startdate') ?? now()->toDateString()}}" required 
+                    {{ $meterReading ? 'readonly' : '' }}>
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="label">End Date of Reading Period<span class="requiredlabel">*</span></label>
-                    <input type="date" class="form-control" name="enddate" value="{{old('enddate')}}" required>
+                    <input type="date" class="form-control" name="enddate" value="{{old('enddate') ?? now()->toDateString()}}" required>
                 </div>
             </div>
         </div>

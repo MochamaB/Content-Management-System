@@ -462,7 +462,7 @@ class LeaseController extends Controller
         // If the charge name does not exist, return a success response
         //  return response()->json(['message' => 'Success!'], 200);
     }
-    /////////// lease wizard/////////////////
+    /////////// LEASE WIZARD FUNCTIONS/////////////////
     public function leasedetails(Request $request)
     {
 

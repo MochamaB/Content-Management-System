@@ -45,8 +45,8 @@ class InvoiceService
     }
     public function getUnitCharges()
     {
-        return Unitcharge::where('recurring_charge', 'Yes')
-            ->where('parent_id', null)
+        return Unitcharge::where('recurring_charge', 'Yes') /// ONly recurrent charges
+            ->where('parent_id', null)  /// Only parent charges
             //   ->whereMonth('nextdate', now()->month)
             ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
@@ -92,7 +92,7 @@ class InvoiceService
         //3. Update Total Amount in Invoice Header
         $this->calculateTotalAmountAction->handle($invoice);
 
-        //4. Update Next Date in the Unitcharge
+        //4. Update Next nad Updated Date in the Unitcharge
         $this->updateNextDateAction->invoicenextdate($unitcharge);
         //// Child Charges
         $childcharges = Unitcharge::where('parent_id', $unitcharge->id)->get();
@@ -201,9 +201,10 @@ class InvoiceService
                 ->where('enddate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
                 ->get();
 
+
             foreach ($meterReadings as $reading) {
                 // Calculate the amount based on meter readings and assign it to $amount
-                // Accumulate the amount from each reading
+                // If theres more than one reading,Accumulate the amount from each reading
                 $amount += $reading->amount;
             }
         } else {

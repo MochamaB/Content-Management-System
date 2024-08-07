@@ -59,7 +59,7 @@
         <div class="col-md-8">
             <div class="form-group">
                 <label class="label">Start Date<span class="requiredlabel">*</span></label>
-                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}" required>
+                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$lease->startdate ?? ''}}" data-date-format="YYYY/MM/DD" required>
             </div>
         </div>
         <div class="col-md-8">

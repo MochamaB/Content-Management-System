@@ -15,20 +15,17 @@ class UpdateNextDateAction
     public function handle(string $chargeCycle, string $startDate): Carbon
     {
         $startDate = Carbon::parse($startDate);
-        $nextDate = null;
+        $monthsToAdd = match ($chargeCycle) {
+            'Monthly' => 1,
+            'Twomonths' => 2,
+            'Quarterly' => 3,
+            'Halfyear' => 6,
+            'Year' => 12,
+            default => throw new \InvalidArgumentException("Invalid charge cycle: $chargeCycle"),
+        };
 
-        if ($chargeCycle === 'Monthly') {
-            $nextDate = $startDate->addMonth();
-        } elseif ($chargeCycle === 'Twomonths') {
-            $nextDate = $startDate->addMonths(2);
-        } elseif ($chargeCycle === 'Quarterly') {
-            $nextDate = $startDate->addMonths(3);
-        } elseif ($chargeCycle === 'Halfyear') {
-            $nextDate = $startDate->addMonths(6);
-        } elseif ($chargeCycle === 'Year') {
-            $nextDate = $startDate->addYear();
-        }
-
+        $nextDate = $startDate->copy()->addMonths($monthsToAdd)->startOfMonth();
+        
         return $nextDate;
     }
 
@@ -36,20 +33,16 @@ class UpdateNextDateAction
     {
         $chargeCycle = $unitcharge->charge_cycle;
         $startDate = Carbon::parse($unitcharge->nextdate);
-        $nextDate = null;
-
-        if ($chargeCycle === 'Monthly') {
-            $nextDate = $startDate->addMonth();
-        } elseif ($chargeCycle === 'Twomonths') {
-            $nextDate = $startDate->addMonths(2);
-        } elseif ($chargeCycle === 'Quarterly') {
-            $nextDate = $startDate->addMonths(3);
-        } elseif ($chargeCycle === 'Halfyear') {
-            $nextDate = $startDate->addMonths(6);
-        } elseif ($chargeCycle === 'Year') {
-            $nextDate = $startDate->addYear();
-        }
-
+      
+        $monthsToAdd = match ($chargeCycle) {
+            'Monthly' => 1,
+            'Twomonths' => 2,
+            'Quarterly' => 3,
+            'Halfyear' => 6,
+            'Year' => 12,
+            default => throw new \InvalidArgumentException("Invalid charge cycle: $chargeCycle"),
+        };
+        $nextDate = $startDate->copy()->addMonths($monthsToAdd)->startOfMonth();
         // Update the nextdate attribute in the Unitcharge model
         $unitcharge->update(['nextdate' => $nextDate]);
         return $nextDate;
