@@ -132,6 +132,7 @@ class Property extends Model implements HasMedia
     {
         return $this->belongsToMany(User::class, 'unit_user', 'property_id', 'user_id');
     }
+    
 
     public function settings()
     {

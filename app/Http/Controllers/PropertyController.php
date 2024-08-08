@@ -134,6 +134,7 @@ class PropertyController extends Controller
         $property->load([
             'amenities',
             'units',
+            'users',
             'utilities',
             'paymentMethods',
             'meterReadings',
@@ -153,8 +154,9 @@ class PropertyController extends Controller
         $tabTitles = collect([
             'Summary',
             'Units',
+            'Users',
             'Utilities',
-            'Payment Methods',
+            'Pay Methods',
             'Meter Readings',
             'Tickets',
             'Deposits',
@@ -174,6 +176,10 @@ class PropertyController extends Controller
         //2. UNITS
         $units = $property->units;
         $unitTableData = $this->tableViewDataService->getUnitData($units);
+
+        //3. USERS
+        $users = $property->users;
+        $userTableData = $this->tableViewDataService->getUserData($users);
         //3.UTILITIES
         $utilities = $property->utilities;
         $utilityController = new UtilityController();
@@ -230,10 +236,13 @@ class PropertyController extends Controller
             } elseif ($title === 'Units') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();
+            } elseif ($title === 'Users') {
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $userTableData,'controller' => ['user']], 
+                compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Utilities') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $utilityTableData,'controller' => ['utility']], 
                 compact('amenities', 'allamenities'))->render();
-            }elseif ($title === 'Payment Methods') {
+            }elseif ($title === 'Pay Methods') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $paymentMethodTableData,'controller' => ['payment-method']], 
                 compact('id', 'model'))->render();
             }elseif ($title === 'Meter Readings') {
