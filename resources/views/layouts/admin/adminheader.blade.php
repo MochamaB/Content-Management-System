@@ -36,7 +36,7 @@
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/style.css') }}">
-  <!--link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/mystyle.css') }}" -->
+  <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/mystyle.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/customstyle.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/wizard.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/notification.css') }}">
