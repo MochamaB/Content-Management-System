@@ -4,15 +4,13 @@
   top: 0;
   height: 100%;
   background-color: #fff;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   z-index: 1;
 }
 
 .fixed-columns {
   left: 0;
 }
-
 .fixed-columns .fixed-table-body {
   overflow: hidden !important;
 }
@@ -20,8 +18,6 @@
 .fixed-columns-right {
   right: 0;
 }
-
 .fixed-columns-right .fixed-table-body {
   overflow-x: hidden !important;
-}
-/*# sourceMappingURL=bootstrap-table-fixed-columns.css.map */
+}/*# sourceMappingURL=bootstrap-table-fixed-columns.css.map */

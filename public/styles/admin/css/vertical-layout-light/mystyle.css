@@ -5,117 +5,21 @@
   Version:	1.2.tab
 -------------------------------------------------------------------*/
 /*--------------------------- Top Navbar  */
-.navbar .navbar-menu-wrapper {
-  background: #F4F5F7;
-  transition: width 0.25s ease;
-  -webkit-transition: width 0.25s ease;
-  -moz-transition: width 0.25s ease;
-  -ms-transition: width 0.25s ease;
-  color: #6C7383;
-  padding-left: 3.5rem;
-  padding-right: 2.187rem;
-  padding-top: 30px;
-  padding-bottom: 25px;
-  width: calc(100% - 255px);
-  height: 97px;
-}
-
-.navbar .navbar-brand-wrapper {
-  background: #0a2351;
-  transition: width 0.25s ease, background 0.25s ease;
-  -webkit-transition: width 0.25s ease, background 0.25s ease;
-  -moz-transition: width 0.25s ease, background 0.25s ease;
-  -ms-transition: width 0.25s ease, background 0.25s ease;
-  width: 253px;
-  height: 97px;
-  padding: 20px 30px;
-}
-
-.navbar-toggler {
-  background-color: white;
-  /* Set the initial background color to white */
-  font-weight: 500;
-  transition: background-color 0.3s;
-  /* Add a transition effect for smooth color change */
-}
-
-.navbar-toggler.collapsed {
-  background-color: black;
-  /* Change the background color to black when collapsed */
-}
 
 /*--------------------------- Side Bar */
 
 
 .sidebar {
-  min-height: calc(100vh - 97px);
+
   background: #0a2351;
-  font-family: "Manrope", sans-serif;
-  font-weight: 500;
   border-right: 2px solid #c8c8c9;
   border-left: 2px solid #c8c8c9;
-  width: 255px;
-  padding: 0px;
-  z-index: 11;
-  transition: width 0.25s ease, background 0.25s ease;
-  -webkit-transition: width 0.25s ease, background 0.25s ease;
-  -moz-transition: width 0.25s ease, background 0.25s ease;
-  -ms-transition: width 0.25s ease, background 0.25s ease;
 }
-
-
-.sidebar-offcanvas {
-  position: fixed;
-  width: 254px;
-  /* Set the width of the sidebar */
-  max-height: calc(100vh - 97px);
-  top: 97px;
-  bottom: 0;
-  overflow: hidden;
-  transition: width 0.25s ease-out;
-  scrollbar-width: thin;
-  scrollbar-color: #adb5bd #0a2351;
-
-}
-
-.sidebar-offcanvas:hover {
-  overflow: auto;
-}
-
-.sidebar-icon-only .sidebar {
-  width: 70px;
-  background: #fff;
-}
-
-.main-panel {
-  flex: 1;
-  margin-left: 255px;
-  /* Adjust to match the width of the sidebar */
-  transition: padding-left 0.25s ease-out;
-}
-
-.sidebar-icon-only .main-panel {
-  width: calc(100% - 70px);
-  margin-left: 70px;
-}
-
-.sidebar-collapsed .main-panel {
-  margin-left: 70px;
-}
-
 
 
 /*--------------------------- Sidebar Category Text  */
 .sidebar .nav .nav-item.nav-category {
-
   color: #fff;
-  margin: 0 30px;
-  margin-top: 0px;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 20px 0px 5px 0px;
-  text-transform: uppercase;
-
 }
 
 .sidebar .nav .nav-item .nav-link {
@@ -137,16 +41,10 @@
 }
 
 .sidebar .nav .nav-item .nav-link i.menu-icon {
-  font-size: 25px;
-  line-height: 1;
-  margin-right: 1rem;
   color: #ffaf00;
 }
 
 .sidebar .nav .nav-item.active .nav-link i.menu-icon {
-  font-size: 25px;
-  line-height: 1;
-  margin-right: 1rem;
   color: #1F3BB3;
 }
 
@@ -161,11 +59,7 @@
   background: #adb5bd;
   position: relative;
   font-weight: bold;
-  font-size: 13px;
   border-radius: 0px 0px;
-
-
-
 }
 
 
@@ -211,9 +105,9 @@
 .home-tab .nav-tabs .nav-item .nav-link {
   font-style: normal;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 1rem;
   line-height: 18px;
-  color: #212121;
+  color: #88898a;
   padding: 22px 14px 14px 20px;
   border: none;
 
@@ -224,7 +118,7 @@
 .home-tab .nav-tabs .nav-item .nav-link.active {
   background: transparent;
   color: #1F3BB3;
-  border-bottom: 7px solid blue;
+  border-bottom: 5px solid blue;
 }
 
 .tab-content {
@@ -237,7 +131,7 @@
 .contwrapper {
 
   border: 1px solid #dee2e6;
-  padding: 30px;
+  padding: 1.5rem;
 }
 
 .horizontalline {
@@ -257,12 +151,10 @@
 }
 
 .label {
-  font-size: 18px;
-  font-weight: 600;
-  text-transform: uppercase;
-  line-height: 1.4rem;
-  vertical-align: top;
-  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.defaulttext{
+  font-size: 0.875em;
 }
 
 .checkboxlabel {
@@ -342,15 +234,14 @@
 }
 
 #filter {
-  margin-top: 5px;
-  margin-left: -15px;
+
   border-radius: 0px;
   border-left: blue solid 10px
 }
 
 .filterbody {
   border-left: 5px solid #1F3BB3;
-  padding: 20px;
+  padding: 15px;
   background-color: #F1F1F1;
 }
 
@@ -391,8 +282,8 @@
   color: #010101;
   margin-bottom: 0.6rem;
   text-transform: capitalize;
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
 }
 
 .card-dashboard {
@@ -416,19 +307,28 @@
 }
 
 /*-------- -------------- a LInks*/
+.table td {
+  font-size: 0.85rem;
+}
 
+.table thead th {
+  border-top: 0;
+  border-bottom-width: 1px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  background-color: lightgray;
+}
 a.table:link {
   color: #1F3BB3;
-  font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   text-transform: capitalize;
 }
 
 a.table:link {
   color: #1F3BB3;
-  font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   text-transform: capitalize;
 }
@@ -439,12 +339,12 @@ a.table:visited {
 
 a.table:hover {
   color: #ffaf00;
-  font-size: 17px;
+  font-size: 0.875rem;
 }
 
 a.email:link {
   color: #04050e;
-  font-size: 15px;
+  font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
   text-transform: capitalize;
@@ -452,7 +352,7 @@ a.email:link {
 
 a.reademail:visited {
   color: #1d1d1f;
-  font-size: 15px;
+  font-size: 0.85rem;
   font-weight: 400;
   text-decoration: none;
   text-transform: capitalize;
@@ -460,7 +360,7 @@ a.reademail:visited {
 
 a.genlink {
   color: #0a0e1f;
-  font-size: 18px;
+  font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
   text-transform: capitalize;
@@ -468,7 +368,7 @@ a.genlink {
 
 a.genlink:hover {
   color: #ffaf00;
-  font-size: 20px;
+  font-size: 0.875rem;
 }
 
 
@@ -514,7 +414,7 @@ body {
 /* Create an active/current "tab button" class */
 .tab button.active {
   background-color: #ccc;
-  font-size: 22px;
+  font-size: 0.875rem;
   font-weight: 800;
   color: #00308F;
   border-left: 5px solid #0000ff;
@@ -523,7 +423,7 @@ body {
 
 .tab button.active>.number {
   /* Your styles for the active number element go here */
-  font-size: 22px;
+  font-size: 0.875rem;
   font-weight: 800;
   background-color: #0000ff;
   color: #F1F1F1;
@@ -696,9 +596,9 @@ select {
   box-sizing: border-box;
   color: #9E9E9E;
   border: 1px solid #BDBDBD;
-  font-size: 16px;
+  font-size: 0.815rem !important;
   letter-spacing: 1px;
-  height: 50px !important;
+  height: 40px !important;
 }
 
 
@@ -764,10 +664,10 @@ select:focus {
 .badge {
   display: inline-block;
   border-radius: 20px;
-  font-size: 12.5px;
+  font-size: 0.65rem;
   line-height: 19px;
   padding: 0 10px 0;
-  font-weight: 900;
+  font-weight: 700;
   text-transform: uppercase;
   text-align: center;
   white-space: nowrap;
@@ -938,12 +838,15 @@ a .badge:hover {
 }
 
 
-
+.btn.btn-lg {
+  font-size: 0.865rem !important;
+  padding: 1.375rem 3.4rem;
+}
 
 .btn-outline-primary {
   border: 2px solid #0000ff !important;
   margin-right: 0px;
-  font-size: 17px;
+  font-size: 1rem;
   color: #0000ff !important;
 }
 

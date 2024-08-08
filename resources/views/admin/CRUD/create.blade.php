@@ -1,4 +1,4 @@
-<h4 style="text-transform: capitalize;"><b> New {{ $routeParts[0] }}</b></h4>
+<h5 style="text-transform: capitalize;"><b> New {{ $routeParts[0] }}</b></h5>
 <hr>
 <form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf

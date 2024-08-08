@@ -117,8 +117,9 @@
 
 /*-------------------------------------------------------------------*/
 /* === Import Bootstrap functions and variables === */
-@import "../../../node_modules/bootstrap/scss/functions";
-@import "../../../node_modules/bootstrap/scss/variables";
+
+@import "styles/admin/scss/common/light/functions";
+@import "../../../styles/admin/scss/common/light/variables";
 
 /*-------------------------------------------------------------------*/
 /* === Import template variables === */
@@ -126,12 +127,12 @@
 
 /*-------------------------------------------------------------------*/
 /* === SCSS Compass Functions === */
-@import "../../../node_modules/compass-mixins/lib/compass";
-@import "../../../node_modules/compass-mixins/lib/animate";
+@import "../../../styles/admin/scss/common/light/compass";
+@import "../../../styles/admin/scss/common/light/animate";
 
 /*-------------------------------------------------------------------*/
 /* === Boostrap Main SCSS === */
-@import "../../../node_modules/bootstrap/scss/bootstrap";
+@import "../../../styles/admin/scss/common/light/bootstrap";
 
 /*-------------------------------------------------------------------*/
 /* === Template mixins === */

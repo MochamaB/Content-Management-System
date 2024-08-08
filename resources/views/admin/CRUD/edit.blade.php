@@ -2,10 +2,10 @@
     @csrf
     @method('PUT')
 
-    <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Details &nbsp;
+    <h5 style="text-transform: capitalize;">{{$routeParts[0]}} Details &nbsp;
         @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
         <a href="" class="editLink">Edit</a>
-    </h4>
+    </h5>
     @endif
     <hr>
 
@@ -18,7 +18,7 @@
                 <span class="requiredlabel">*</span>
                 @endif
             </label>
-            <h5>
+            <h6>
                 <small class="text-muted" style="text-transform: capitalize;">
                     @if($specialvalue !== null && $specialvalue->has($field))
                     {{ $specialvalue[$field] }}
@@ -26,7 +26,7 @@
                     {{ $actualvalues->$field }}
                     @endif
                 </small>
-            </h5>
+            </h6>
             <!---- NORMAL SELECT ------------->
             @if($attributes['inputType'] === 'select')
             <select class="formcontrol2" id="{{ $field }}" name="{{ $field }}">

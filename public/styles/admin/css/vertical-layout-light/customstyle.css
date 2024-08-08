@@ -1,0 +1,16 @@
+/*------------------------------------------------------------------
+ [Custom Stylesheet]
+
+  Project:	Bridgetech Properties
+  Version:	1.2.tab
+-------------------------------------------------------------------*/
+/*--------------------------- Top Navbar  */
+
+  
+.sidebar {
+   
+    background: #0a2351;
+    font-family: "Manrope", sans-serif;
+    border-right: 2px solid #c8c8c9;
+    border-left: 2px solid #c8c8c9;
+  }

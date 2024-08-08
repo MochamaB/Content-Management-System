@@ -5,7 +5,7 @@
 
 <div class=" contwrapper">
 
-    <h4>New Meter reading</h4>
+    <h5>New Meter reading</h5>
     <hr>
     <form method="POST" action="{{ url('meter-reading') }}" class="myForm" novalidate>
         @csrf
@@ -19,7 +19,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-md-10">
+        <div class="col-md-12">
             <table id="table" 
             data-toggle="table" 
             data-icon-size="sm" 

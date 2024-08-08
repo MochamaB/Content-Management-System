@@ -219,7 +219,12 @@ class MeterReadingController extends Controller
      */
     public function edit(MeterReading $meterReading)
     {
-        //
+        $pageheadings = collect([
+            '0' => $meterReading->unitcharge->charge_name,
+            '1' => $meterReading->unit->unit_number,
+            '2' => $meterReading->property->property_name,
+        ]);
+        return View('admin.Property.edit_meterreading', compact('meterReading','pageheadings'));
     }
 
     /**

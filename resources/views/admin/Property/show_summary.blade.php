@@ -5,14 +5,14 @@
             @include('admin.CRUD.edit')
 
             <hr>
-            <h4 style="text-transform: capitalize;">Amenities
-            </h4>
+            <h5 style="text-transform: capitalize;">Amenities
+            </h5>
             @if($amenities->isEmpty())
-            <h5>
+            <h6>
                 <small class="text-muted">
                     No Amenities added
                 </small>
-            </h5>
+            </h6>
             @else
             <div class="form-group">
                 <div class="form-check">
@@ -43,24 +43,24 @@
     <div class="col-md-5">
         <div class=" contwrapper" style="background-color: #dfebf3;border: 1px solid #7fafd0;">
 
-            <h4><b>Financials & Balances</b>
-            </h4>
+            <h5><b>Financials & Balances</b>
+            </h5>
             <hr>
             <div style="display: flex; justify-content: space-between;">
-                <span><b>Deposits and Pre-payments:</b></span>
-                <span>{{ $sitesettings->site_currency }} @currency($property->deposits->sum('totalamount'))</span>
+                <span class="defaulttext"><b>Deposits and Pre-payments:</b></span>
+                <span class="defaulttext">{{ $sitesettings->site_currency }} @currency($property->deposits->sum('totalamount'))</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-                <span><b>Total Invoice Amount:</b></span>
-                <span>{{ $sitesettings->site_currency }} @currency($property->invoices->sum('totalamount'))</span>
+                <span class="defaulttext"><b>Total Invoice Amount:</b></span>
+                <span class="defaulttext">{{ $sitesettings->site_currency }} @currency($property->invoices->sum('totalamount'))</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-                <span><b>Total Expenses:</b></span>
-                <span>{{ $sitesettings->site_currency }} @currency($property->expenses->sum('totalamount'))</span>
+                <span class="defaulttext"><b>Total Expenses:</b></span>
+                <span class="defaulttext">{{ $sitesettings->site_currency }} @currency($property->expenses->sum('totalamount'))</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
-                <span><b>Total Payments:</b></span>
-                <span>{{ $sitesettings->site_currency }} @currency($property->payments->sum('totalamount'))</span>
+                <span class="defaulttext"><b>Total Payments:</b></span>
+                <span class="defaulttext">{{ $sitesettings->site_currency }} @currency($property->payments->sum('totalamount'))</span>
             </div>
           
 

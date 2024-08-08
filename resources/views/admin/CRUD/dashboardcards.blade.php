@@ -11,7 +11,7 @@
                     </span>
                 </p>
             </div>
-            <div class="card-body" style="padding-top:17px;padding-bottom: 0.7em;">
+            <div class="card-body" style="padding-top:5px;padding-bottom: 0.7em;">
                 @if (!empty($card['value']))
                 <h2 class="rate-percentage text-primary d-flex justify-content-between">
                     {{ $card['value'] }}

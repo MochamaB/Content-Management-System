@@ -26,8 +26,8 @@
 
     <ul class="navbar-nav">
       <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-        <h1 class="welcome-text">Hi, <span class="text-black fw-bold">{{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'lastname'}}</span></h1>
-        <h3 class="welcome-sub-text">{{$sitesettings->site_name ?? 'Site Name'}} Dashboard</h3>
+        <h2 class="">Hi, <span class="text-black fw-bold">{{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'lastname'}}</span></h2>
+        <h4 class="welcome-sub-text">{{$sitesettings->site_name ?? 'Site Name'}} Dashboard</h4>
       </li>
     </ul>
     <ul class="navbar-nav ms-auto">

@@ -20,11 +20,11 @@
 
                 <div class="form-group">
                     <label class="label">Property Name</label>
-                    <h5>
+                    <h6>
                     <small class="text-muted" style="text-transform: capitalize;">
                         {{ $property->property_name }}
                     </small>
-                    </h5>
+                    </h6>
                     <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required readonly>
                         <option value="{{$property->id}}">{{$property->property_name}}</option>
                     </select>
