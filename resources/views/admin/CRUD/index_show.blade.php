@@ -15,9 +15,8 @@
         <i class="mdi mdi-plus-circle-outline"></i>
         Add {{$controller[1] ?? $controller[0] }}
     </a>
-    <br /><br /><br />
     @endif
-    
+    <div class="mb-2" style="clear: both;"></div>
     <div class=" contwrapper">
         <div class="row">
             @include('admin.CRUD.table', ['data' => $tableData])

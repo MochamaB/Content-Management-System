@@ -43,8 +43,8 @@
     <div class="col-md-5">
         <div class=" contwrapper" style="background-color: #dfebf3;border: 1px solid #7fafd0;">
 
-            <h5><b>Financials & Balances</b>
-            </h5>
+            <h6><b>Financials & Balances</b>
+            </h6>
             <hr>
             <div style="display: flex; justify-content: space-between;">
                 <span class="defaulttext"><b>Deposits and Pre-payments:</b></span>

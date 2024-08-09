@@ -155,4 +155,17 @@
     $("#navbar-search-input").focus();
   });
 
+  $(window).scroll(function () {
+    var scroll = $(window).scrollTop();
+
+    //>=, not <=
+    if (scroll >= 97) {
+      //clearHeader, not clearheader - caps H
+      $(".fixed-top").addClass("headerLight");
+    }
+    else {
+      $(".fixed-top").removeClass("headerLight");
+    }
+  }); //missing );
+
 })(jQuery);

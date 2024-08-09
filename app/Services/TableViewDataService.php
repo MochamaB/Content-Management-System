@@ -579,8 +579,8 @@ class TableViewDataService
             //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
             <div>
-            <h6>' . $item->firstname . ' ' . $item->lastname .
-                '</h6>
+            ' . $item->firstname . ' ' . $item->lastname .
+                '
             </div>
           </div>';
 

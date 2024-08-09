@@ -5,8 +5,8 @@
 
 <div class=" contwrapper">
 @if( $routeParts[1] === 'edit' && Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
-        <h5>Edit Meter reading
-        <a href="" class="editLink">Edit</a>
+        <h5>Edit Meter reading 
+        <a href="" class="editLink"> Edit</a>
         </h5>
         @endif
 
@@ -14,10 +14,27 @@
 <form action="{{ url('meter-reading/'. $meterReading->id) }}" method="POST">
         @csrf
         @method('PUT')
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label class="label">FROM DATE <span class="requiredlabel">*</span></label>
+                    </br>
+                    <label class="label">
+                        {{ $meterReading->startdate}}
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label class="label">TO DATE <span class="requiredlabel">*</span></label>
+                    </br>
+                    <label class="label">
+                        {{ $meterReading->enddate}}
+                    </label>
+                </div>
+            </div>
+        </div>
         
-       
-
-
             <div class="col-md-5">
                 <div class="form-group">
                     <label class="label">Previous Reading<span class="requiredlabel">*</span></label>
@@ -43,8 +60,7 @@
 
 
 
-           
-        
+    
    
         <hr>
         <div class="col-md-6">

@@ -2,7 +2,7 @@
 <div class="" style="padding:10px 0px 0px 10px;border-left:5px solid #ffaf00;margin-bottom:15px;">
     <!-- Breadcrumb -->
     <nav class="d-flex">
-        <h2 class="mb-1">
+        <h2 class="mb-0">
             @php
             $routeName = Route::currentRouteName();
             $routeParts = explode('.', $routeName);

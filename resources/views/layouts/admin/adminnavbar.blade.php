@@ -8,14 +8,14 @@
     <div>
       <a class="navbar-brand brand-logo" href="">
         @if ($sitesettings)
-        <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: 70px; width: 150px;">
+        <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: auto; width: 100%;">
         @else
-        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 70px; width: 150px;">
+        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: auto; width: 100%;">
         @endif
       </a>
       <a class="navbar-brand brand-logo-mini" href="index.html">
         @if ($sitesettings)
-        <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
+        <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: auto; width: 100%;">
         @else
         <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image">
         @endif
@@ -26,7 +26,7 @@
 
     <ul class="navbar-nav">
       <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-        <h2 class="">Hi, <span class="text-black fw-bold">{{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'lastname'}}</span></h2>
+        <h2 class="welcome-text">Hi, <span class="text-black fw-bold welcome-text">{{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'lastname'}}</span></h2>
         <h4 class="welcome-sub-text">{{$sitesettings->site_name ?? 'Site Name'}} Dashboard</h4>
       </li>
     </ul>

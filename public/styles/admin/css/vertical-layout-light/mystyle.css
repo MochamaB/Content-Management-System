@@ -6,6 +6,26 @@
 -------------------------------------------------------------------*/
 /*--------------------------- Top Navbar  */
 
+.navbar.headerLight .navbar-menu-wrapper, .navbar.headerLight .navbar-brand-wrapper {
+  background: #ffffff;
+  height: 60px;
+
+  /* Add a shadow effect */
+  box-shadow: 6px 2px 4px 2px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .navbar-menu-wrapper .navbar-nav .nav-item .welcome-text {
+  font-size: 24px;
+  line-height: 38px;
+  color: #8D8D8D;
+  margin-bottom: 5px;
+}
+.navbar.headerLight .navbar-menu-wrapper .navbar-nav .nav-item .welcome-text {
+  display: none;
+}
+.navbar.headerLight .navbar-menu-wrapper .navbar-nav .nav-item .welcome-sub-text {
+  display: none;
+}
 /*--------------------------- Side Bar */
 
 
@@ -839,7 +859,7 @@ a .badge:hover {
 
 
 .btn.btn-lg {
-  font-size: 0.865rem !important;
+  font-size: 0.825rem !important;
   padding: 1.375rem 3.4rem;
 }
 

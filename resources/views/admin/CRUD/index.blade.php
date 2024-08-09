@@ -7,7 +7,7 @@
     Add {{$controller[1] ?? $controller[0] }}
 </a>
 @endif
-<br /><br /><br />
+<div class="mb-2" style="clear: both;"></div>
 
 
 

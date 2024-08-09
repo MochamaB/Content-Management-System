@@ -208,7 +208,14 @@ class MeterReadingController extends Controller
     }
     public function show(MeterReading $meterReading)
     {
-        //
+        ///// Used to Set Property TYpe name in the edit view.///
+        $specialvalue = collect([
+            'property_id' => $meterReading->property->property_name, // Use a string for the controller name
+            'unit_id' => $meterReading->unit->unit_number,
+            'unitcharge_id' => $meterReading->unitcharge->charge_name,
+        ]);
+        $viewData = $this->formData($this->model, $meterReading,$specialvalue);
+        return View('admin.CRUD.details',$viewData);
     }
 
     /**
@@ -224,6 +231,11 @@ class MeterReadingController extends Controller
             '1' => $meterReading->unit->unit_number,
             '2' => $meterReading->property->property_name,
         ]);
+
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
+
         return View('admin.Property.edit_meterreading', compact('meterReading','pageheadings'));
     }
 
@@ -236,7 +248,22 @@ class MeterReadingController extends Controller
      */
     public function update(Request $request, MeterReading $meterReading)
     {
-        //
+         // Validate the request data if necessary
+        $validatedData = $request->validate([
+            'currentreading' => 'required|numeric',
+            'lastreading' => 'required|numeric',
+            // other validation rules if needed
+        ]);
+
+       // Calculate the reading difference and new amount
+        $reading = $request->input('currentreading') - $request->input('lastreading');
+        $newamount = $reading * $meterReading->rate_at_reading;
+        $meterReading->currentreading = $request->input('currentreading');
+        $meterReading->amount = $newamount;
+        $meterReading->save();
+       
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**
