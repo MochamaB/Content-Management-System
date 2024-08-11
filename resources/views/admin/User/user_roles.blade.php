@@ -2,7 +2,7 @@
 @if(($routeParts[1] === 'create'))
 <form method="POST" action="{{ url('roleuser') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
-<h4>Select Role</h4>
+<h5>Select Role</h5>
 <hr>
 <div class="col-md-6">
     <div class="form-group">
@@ -21,9 +21,9 @@
 </form>
 
 @elseif(($routeParts[1] === 'edit'))
-<h4 style="text-transform: capitalize;">{{$routeParts[0]}} Role &nbsp; 
+<h5 style="text-transform: capitalize;">{{$routeParts[0]}} Role &nbsp; 
 @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
-<a href="" class="editLink">Edit</a></h4>
+<a href="" class="editLink">Edit</a></h5>
 @endif
 <hr>
 <div class="col-md-6">

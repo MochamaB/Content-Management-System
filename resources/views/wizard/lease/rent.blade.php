@@ -1,11 +1,11 @@
 @if(($routeParts[1] === 'create'))
-<h4><b> Add Rent Details</b></h4>
+<h5><b> Add Rent Details</b></h5>
 <hr>
 <br />
 <div class="col-md-8">
     <div class="form-group" id="rentselect">
         <label class="">
-            <h4>Does this unit have Rent charge?<span class="requiredlabel">*</span></h4>
+            <h6>Does this unit have Rent charge?<span class="requiredlabel">*</span></h6>
         </label>
         <select name="" id="rentstatus" class="formcontrol2" placeholder="Select" required>
             <option value="">Select Answer</option>
@@ -27,7 +27,7 @@
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <i class="mdi mdi-information text-muted me-1"></i>
-            <h5><a href="{{ url('skiprent') }}" class="nextBtn" id="nextBtn">Click Here</a> if there is no Rent Charge</a></h5>
+            <h6><a href="{{ url('skiprent') }}" class="nextBtn" id="nextBtn">Click Here</a> if there is no Rent Charge</a></h6>
 
         </div>
     </div><br />
@@ -39,7 +39,7 @@
             <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
             <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
             <div class="form-group">
-                <h4>Rent <span class="text-muted">(optional)</span></h4>
+                <h5>Rent <span class="text-muted">(optional)</span></h5>
                 <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="Rent" readonly>
             </div>
         </div>
@@ -173,11 +173,11 @@
 <form method="POST" action="{{ url($routeParts[0].'/'.$unitcharge->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
     @method('PUT')
     @csrf
-    <h4 style="text-transform: capitalize;"> Edit Rent Details &nbsp;
+    <h6 style="text-transform: capitalize;"> Edit Rent Details &nbsp;
         @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
         <a href="" class="editLink">Edit</a>
         @endif
-    </h4>
+    </h6>
     <hr>
 
     <div class="col-md-5">
@@ -310,7 +310,7 @@
         @endif
     </div>
     <div class="col-md-12" style="margin-bottom:30px">
-        <h5><a class=" split_rent"><i class="menu-icon mdi mdi-plus-circle"></i> Split the Rent Charge </a>
+        <h5><a class=" split_rent"><i class="menu-icon mdi mdi-plus-circle"></i> Add to the Rent Charge </a>
             <span class="text-muted">(Will be included in Rent Invoices & Payments)</span>
         </h5>
     </div>

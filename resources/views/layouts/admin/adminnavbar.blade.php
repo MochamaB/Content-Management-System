@@ -26,8 +26,7 @@
 
     <ul class="navbar-nav">
       <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
-        <h2 class="welcome-text">Hi, <span class="text-black fw-bold welcome-text">{{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'lastname'}}</span></h2>
-        <h4 class="welcome-sub-text">{{$sitesettings->site_name ?? 'Site Name'}} Dashboard</h4>
+        <h3 class="welcome-sub-text"><span class="text-black fw-bold">{{$sitesettings->site_name ?? 'Site Name'}}</span> System</h3>
       </li>
     </ul>
     <ul class="navbar-nav ms-auto">
@@ -70,6 +69,9 @@
             @csrf
           </form>
         </div>
+      </li>
+      <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+        <p class=""> &nbsp;Hi, <span class="text-black fw-bold">{{$user->firstname ?? 'Firstname'}}</span></p>
       </li>
 
     </ul>

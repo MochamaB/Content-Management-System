@@ -2,7 +2,7 @@
 @if(($routeParts[1] === 'create'))
 <form method="POST" action="{{ url('userinfo') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
-<h4>Contact Information</h4>
+<h5>Contact Information</h5>
 <hr>
 <div class="col-md-8">
     <div class="form-group">

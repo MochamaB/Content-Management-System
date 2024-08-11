@@ -1,12 +1,12 @@
 @if(($routeParts[1] === 'create'))
-<h4><b> Add Security Deposit Details</b></h4>
+<h5><b> Add Security Deposit Details</b></h5>
 <hr>
 
 <br />
 <div class="col-md-8">
     <div class="form-group" id="depositselect">
         <label class="">
-            <h4>Does this unit have Security Deposit charge?<span class="requiredlabel">*</span></h4>
+            <h6>Does this unit have Security Deposit charge?<span class="requiredlabel">*</span></h6>
         </label>
         <select name="" id="depositstatus" class="formcontrol2" placeholder="Select" required>
             <option value="">Select Answer</option>
@@ -28,7 +28,7 @@
     <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
             <i class="mdi mdi-information text-muted me-1"></i>
-            <h5><a href="{{ url('skipdeposit') }}" class="" id="">Click Here</a> if there is No Security Deposit</a></h5>
+            <h6><a href="{{ url('skipdeposit') }}" class="" id="">Click Here</a> if there is No Security Deposit</a></h6>
 
         </div>
     </div><br />
@@ -39,7 +39,7 @@
             <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
             <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
             <div class="form-group">
-                <h4>Security Deposit <span class="text-muted">(optional)</span></h4>
+                <h5>Security Deposit <span class="text-muted">(optional)</span></h5>
                 <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="security deposit" readonly>
             </div>
         </div>
