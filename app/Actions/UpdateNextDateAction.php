@@ -21,6 +21,7 @@ class UpdateNextDateAction
             'Quarterly' => 3,
             'Halfyear' => 6,
             'Year' => 12,
+            'once'=>0,
             default => throw new \InvalidArgumentException("Invalid charge cycle: $chargeCycle"),
         };
 
@@ -40,6 +41,7 @@ class UpdateNextDateAction
             'Quarterly' => 3,
             'Halfyear' => 6,
             'Year' => 12,
+            'once'=>0,
             default => throw new \InvalidArgumentException("Invalid charge cycle: $chargeCycle"),
         };
         $nextDate = $startDate->copy()->addMonths($monthsToAdd)->startOfMonth();

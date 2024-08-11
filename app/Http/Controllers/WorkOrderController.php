@@ -88,9 +88,9 @@ class WorkOrderController extends Controller
         $workOrder->save();
 
         //// send Notification
-        $workOrder->load('ticket.user');
-        $assignedUser = $workOrder->user;
-        $ticketUser = $workOrder->ticket->user;
+        $workOrder->load('tickets','users');
+        $assignedUser = $workOrder->tickets->assigned;
+        $ticketUser = $workOrder->users;
         $users = [$assignedUser, $ticketUser]; // Array of users to notify
         try {
             Notification::send($users, new TicketWorkOrderNotification($users, $workOrder->ticket, $workOrder));

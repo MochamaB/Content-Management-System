@@ -27,6 +27,7 @@ use App\Scopes\PropertyAccessScope;
 use App\Scopes\UtilityAccessScope;
 use App\Scopes\UserAccessScope;
 use App\Scopes\ApplyFilterScope;
+use App\Scopes\TicketAccessScope;
 use App\Scopes\UserScope;
 use App\Services\FilterService;
 use Illuminate\Support\Facades\Gate;
@@ -74,7 +75,7 @@ class AppServiceProvider extends ServiceProvider
 
         //   User::addGlobalScope(new UserScope);
         Property::addGlobalScope(new PropertyAccessScope);
-        // Ticket::addGlobalScope(new PropertyAccessScope);
+        Ticket::addGlobalScope(new TicketAccessScope);
 
         Utility::addGlobalScope(new UtilityAccessScope);
 

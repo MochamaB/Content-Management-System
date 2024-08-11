@@ -60,8 +60,9 @@ class TicketController extends Controller
     {
         $user = Auth::user();
         $filters = $request->except(['tab','_token','_method']);
-            $tickets = Ticket::applyFilters($filters)->get();
-            
+      
+        $tickets = Ticket::applyFilters($filters)->get();
+        
         $filterdata = $this->filterService->getUnitChargeFilters($request);
         $mainfilter =  Ticket::pluck('category')->toArray();
         //   $filterData = $this->filterData($this->model);

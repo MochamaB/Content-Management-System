@@ -1,7 +1,7 @@
     @if(($routeParts[1] === 'create'))
     <form method="POST" action="{{ url('role') }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
-        <h4> Roles Summary</h4>
+        <h6> Roles Summary</h6>
         <hr>
         <div class="col-md-8">
             <div class="form-group">

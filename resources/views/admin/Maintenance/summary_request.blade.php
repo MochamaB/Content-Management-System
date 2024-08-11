@@ -11,10 +11,10 @@
 
     <div class="col-md-5">
         <div class=" contwrapper" style="background-color: #dfebf3;border: 1px solid #7fafd0;">
-            <h4><b> Process Requests</b>
-            </h4>
+            <h6><b> Process Requests</b>
+            </h6>
             <hr>
-            <h5><b>Status:</b></h5>
+            <h6><b>Status:</b></h6>
             @if ($tickets)
             @php
             $statusClasses = [
@@ -31,7 +31,7 @@
             @endphp
 
             <span class="statusdot statusdot-{{ $statusClass }}"></span>
-            <span>{{ $status }}&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+            <span  class="defaulttext">{{ $status }}&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
                 @if( Auth::user()->can('ticket.edit') || Auth::user()->id === 1)
                 <a href="" class="editLink"><i class="mdi mdi-lead-pencil  text-primary"></i> Change Status</a>
                 @endif
@@ -103,31 +103,31 @@
             <h5 style="text-transform: capitalize;">{{$tickets->charged_to}}</h5>
             @endif
             <hr>
-            <h5><b>Assigned:</b> &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
-                @if( Auth::user()->can('ticket.assign') || Auth::user()->id === 1)
-                <a class="" href="{{ url('ticket/assign/'.$tickets->id) }}"><i class="mdi mdi-lead-pencil text-primary">Edit</i></a>
-                @endif
-            </h5>
+            <h6><b>Assigned:</b> &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;
+               
+            </h6>
+
             @if ($tickets->assigned)
 
             <!-- Assigned user or vendor exists -->
-            @if ($tickets->assigned_type === 'App\Models\User')
-            <!-- Assigned to a user -->
-            <h5>Employee- {{ $tickets->assigned->firstname }} {{ $tickets->assigned->lastname }}</h5>
+                    @if ($tickets->assigned_type === 'App\Models\User')
+                    <!-- Assigned to a user -->
+                    <p>Employee- {{ $tickets->assigned->firstname }} {{ $tickets->assigned->lastname }}</p>
 
 
-            @elseif ($tickets->assigned_type === 'App\Models\Vendor')
-            <!-- Assigned to a vendor -->
-            <h5>Vendor: {{ $tickets->assigned->name }}</h5>
-            @endif
+                    @elseif ($tickets->assigned_type === 'App\Models\Vendor')
+                    <!-- Assigned to a vendor -->
+                    <p>Vendor: {{ $tickets->assigned->name }}</p>
+                    @endif
             @else
-            <!-- No assigned user or vendor -->
-            <a href="{{ url('ticket/assign/'.$tickets->id) }}">Assign Request</a>
+            @if( Auth::user()->can('ticket.assign') || Auth::user()->id === 1)
+                <a class="" href="{{ url('ticket/assign/'.$tickets->id) }}"><i class="mdi mdi-lead-pencil text-primary">Assign</i></a>
+                @endif
             @endif
             <hr>
-            <h5><b>Total Invoice Amount:</b> {{ $sitesettings->site_currency}}: {{$tickets->totalamount}}</h5>
-            <h5><b>Total Paid Amount:</b> {{ $sitesettings->site_currency}}:</h5>
-            <h4><b>Balance:</b></h4>
+            <p><b>Total Invoice Amount:</b> {{ $sitesettings->site_currency}}: {{$tickets->totalamount}}</p>
+            <p><b>Total Paid Amount:</b> {{ $sitesettings->site_currency}}:</p>
+            <h6><b>Balance:</b></h6>
         </div>
     </div>
 </div>

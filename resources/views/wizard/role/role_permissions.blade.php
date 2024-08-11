@@ -1,7 +1,7 @@
 @if(($routeParts[1] === 'create'))
 <form method="POST" action="{{ url('assignpermission') }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
-<h4>Menu/Module Access</h4>
+<h6>Menu/Module Access</h6>
 <hr>
 <!-- Menu Access content -->
 <div id="accordion">
@@ -11,7 +11,7 @@
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $module}}Collapse" aria-expanded="true" aria-controls="collapseOne">
                 <i class="menu-icon mdi mdi-plus"></i>
             </button>
-            <h4>{{ $module}} Menu ({{ $modulePermissions->flatten()->count() }})</h4>
+            <p>{{ $module}} Menu ({{ $modulePermissions->flatten()->count() }})</p>
             <div class="form-check form-check-inline ">
                 <input class="form-check-input p-0 header-checkbox" type="checkbox" name="header-checkbox" id="header-checkbox">
                 <label class="checkboxlabel pt-0 m-0" for="">
@@ -54,9 +54,9 @@
 @include('admin.CRUD.wizardbuttons')
 </form>
 @elseif(($routeParts[1] === 'edit'))
-<h4 style="text-transform: capitalize;"> Menu/Module Access &nbsp; 
+<h5 style="text-transform: capitalize;"> Menu/Module Access &nbsp; 
 @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
-<a href="" class="editLink">Edit</a></h4>
+<a href="" class="editLink">Edit</a></h5>
 @endif
 <hr>
 <div id="accordion">
@@ -66,9 +66,9 @@
             <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#{{ $module}}Collapse" aria-expanded="true" aria-controls="collapseOne">
                 <i class="menu-icon mdi mdi-plus"></i>
             </button>
-            <h4>{{ $module}} Menu ({{ $modulePermissions->flatten()->filter(function ($permission) use ($rolePermissions) {
+            <h6>{{ $module}} Menu ({{ $modulePermissions->flatten()->filter(function ($permission) use ($rolePermissions) {
             return in_array($permission->name, $rolePermissions);
-        })->count() }} / {{ $modulePermissions->flatten()->count() }})</h4>
+        })->count() }} / {{ $modulePermissions->flatten()->count() }})</h6>
       
             <div class="form-check form-check-inline ">
                 <input class="form-check-input p-0 header-checkbox" type="checkbox" name="header-checkbox" id="header-checkbox">
