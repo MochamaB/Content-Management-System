@@ -1,21 +1,15 @@
 <div class="row" style="margin-top: 0px;">
 
     @foreach($cardData as $cardType => $card)
-    <div class="col-md-3">
+    <div class="col-md-3 mb-2">
         <div class="card h-100">
-            <div class="card-header" style="background-color:#ffff ;">
-                <p class="card-title card-title-dash font-weight-medium d-flex justify-content-between">
-                    <span class="d-flex align-items-center">
-                        <i class="text-warning mdi mdi-pin icon-md"></i>
-                        &nbsp; {{ $card['title'] }}
-                    </span>
-                </p>
-            </div>
-            <div class="card-body" style="padding-top:5px;padding-bottom: 0.7em;">
+            <div class="card-body">
+                <!--- TITLE -->
+                <h4 class="card-title card-title-dash mt-1"> {{ $card['title'] }}   </h4>
+             <!--- BODY -->
                 @if (!empty($card['value']))
                 <h2 class="rate-percentage text-primary d-flex justify-content-between">
                     {{ $card['value'] }}
-
                 </h2>
                 @else
                 <h2 class="rate-percentage text-success d-flex">
@@ -25,23 +19,17 @@
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $sitesettings->site_currency ?? '' }}</span>
                 </h2>
                 @endif
-            </div>
-            @if (!empty($card['links']))
-            <div class="card-footer" style="background-color:#fff ;">
-                <h6 class="text-muted">
-                    .
-                    <span class="text-warning font-weight-medium">
-                        <a class="table" href="{{ url($card['links']) }}">
+                 <!--- Footer -->
+                 @if (!empty($card['links']))
+                 <h6 class="text-muted">
+                        <a class="text-muted text-small" href="{{ url($card['links']) }}">
                             View More</a>
-                    </span>
                 </h6>
+                 @endif
             </div>
-            @endif
         </div>
     </div>
-
     @endforeach
-
 </div>
 
 

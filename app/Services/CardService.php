@@ -46,8 +46,8 @@ class CardService
         $cards =  [
             'propertyCount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'pecentage' => '', 'links' => '/property'],
             'unitCount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'pecentage' => '', 'links' => '/unit'],
-            'invoices' => ['title' => 'Invoiced This Month', 'value' => '', 'amount' => $invoices, 'pecentage' => '', 'links' => '/invoice'],
-            'balance' => ['title' => 'Balance This Month', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
+            'invoices' => ['title' => 'Invoiced Amount', 'value' => '', 'amount' => $invoices, 'pecentage' => '', 'links' => '/invoice'],
+            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
         ];
         return $cards;
     }
@@ -101,6 +101,15 @@ class CardService
             'balance' => ['title' => 'Balance Not Paid', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => ''],
         ];
         return $cards;
+    }
+
+    public function invoiceChart($invoices = null)
+    {
+        $chart = new \stdClass();
+        // Assign properties to the $card object
+        $chart->title = "Invoice Chart Title"; // Example title
+        $chart->description = "This is the description of the invoice chart."; // Example description
+        return $chart;
     }
     public function unitCard($units)
     {

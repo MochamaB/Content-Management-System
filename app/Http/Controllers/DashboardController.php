@@ -42,12 +42,16 @@ class DashboardController extends Controller
 
     public function index(Request $request)
     {
+        $tabTitles = collect([
+            'Dashboard',
+            'Properties',
+            'Financials',
+        ]);
         $controller = $this->controller;
         $user = auth()->user();
 
         $properties = Property::with('units', 'leases', 'invoices')->get();
         $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
-
        // dd($user->roles);
 
         if ($user && $user->id !== 1 && $user->roles->first()->name === "Tenant") {
@@ -55,24 +59,21 @@ class DashboardController extends Controller
         } else {
             $cardData = $this->cardService->topCard($properties, $units);
         }
+        /// CHART DATA
+        $chartData = $this->getInvoiceChartData($properties);
 
-        $invoiceData = Invoice::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get()
-            ->pluck('total', 'month')
-            ->all();
+            $tabContents = [];
+            foreach ($tabTitles as $title) {
+                if ($title === 'Dashboard') {
+                    $tabContents[] = View('admin.Report.alldashboard',compact('properties','cardData','chartData'))->render();
+                } elseif ($title === 'Properties') {
+                    $tabContents[] = View('admin.Report.dashboardproperties' ,compact('properties'))->render();
+                } elseif ($title === 'Financials') {
+                    $tabContents[] = View('admin.Report.dashboardfinancials', compact('properties'))->render();
+                }
+            }
 
-
-        // Example query to get payment data (adjust the query to fit your needs)
-        $paymentData = Payment::selectRaw('MONTH(created_at) as month, SUM(totalamount) as total')
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get()
-            ->pluck('total', 'month')
-            ->all();
-
-        return View('admin.Report.dashboard', compact('cardData', 'controller', 'invoiceData', 'paymentData'));
+        return View('admin.Report.dashboard', compact('cardData', 'controller', 'invoiceData', 'paymentData','tabTitles', 'tabContents'));
     }
 
     /**
@@ -80,7 +81,32 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+    private function getInvoiceChartData($properties)
+    {
+        $chartData = $this->cardService->invoiceChart();
+        // Collect all invoices from all properties
+            $invoices = Invoice::selectRaw('DATE_FORMAT(created_at, "%b %Y") as month, SUM(totalamount) as totalamount')
+            ->where("created_at", ">", Carbon::now()->subMonths(6))
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->get();
+        
+            $payments = Payment::selectRaw('DATE_FORMAT(created_at, "%b %Y") as month, SUM(totalamount) as totalamount')
+            ->where("created_at", ">", Carbon::now()->subMonths(6))
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->get();
+        return [
+            'labels' => $invoices->pluck('month'),
+            'firstLabel' => 'Invoices',
+            'firstData' => $invoices->pluck('totalamount'),
+            'secondLabel' => 'Payments',
+            'secondData' => $payments->pluck('totalamount'),
+            'firstTotal' => $invoices->sum('totalamount'),
+            'secondTotal' => $payments->sum('totalamount'),
+            'percentage' => ($payments->sum('totalamount') / $invoices->sum('totalamount')) * 100
+        ];
+    }
 
     private function getAdminCardData($month, $year)
     {

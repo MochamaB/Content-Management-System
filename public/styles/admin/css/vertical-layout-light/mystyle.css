@@ -313,6 +313,9 @@
   border: 1px solid #e3e3e3;
   border-radius: 0px;
 }
+.card .card-body {
+  padding: 1rem 1.5rem;
+}
 
 .card .card-title {
   color: #010101;
@@ -332,6 +335,9 @@
   background-clip: border-box;
   border: 1px solid #e3e3e3;
   border-radius: 0px;
+}
+.dropdown-menu {
+  font-size:0.815rem;
 }
 
 .modalheader {

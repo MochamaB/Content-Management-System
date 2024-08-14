@@ -369,10 +369,10 @@
     if ($("#marketingOverview").length) {
       var marketingOverviewChart = document.getElementById("marketingOverview").getContext('2d');
       var marketingOverviewData = {
-          labels: ["JAN","FEB", "MAR", "APR", "MAY", "JUN"],
+          labels:chartData.labels,
           datasets: [{
-              label: 'Last week',
-              data: [110, 220, 200, 190, 220, 110, 210, 110, 205, 202, 201, 150],
+              label: chartData.firstLabel,
+              data: chartData.firstData,
               backgroundColor: "#52CDFF",
               borderColor: [
                   '#52CDFF',
@@ -381,8 +381,8 @@
               fill: true, // 3: no fill
               
           },{
-            label: 'This week',
-            data: [215, 290, 210, 250, 290, 230, 290, 210, 280, 220, 190, 300],
+            label: chartData.secondLabel,
+            data: chartData.secondData,
             backgroundColor: "#1F3BB3",
             borderColor: [
                 '#1F3BB3',
@@ -457,6 +457,8 @@
           options: marketingOverviewOptions
       });
       document.getElementById('marketing-overview-legend').innerHTML = marketingOverview.generateLegend();
+      document.getElementById('firstTotal').textContent = `$${chartData.firstTotal.toFixed(0).toLocaleString()}`;
+      document.getElementById('percentage').textContent = `(${chartData.percentage.toFixed(0)}% )`;
     }
     if ($("#marketingOverview-dark").length) {
       var marketingOverviewChartDark = document.getElementById("marketingOverview-dark").getContext('2d');
