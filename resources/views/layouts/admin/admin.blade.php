@@ -44,7 +44,7 @@
       @include('layouts.admin.sidebar')
       <!-- partial -->
       <div class="main-panel" >
-        <div class="content-wrapper" style="background-color: white;padding-top:0px">
+        <div class="content-wrapper" style="background-color: #F4F5F7;padding-top:0px">
           <div class="row" >
             <div class="col-sm-12" >
               <div class="home-tab">

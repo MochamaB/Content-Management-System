@@ -1,10 +1,10 @@
 <div class=" contwrapper">
 
 
-    <h4 style="text-transform: capitalize;">All {{$className = class_basename($setting->model_type)}} Settings &nbsp;
+    <h6 style="text-transform: capitalize;">All {{$className = class_basename($setting->model_type)}} Settings &nbsp;
         @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
         <a href="#" class="editLink">Edit</a>
-    </h4>
+    </h6>
     @endif
     <hr>
     <div class="row">
@@ -17,14 +17,14 @@
                 <div> <!-- Additional div with red border (optional) -->
                     <div class="form-group">
                         <label class="label">{{$setting->name}}</label>
-                        <h6>
+                        <p>
                             <span class="requiredlabel">*</span>{{$setting->description}}
-                        </h6>
-                        <h5>
+                        </p>
+                        <h6>
                             <small class="text-muted">
                                 {{$setting->value}}
                             </small>
-                        </h5>
+                        </h6>
                         @if($setting->key === 'massupdate')
                         <select class="formcontrol2" id="" name="value">
                             <option value="">Select Value</option>

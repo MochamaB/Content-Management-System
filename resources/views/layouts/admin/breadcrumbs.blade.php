@@ -15,9 +15,15 @@
                 @endforeach
         </h3>
         @if ($routeCount > 1 && $routeParts[1] != 'index')
-        <button type="button" onclick="history.back()" class="btn btn-outline-primary ms-auto mb-0">
+        <button type="button" onclick="history.back()" class="btn btn-outline-primary ms-auto mb-0 me-0">
             <i class="mdi mdi-arrow-left-bold-circle mdi-24"> BACK</i>
         </button>
+        @elseif(isset($controller)  && (Auth::user()->can($controller[0].'.create') || Auth::user()->id === 1) 
+            && $controller[0] !== '' && $controller[0] !== 'media' && $controller[0] !== 'payment' )
+            <a href="{{ url($controller[0].'/create', ['id' => $id ?? '','model' => $model ?? '']) }}" class="btn btn-primary btn-lg text-white ms-auto mb-3 me-0" role="button" style="text-transform: capitalize;">
+                <i class="mdi mdi-plus-circle-outline"></i>
+                Add {{$controller[1] ?? $controller[0] }}
+            </a>
         @endif
 
 

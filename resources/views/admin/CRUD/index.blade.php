@@ -1,5 +1,6 @@
 
 
+<!--
 @if( (Auth::user()->can($controller[0].'.create') || Auth::user()->id === 1) 
 && $controller[0] !== '' && $controller[0] !== 'media' && $controller[0] !== 'payment' )
 <a href="{{ url($controller[0].'/create', ['id' => $id ?? '','model' => $model ?? '']) }}" class="btn btn-primary btn-lg text-white mb-0 me-0  float-end" role="button" style="text-transform: capitalize;">
@@ -8,7 +9,7 @@
 </a>
 @endif
 <div class="mb-2" style="clear: both;"></div>
-
+-->
 
 
 

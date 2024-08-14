@@ -8,7 +8,7 @@
             role="tab" aria-controls="fx1-tabs-{{ $loop->iteration }}" 
             aria-selected="{{ $loop->first ? 'true' : 'false' }}"
             data-tab="{{ $title }}"
-            style="font-size:17px">
+            style="font-size:0.85rem">
 
                 {{ $title }}
             </a>

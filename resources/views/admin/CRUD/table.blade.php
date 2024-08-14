@@ -22,7 +22,7 @@
 </style>
 
     
-    <table id="table" 
+    <table style="background-color: #ffffff;" id="table" 
     data-toggle="table"
         data-icon-size="sm"
         data-buttons-class="outline-primary" 

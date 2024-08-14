@@ -175,7 +175,7 @@ class PropertyController extends Controller
         $totalExpenses = $property->expenses->sum('totalamount');
         //2. UNITS
         $units = $property->units;
-        $unitTableData = $this->tableViewDataService->getUnitData($units);
+        $unitTableData = $this->tableViewDataService->getUnitData($property->units);
 
         //3. USERS
         $users = $property->users;
@@ -256,7 +256,10 @@ class PropertyController extends Controller
             }elseif ($title === 'Expenses') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $expenseTableData, 'controller' => ['expense']], compact('id','model'))->render();
             }elseif ($title === 'Settings') {
-                $tabContents[] = View('admin.CRUD.tabs_horizontal_show', ['tabTitles' => $settingTableData['tabTitles'], 'tabContents' => $settingTableData['tabContents'],'controller' => ['setting']], 
+                $tabContents[] = View('admin.CRUD.tabs_horizontal_show', 
+                ['tabTitles' => $settingTableData['tabTitles'], 
+                'tabContents' => $settingTableData['tabContents'],
+                'controller' => ['setting']], 
                 compact('amenities', 'allamenities','model','id'))->render();
             }
         }
