@@ -29,7 +29,7 @@ class CheckCreateVariables
             // 'id' is present, proceed with the regular execution
             return $next($request);
         } else {
-
+            session()->put('previousUrl', url()->previous());
             // 'id' is not present, load dynamic view
             return response()->view('admin.CRUD.select', compact('properties','units','routeName'));
         }

@@ -11,6 +11,7 @@ use App\Models\Property;
 use App\Models\Lease;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\Ticket;
 use App\Services\TableViewDataService;
 use App\Services\CardService;
 use Carbon\Carbon;
@@ -61,11 +62,14 @@ class DashboardController extends Controller
         }
         /// CHART DATA
         $chartData = $this->getInvoiceChartData($properties);
+        // TICKET DATA ////
+        $tickets = Ticket::latest()->take(3)->get();
 
             $tabContents = [];
             foreach ($tabTitles as $title) {
                 if ($title === 'Dashboard') {
-                    $tabContents[] = View('admin.Report.alldashboard',compact('properties','cardData','chartData'))->render();
+                    $tabContents[] = View('admin.Report.dashboardall',
+                    compact('properties','cardData','chartData','tickets'))->render();
                 } elseif ($title === 'Properties') {
                     $tabContents[] = View('admin.Report.dashboardproperties' ,compact('properties'))->render();
                 } elseif ($title === 'Financials') {
@@ -73,7 +77,7 @@ class DashboardController extends Controller
                 }
             }
 
-        return View('admin.Report.dashboard', compact('cardData', 'controller', 'invoiceData', 'paymentData','tabTitles', 'tabContents'));
+        return View('admin.Report.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents'));
     }
 
     /**

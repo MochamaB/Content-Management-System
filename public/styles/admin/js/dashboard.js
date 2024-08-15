@@ -457,7 +457,7 @@
           options: marketingOverviewOptions
       });
       document.getElementById('marketing-overview-legend').innerHTML = marketingOverview.generateLegend();
-      document.getElementById('firstTotal').textContent = `$${chartData.firstTotal.toFixed(0).toLocaleString()}`;
+      document.getElementById('firstTotal').textContent = `$${chartData.firstTotal.toLocaleString()}`;
       document.getElementById('percentage').textContent = `(${chartData.percentage.toFixed(0)}% )`;
     }
     if ($("#marketingOverview-dark").length) {

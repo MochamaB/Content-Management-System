@@ -7,6 +7,6 @@
     @include('admin.Report.barchart', ['data' => $chartData])
     </div>
     <div class="col-lg-4 d-flex flex-column">
-
+    @include('admin.Report.ticketcard', ['data' => $chartData])
     </div>
 </div>
