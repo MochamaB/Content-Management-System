@@ -55,9 +55,8 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $filters = $request->except(['tab','_token','_method']);
-        $invoices = Invoice::applyFilters($filters)->get();
-     
         $filterdata = $this->filterService->getInvoiceFilters();
+        $invoices = Invoice::with('unit','property','payments')->ApplyDateFilters($filters)->get();
         $cardData = $this->cardService->invoiceCard($invoices);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getInvoiceData($invoices, true);

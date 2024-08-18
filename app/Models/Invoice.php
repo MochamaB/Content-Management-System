@@ -130,26 +130,7 @@ class Invoice extends Model
         return $this->hasOne(PaymentMethod::class, 'property_id', 'property_id');
     }
 
-    public function scopeApplyFilters($query, $filters)
-    {
-
-        foreach ($filters as $column => $value) {
-            if (!empty($value)) {
-                if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
-                    $query->whereBetween('created_at', [$filters['from_date'], $filters['to_date']]);
-                } else {
-                    // Use where on the other columns
-                    $query->where($column, $value);
-                }
-            }
-        }
-        // Add default filter for the last two months
-        if (empty($filters['from_date']) && empty($filters['to_date'])) {
-            $query->where("created_at", ">", Carbon::now()->subMonths(4));
-        }
-
-        return $query;
-    }
+  
 
     //// for the email view
     public function getTransactions()
@@ -165,6 +146,8 @@ class Invoice extends Model
     {
         return $this->getTransactions()->groupBy('unitcharge_id');
     }
+
+    /// Creating the Reference Number
     protected static function boot()
     {
         parent::boot();

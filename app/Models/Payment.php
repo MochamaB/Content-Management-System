@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\FilterableScope;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterableScope;
     protected $table = 'payments';
     protected $fillable = [
         'property_id',

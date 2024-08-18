@@ -19,26 +19,14 @@
                 @endforeach
             </ul>
 
-      <div>
-        <div class="btn-wrapper">
-        <div class="btn-group">
-                <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    This Month
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Last Month</a></li>
-                    <li><a class="dropdown-item" href="#">Last 2 Months</a></li>
-                    <li><a class="dropdown-item" href="#">Last Quarter</a></li>
-                    <li><a class="dropdown-item" href="#">Last 6 Months</a></li>
-                    <li><a class="dropdown-item" href="#">Last Year</a></li>
-                </ul>
-            </div>
-          <a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
-          <a href="#" class="btn btn-otline-dark"><i class="icon-printer"></i> Print</a>
-          <a href="#" class="btn btn-primary text-white me-0"><i class="icon-download"></i> Export</a>
+      
+        <div class="btn-wrapper d-flex align-items-center justify-content-end">
+        <label class="defaulttext pr-2 mr-5 " id=""><b>FROM - T0 &nbsp; &nbsp;</b> </label>
+        @include('admin.CRUD.date_filter')
         </div>
-      </div>
+      
 </div>
+
 <div class="tab-content pt-1" id="ex1-content">
             <!----------- ------------------>
             @foreach($tabContents as $index => $content)

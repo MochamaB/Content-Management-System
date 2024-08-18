@@ -28,11 +28,22 @@ class FilterService
         ];
     }
 
+    public function getDashboardFilters()
+    {
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        return [
+            'id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
+            'from_date' => ['label' => 'From', 'values' => '', 'inputType' => 'date'],
+            'to_date' => ['label' => 'To', 'values' => '', 'inputType' => 'date']
+        ];
+    }
+
     public function getPropertyFilters()
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
         return [
             'id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
+            
 
         ];
     }

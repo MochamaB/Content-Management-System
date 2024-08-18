@@ -17,25 +17,23 @@ use Illuminate\Support\Facades\Gate;
 class CardService
 {
     /////// DASHBOARD CARDS
-    public function topCard($properties, $units)
+    public function topCard($properties, $units, $filters)
     {
-         // Get the start and end dates of the current month
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
         $propertyCount = $properties->count();
         $unitCount = $units->count();
         // Filter invoices for the current month and sum their total amount
-        $invoices = $units->flatMap(function ($unit) use ($startOfMonth, $endOfMonth) {
-            return $unit->invoices->filter(function ($invoice) use ($startOfMonth, $endOfMonth) {
-                return $invoice->created_at >= $startOfMonth && $invoice->created_at <= $endOfMonth;
-            });
+        $invoices = $units->flatMap(function ($unit) use ($filters) {
+            return $unit->invoices()
+                ->ApplyDateFilters($filters)
+                ->get();
         })->sum('totalamount');
        // Filter payments for the current month and sum their total amount
-        $payments = $units->flatMap(function ($unit) use ($startOfMonth, $endOfMonth) {
-            return $unit->payments->filter(function ($payment) use ($startOfMonth, $endOfMonth) {
-                return $payment->created_at >= $startOfMonth && $payment->created_at <= $endOfMonth;
-            });
+       $payments = $units->flatMap(function ($unit) use ($filters) {
+        return $unit->payments()
+            ->ApplyDateFilters($filters)
+            ->get();
         })->sum('totalamount');
+       
         $balance = $invoices - $payments;
         //   $invoicepaid =  $invoices->filter(function ($invoice) {
         //        return $invoice->payments !== null;
@@ -77,39 +75,44 @@ class CardService
         return $cards;
     }
 
-
-    public function invoiceCard($invoices)
+    public function propertyCard($property)
     {
 
 
-        $invoiceCount = $invoices->count();
-        $amountinvoiced = $invoices->sum('totalamount');
-        $invoicepaid = $invoices->flatMap(function ($invoice) {
-            return $invoice->payments;
-        })->sum('totalamount');
-        $balance = $amountinvoiced - $invoicepaid;
-        //   $invoicepaid =  $invoices->filter(function ($invoice) {
-        //        return $invoice->payments !== null;
-        //   })->sum('payments.totalamount');
-        //  $invoicePayments = $invoices->withCount('payments')->get();
-        //  $paymentCount = $invoicePayments->sum('payments_count');
-        // Define the columns for the unit report
+        $propertyCount = $property->count();
+        $unitCount =  $property->flatMap(function ($property) {
+            return $property->units;
+        })->count();
+        $unitOccupied = $property->flatMap(function ($property) {
+            return $property->units->filter(function ($unit) {
+                return $unit->lease && $unit->lease->status == 'Active'; // Example condition
+            });
+        })->count();
+
+        // Calculate the occupancy rate
+        $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
+        // Format the occupancy rate (optional)
+        $formattedOccupancyRate = number_format($occupancyRate, 1);
+        $ticketcount =  $property->flatMap(function ($property) {
+            return $property->tickets;
+        })->count();
+
+        $pendingTickets = $property->flatMap(function ($property) {
+            return $property->tickets->filter(function ($ticket) {
+                return $ticket->status !== 'completed'; // Filter out tickets with the status "completed"
+            });
+        })->count();
+        
+       
         $cards =  [
-            'invoicecount' => ['title' => 'Total Invoices This Month', 'value' => $invoiceCount, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'amountinvoiced' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'pecentage' => '', 'links' => ''],
-            'invoicepaid' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $invoicepaid, 'pecentage' => '', 'links' => ''],
-            'balance' => ['title' => 'Balance Not Paid', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => ''],
+            'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '/property', 'desc' => 'Active'],
+            'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '/property', 'desc' => ''],
+            'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '/unit', 'desc' => ''],
+            'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '/unit', 'desc' => ''],
+            'ticketcount' => ['title' => 'Total Tickets', 'value' => $ticketcount, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
+            'pendingTickets' => ['title' => 'Pending Tickets', 'value' => $pendingTickets, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
         ];
         return $cards;
-    }
-
-    public function invoiceChart($invoices = null)
-    {
-        $chart = new \stdClass();
-        // Assign properties to the $card object
-        $chart->title = "Invoice Chart Title"; // Example title
-        $chart->description = "This is the description of the invoice chart."; // Example description
-        return $chart;
     }
     public function unitCard($units)
     {
@@ -130,4 +133,46 @@ class CardService
         ];
         return $cards;
     }
+
+
+    public function invoiceCard($invoices)
+    {
+
+
+        $invoiceCount = $invoices->count();
+        $amountinvoiced = $invoices->sum('totalamount');
+        $invoicepaid = $invoices->flatMap(function ($invoice) {
+            return $invoice->payments;
+        })->sum('totalamount');
+        $paymentCount = $invoices->flatMap(function ($invoice) {
+            return $invoice->payments;
+        })->count();
+        $balance = $amountinvoiced - $invoicepaid;
+        $payRate = $invoiceCount > 0 ? ($paymentCount / $invoiceCount) * 100 : 0;
+        //   $invoicepaid =  $invoices->filter(function ($invoice) {
+        //        return $invoice->payments !== null;
+        //   })->sum('payments.totalamount');
+        //  $invoicePayments = $invoices->withCount('payments')->get();
+        //  $paymentCount = $invoicePayments->sum('payments_count');
+        // Define the columns for the unit report
+        $cards =  [
+            'invoicecount' => ['title' => 'Total Invoices', 'value' => $invoiceCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'paymentCount' => ['title' => 'Total Payments', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'amountinvoiced' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'pecentage' => '', 'links' => ''],
+            'invoicepaid' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $invoicepaid, 'pecentage' => '', 'links' => ''],
+            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'links' => ''],
+            'payRate' => ['title' => 'Payment Percentage', 'value' => '', 'amount' => '', 'percentage' => $payRate, 'links' => ''],
+        ];
+        return $cards;
+    }
+
+    public function invoiceChart($invoices = null)
+    {
+        $chart = new \stdClass();
+        // Assign properties to the $card object
+        $chart->title = "Invoice Chart Title"; // Example title
+        $chart->description = "This is the description of the invoice chart."; // Example description
+        return $chart;
+    }
+    
 }

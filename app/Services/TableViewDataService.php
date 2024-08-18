@@ -307,7 +307,7 @@ class TableViewDataService
         // $invoicedata->load('user');
 
         // TABLE DATA
-        $headers = ['REFERENCE NO', 'PAYMENT DATE', 'TYPE', 'DESCRIPTION', 'AMOUNT', 'PAY METHOD', 'ACTIONS'];
+        $headers = ['REFERENCE NO', 'PAYMENT DATE', 'TYPE', 'AMOUNT', 'PAY METHOD', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -321,7 +321,6 @@ class TableViewDataService
 
         foreach ($paymentdata as $item) {
             $PaymentMethod = $item->PaymentMethod;
-            $type = $item->paymentItems->first();
             $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $row = [
                 'id' => $item->id,
@@ -329,7 +328,6 @@ class TableViewDataService
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Paid on Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d'),
                 class_basename($item->model),
-                $type->charge_name ?? $item->model->name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $PaymentMethod->name .
                     ' </br>

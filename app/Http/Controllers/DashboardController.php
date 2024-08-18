@@ -50,20 +50,25 @@ class DashboardController extends Controller
         ]);
         $controller = $this->controller;
         $user = auth()->user();
+        $filters = $request->except(['tab','_token','_method']);
 
-        $properties = Property::with('units', 'leases', 'invoices')->get();
+        $properties = Property::with('units', 'leases', 'invoices')->applyFilters($filters)->get();
         $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
        // dd($user->roles);
 
+       ///1. Dashboard Tab
         if ($user && $user->id !== 1 && $user->roles->first()->name === "Tenant") {
-            $cardData = $this->cardService->tenantTopCard($properties, $units);
+            $cardData = $this->cardService->tenantTopCard($properties, $units, $filters);
         } else {
-            $cardData = $this->cardService->topCard($properties, $units);
+            $cardData = $this->cardService->topCard($properties, $units,$filters);
         }
         /// CHART DATA
-        $chartData = $this->getInvoiceChartData($properties);
+        $chartData = $this->getInvoiceChartData($filters);
         // TICKET DATA ////
         $tickets = Ticket::latest()->take(3)->get();
+
+        //2. Property Tab
+        $propertyCard = $this->cardService->propertyCard($properties);
 
             $tabContents = [];
             foreach ($tabTitles as $title) {
@@ -71,7 +76,7 @@ class DashboardController extends Controller
                     $tabContents[] = View('admin.Report.dashboardall',
                     compact('properties','cardData','chartData','tickets'))->render();
                 } elseif ($title === 'Properties') {
-                    $tabContents[] = View('admin.Report.dashboardproperties' ,compact('properties'))->render();
+                    $tabContents[] = View('admin.Report.dashboardproperties' ,compact('propertyCard'))->render();
                 } elseif ($title === 'Financials') {
                     $tabContents[] = View('admin.Report.dashboardfinancials', compact('properties'))->render();
                 }
@@ -85,18 +90,17 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    private function getInvoiceChartData($properties)
+    private function getInvoiceChartData($filters)
     {
-        $chartData = $this->cardService->invoiceChart();
         // Collect all invoices from all properties
             $invoices = Invoice::selectRaw('DATE_FORMAT(created_at, "%b %Y") as month, SUM(totalamount) as totalamount')
-            ->where("created_at", ">", Carbon::now()->subMonths(6))
+            ->ApplyDateFilters($filters)
             ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();
         
             $payments = Payment::selectRaw('DATE_FORMAT(created_at, "%b %Y") as month, SUM(totalamount) as totalamount')
-            ->where("created_at", ">", Carbon::now()->subMonths(6))
+            ->ApplyDateFilters($filters)
             ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();
@@ -108,7 +112,9 @@ class DashboardController extends Controller
             'secondData' => $payments->pluck('totalamount'),
             'firstTotal' => $invoices->sum('totalamount'),
             'secondTotal' => $payments->sum('totalamount'),
-            'percentage' => ($payments->sum('totalamount') / $invoices->sum('totalamount')) * 100
+            'percentage' => $invoices->sum('totalamount') > 0
+                            ? ($payments->sum('totalamount') / $invoices->sum('totalamount')) * 100
+                            : 0
         ];
     }
 

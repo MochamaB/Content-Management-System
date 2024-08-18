@@ -373,12 +373,12 @@
           datasets: [{
               label: chartData.firstLabel,
               data: chartData.firstData,
-              backgroundColor: "#52CDFF",
+              backgroundColor: "rgba(82, 205, 255, 0.5)",
               borderColor: [
                   '#52CDFF',
               ],
               borderWidth: 0,
-              fill: true, // 3: no fill
+              fill: false, // 3: no fill
               
           },{
             label: chartData.secondLabel,
@@ -388,7 +388,7 @@
                 '#1F3BB3',
             ],
             borderWidth: 0,
-            fill: true, // 3: no fill
+            fill: false, // 3: no fill
         }]
       };
   
@@ -457,7 +457,7 @@
           options: marketingOverviewOptions
       });
       document.getElementById('marketing-overview-legend').innerHTML = marketingOverview.generateLegend();
-      document.getElementById('firstTotal').textContent = `$${chartData.firstTotal.toLocaleString()}`;
+      document.getElementById('firstTotal').textContent = `${chartData.firstTotal.toLocaleString()}`;
       document.getElementById('percentage').textContent = `(${chartData.percentage.toFixed(0)}% )`;
     }
     if ($("#marketingOverview-dark").length) {

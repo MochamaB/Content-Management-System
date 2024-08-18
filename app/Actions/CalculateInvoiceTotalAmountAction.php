@@ -38,22 +38,22 @@ class CalculateInvoiceTotalAmountAction
 
     public function payment(Payment $payment)
     {
-        // Calculate the total amount for the given invoice
-        $totalAmount = $payment->totalamount;
+        // Calculate the total amount paid for the given invoice
+        $refmodel = $payment->model;
 
-      
-        ///get the corresponding invoice, expense or deposit
-        $refinvoice =$payment->model;
+        // Sum all payments for the given model
+        $totalAmountPaid = $refmodel->payments->sum('totalamount');
+        
             ////Update Status /////
-        if ($totalAmount < $refinvoice->totalamount) {
+        if ($totalAmountPaid < $refmodel->totalamount) {
             // Partially paid
-            $refinvoice->update(['status' => 'partially_paid']);
-        } elseif ($totalAmount > $refinvoice->totalamount) {
+            $refmodel->update(['status' => 'partially_paid']);
+        } elseif ($totalAmountPaid > $refmodel->totalamount) {
             // Overpaid
-            $refinvoice->update(['status' => 'over_paid']);
-        } elseif ($totalAmount == $refinvoice->totalamount) {
+            $refmodel->update(['status' => 'over_paid']);
+        } elseif ($totalAmountPaid == $refmodel->totalamount) {
             // Fully paid
-            $refinvoice->update(['status' => 'paid']);
+            $refmodel->update(['status' => 'paid']);
         }
     }
 

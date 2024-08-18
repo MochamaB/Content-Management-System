@@ -50,16 +50,14 @@ class PaymentService
         //1. Create Payment Header Data
         $payment = $this->createPayment($paymentData);
 
-        //2. Create Payment items
-        //  $this->createPaymentItems($model, $payment, $validatedData,$mpesaTransaction);
+       
+        //2. Update Payment Status in Model Headers
+          $this->calculateTotalAmountAction->payment($payment, $model);
 
-        //3. Update Total Amount in Payment Header
-        //  $this->calculateTotalAmountAction->payment($payment, $model);
-
-        //4. Create Transactions for ledger
+        //3. Create Transactions for ledger
         $this->recordTransactionAction->payments($payment, $model);
 
-        //5. Send Email/Notification to the Tenant containing the receipt.
+        //4. Send Email/Notification to the Tenant containing the receipt.
         $this->paymentEmail($payment);
 
 

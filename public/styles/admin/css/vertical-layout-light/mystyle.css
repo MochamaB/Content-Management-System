@@ -336,6 +336,11 @@
   border: 1px solid #e3e3e3;
   border-radius: 0px;
 }
+
+.indexcard{
+  padding:5px 15px;
+  border-right: 2px solid #ddd;
+}
 .dropdown-menu {
   font-size:0.815rem;
 }
@@ -1115,4 +1120,11 @@ a .badge:hover {
       border: none;
       padding: 1rem;
     }
+    .row > .col {
+      flex: 0 0 33.33%;
+      max-width: 33.33%;
+  }
+    .home-tab .statistics-details {
+      margin-bottom: 15px;
+  }
   }
