@@ -148,7 +148,8 @@ class CardService
             return $invoice->payments;
         })->count();
         $balance = $amountinvoiced - $invoicepaid;
-        $payRate = $invoiceCount > 0 ? ($paymentCount / $invoiceCount) * 100 : 0;
+        $paymentRate = $invoiceCount > 0 ? ($paymentCount / $invoiceCount) * 100 : 0;
+        $payRate = number_format($paymentRate, 1);
         //   $invoicepaid =  $invoices->filter(function ($invoice) {
         //        return $invoice->payments !== null;
         //   })->sum('payments.totalamount');
@@ -162,6 +163,19 @@ class CardService
             'invoicepaid' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $invoicepaid, 'pecentage' => '', 'links' => ''],
             'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'links' => ''],
             'payRate' => ['title' => 'Payment Percentage', 'value' => '', 'amount' => '', 'percentage' => $payRate, 'links' => ''],
+        ];
+        return $cards;
+    }
+
+    public function paymentCard($payments)
+    {
+        $paymentCount = $payments->count();
+        $totalpay = $payments->sum('totalamount');
+     
+        $cards =  [
+            'paymentcount' => ['title' => 'Total Invoices', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'totalpay' => ['title' => 'Total Payments', 'value' => '', 'amount' => $totalpay, 'percentage' => '', 'links' => ''],
+            
         ];
         return $cards;
     }

@@ -7,6 +7,7 @@ namespace App\Services;
 use Illuminate\Http\Request;
 use App\Models\Chartofaccount;
 use App\Models\Lease;
+use App\Models\PaymentMethod;
 use App\Models\Property;
 use App\Models\Unit;
 use App\Models\Unitcharge;
@@ -97,7 +98,12 @@ class FilterService
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
         $units = Unit::pluck('unit_number', 'id')->toArray();
-        $unitcharge = Unitcharge::pluck('charge_name', 'id')->unique()->toArray();
+        $unitcharge = Unitcharge::selectRaw('MIN(id) as id, charge_name')
+        ->groupBy('charge_name')
+        ->orderBy('charge_name')
+        ->get()
+        ->pluck('charge_name', 'id')
+        ->toArray();
         $status = [
             'paid' => 'Paid',
             'unpaid' => 'Not Paid',
@@ -113,6 +119,31 @@ class FilterService
             'unitcharge_id' => ['label' => 'Charge', 'values' => $unitcharge, 'inputType' => 'select', 'filtertype' => 'advanced'],
             'from_date' => ['label' => 'From', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced'],
             'to_date' => ['label' => 'To', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced']
+        ];
+    }
+    public function getPaymentFilters()
+    {
+        $properties = Property::pluck('property_name', 'id')->toArray();
+        $units = Unit::pluck('unit_number', 'id')->toArray();
+        $paymethods = PaymentMethod::selectRaw('MAX(id) as id, name')
+        ->groupBy('name')
+        ->orderBy('name')
+        ->get()
+        ->mapWithKeys(function ($method) {
+            return [$method->id => $method->name];
+        });
+        $model = [
+            'App\Models\Invoice' => 'Invoices',
+            'App\Models\Deposit' => 'Deposits',
+            'App\Models\Expense' => 'Expenses',
+        ];
+
+        // Define the columns for the unit report
+        return [
+            'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
+            'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select', 'filtertype' => 'main'],
+            'payment_method_id' => ['label' => 'Pay Method', 'values' => $paymethods, 'inputType' => 'select', 'filtertype' => 'main'],
+            'model_type' => ['label' => 'Type', 'values' => $model, 'inputType' => 'select', 'filtertype' => 'main'],
         ];
     }
 

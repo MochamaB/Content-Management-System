@@ -43,9 +43,7 @@ class MpesaSTKPUSHController extends Controller
     {
         $invoice = Invoice::find($id);
 
-        $amountPaid = $invoice->payments->sum(function ($payment) {
-            return $payment->paymentItems->sum('amount');
-        });
+        $amountPaid = $invoice->payments->sum('totalamount');
         $amountdue = $invoice->totalamount - $amountPaid;
         if ($amountdue <= 0) {
             return redirect()->back()->with('statuserror', 'Invoice has already been fully paid');

@@ -13,6 +13,7 @@ use App\Http\Controllers\UnitController;
 use App\Models\Setting;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
+use App\Services\CardService;
 
 class PropertyController extends Controller
 {
@@ -26,8 +27,9 @@ class PropertyController extends Controller
     protected $model;
     private $tableViewDataService;
     protected $filterService;
+    private $cardService;
 
-    public function __construct(TableViewDataService $tableViewDataService,FilterService $filterService)
+    public function __construct(TableViewDataService $tableViewDataService,FilterService $filterService, CardService $cardService)
     {
         $this->model = Property::class;
 
@@ -37,6 +39,7 @@ class PropertyController extends Controller
         ]);
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
+        $this->cardService = $cardService;
     }
 
 
@@ -48,6 +51,7 @@ class PropertyController extends Controller
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
         $tablevalues = Property::with('units','propertyType')->ApplyFilters($filters)->get();
+        $cardData = $this->cardService->propertyCard($tablevalues);
         //   $tablevalues = Property::withUserUnits()->get();
         $viewData = $this->formData($this->model);
      //   $cardData = $this->cardData($this->model);
@@ -74,7 +78,7 @@ class PropertyController extends Controller
             'controller' => $this->controller,
             'viewData' => $viewData,
             'filterdata' => $filterdata,
-       //     'cardData' => $cardData,
+            'cardData' => $cardData,
         ]);
     }
 

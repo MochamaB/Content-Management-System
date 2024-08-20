@@ -18,6 +18,8 @@ use Carbon\Carbon;
 use App\Notifications\PaymentNotification;
 use App\Services\TableViewDataService;
 use App\Actions\RecordTransactionAction;
+use App\Services\FilterService;
+use App\Services\CardService;
 
 
 class PaymentController extends Controller
@@ -34,9 +36,12 @@ class PaymentController extends Controller
     private $paymentService;
     private $tableViewDataService;
     private $recordTransactionAction;
+    private $filterService;
+    private $cardService;
+
 
     public function __construct(PaymentService $paymentService, TableViewDataService $tableViewDataService,
-    RecordTransactionAction $recordTransactionAction)
+    RecordTransactionAction $recordTransactionAction, FilterService $filterService, CardService $cardService)
     {
         $this->model = Payment::class;
         $this->controller = collect([
@@ -47,21 +52,25 @@ class PaymentController extends Controller
         $this->paymentService = $paymentService;
         $this->tableViewDataService = $tableViewDataService;
         $this->recordTransactionAction = $recordTransactionAction;
+        $this->filterService = $filterService;
+        $this->cardService = $cardService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $paymentdata = $this->model::with('property', 'lease', 'unit')->get();
-        $mainfilter =  $this->model::distinct()->pluck('payment_code')->toArray();
+        $filters = $request->except(['tab','_token','_method']);
+        $filterdata = $this->filterService->getPaymentFilters();
+        $payments = $this->model::with('property', 'lease', 'unit')->ApplyDateFilters($filters)->get();
+        $cardData = $this->cardService->paymentCard($payments);
         //   $viewData = $this->formData($this->model);
         //   $cardData = $this->cardData($this->model,$invoicedata);
         // dd($cardData);
         $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getPaymentData($paymentdata, true);
+        $tableData = $this->tableViewDataService->getPaymentData($payments, true);
 
         return View(
             'admin.CRUD.form',
-            compact('mainfilter', 'tableData', 'controller'),
+            compact('tableData', 'controller','cardData','filterdata',),
             //  $viewData,
             [
                 //   'cardData' => $cardData,

@@ -21,12 +21,7 @@
         </h3>
         @endif
         <!--link -->
-        @if (!empty($card['links']))
-                 <p>
-                        <a class="text-primary text-small" href="{{ url($card['links']) }}">
-                            View More</a>
-                </p>
-                 @endif
+      
     </div>
     @endforeach
 
