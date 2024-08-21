@@ -59,12 +59,15 @@ class RoleController extends Controller
             $showLink = url($this->controller['0'] . 'show' . $item->id);
             $userCount = $item->users->count();
             $permissionCount = $item->permissions->count();
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->name . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     $item->description . '</span>',
                 $userCount,
                 $permissionCount.' / '.$allpermissions,
+                'isDeleted' => $isDeleted,
+
 
             ];
         }

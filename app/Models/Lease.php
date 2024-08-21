@@ -11,11 +11,13 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Traits\MediaUpload;
 use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Lease extends Model implements HasMedia
 {
-    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload,FilterableScope;
+    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload,FilterableScope, SoftDeleteScope, SoftDeletes;
     protected $table = 'leases';
     protected $fillable = [
         'property_id',

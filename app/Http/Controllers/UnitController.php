@@ -55,12 +55,14 @@ class UnitController extends Controller
 
         foreach ($unitdata as $item) {
             $leaseStatus = $item->lease ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->unit_number.' - '.$item->property->property_name.'('.$item->property->property_location.')',
                 $item->unit_type,
                 $item->bedrooms.'<span style="font-size:20px;"> / </span> '.$item->bathrooms,
                 $leaseStatus,
+                'isDeleted' => $isDeleted,
             ];
         }
 
@@ -72,12 +74,9 @@ class UnitController extends Controller
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
-        $unitdata = $this->model::with('property','lease')->applyFilters($filters)->get();
         $filterdata = $this->filterService->getUnitFilters();
-        $viewData = $this->formData($this->model);
-     //   $cardData = $this->cardData($this->model,$unitdata);
+        $unitdata = $this->model::with('property','lease')->showSoftDeleted()->ApplyFilters($filters)->get();
         $cardData = $this->cardService->unitCard($unitdata);
-       // dd($cardData);
         $controller = $this->controller;
         $tableData = $this->getUnitData($unitdata);
         
@@ -314,6 +313,23 @@ class UnitController extends Controller
      */
     public function destroy(Unit $unit)
     {
+        // Retrieve the Model
+    
+        // Get all relationships defined on the model
+        $relationships = ['lease','unitdetails','payments','invoices','unitcharges','meterReadings','deposits','meterReadings'];
+        $blockingRelationships = [];
+    
+        foreach ($relationships as $relationship) {
+            if ($unit->$relationship()->exists()) {
+                $blockingRelationships[] = $relationship;
+            }
+        }
+    
+        if (!empty($blockingRelationships)) {
+            $blockingRelationshipsString = implode(', ', $blockingRelationships);
+            return back()->with('statuserror', 'Cannot delete ' . $this->controller['1'] . ' because the following related records exist:<strong>' . $blockingRelationshipsString . '</strong>.');
+        }
+    
         //Check if unit is first attached to leases, invoices,payments,  
         $unit->users()->detach();   /////// Remove assigned units
         $unit->delete();   //// Delete User          //////// Remove Role

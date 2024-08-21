@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class Amenity extends Model
 {
-    use HasFactory, FilterableScope;
+    use HasFactory, FilterableScope, SoftDeletes, SoftDeleteScope;
     protected $table = 'amenities';
     protected $fillable = [
         'amenity_name',
@@ -48,4 +50,5 @@ class Amenity extends Model
     {
         return $this->belongsToMany(Property::class, 'properties_amenities');
     }
+
 }

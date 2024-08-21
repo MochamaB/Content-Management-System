@@ -50,12 +50,13 @@ class ChartOfAccountController extends Controller
         ];
 
         foreach ($tablevalues as  $item) {
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->account_name,
                 $item->account_type,
                 $item->account_number,
-              
+                'isDeleted' => $isDeleted,
             ];
         }
 

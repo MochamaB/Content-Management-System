@@ -42,14 +42,16 @@ class PermissionController extends Controller
             $showLink = url($this->controller['0'] . 'show' . $item->id);
             $rolesHtml = '';
             foreach ($item->roles as $key => $role) {
-                $rolesHtml .= '<li class="list-group-item">' . ($key + 1) . '. ' . $role->name . '</li>';
+                $rolesHtml .= '<li class=""> ' . ($key + 1) . '. ' . $role->name . '</li>';
             }
-        
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->name,
                 $item->module,
-                '<ul class="list-group">' . $rolesHtml . '</ul>',
+                 $rolesHtml,
+                'isDeleted' => $isDeleted,
+
             ];
         }
     

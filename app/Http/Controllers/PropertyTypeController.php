@@ -47,10 +47,13 @@ class PropertyTypeController extends Controller
         ];
 
         foreach ($tablevalues as  $item) {
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->property_type,
                 $item->property_category,
+                'isDeleted' => $isDeleted,
+
 
             ];
         }

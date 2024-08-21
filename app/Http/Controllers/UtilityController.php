@@ -41,12 +41,15 @@ class UtilityController extends Controller
         ];
 
         foreach ($utilitiesdata as  $item) {
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->utility_name,
                 $item->property->property_name,
                 $item->utility_type,
                 $sitesettings->site_currency.' '.number_format($item->rate, 0, '.', ','),
+                'isDeleted' => $isDeleted,
+
 
             ];
         }

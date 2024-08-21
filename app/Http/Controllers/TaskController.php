@@ -50,6 +50,7 @@ class TaskController extends Controller
             } else {
                 $monitorLink = '<span class="badge badge-success" style="float: right; margin-right:10px">Monitoring</a>';
             }
+            $isDeleted = $item->deleted_at !== null;
 
             //  dd($monitoredTasks);
             $tableData['rows'][] = [
@@ -61,6 +62,8 @@ class TaskController extends Controller
                 $item->time,
                 $status,
                 $monitorLink,
+                'isDeleted' => $isDeleted,
+
             ];
         }
 

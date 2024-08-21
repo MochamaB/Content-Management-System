@@ -56,6 +56,7 @@ class SliderController extends Controller
         ];
 
         foreach ($tablevalues as $item) {
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->id,
@@ -69,6 +70,7 @@ class SliderController extends Controller
                 white-space: wrap;
                 text-overflow: ellipsis;">'.$item->slider_info.'</div>', // Apply the word-wrap class here
                  // Add action buttons to each row
+                 'isDeleted' => $isDeleted,
            ];
        }
 

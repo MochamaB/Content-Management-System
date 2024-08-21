@@ -60,7 +60,7 @@ class PaymentController extends Controller
     {
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPaymentFilters();
-        $payments = $this->model::with('property', 'lease', 'unit')->ApplyDateFilters($filters)->get();
+        $payments = $this->model::with('property', 'lease', 'unit')->ApplyCurrentMonthFilters($filters)->get();
         $cardData = $this->cardService->paymentCard($payments);
         //   $viewData = $this->formData($this->model);
         //   $cardData = $this->cardData($this->model,$invoicedata);

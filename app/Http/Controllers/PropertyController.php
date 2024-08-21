@@ -50,7 +50,7 @@ class PropertyController extends Controller
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
-        $tablevalues = Property::with('units','propertyType')->ApplyFilters($filters)->get();
+        $tablevalues = Property::with('units','propertyType')->showSoftDeleted()->ApplyFilters($filters)->get();
         $cardData = $this->cardService->propertyCard($tablevalues);
         //   $tablevalues = Property::withUserUnits()->get();
         $viewData = $this->formData($this->model);
@@ -64,12 +64,14 @@ class PropertyController extends Controller
         ];
 
         foreach ($tablevalues as $item) {
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->property_name . ' - ' . $item->property_streetname,
                 $item->property_location,
                 $item->units->count(),
                 $item->propertyType->property_type,
+                'isDeleted' => $isDeleted,
             ];
         }
 
@@ -315,7 +317,28 @@ class PropertyController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // Retrieve the Model
+        $model = $this->model::findOrFail($id);
+    
+        // Get all relationships defined on the model
+        $relationships = ['units', 'leases','utilities','payments','paymentMethods','tickets','expenses','deposits'];
+        $blockingRelationships = [];
+    
+        foreach ($relationships as $relationship) {
+            if ($model->$relationship()->exists()) {
+                $blockingRelationships[] = $relationship;
+            }
+        }
+    
+        if (!empty($blockingRelationships)) {
+            $blockingRelationshipsString = implode(', ', $blockingRelationships);
+            return back()->with('statuserror', 'Cannot delete ' . $this->controller['1'] . ' because the following related records exist:' . $blockingRelationshipsString . '.');
+        }
+    
+        // Perform deletion
+        $model->delete();
+    
+        return back()->with('status', $this->controller['1'] . ' deleted successfully.');
     }
 
 

@@ -5,7 +5,7 @@
         <p class="statistics-title">{{ $card['title'] }}</p> <!--Title -->
         @if (!empty($card['value']))
         <h3 class="rate-percentage">
-            {{ $card['value'] }}
+            {{ $card['value'] ?? 0 }}
         </h3>
         @elseif(!empty($card['amount']))
         <h3 class="rate-percentage text-center d-flex">
@@ -17,7 +17,7 @@
         @elseif(!empty($card['percentage']))
         <h3 class="rate-percentage">
 
-            {{ $card['percentage'] }} %
+            {{ $card['percentage'] ?? 0 }} %
         </h3>
         @endif
         <!--link -->

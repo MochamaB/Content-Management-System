@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
+use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Utility extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterableScope, SoftDeletes, SoftDeleteScope;
     protected $table = 'utilities';
     protected $fillable = [
         'property_id',

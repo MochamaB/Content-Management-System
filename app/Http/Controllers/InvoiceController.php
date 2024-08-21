@@ -56,7 +56,7 @@ class InvoiceController extends Controller
     {
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getInvoiceFilters();
-        $invoices = Invoice::with('unit','property','payments')->ApplyDateFilters($filters)->get();
+        $invoices = Invoice::with('unit','property','payments')->ApplyCurrentMonthFilters($filters)->get();
         $cardData = $this->cardService->invoiceCard($invoices);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getInvoiceData($invoices, true);

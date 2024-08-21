@@ -49,10 +49,12 @@ class VendorCategoryController extends Controller
         ];
 
         foreach ($tablevalues as  $item) {
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->vendor_type,
                 $item->vendor_category,
+                'isDeleted' => $isDeleted,
 
             ];
         }

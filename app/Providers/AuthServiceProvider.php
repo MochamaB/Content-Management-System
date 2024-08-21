@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Policies\DeletePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -34,6 +35,8 @@ class AuthServiceProvider extends ServiceProvider
                 return str_contains(strtolower($role->name), 'admin');
             });
         });
+            // Deletion Policy ///
+            Gate::define('delete', [DeletePolicy::class, 'delete']);
         
     }
 }

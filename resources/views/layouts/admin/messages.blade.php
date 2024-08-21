@@ -11,7 +11,7 @@
 				@if (session('statuserror'))
 				<div class="alert alert-danger alert-dismissible fade show" role="alert">
           <i class="menu-icon mdi mdi mdi-alert-circle mdi-24px"></i>
-                      <strong>Error! </strong> {{ session('statuserror') }}. 
+                      <strong>Error! </strong> {!! session('statuserror') !!}. 
                         <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>

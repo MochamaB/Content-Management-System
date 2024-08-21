@@ -8,6 +8,8 @@ use App\Models\Property;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+Use App\Policies\DeletePolicy;
+use App\Services\TableViewDataService;
 
 class AmenityController extends Controller
 {
@@ -20,8 +22,9 @@ class AmenityController extends Controller
     protected $controller;
     protected $model;
     protected $user;
+    private $tableViewDataService;
 
-    public function __construct()
+    public function __construct(TableViewDataService $tableViewDataService)
     {
         $this->model = Amenity::class; 
         $this->controller = collect([
@@ -29,31 +32,19 @@ class AmenityController extends Controller
             '1' => ' Amenity',
         ]);
         $this->user = Auth::user();
+        $this->tableViewDataService = $tableViewDataService;
     }
 
 
     public function index()
     {
         
-        $tablevalues = Amenity::with('properties')->get();
-        $mainfilter =  $this->model::pluck('amenity_name')->toArray();
+        $amenities = Amenity::with('properties')->showSoftDeleted()->get();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
+        $tableData = $this->tableViewDataService->getAmenitiesData($amenities,false);
          /// TABLE DATA ///////////////////////////
-         $tableData = [
-            'headers' => ['','AMENITIES','ACTIONS'],
-            'rows' => [],
-        ];
-
-        foreach ($tablevalues as $key=> $item) {
-            $tableData['rows'][] = [
-                'id' => $item->id,
-                $key+1,
-                $item->amenity_name,
-            ];
-        }
-
-        return View('admin.CRUD.form',compact('mainfilter','tableData','controller'),$viewData);
+        return View('admin.CRUD.form',compact('tableData','controller'),$viewData);
     }
 
     /**
@@ -141,6 +132,27 @@ class AmenityController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // Retrieve the property
+        $model = $this->model::findOrFail($id);
+    
+        // Get all relationships defined on the model
+        $relationships = ['properties'];
+        $blockingRelationships = [];
+    
+        foreach ($relationships as $relationship) {
+            if ($model->$relationship()->exists()) {
+                $blockingRelationships[] = $relationship;
+            }
+        }
+    
+        if (!empty($blockingRelationships)) {
+            $blockingRelationshipsString = implode(', ', $blockingRelationships);
+            return back()->with('statuserror', 'Cannot delete ' . $this->controller['1'] . ' because the following related records exist:' . $blockingRelationshipsString . '.');
+        }
+    
+        // Perform deletion
+        $model->delete();
+    
+        return back()->with('status', $this->controller['1'] . ' deleted successfully.');
     }
 }

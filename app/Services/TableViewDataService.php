@@ -58,25 +58,6 @@ class TableViewDataService
     }
 
 
-    public function applyDateRangeFilter($query, $month, $year)
-    {
-        if ($month !== 'ALL') {
-            // Get the first and last day of the specified month
-            $firstDayOfMonth = Carbon::create($year, $month, 1)->startOfMonth();
-            $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth();
-            $query->whereBetween('created_at', [$firstDayOfMonth, $lastDayOfMonth]);
-        }
-    }
-
-    public function applyPaymentDateRangeFilter($query, $month, $year)
-    {
-        if ($month !== 'ALL') {
-            // Get the first and last day of the specified month
-            $firstDayOfMonth = Carbon::create($year, $month, 1)->startOfMonth();
-            $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth();
-            $query->whereBetween('created_at', [$firstDayOfMonth, $lastDayOfMonth]);
-        }
-    }
 
     public function getUnitData($unitdata)
     {
@@ -88,6 +69,7 @@ class TableViewDataService
 
         foreach ($unitdata as $item) {
             $leaseStatus = $item->lease ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->unit_number . ' - ' . $item->property->property_name . '(' . $item->property->property_location . ')',
@@ -95,6 +77,7 @@ class TableViewDataService
                 $item->bedrooms,
                 $item->bathrooms,
                 $leaseStatus,
+                'isDeleted' => $isDeleted,
             ];
         }
 
@@ -107,7 +90,6 @@ class TableViewDataService
     {
         // Eager load the 'unit' relationship
         //   $invoicedata->load('user');
-        $sitesettings = WebsiteSetting::first();
 
         /// TABLE DATA ///////////////////////////
 
@@ -163,7 +145,7 @@ class TableViewDataService
 
             $statusClass = $statusClasses[$status] ?? 'secondary';
             $invoiceStatus = '  <span class="badge badge-' . $statusClass . '">' . $status . '</span>';
-            $balanceStatus = '  <span style ="font-weight:700" class="text-' . $statusClass . '">' . $sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
+            $balanceStatus = '  <span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
             if (!empty($item->payments)) {
                 $receipttext = '</br><span class="text-muted" style="margin-top:5px;font-weight:500;"> Receipts</span>';
             } else {
@@ -178,6 +160,7 @@ class TableViewDataService
                 $paymentLinks .= '<br> <a href="' . url('payment/' . $id) . '" class="badge badge-light">' . $id . ' ' . $refn . '</a>';
                 $paymentCounter++;
             }
+            $isDeleted = $item->deleted_at !== null;
 
             $row = [
                 'id' => $item->id,
@@ -185,9 +168,10 @@ class TableViewDataService
                 '<span class="text-muted" style="font-weight:500;font-style: italic"> Issue Date  -  Due Date</span></br>' .
                     Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->name,
-                $sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
-                $sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ',') . $receipttext . '' . $paymentLinks,
+                $this->sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
+                $this->sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ',') . $receipttext . '' . $paymentLinks,
                 $balanceStatus . ' </br>' . $payLink,
+                'isDeleted' => $isDeleted,
 
 
             ];
@@ -271,7 +255,7 @@ class TableViewDataService
             } else {
                 $dueDate = "";
             }
-
+            $isDeleted = $item->deleted_at !== null;
 
 
             $row = [
@@ -282,6 +266,7 @@ class TableViewDataService
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
                 $balanceStatus . ' </br></br> ' . $payLink,
+                'isDeleted' => $isDeleted,
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
@@ -321,7 +306,8 @@ class TableViewDataService
 
         foreach ($paymentdata as $item) {
             $PaymentMethod = $item->PaymentMethod;
-            $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $isDeleted = $item->deleted_at !== null;
+
             $row = [
                 'id' => $item->id,
                 $item->referenceno . ' - #' . $item->id,
@@ -332,6 +318,7 @@ class TableViewDataService
                 $PaymentMethod->name .
                     ' </br>
                 <span class="text-muted" style="font-weight:500;font-style: italic"> Payment Code: </span> ' . $item->payment_code,
+                'isDeleted' => $isDeleted,
 
             ];
 
@@ -433,6 +420,7 @@ class TableViewDataService
                             </div>';
                 }
             }
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $charge_name,
@@ -442,6 +430,7 @@ class TableViewDataService
                 $recurring_charge,
                 \Carbon\Carbon::parse($item->updated_at)->format('Y-m-d'),
                 $nextDateFormatted,
+                'isDeleted' => $isDeleted,
 
             ];
 
@@ -477,7 +466,7 @@ class TableViewDataService
             $enddateFormatted = empty($item->enddate) ? 'Not set' : Carbon::parse($item->enddate)->format('Y-m-d');
             $usage =  $item->currentreading - $item->lastreading;
             $amount = $usage *  $item->rate_at_reading;
-
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $item->unit->unit_number,
@@ -489,6 +478,7 @@ class TableViewDataService
                 $usage . ' units ',
                 $item->rate_at_reading,
                 $this->sitesettings->site_currency . '. ' . number_format($amount, 0, '.', ','),
+                'isDeleted' => $isDeleted,
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
@@ -527,6 +517,7 @@ class TableViewDataService
             } else {
                 $thumbnail = $item->getUrl();
             }
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $key + 1,
@@ -535,6 +526,7 @@ class TableViewDataService
                 $category,
                 $item->collection_name,
                 $item->size,
+                'isDeleted' => $isDeleted,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -545,7 +537,39 @@ class TableViewDataService
         return $tableData;
     }
 
+    public function getAmenitiesData($amenities,$extraColumns = false)
+    {
+        // Eager load the 'unit' relationship
+        //   $invoicedata->load('user');
 
+        /// TABLE DATA ///////////////////////////
+        $headers = ['', 'AMENITIES', 'ATTACHED PROPERTY', 'ACTIONS'];
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+        foreach ($amenities as $key=> $item) 
+        {
+            $names = '';
+            foreach ($item->properties as $key => $property) {
+                $names .= '<li class="">' . ($key + 1) . '. ' . $property->property_name . '</li>';
+            }
+            // Add a 'deleted' flag if the item is soft deleted
+            $isDeleted = $item->deleted_at !== null;
+            $row = [
+                'id' => $item->id,
+                $key+1,
+                $item->amenity_name,
+                $names,
+                'isDeleted' => $isDeleted,
+                
+            ];
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
     public function getUserData($userdata, $extraColumns = false)
     {
 
@@ -581,6 +605,7 @@ class TableViewDataService
                 '
             </div>
           </div>';
+            $isDeleted = $item->deleted_at !== null;
 
             $row = [
                 'id' => $item->id,
@@ -588,6 +613,8 @@ class TableViewDataService
                 $roleNames->name ?? 'Super Admin',
                 $item->email,
                 $item->status,
+                'isDeleted' => $isDeleted,
+                
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -634,13 +661,14 @@ class TableViewDataService
                 '</h6>
             </div>
           </div>';
-
+          $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $name,
                 $item->email,
                 $item->phonenumber,
                 $item->vendorSubscription->subscription_status,
+                'isDeleted' => $isDeleted,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -715,7 +743,7 @@ class TableViewDataService
             // Calculate the difference in days
             $ageInDays = $createdAt->diffInDays($currentDate);
             // Now, you can check the type of the assigned model and access its attributes accordingly
-
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $requestStatus . ' ' . $status,
@@ -729,6 +757,7 @@ class TableViewDataService
                 $priorityStatus,
                 $assigned ?? $assignLink,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
+                'isDeleted' => $isDeleted,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -762,7 +791,7 @@ class TableViewDataService
         ];
 
         foreach ($ledgerdata as $item) {
-
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 Carbon::parse($item->created_at)->format('Y-m-d'),
@@ -772,6 +801,7 @@ class TableViewDataService
                 $item->debitAccount->account_name,
                 $item->creditAccount->account_name,
                 $item->amount,
+                'isDeleted' => $isDeleted,
 
             ];
             if ($extraColumns) {
@@ -803,7 +833,7 @@ class TableViewDataService
         ];
 
         foreach ($expensedata as $key => $item) {
-
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $key + 1,
@@ -812,6 +842,7 @@ class TableViewDataService
                 $item->quantity,
                 $this->sitesettings->site_currency . ' ' . number_format($item->price, 0, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($item->amount, 0, '.', ','),
+                'isDeleted' => $isDeleted,
 
             ];
             if ($extraColumns) {
@@ -842,13 +873,15 @@ class TableViewDataService
         ];
 
         foreach ($settingdata as $item) {
-
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $item->name,
                 $item->key,
                 $item->value,
                 $item->description,
+                'isDeleted' => $isDeleted,
+                
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -946,7 +979,7 @@ class TableViewDataService
             $statusClass = $statusClasses[$status] ?? 'unpaid';
             $expenseStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
-
+            $isDeleted = $item->deleted_at !== null;
 
 
             $row = [
@@ -957,6 +990,7 @@ class TableViewDataService
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
                 $balanceStatus . ' </br></br> ' . $payLink,
+                'isDeleted' => $isDeleted,
 
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -986,10 +1020,12 @@ class TableViewDataService
         ];
 
         foreach ($PaymentMethoddata as $item) {
+            $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
                 $item->name,
                 $item->type,
+                'isDeleted' => $isDeleted,
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {

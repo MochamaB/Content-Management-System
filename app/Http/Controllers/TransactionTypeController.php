@@ -58,6 +58,7 @@ class TransactionTypeController extends Controller
             } else {
                 $prefix = ' Record';
             }
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->description,
@@ -66,6 +67,7 @@ class TransactionTypeController extends Controller
                 $item->account_type,
                 $item->debit->account_name,
                 $item->credit->account_name,
+                'isDeleted' => $isDeleted,
 
             ];
         }

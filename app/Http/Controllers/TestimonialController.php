@@ -60,6 +60,7 @@ class TestimonialController extends Controller
 
         foreach ($tablevalues as $item) {
             $showLink = url($this->controller['0'].'show' . $item->id);
+            $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->client_name,
@@ -70,6 +71,8 @@ class TestimonialController extends Controller
                 overflow: hidden;
                 white-space: wrap;
                 text-overflow: ellipsis;">'.$item->testimonial.'</div>',
+                'isDeleted' => $isDeleted,
+
                 
             ];
         }

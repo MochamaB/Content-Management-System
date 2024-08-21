@@ -8,10 +8,12 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Property extends Model implements HasMedia
 {
-    use HasFactory, InteractsWithMedia, FilterableScope;
+    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope;
     protected $table = 'properties';
     protected $fillable = [
         'property_name',

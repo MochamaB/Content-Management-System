@@ -100,6 +100,8 @@ class LeaseController extends Controller
             $statusClass = $statusClasses[$item->status] ?? 'badge-secondary';
             // Generate the status badge
             $statusBadge = '<span class="badge ' . $statusClass . '">' . $item->status . '</span>';
+            $isDeleted = $item->deleted_at !== null;
+
             $tableData['rows'][] = [
                 'id' => $item->id,
                 //  $item,
@@ -108,6 +110,7 @@ class LeaseController extends Controller
                     '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     Carbon::parse($item->startdate)->format('Y-m-d') . ' - ' . $endDateFormatted . '</span>',
                 $statusBadge,
+                'isDeleted' => $isDeleted,
 
             ];
         }
