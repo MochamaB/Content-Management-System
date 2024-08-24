@@ -17,6 +17,8 @@ use App\Models\Property;
 use App\Models\Ticket;
 use App\Models\Unit;
 use App\Models\Unitcharge;
+use App\Repositories\InvoiceRepository;
+use App\Repositories\PaymentRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +45,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(InvoiceRepository::class, InvoiceRepository::class);
+        $this->app->bind(PaymentRepository::class, PaymentRepository::class);
     }
 
     /**

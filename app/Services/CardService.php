@@ -13,9 +13,19 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Repositories\InvoiceRepository;
+use App\Repositories\PaymentRepository;
 
 class CardService
 {
+    private $invoiceRepository;
+    private $paymentRepository;
+
+    public function __construct(InvoiceRepository $invoiceRepository, PaymentRepository $paymentRepository)
+    {
+        $this->invoiceRepository = $invoiceRepository;
+        $this->paymentRepository = $paymentRepository;
+    }
     /////// DASHBOARD CARDS
     public function topCard($properties, $units, $filters)
     {
@@ -139,14 +149,10 @@ class CardService
     {
 
 
-        $invoiceCount = $invoices->count();
-        $amountinvoiced = $invoices->sum('totalamount');
-        $invoicepaid = $invoices->flatMap(function ($invoice) {
-            return $invoice->payments;
-        })->sum('totalamount');
-        $paymentCount = $invoices->flatMap(function ($invoice) {
-            return $invoice->payments;
-        })->count();
+        $invoiceCount =  $this->invoiceRepository->getInvoiceCount($invoices);
+        $amountinvoiced = $this->invoiceRepository->getAmountinvoiced($invoices);
+        $invoicepaid = $this->invoiceRepository->getInvoicepaidAmount($invoices);
+        $paymentCount =  $this->invoiceRepository->getInvoicePaymentCount($invoices);
         $balance = $amountinvoiced - $invoicepaid;
         $paymentRate = $invoiceCount > 0 ? ($paymentCount / $invoiceCount) * 100 : 0;
         $payRate = number_format($paymentRate, 1);
