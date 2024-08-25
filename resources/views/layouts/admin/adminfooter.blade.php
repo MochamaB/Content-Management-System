@@ -60,6 +60,28 @@
   })(jQuery);
 </script>
 
+<!--- Sidebar Position------------------>
+<script>
+  $(document).ready(function() {
+    function adjustSidebarTop() {
+        // Get the current height of the navbar
+        var navbarHeight = $('.navbar').outerHeight();
+
+        // Set the top of the sidebar to be right after the navbar
+        $('.sidebar').css('top', navbarHeight + 'px');
+    }
+
+    // Adjust the sidebar position when the page loads
+    adjustSidebarTop();
+
+    // Adjust the sidebar position when the window is resized or scrolled
+    $(window).on('resize scroll', function() {
+        adjustSidebarTop();
+    });
+});
+
+</script>
+
 <!---- Validation ----->
 <script>
   $(document).ready(function() {

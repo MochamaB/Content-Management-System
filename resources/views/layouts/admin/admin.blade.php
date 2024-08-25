@@ -43,26 +43,14 @@
       <!-- partial:partials/_sidebar.html -->
       @include('layouts.admin.sidebar')
       <!-- partial -->
-      <div class="main-panel" >
+      <div class="main-panel" style="background-color: #F4F5F7;padding-top:0px">
         <div class="content-wrapper" style="background-color: #F4F5F7;padding-top:0px">
-          <div class="row" >
-            <div class="col-sm-12" >
               <div class="home-tab">
-                
-                <div class="tab-content tab-content-basic" >
-                 <!-- Breadcrumb -->
-                 @include('layouts.admin.breadcrumbs')
-                      <!-- Breadcrumb -->
-                  <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
-                    
-                @yield('content')
-                    </div>
-                </div>
-
-
+                  <!-- Breadcrumb -->
+                  @include('layouts.admin.breadcrumbs')
+                        <!-- Breadcrumb -->
+                        @yield('content')
               </div>
-            </div>
-          </div>
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->

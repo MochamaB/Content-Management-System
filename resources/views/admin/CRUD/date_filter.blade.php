@@ -2,7 +2,7 @@
 
             <form action="{{  url($routeParts[0]) }}" method="GET" style="margin-bottom:0px" class="d-flex justify-content-end">
                 <div class="form-group mr-4" style="margin-bottom:0px">
-                <input type="date" class="form-control" id="" name="from_date" value="{{ request('from_date', now()->toDateString()) }}" style="max-width: 150px;" />
+                <input type="date" class="form-control" id="" name="from_date" value="{{ request('from_date', now()->startOfMonth()->toDateString()) }}" style="max-width: 150px;" />
                 </div>
 
                 <div class="form-group mr-4" style="margin-bottom:0px">

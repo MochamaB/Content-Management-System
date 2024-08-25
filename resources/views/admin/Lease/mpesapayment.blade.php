@@ -35,7 +35,7 @@
 
     <div class="row">
         <div class="col-md-4">
-            <img class="logo" src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'resources/uploads/images/noimage.jpg' }}" alt="Logo">
+            <img class="" style="height: 100%; width: 100%;" src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'resources/uploads/images/noimage.jpg' }}" alt="Logo">
 
         </div>
         <div class="col-md-4">

@@ -5,6 +5,11 @@
   Version:	1.2.tab
 -------------------------------------------------------------------*/
 /*--------------------------- Top Navbar  */
+.navbar {
+  height: auto; /* Allow the navbar to accommodate different heights */
+  padding: 0; /* Remove padding if needed */
+}
+
 
 .navbar .navbar-brand-wrapper {
   background: #ffffff;
@@ -13,20 +18,28 @@
   -moz-transition: width 0.25s ease, background 0.25s ease;
   -ms-transition: width 0.25s ease, background 0.25s ease;
   width: 220px;
-  height: 97px;
+  height: 100px;
   padding: 5px 5px 5px 15px;
+  display: flex;
+    align-items: center; /* Vertically align the content */
+    justify-content: start; /* Horizontally align the content */
 }
 .navbar .navbar-menu-wrapper{
   background: #ffffff;
-  box-shadow: 6px 2px 4px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 2px 4px 2px rgba(0, 0, 0, 0.1);
+  height: 60px; /* Set the height for the menu wrapper */
+  align-self: flex-start;
+ 
 }
+
 
 .navbar.headerLight .navbar-menu-wrapper, .navbar.headerLight .navbar-brand-wrapper {
   background: #ffffff;
   height: 60px;
+  
 
   /* Add a shadow effect */
-  box-shadow: 6px 2px 4px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 2px 4px 2px rgba(0, 0, 0, 0.1);
 }
 
 .navbar .navbar-menu-wrapper .navbar-nav .nav-item .welcome-sub-text {
@@ -49,10 +62,32 @@
   background: #0a2351;
   border-right: 2px solid #c8c8c9;
   border-left: 2px solid #c8c8c9;
-  
+  position: fixed; /* Fix the sidebar position */
+    top: 100px;
+    left: 0;
+    width: 220px; /* Sidebar width */
+    height: 100vh; /* Full height of the viewport */
+    overflow-y: auto; /* Enable scrolling inside the sidebar */
+    z-index: 1000; /* Ensure it stays on top */
+    transition: width 0.25s ease; /* Smooth transition for collapse/expand */
+    scrollbar-color: orange #c8c8c9;
+    scrollbar-width: thin;
 }
 
+.main-panel {
+  margin-left: 220px; /* Offset by the sidebar width */
+  transition: margin-left 0.25s ease, width 0.25s ease; /* Smooth transition for collapse/expand */
+  width: calc(100% - 220px); /* Adjust the width to account for the sidebar */
+  min-height: calc(100vh - 97px); /* Maintain full height */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
+}
+.sidebar-icon-only .main-panel {
+  margin-left: 70px;
+  width: calc(100% - 70px);
+}
 /*--------------------------- Sidebar Category Text  */
 .sidebar .nav .nav-item.nav-category {
   color: #fff;
@@ -156,6 +191,10 @@
   border-bottom: 5px solid blue;
 }
 
+.home-tab .tab-content {
+  padding: 4px 0;
+  border: none;
+}
 .tab-content {
   border: 1px solid #dee2e6;
   border-top: 0;
@@ -1053,12 +1092,13 @@ a .badge:hover {
   @media screen and (max-width: 991px) {
 
     .sidebar-offcanvas {
+      display: none;
       position: fixed;
       max-height: calc(100vh - 97px);
       top: 97px;
       bottom: 0;
       overflow: auto;
-      right: -255px;
+      right: -200px;
       /* Adjust the sidebar width accordingly */
       -webkit-transition: all 0.25s ease-out;
       -o-transition: all 0.25s ease-out;
@@ -1066,6 +1106,7 @@ a .badge:hover {
     }
 
     .sidebar-offcanvas.active {
+    
       right: 0;
     }
 
@@ -1116,6 +1157,19 @@ a .badge:hover {
   }
    /* Screen size under 576(phone) */
    @media (max-width: 576px) {
+    .sidebar {
+      display: none;
+      right: -255px; /* Hide the sidebar off-screen */
+  }
+
+ .sidebar-offcanvas{
+    display: none;
+      right: 0; /* Show the sidebar when active */
+  }
+  .main-panel {
+    margin-left: 0; /* Ensure the main panel takes full width */
+    width: 100%;
+}
     .contwrapper {
       border: none;
       padding: 1rem;

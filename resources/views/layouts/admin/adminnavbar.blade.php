@@ -5,19 +5,19 @@
         <span class="icon-menu"></span>
       </button>
     </div>
-    <div>
+    <div class="divlogo" style=" width: 100%;height: 100%;">
       <a class="navbar-brand brand-logo" href="">
         @if ($sitesettings)
-        <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: auto; width: 100%;">
+        <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: 100%; width: 100%;">
         @else
-        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: auto; width: 100%;">
+        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 100%; width: 100%;">
         @endif
       </a>
-      <a class="navbar-brand brand-logo-mini" href="index.html">
+      <a class="navbar-brand brand-logo-mini" href="" style=" width: 100%;height: 100%;">
         @if ($sitesettings)
-        <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: auto; width: 100%;">
+        <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 100%; width: 100%;">
         @else
-        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image">
+        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 100%; width: 100%;">
         @endif
       </a>
     </div>

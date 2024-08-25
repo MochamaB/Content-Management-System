@@ -1,6 +1,9 @@
 @extends('layouts.admin.admin')
 
 @section('content')
+<h4 class=" pr-2 mr-5 d-block d-lg-none" id="">
+    <b>Hi {{ Auth::user()->firstname ?? '' }} {{ Auth::user()->lastname ?? '' }}</b> 
+</h4>
 
 <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3">
             <ul class="nav nav-tabs mb-0" id="ex1" role="tablist">
@@ -21,7 +24,7 @@
 
       
         <div class="btn-wrapper d-flex align-items-center justify-content-end">
-        <label class="defaulttext pr-2 mr-5 " id=""><b>FROM - T0 &nbsp; &nbsp;</b> </label>
+        <label class="defaulttext pr-2 mr-5 d-none d-lg-block" id=""><b>FROM - T0 &nbsp; &nbsp;</b> </label>
         @include('admin.CRUD.date_filter')
         </div>
       
