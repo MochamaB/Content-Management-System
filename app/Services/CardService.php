@@ -15,16 +15,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Repositories\InvoiceRepository;
 use App\Repositories\PaymentRepository;
+use App\Repositories\UnitRepository;
 
 class CardService
 {
     private $invoiceRepository;
     private $paymentRepository;
+    private $unitRepository;
 
-    public function __construct(InvoiceRepository $invoiceRepository, PaymentRepository $paymentRepository)
+    public function __construct(InvoiceRepository $invoiceRepository, PaymentRepository $paymentRepository,
+    UnitRepository $unitRepository)
     {
         $this->invoiceRepository = $invoiceRepository;
         $this->paymentRepository = $paymentRepository;
+        $this->unitRepository = $unitRepository;
     }
     /////// DASHBOARD CARDS
     public function topCard($properties, $units, $filters)
@@ -119,8 +123,8 @@ class CardService
             'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '/property', 'desc' => ''],
             'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '/unit', 'desc' => ''],
             'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '/unit', 'desc' => ''],
-            'ticketcount' => ['title' => 'Total Tickets', 'value' => $ticketcount, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
-            'pendingTickets' => ['title' => 'Pending Tickets', 'value' => $pendingTickets, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
+            'Residential' => ['title' => 'Total Tickets', 'value' => $ticketcount, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
+            'Commercial' => ['title' => 'Pending Tickets', 'value' => $pendingTickets, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
         ];
         return $cards;
     }

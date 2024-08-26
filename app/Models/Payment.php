@@ -19,6 +19,7 @@ class Payment extends Model
         'payment_method_id',
         'payment_code',
         'totalamount',
+        'taxamount',
         'received_by',
         'reviewed_by',
         'invoicedate'
@@ -76,5 +77,9 @@ class Payment extends Model
     public function transactions()
     {
         return $this->morphMany(Transaction::class, 'transactionable');
+    }
+    public function taxes()
+    {
+        return $this->morphMany(Tax::class, 'taxable');
     }
 }

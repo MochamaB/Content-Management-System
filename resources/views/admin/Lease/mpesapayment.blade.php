@@ -35,7 +35,7 @@
 
     <div class="row">
         <div class="col-md-4">
-            <img class="" style="height: 100%; width: 100%;" src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'resources/uploads/images/noimage.jpg' }}" alt="Logo">
+            <img class="" style="height: 140px; width: 180px;" src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'resources/uploads/images/noimage.jpg' }}" alt="Logo">
 
         </div>
         <div class="col-md-4">
@@ -48,7 +48,7 @@
             </ul>
         </div>
         <div class="col-md-4">
-            <img class="logo" src="{{ asset('uploads/M-PESA.png') }}" style="height:100px;width:220px; margin-bottom:30px;">
+            <img class="logo" src="{{ asset('uploads/M-PESA.png') }}" style="height:100px;width:220px; margin-bottom:0px;">
 
         </div>
     </div>

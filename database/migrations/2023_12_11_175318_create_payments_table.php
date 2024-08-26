@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('payment_method_id');
  	        $table->string('payment_code')->nullable();
             $table->decimal('totalamount')->nullable();
+            $table->decimal('taxamount')->nullable();
             $table->enum('status', ['allocated', 'unallocated',])->nullable();
             $table->string('received_by')->nullable();
             $table->string('reviewed_by')->nullable();

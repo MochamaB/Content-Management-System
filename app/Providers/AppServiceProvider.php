@@ -19,6 +19,7 @@ use App\Models\Unit;
 use App\Models\Unitcharge;
 use App\Repositories\InvoiceRepository;
 use App\Repositories\PaymentRepository;
+use App\Repositories\UnitRepository;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
@@ -47,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(InvoiceRepository::class, InvoiceRepository::class);
         $this->app->bind(PaymentRepository::class, PaymentRepository::class);
+        $this->app->bind(UnitRepository::class, UnitRepository::class);
     }
 
     /**
@@ -186,6 +188,7 @@ class AppServiceProvider extends ServiceProvider
                     'income-statement' => ['display' => 'Profit and Loss'],
                     'chartofaccount' => ['display' => 'Chart Of Accounts'],
                     'payment-method' => ['display' => 'Payment methods'],
+                    'tax' => ['display' => 'Taxes'],
                     'transaction-type' => ['display' => 'Transaction Types'],
                 ]],
 

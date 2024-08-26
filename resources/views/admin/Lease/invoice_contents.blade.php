@@ -22,7 +22,7 @@
                 <td class="text-left">
                     <ul class="ml-4 px-3 list-unstyled">
                         <li>
-                            <h3 style="text-transform: uppercase;"> {{$invoice->name}} INVOICE</h3>
+                            <h5 style="text-transform: uppercase;"> {{$invoice->name}} INVOICE</h5>
                         </li>
                         <li><b>{{$invoice->referenceno}}</b></li>
                         <li style="color:red; font-weight:700;font-size:14px">TOTAL DUE</li>
@@ -33,7 +33,7 @@
             <!------ SECOND SECTION DETAILS -->
             <tr>
                 <td></br>
-                    <h4="text-muted"><b>BILL TO</b></h4>
+                    <h4><b>BILL TO</b></h4>
                         <ul class="ml-2 px-3 list-unstyled">
                             <li><b>PROPERTY:</b> {{$invoice->property->property_name}}</li>
                             <li><b>UNIT NUMBER:</b> {{$invoice->unit->unit_number}}</li>
@@ -104,17 +104,17 @@
 
     <div class="row">
     <div class="col-md-6 mt-3">
-    <h4><b>Payment Methods </b></h4>
+    <h6><b>PAYMENT OPTIONS </b></h6>
         @foreach($PaymentMethod as $key=> $item)
         <div class="d-flex justify-content-start" style="text-transform: capitalize;">
-            <p class="text-muted me-3" style="font-size:15px;font-weight:600"> </p>
+            <p class="text-muted me-3" style="font-size:14px;font-weight:600"> </p>
             @if($item->name == 'm-pesa')
-            <span>{{$key+1}}. {{$item->name}} - 
+            <span class="defaulttext">{{$key+1}}. {{$item->name}} - 
             <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="btn btn-warning btn-lg text-white mb-0 me-0">
                 <i class="ti-money"></i>Pay Now</a>
             </span>
             @else
-            <span>{{$key+1}}. {{$item->name}} </span>
+            <span class="defaulttext">{{$key+1}}. {{$item->name}} </span>
             @endif
         </div>
         @endforeach
@@ -122,20 +122,20 @@
     </div>
     <div class="col-md-6 mt-3">
         <div class="d-flex justify-content-end">
-            <p class="text-muted me-3" style="font-size:15px;font-weight:600">Sub total Amount :</p>
+            <p class="text-muted me-3" style="font-size:14px;font-weight:600">Sub total Amount :</p>
             <span>{{ $sitesettings->site_currency }} @currency($invoice->totalamount)</span>
         </div>
         <div class="d-flex justify-content-end">
-            <p class="text-muted me-3" style="font-size:15px;font-weight:600">Tax & Discounts:</p>
+            <p class="text-muted me-3" style="font-size:14px;font-weight:600">Tax & Discounts:</p>
             <span>{{ $sitesettings->site_currency }} 0 </span>
         </div>
         <div class="d-flex justify-content-end">
-            <p class="text-muted me-3" style="font-size:16px;font-weight:600">Other Charges:</p>
+            <p class="text-muted me-3" style="font-size:14px;font-weight:600">Other Charges:</p>
             <span>{{ $sitesettings->site_currency }} 0 </span>
         </div>
         <div class="d-flex justify-content-end mt-3">
-            <h4 class="me-3" style="font-weight:700">Total:</h4>
-            <h4 class="text-error" style="font-weight:700">{{ $sitesettings->site_currency }} @currency($invoice->totalamount)</h4>
+            <h5 class="me-3" style="font-weight:700">Total:</h5>
+            <h5 class="text-error" style="font-weight:700">{{ $sitesettings->site_currency }} @currency($invoice->totalamount)</h5>
         </div>
     </div>
     </div>

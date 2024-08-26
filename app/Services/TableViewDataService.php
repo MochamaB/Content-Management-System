@@ -1036,4 +1036,45 @@ class TableViewDataService
 
         return $tableData;
     }
+
+    public function getTaxData($taxData, $extraColumns = false)
+    {
+         /// TABLE DATA ///////////////////////////
+
+         $headers = ['NAME', 'PROPERTY TYPE','APPLIES TO','RATE','STATUS', 'ACTIONS'];
+
+         // If $Extra columns is true, insert 'Unit Details' at position 3
+         if ($extraColumns) {
+            array_splice($headers, 0, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($taxData as $item) {
+            $className = class_basename($item->model_type);
+            $status = ($item->status === 'active')
+            ? '<span class="badge badge-active">Active</span>'
+            : '<span class="badge badge-danger">Not Active</span>';
+            $isDeleted = $item->deleted_at !== null;
+            $row = [
+                'id' => $item->id,
+                $item->name,
+                $item->propertyType->property_category.' - '. $item->propertyType->property_type,
+                $className,
+                $item->rate,
+                $status,
+                'isDeleted' => $isDeleted,
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 1, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
 }

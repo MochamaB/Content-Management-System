@@ -9,7 +9,7 @@ use App\Actions\CalculateInvoiceTotalAmountAction;
 use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
-use App\Models\Invoice;
+use App\Actions\CalculateTaxAction;
 use App\Models\Payment;
 use App\Models\PaymentItems;
 use App\Models\PaymentMethod;
@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\View;
 class PaymentService
 {
     private $calculateTotalAmountAction;
+    private $calculateTaxAction;
     private $updateDueDateAction;
     private $updateNextDateAction;
     private $recordTransactionAction;
@@ -32,12 +33,14 @@ class PaymentService
         CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
         UpdateNextDateAction $updateNextDateAction,
         UpdateDueDateAction $updateDueDateAction,
-        RecordTransactionAction $recordTransactionAction
+        RecordTransactionAction $recordTransactionAction,
+        CalculateTaxAction $calculateTaxAction
     ) {
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
         $this->updateNextDateAction = $updateNextDateAction;
         $this->updateDueDateAction = $updateDueDateAction;
         $this->recordTransactionAction = $recordTransactionAction;
+        $this->calculateTaxAction = $calculateTaxAction;
     }
 
     ///////// ALLOCATED PAYMENTS /////////////////////
@@ -54,10 +57,13 @@ class PaymentService
         //2. Update Payment Status in Model Headers
           $this->calculateTotalAmountAction->payment($payment, $model);
 
-        //3. Create Transactions for ledger
+        //3. Calculate Taxes payment
+        $this->calculateTaxAction->calculateTax($payment);
+
+        //4. Create Transactions for ledger
         $this->recordTransactionAction->payments($payment, $model);
 
-        //4. Send Email/Notification to the Tenant containing the receipt.
+        //5. Send Email/Notification to the Tenant containing the receipt.
         $this->paymentEmail($payment);
 
 
@@ -90,6 +96,7 @@ class PaymentService
                 'payment_method_id' => $paymentMethod,
                 'payment_code' => $paymentCode,
                 'totalamount' =>  $totalamount,
+                'taxamount' => null,
                 'received_by' => $user->email,
                 'reviewed_by' => null,
                 'invoicedate' => $model->created_at,
@@ -107,6 +114,7 @@ class PaymentService
                 'payment_method_id' => $mpesa->id,
                 'payment_code' => $mpesaTransaction->mpesa_receipt_number,
                 'totalamount' =>  $mpesaTransaction->amount,
+                'taxamount' => null,
                 'received_by' => $user->email ?? $model->model->email,
                 'reviewed_by' => null,
                 'invoicedate' => $model->created_at,

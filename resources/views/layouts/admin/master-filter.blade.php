@@ -37,13 +37,15 @@
 </div>
 @endforeach
 @endif
+
+@if (isset($filter['filtertype']) && $filter['filtertype'] === 'advanced')
 <div class="col-md-3 " style="padding-top:0px">
 
     <button class="btn btn-warning btn-lg text-white" id="filter" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
     <i class="fa fa-filter"></i></i> Advanced Filter <i class="fa-solid fa-plus" id="expandIcon" style="display: none;"></i>
     </button>
 </div>
-
+@endif
 
 <div class="collapse" id="collapseExample" style="margin-bottom:20px;">
     <div class="filterbody">

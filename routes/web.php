@@ -35,6 +35,7 @@ use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SystemSettingController;
+use App\Http\Controllers\TaxController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\TransactionTypeController;
@@ -100,6 +101,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
             'as' => 'payment-method.create',
             'uses' => 'App\Http\Controllers\PaymentMethodController@create'
         ]);
+        Route::resource('tax', TaxController::class);
         Route::resource('payment-method', PaymentMethodController::class);
         Route::resource('transaction', TransactionController::class);
         Route::resource('general-ledger', GeneralLedgerController::class);

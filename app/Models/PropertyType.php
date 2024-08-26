@@ -39,4 +39,9 @@ class PropertyType extends Model
     public function property(){
         return $this->hasMany(Property::class,'property_type');
     }
+
+    public function taxes()
+{
+    return $this->hasMany(Tax::class);
+}
 }
