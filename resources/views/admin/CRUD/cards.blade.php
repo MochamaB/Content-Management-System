@@ -6,7 +6,7 @@
 <div class="row statistics-details " style="margin: 10px; padding:10px;" >
     @foreach($cardData as $cardType => $card)
     <!-- TOTAL CARDS -->
-    <div class="col text-center">
+    <div class="col text-center pb-2">
         <p class="statistics-title">{{ $card['title'] }}</p> <!--Title -->
         @if (!empty($card['value']) || $card['value'] === 0)
         <h3 class="rate-percentage">
@@ -27,6 +27,12 @@
         </h3>
         @endif
         <!--link -->
+        <!--- Footer -->
+        @if (!empty($card['links']))
+                 <p class="text-muted">
+                 {{ $card['links'] }}
+                </p>
+                 @endif
       
     </div>
     @endforeach

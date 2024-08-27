@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MeterReading extends Model
 {
-    use HasFactory;
+    use HasFactory, FilterableScope, SoftDeletes, SoftDeleteScope;
     protected $table = 'meter_readings';
     protected $fillable = [
         'property_id',

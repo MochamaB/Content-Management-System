@@ -143,7 +143,9 @@ class FilterService
             'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
             'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select', 'filtertype' => 'main'],
             'payment_method_id' => ['label' => 'Pay Method', 'values' => $paymethods, 'inputType' => 'select', 'filtertype' => 'main'],
-            'model_type' => ['label' => 'Type', 'values' => $model, 'inputType' => 'select', 'filtertype' => 'main'],
+            'model_type' => ['label' => 'Type', 'values' => $model, 'inputType' => 'select', 'filtertype' => 'advanced'],
+            'from_date' => ['label' => 'From', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced'],
+            'to_date' => ['label' => 'To', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced']
         ];
     }
 

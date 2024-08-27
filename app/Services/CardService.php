@@ -195,18 +195,25 @@ class CardService
             return $payment->PaymentMethod->name === 'cheque';
         });
         $cash = $cashPayments->sum('totalamount');
+        $cashCount = $cashPayments->count();
+
         $mpesa = $mpesaPayments->sum('totalamount');
+        $mpesaCount = $mpesaPayments->count();
+
         $bank = $bankPayments->sum('totalamount');
+        $bankCount = $bankPayments->count();
+
         $cheque = $chequePayments->sum('totalamount');
+        $chequeCount = $chequePayments->count();
         
      
         $cards =  [
             'paymentcount' => ['title' => 'Total Payments', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
             'totalpay' => ['title' => 'Total Amount', 'value' => '', 'amount' => $totalpay, 'percentage' => '', 'links' => ''],
-            'cash' => ['title' => 'Cash Amount', 'value' => '', 'amount' => $cash, 'percentage' => '', 'links' => ''],
-            'mpesa' => ['title' => 'M-Pesa Amount', 'value' => '', 'amount' => $mpesa, 'percentage' => '', 'links' => ''],
-            'bank' => ['title' => 'Bank Amount', 'value' => '', 'amount' => $bank, 'percentage' => '', 'links' => ''],
-            'cheque' => ['title' => 'Cheque Amount', 'value' => '', 'amount' => $cheque, 'percentage' => '', 'links' => ''],
+            'cash' => ['title' => 'Cash Amount(' . $cashCount . ')', 'value' => '', 'amount' => $cash, 'percentage' => '', 'links' => ''],
+            'mpesa' => ['title' => 'M-Pesa Amount(' . $mpesaCount . ')', 'value' => '', 'amount' => $mpesa, 'percentage' => '', 'links' => ''],
+            'bank' => ['title' => 'Bank Amount(' . $bankCount . ')', 'value' => '', 'amount' => $bank, 'percentage' => '', 'links' => ''],
+            'cheque' => ['title' => 'Cheque Amount(' . $chequeCount . ')', 'value' => '', 'amount' => $cheque, 'percentage' => '', 'links' => ''],
             
         ];
         return $cards;

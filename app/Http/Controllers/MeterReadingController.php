@@ -49,14 +49,13 @@ class MeterReadingController extends Controller
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
         $filters = $request->except(['tab', '_token', '_method']);
-        $meterReadings = MeterReading::applyFilters($filters)->get();
-        $mainfilter =  $this->model::pluck('unit_id')->toArray();
+        $meterReadings = MeterReading::ApplyCurrentMonthFilters($filters)->get();
         $filterdata = $this->filterService->getMeterReadingsFilters();
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getMeterReadingsData($meterReadings, true);
         return View(
             'admin.CRUD.form',
-            compact('mainfilter', 'tableData', 'controller', 'filterdata'),
+            compact('tableData', 'controller', 'filterdata'),
             //  $viewData,
             [
                 //     'cardData' => $cardData,
