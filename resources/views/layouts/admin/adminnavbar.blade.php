@@ -5,7 +5,7 @@
         <span class="icon-menu"></span>
       </button>
     </div>
-    <div class="divlogo" style=" width: 100%;height: 100%;">
+    <div class="divlogo" style=" width: 80%;height: 80%;">
       <a class="navbar-brand brand-logo" href="">
         @if ($sitesettings)
         <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: 100%; width: 100%;">

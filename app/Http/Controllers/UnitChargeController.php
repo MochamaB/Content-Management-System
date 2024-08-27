@@ -133,6 +133,14 @@ class UnitChargeController extends Controller
      */
     public function show(unitcharge $unitcharge)
     {
+        ///// Used to Set Property TYpe name in the edit view.///
+        $specialvalue = collect([
+            'property_id' =>$unitcharge->property->property_name, // Use a string for the controller name
+            'unit_id' => $unitcharge->unit->unit_number,
+            'chartofaccounts_id' => $unitcharge->chartofaccounts->account_name,
+        ]);
+        $viewData = $this->formData($this->model, $unitcharge,$specialvalue);
+        return View('admin.CRUD.details',$viewData);
     }
 
     /**

@@ -26,11 +26,11 @@ class Unitcharge extends Model
 
     ];
     public static $fields = [
-        'property_id' => ['label' => 'Unit Number', 'inputType' => 'select', 'required' => true, 'readonly' => true],
-        'unit_id' => ['label' => 'Unit Property', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
-        'chartofaccounts_id' => ['label' => 'Slug', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
+        'property_id' => ['label' => 'Property', 'inputType' => 'select', 'required' => true, 'readonly' => true],
+        'unit_id' => ['label' => 'Unit', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'chartofaccounts_id' => ['label' => 'Account', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
         'charge_name' => ['label' => 'Description', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
-
+        'rate' => ['label' => 'Rate/ Amount', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
         // Add more fields as needed
     ];
 

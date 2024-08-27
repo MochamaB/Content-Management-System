@@ -51,7 +51,7 @@
                 }
             }
         }'
-        class="table table-bordered">
+        class="table">
         <thead>
             <tr>
                 @foreach($data['headers'] as $header)

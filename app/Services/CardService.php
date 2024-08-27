@@ -94,6 +94,14 @@ class CardService
 
 
         $propertyCount = $property->count();
+        $residentialProperties = $property->filter(function ($property) {
+            return $property->propertyType->property_category === 'Residential';
+        });
+        $residentialCount = $residentialProperties->count();
+        $commercialProperties = $property->filter(function ($property) {
+            return $property->propertyType->property_category === 'Commercial';
+        });
+        $commercialCount = $commercialProperties->count();
         $unitCount =  $property->flatMap(function ($property) {
             return $property->units;
         })->count();
@@ -119,12 +127,13 @@ class CardService
         
        
         $cards =  [
-            'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '/property', 'desc' => 'Active'],
-            'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '/property', 'desc' => ''],
-            'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '/unit', 'desc' => ''],
-            'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '/unit', 'desc' => ''],
-            'Residential' => ['title' => 'Total Tickets', 'value' => $ticketcount, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
-            'Commercial' => ['title' => 'Pending Tickets', 'value' => $pendingTickets, 'amount' => '', 'percentage' => '', 'links' => '/ticket', 'desc' => ''],
+            'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
+            'Residential' => ['title' => 'Residential', 'value' => $residentialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
+            'Commercial' => ['title' => 'Commercial', 'value' => $commercialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
+            'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
+            'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
+            'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '', 'desc' => ''],
+           
         ];
         return $cards;
     }

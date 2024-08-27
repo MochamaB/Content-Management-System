@@ -14,11 +14,10 @@
 <div class=" contwrapper">
     <form class="filterForm" method="GET" action="{{ url()->current() }}">
         <div class="row">
-        
-          
+            @include('admin.CRUD.card_title')
             @if (isset($cardData))
             @include('admin.CRUD.cards')
-            
+
 
             @endif
             @include('layouts.admin.master-filter')

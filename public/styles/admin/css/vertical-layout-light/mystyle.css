@@ -398,12 +398,12 @@
 }
 
 .table thead th {
-  border-top: 0;
+  border: none; 
   border-bottom-width: 1px;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 0.8rem;
   text-transform: uppercase;
-  background-color: lightgray;
+  background-color: #F4F5F7;
 }
 a.table:link {
   color: #1F3BB3;
@@ -813,6 +813,16 @@ a .badge:hover {
   margin-top: 5px;
 }
 
+.badge-filter {
+  color: #000 !important;
+  background-color: #E9E9E9;
+  border: 2px solid #E9E9E9 !important;
+  font-weight: 600;
+  font-size: 0.8rem;
+  line-height: 25px;
+  text-transform: capitalize;
+}
+
 
 .text-active {
   color: #038d21 !important;
@@ -897,10 +907,7 @@ a .badge:hover {
 }
 
 /* Use a CSS selector to target all the cells in your table */
-#table th,
-#table td {
-  padding-left: 15px;
-}
+
 
 .row-height {
   height: 40px;
@@ -953,16 +960,11 @@ a .badge:hover {
   /* Set the desired hover color */
 }
 
-#table th.nomargin,
-#table td.nomargin {
-  border: none !important;
-  border-top: none !important;
-  border-bottom: none !important;
-  background-color: white;
-}
+
 
 .table th,
 .table td {
+  border: none;    
   vertical-align: middle;
   line-height: 1;
   white-space: nowrap;
