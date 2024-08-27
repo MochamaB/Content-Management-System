@@ -181,10 +181,32 @@ class CardService
     {
         $paymentCount = $payments->count();
         $totalpay = $payments->sum('totalamount');
+        // Filter payments by payment method name (e.g., "cash")
+        $cashPayments = $payments->filter(function ($payment) {
+            return $payment->PaymentMethod->name === 'cash';
+        });
+        $mpesaPayments = $payments->filter(function ($payment) {
+            return $payment->PaymentMethod->name === 'm-pesa';
+        });
+        $bankPayments = $payments->filter(function ($payment) {
+            return $payment->PaymentMethod->name === 'bank';
+        });
+        $chequePayments = $payments->filter(function ($payment) {
+            return $payment->PaymentMethod->name === 'cheque';
+        });
+        $cash = $cashPayments->sum('totalamount');
+        $mpesa = $mpesaPayments->sum('totalamount');
+        $bank = $bankPayments->sum('totalamount');
+        $cheque = $chequePayments->sum('totalamount');
+        
      
         $cards =  [
-            'paymentcount' => ['title' => 'Total Invoices', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
-            'totalpay' => ['title' => 'Total Payments', 'value' => '', 'amount' => $totalpay, 'percentage' => '', 'links' => ''],
+            'paymentcount' => ['title' => 'Total Payments', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'totalpay' => ['title' => 'Total Amount', 'value' => '', 'amount' => $totalpay, 'percentage' => '', 'links' => ''],
+            'cash' => ['title' => 'Cash Amount', 'value' => '', 'amount' => $cash, 'percentage' => '', 'links' => ''],
+            'mpesa' => ['title' => 'M-Pesa Amount', 'value' => '', 'amount' => $mpesa, 'percentage' => '', 'links' => ''],
+            'bank' => ['title' => 'Bank Amount', 'value' => '', 'amount' => $bank, 'percentage' => '', 'links' => ''],
+            'cheque' => ['title' => 'Cheque Amount', 'value' => '', 'amount' => $cheque, 'percentage' => '', 'links' => ''],
             
         ];
         return $cards;
