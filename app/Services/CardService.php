@@ -142,6 +142,14 @@ class CardService
 
 
         $unitCount = $units->count();
+        // Get the count of units that are for sale
+        $forRent = $units->filter(function ($unit) {
+            return $unit->unit_type === 'rent';
+        })->count();
+         // Get the count of units that are for sale
+        $forSale = $units->filter(function ($unit) {
+            return $unit->unit_type === 'sale';
+        })->count();
         $unitsleased =  $units->filter(function ($unit) {
             return $unit->lease !== null;
         })->count();
@@ -150,12 +158,43 @@ class CardService
         // Define the columns for the unit report
         $cards =  [
             'unitCount' => ['title' => 'Total Units', 'icon' => '', 'value' => $unitCount, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'unitsleased' => ['title' => 'Units Leased', 'icon' => '', 'value' => $unitsleased, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'No of Tenants' => ['title' => 'No of Tenants', 'icon' => '', 'value' => $unitsleased, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'forRent' => ['title' => 'For Rent', 'icon' => '', 'value' => $forRent, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'forSale' => ['title' => 'For Sale', 'icon' => '', 'value' => $forSale, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'unitsleased' => ['title' => 'Active Leases', 'icon' => '', 'value' => $unitsleased, 'amount' => '', 'pecentage' => '', 'links' => ''],
             'Vacant Units' => ['title' => 'Vacant Units', 'icon' => '', 'value' => $vacant, 'amount' => '', 'pecentage' => '', 'links' => ''],
         ];
         return $cards;
     }
+
+    public function leaseCard($lease)
+    {
+
+
+        $leaseCount = $lease->count();
+        // Get the count of units that are for sale
+        $activeleases = $lease->filter(function ($lease) {
+            return $lease->status === 'Active';
+        })->count();
+         // Get the count of units that are for sale
+        $open = $lease->filter(function ($lease) {
+            return $lease->lease_period === 'open';
+        })->count();
+        $fixed = $lease->filter(function ($lease) {
+            return $lease->lease_period === 'fixed';
+        })->count();
+        $inactive = $leaseCount - $activeleases;
+        //  $paymentCount = $invoicePayments->sum('payments_count');
+        // Define the columns for the unit report
+        $cards =  [
+            'leaseCount' => ['title' => 'Total Leases', 'icon' => '', 'value' => $leaseCount, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'activeleases' => ['title' => 'Active', 'icon' => '', 'value' => $activeleases, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'open' => ['title' => 'Open Leases', 'icon' => '', 'value' => $open, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'fixed' => ['title' => 'Closed Leases', 'icon' => '', 'value' => $fixed, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'inactive Units' => ['title' => 'Inactive / Suspended', 'icon' => '', 'value' => $inactive, 'amount' => '', 'pecentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
 
 
     public function invoiceCard($invoices)
@@ -218,11 +257,11 @@ class CardService
      
         $cards =  [
             'paymentcount' => ['title' => 'Total Payments', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
-            'totalpay' => ['title' => 'Total Amount', 'value' => '', 'amount' => $totalpay, 'percentage' => '', 'links' => ''],
-            'cash' => ['title' => 'Cash Amount(' . $cashCount . ')', 'value' => '', 'amount' => $cash, 'percentage' => '', 'links' => ''],
-            'mpesa' => ['title' => 'M-Pesa Amount(' . $mpesaCount . ')', 'value' => '', 'amount' => $mpesa, 'percentage' => '', 'links' => ''],
-            'bank' => ['title' => 'Bank Amount(' . $bankCount . ')', 'value' => '', 'amount' => $bank, 'percentage' => '', 'links' => ''],
-            'cheque' => ['title' => 'Cheque Amount(' . $chequeCount . ')', 'value' => '', 'amount' => $cheque, 'percentage' => '', 'links' => ''],
+            'totalpay' => ['title' => 'Total Amount ', 'value' => '', 'amount' => $totalpay, 'percentage' => '', 'links' => ''],
+            'cash' => ['title' => 'Cash (' . $cashCount . ')', 'value' => '', 'amount' => $cash, 'percentage' => '', 'links' => ''],
+            'mpesa' => ['title' => 'M-Pesa (' . $mpesaCount . ')', 'value' => '', 'amount' => $mpesa, 'percentage' => '', 'links' => ''],
+            'bank' => ['title' => 'Bank (' . $bankCount . ')', 'value' => '', 'amount' => $bank, 'percentage' => '', 'links' => ''],
+            'cheque' => ['title' => 'Cheque (' . $chequeCount . ')', 'value' => '', 'amount' => $cheque, 'percentage' => '', 'links' => ''],
             
         ];
         return $cards;

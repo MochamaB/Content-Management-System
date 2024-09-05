@@ -168,6 +168,7 @@
   color: #fff;
 }
 
+
 .home-tab .nav-tabs {
   font-family: "Manrope", sans-serif;
   border-bottom: 2px solid #dee2e6;
@@ -1179,6 +1180,7 @@ a .badge:hover {
     .row > .col {
       flex: 0 0 33.33%;
       max-width: 33.33%;
+     
   }
     .home-tab .statistics-details {
       margin-bottom: 15px;

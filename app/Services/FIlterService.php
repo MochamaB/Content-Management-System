@@ -81,16 +81,22 @@ class FilterService
         ];
     }
 
-    public function getAllLeasesFilters()
+    public function getLeaseFilters(Request $request)
     {
         $properties = Property::pluck('property_name', 'id')->toArray();
-        $units = Unit::pluck('unit_number', 'id')->toArray();
+        $propertyId = $request->property_id;
+        if ($propertyId) {
+            $units = Unit::where('property_id', $propertyId)->pluck('unit_number', 'id')->toArray();
+        } else {
+            // If property_id is not provided, fetch all units
+            $units = Unit::pluck('unit_number', 'id')->toArray();
+        }
         $status = Lease::pluck('status', 'status')->toArray();
         // Define the columns for the unit report
         return [
-            'property_id' => ['label' => 'Properties', 'values' => $properties],
-            'unit_id' => ['label' => 'Units', 'values' => $units],
-            'status' => ['label' => 'Status', 'values' => $status]
+            'property_id' => ['label' => 'Properties', 'values' => $properties,  'inputType' => 'select', 'filtertype' => 'main'],
+            'unit_id' => ['label' => 'Units', 'values' => $units,  'inputType' => 'select', 'filtertype' => 'main'],
+            'status' => ['label' => 'Status', 'values' => $status,  'inputType' => 'select', 'filtertype' => 'main']
         ];
     }
 

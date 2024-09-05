@@ -27,6 +27,9 @@ use App\Services\InvoiceService;
 use App\Services\TableViewDataService;
 use App\Actions\UploadMediaAction;
 use Illuminate\Support\Facades\Log;
+use App\Services\FilterService;
+use App\Services\CardService;
+
 
 class LeaseController extends Controller
 {
@@ -45,6 +48,8 @@ class LeaseController extends Controller
     private $invoiceService;
     private $recordTransactionAction;
     private $tableViewDataService;
+    protected $filterService;
+    private $cardService;
 
 
 
@@ -55,7 +60,8 @@ class LeaseController extends Controller
         DepositService $DepositService,
         InvoiceService $invoiceService,
         RecordTransactionAction $recordTransactionAction,
-        TableViewDataService $tableViewDataService
+        TableViewDataService $tableViewDataService,
+        FilterService $filterService, CardService $cardService
     ) {
         $this->model = Lease::class;
 
@@ -71,12 +77,18 @@ class LeaseController extends Controller
         $this->invoiceService = $invoiceService;
         $this->recordTransactionAction = $recordTransactionAction;
         $this->tableViewDataService = $tableViewDataService;
+        $this->filterService = $filterService;
+        $this->cardService = $cardService;
     }
-    public function index()
+    public function index(Request $request)
     {
         //  $user = Auth::user();
-        $tablevalues = lease::with('property', 'unit', 'user')->get();
-        $mainfilter =  $this->model::pluck('status')->toArray();
+         // Clear previousUrl if navigating to a new  method
+        session()->forget('previousUrl');
+        $filters = $request->except(['tab','_token','_method']);
+        $filterdata = $this->filterService->getLeaseFilters($request);
+        $tablevalues = lease::with('property', 'unit', 'user')->showSoftDeleted()->ApplyFilters($filters)->get();
+        $cardData = $this->cardService->leaseCard($tablevalues);
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         /// TABLE DATA ///////////////////////////
@@ -116,10 +128,7 @@ class LeaseController extends Controller
         }
 
         return View(
-            'admin.CRUD.form',
-            compact('mainfilter', 'tableData', 'controller'),
-            $viewData,
-            ['controller' => $this->controller]
+            'admin.CRUD.form',compact('tableData', 'controller','filterdata','cardData')
         );
     }
 
