@@ -214,11 +214,12 @@ class TicketController extends Controller
         $vendors = Vendor::all();
         // Get the "tenant" role
         $tenantRole = ModelsRole::where('name', 'tenant')->first();
-
         // Get all users except those with the "tenant" role
-        $users = User::whereDoesntHave('roles', function ($query) use ($tenantRole) {
+        $users =  User::ApplyFilterUsers()
+        ->whereDoesntHave('roles', function ($query) use ($tenantRole) {
             $query->where('role_id', $tenantRole->id);
         })->get();
+        
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 

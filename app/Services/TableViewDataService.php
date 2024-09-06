@@ -749,7 +749,7 @@ class TableViewDataService
                 $requestStatus . ' ' . $status,
                 $item->category,
                 $item->subject
-                    . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . $item->property->property_name . ' ' . $unit . '</span>',
+                    . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . ($item->property->property_name ?? '') . ' ' .($unit ?? ''). '</span>',
                 Carbon::parse($item->created_at)->format('Y-m-d')
                     . '</br><span class="text-muted" style="font-weight:500;font-style: italic">' . $ageInDays . ' Days </span>',
                 $raisedby
@@ -762,7 +762,7 @@ class TableViewDataService
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+                array_splice($row, 3, 0, $item->property->property_name ?? ''); // Replace with how you get unit details
             }
             $tableData['rows'][] = $row;
         }

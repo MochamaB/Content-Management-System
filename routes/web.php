@@ -251,6 +251,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('roleuser', [UserController::class, 'roleuser']);
         Route::post('userinfo', [UserController::class, 'userinfo']);
         Route::post('assignProperties', [UserController::class, 'assignProperties']);
+        Route::put('updateAssignedUnits/{id}', [UserController::class, 'updateAssignedUnits']);
+       
 
         /////role wizard
         Route::post('assignpermission', [RoleController::class, 'assignpermission']);

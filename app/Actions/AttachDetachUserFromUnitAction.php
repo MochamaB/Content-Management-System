@@ -31,6 +31,7 @@ class AttachDetachUserFromUnitAction
 
     public function assignFromView(User $user, $unitIds, Request $request)
     {
+        dd($request->all());
         // Detach the old units from the user
         $user->units()->detach();
 

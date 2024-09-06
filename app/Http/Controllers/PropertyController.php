@@ -184,7 +184,7 @@ class PropertyController extends Controller
         $unitTableData = $this->tableViewDataService->getUnitData($property->units);
 
         //3. USERS
-        $users = $property->users;
+        $users = $property->users()->distinct()->get();
         $userTableData = $this->tableViewDataService->getUserData($users);
         //3.UTILITIES
         $utilities = $property->utilities;

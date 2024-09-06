@@ -63,6 +63,7 @@ class UserController extends Controller
     public function index()
     {
         /** @var \App\Models\User $user */
+        /*
         $user = Auth::user();
         if (Gate::allows('view-all', $user)) {
         
@@ -75,6 +76,8 @@ class UserController extends Controller
         }else {
             $users = $user->filterUsers();
         }
+            */
+        $users = User::with('properties','units')->ApplyFilterUsers()->get();
         $mainfilter =  Role::pluck('name')->toArray();
         $filterData = $this->filterData($this->model);
         $controller = $this->controller;
@@ -319,16 +322,16 @@ class UserController extends Controller
     {
         $editUser = $user;
         $roles = Role::all();
-        $userRole = $editUser->roles->pluck('name');
-        $assignedproperties = $editUser->units->pluck('id')->toArray();
+        $userRole = $user->roles->pluck('name');
+        $assignedproperties = $user->units->pluck('id')->toArray();
        
         //// Role of user being edited
         //   $savedRole = Role::where('id', $userRole)->first();
 
         $pageheadings = collect([
-            '0' => $editUser->email,
-            '1' => $editUser->firstname,
-            '2' => $editUser->lastname,
+            '0' => $user->email,
+            '1' => $user->firstname,
+            '2' => $user->lastname,
         ]);
         $propertyaccess = Property::with('units')->get();
         $assignedUnits = User::role($userRole)->with('units')->get()->pluck('units')->flatten()->pluck('id')->toArray();
@@ -347,13 +350,13 @@ class UserController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Roles') {
-                $tabContents[] = View('admin.User.user_roles', compact('roles', 'editUser', 'userRole'))->render();
+                $tabContents[] = View('admin.User.user_roles', compact('roles', 'user', 'userRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $tabContents[] = View('admin.User.user_contactinfo', compact('editUser'))->render();
+                $tabContents[] = View('admin.User.user_contactinfo', compact('user'))->render();
             } elseif ($title === 'Login Access') {
-                $tabContents[] = View('admin.User.user_logins', compact('editUser'))->render();
+                $tabContents[] = View('admin.User.user_logins', compact('user'))->render();
             } elseif ($title === 'Property Access') {
-                $tabContents[] = View('admin.User.user_property', compact('userRole', 'propertyaccess', 'assignedproperties', 'assignedUnits'))->render();
+                $tabContents[] = View('admin.User.user_property', compact('editUser','userRole', 'propertyaccess', 'assignedproperties', 'assignedUnits'))->render();
             }
         }
 
@@ -378,13 +381,35 @@ class UserController extends Controller
         $user->update($request->all());
         $this->uploadMediaAction->handle($user, 'profilepicture', 'avatar', $request);
 
+        
+       // $this->attachDetachUserFromUnitAction->assignFromView($user, $unitIds, $request);
 
+
+
+      
+    }
+
+    public function updateAssignedUnits(Request $request, $id)
+    {
+        $user = User::find($id);
+        $user->units()->detach();
+        //Attach Units
         $unitIds = $request->input('unit_id', []);
-        $this->attachDetachUserFromUnitAction->assignFromView($user, $unitIds, $request);
+        $properties = [];
+        foreach ($unitIds as $unitId => $selected) {
+            if ($selected) {
+                // Retrieve the corresponding property_id from the hidden field
+                $propertyId = $request->input("property_id.{$unitId}");
+
+                // Store the unit and property IDs
+               // Attach the unit to the user with the associated property_id
+               $user->units()->attach($unitId, ['property_id' => $propertyId]);
+            }
+        }
 
 
+        return redirect()->back()->with('status', $this->controller['1'] . ' Edited Successfully');
 
-        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**

@@ -238,7 +238,7 @@ class User extends Authenticatable implements HasMedia
                     ->having('permission_count', '<', $loggedInUserPermissions->count());
             });
     }
-    public function scopeUserAcess($query)
+    public function scopeUserAccess($query)
     {
         $user = auth()->user();
         if ($user  && $user->id) {
@@ -264,7 +264,7 @@ class User extends Authenticatable implements HasMedia
         $query = self::query(); // Initialize the query builder
 
         if (auth()->user()->id !== 1) {
-            $query->userAcess(); // Apply the scope conditionally
+            $query->userAccess(); // Apply the scope conditionally
         }
 
         $allUsers = $query
@@ -287,6 +287,40 @@ class User extends Authenticatable implements HasMedia
 
         return $filteredUsers;
     }
+
+    public function scopeApplyFilterUsers($query)
+    {
+        $user = auth()->user();
+    
+        // If no user is authenticated or if the user is super admin or an admin, return all users
+        if (!$user || $user->id === 1 || stripos($user->roles->first()->name, 'admin') !== false) {
+            return $query->where('id', '!=', 1)
+            ->where('id', '<>', $user->id); // Return the unfiltered query
+        }
+    
+        $loggedInUserRoles = $user->roles;
+        $loggedInUserPermissions = $loggedInUserRoles->flatMap(function ($role) {
+            return $role->permissions;
+        });
+    
+        // Apply the UserAccess scope if the user's ID is not 1
+        if ($user->id !== 1) {
+            $query->userAccess(); // Make sure this is spelled correctly (Access, not Acess)
+        }
+    
+        // Ensure roles and permissions are properly joined and aggregated
+        return $query->where('id', '!=', 1) // Exclude users with id 1
+            ->where('id', '<>', $user->id) // Exclude loggedinuser from
+            ->with('roles.permissions')
+            ->whereHas('roles', function ($roleQuery) use ($loggedInUserPermissions) {
+                $roleQuery->whereHas('permissions', function ($permissionQuery) use ($loggedInUserPermissions) {
+                    // Check for the permission count within roles
+                    $permissionQuery->groupBy('permissions.id')
+                        ->havingRaw('COUNT(*) < ?', [$loggedInUserPermissions->count()]);
+                });
+            });
+    }
+    
 
     public function scopeTenants(Builder $query, User $user)
     {

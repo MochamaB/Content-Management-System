@@ -40,7 +40,7 @@ margin-top:60px;
 text-align: center;
 counter-increment:container 1;
 color: black;
-font-size:14px;
+font-size:16px;
 }
 .progress-bar li::before{
 content:counter(container);
@@ -86,12 +86,12 @@ display:none;
 color:#fff;
 text-align: center;
 padding: 10px;
-font-size: 17px;
+font-size: 16px;
 border:1px solid #0000ff;
 background-color: #0000ff;
 }
 .progress-bar li.active{
-  font-size: 17px;
+  font-size: 16px;
 color:#0000ff;
 }
 
@@ -99,14 +99,14 @@ color:#0000ff;
   color:#fff;
   text-align: center;
   padding: 10px;
-  font-size: 17px;
+  font-size: 16px;
   border:1px solid #ffaf00;
   background-color: #ffaf00;
   content: "\f12c";  /* Unicode for tick icon from mdi */
   font-family: 'Material Design Icons'; 
   }
   .progress-bar li.completed{
-    font-size: 19px;
+    font-size: 16px;
   color:#ffaf00;
   }
 
