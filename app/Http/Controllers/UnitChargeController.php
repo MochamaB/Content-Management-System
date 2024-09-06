@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use App\Services\TableViewDataService;
 use App\Services\DepositService;
 use App\Services\FilterService;
+use App\Services\CardService;
 
 class UnitChargeController extends Controller
 {
@@ -31,9 +32,10 @@ class UnitChargeController extends Controller
     private $tableViewDataService;
     private $DepositService;
     private $filterService;
+    private $cardService;
 
     public function __construct(TableViewDataService $tableViewDataService, DepositService $DepositService,
-    FilterService $filterService)
+    FilterService $filterService, CardService $cardService)
     {
         $this->model = unitcharge::class;
         $this->controller = collect([
@@ -43,6 +45,7 @@ class UnitChargeController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->DepositService = $DepositService;
         $this->filterService = $filterService;
+        $this->cardService = $cardService;
     }
 
 
@@ -52,12 +55,13 @@ class UnitChargeController extends Controller
         $filters = $request->except(['tab','_token','_method']);
         $unitChargeData = $this->model::with('property', 'unit')->whereNull('parent_id')->applyFilters($filters)->get();
         $filterdata = $this->filterService->getUnitChargeFilters($request);
+        $cardData = $this->cardService->unitchargeCard($unitChargeData);
       //  $mainfilter =  $this->model::pluck('charge_type')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getUnitChargeData($unitChargeData, true);
 
-        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller'));
+        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller','cardData'));
     }
 
     /**

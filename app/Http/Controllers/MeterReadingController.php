@@ -13,6 +13,7 @@ use App\Models\Unitcharge;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use Carbon\Carbon;
+use App\Services\CardService;
 
 
 
@@ -28,10 +29,11 @@ class MeterReadingController extends Controller
     protected $model;
     private $tableViewDataService;
     private $filterService;
+    private $cardService;
 
     public function __construct(
         TableViewDataService $tableViewDataService,
-        FilterService $filterService
+        FilterService $filterService, CardService $cardService
     ) {
         $this->model = MeterReading::class;
 
@@ -42,6 +44,7 @@ class MeterReadingController extends Controller
 
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
+        $this->cardService = $cardService;
     }
 
     public function index(Request $request)
@@ -53,9 +56,10 @@ class MeterReadingController extends Controller
         $filterdata = $this->filterService->getMeterReadingsFilters();
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getMeterReadingsData($meterReadings, true);
+        $cardData = $this->cardService->meterReadingCard($meterReadings,$filters);
         return View(
             'admin.CRUD.form',
-            compact('tableData', 'controller', 'filterdata'),
+            compact('tableData', 'controller', 'filterdata','filters','cardData'),
             //  $viewData,
             [
                 //     'cardData' => $cardData,

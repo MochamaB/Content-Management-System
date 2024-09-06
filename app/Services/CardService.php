@@ -56,10 +56,10 @@ class CardService
         //  $paymentCount = $invoicePayments->sum('payments_count');
         // Define the columns for the unit report
         $cards =  [
-            'propertyCount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'pecentage' => '', 'links' => '/property'],
-            'unitCount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'pecentage' => '', 'links' => '/unit'],
-            'invoices' => ['title' => 'Invoiced Amount', 'value' => '', 'amount' => $invoices, 'pecentage' => '', 'links' => '/invoice'],
-            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
+            'propertyCount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '/property'],
+            'unitCount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '/unit'],
+            'invoices' => ['title' => 'Invoiced Amount', 'value' => '', 'amount' => $invoices, 'percentage' => '', 'links' => '/invoice'],
+            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'links' => '/payment'],
         ];
         return $cards;
     }
@@ -81,10 +81,10 @@ class CardService
         })->sum('totalamount');
         $balance = $invoiceSum - $paymentSum;
         $cards =  [
-            'maintenance' => ['title' => 'No of Tickets', 'value' => $maintenance, 'amount' => '', 'pecentage' => '', 'links' => '/ticket'],
-            'invoiceSum' => ['title' => 'Total Invoiced', 'value' => $invoiceSum, 'amount' => '', 'pecentage' => '', 'links' => '/invoice'],
-            'paymentSum' => ['title' => 'Total Paid', 'value' => '', 'amount' => $paymentSum, 'pecentage' => '', 'links' => '/invoice'],
-            'balance' => ['title' => 'Unpaid Balance', 'value' => '', 'amount' => $balance, 'pecentage' => '', 'links' => '/payment'],
+            'maintenance' => ['title' => 'No of Tickets', 'value' => $maintenance, 'amount' => '', 'percentage' => '', 'links' => '/ticket'],
+            'invoiceSum' => ['title' => 'Total Invoiced', 'value' => $invoiceSum, 'amount' => '', 'percentage' => '', 'links' => '/invoice'],
+            'paymentSum' => ['title' => 'Total Paid', 'value' => '', 'amount' => $paymentSum, 'percentage' => '', 'links' => '/invoice'],
+            'balance' => ['title' => 'Unpaid Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'links' => '/payment'],
         ];
         return $cards;
     }
@@ -157,11 +157,11 @@ class CardService
         //  $paymentCount = $invoicePayments->sum('payments_count');
         // Define the columns for the unit report
         $cards =  [
-            'unitCount' => ['title' => 'Total Units', 'icon' => '', 'value' => $unitCount, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'forRent' => ['title' => 'For Rent', 'icon' => '', 'value' => $forRent, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'forSale' => ['title' => 'For Sale', 'icon' => '', 'value' => $forSale, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'unitsleased' => ['title' => 'Active Leases', 'icon' => '', 'value' => $unitsleased, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'Vacant Units' => ['title' => 'Vacant Units', 'icon' => '', 'value' => $vacant, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'unitCount' => ['title' => 'Total Units', 'icon' => '', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'forRent' => ['title' => 'For Rent', 'icon' => '', 'value' => $forRent, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'forSale' => ['title' => 'For Sale', 'icon' => '', 'value' => $forSale, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'unitsleased' => ['title' => 'Active Leases', 'icon' => '', 'value' => $unitsleased, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'Vacant Units' => ['title' => 'Vacant Units', 'icon' => '', 'value' => $vacant, 'amount' => '', 'percentage' => '', 'links' => ''],
         ];
         return $cards;
     }
@@ -186,11 +186,11 @@ class CardService
         //  $paymentCount = $invoicePayments->sum('payments_count');
         // Define the columns for the unit report
         $cards =  [
-            'leaseCount' => ['title' => 'Total Leases', 'icon' => '', 'value' => $leaseCount, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'activeleases' => ['title' => 'Active', 'icon' => '', 'value' => $activeleases, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'open' => ['title' => 'Open Leases', 'icon' => '', 'value' => $open, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'fixed' => ['title' => 'Closed Leases', 'icon' => '', 'value' => $fixed, 'amount' => '', 'pecentage' => '', 'links' => ''],
-            'inactive Units' => ['title' => 'Inactive / Suspended', 'icon' => '', 'value' => $inactive, 'amount' => '', 'pecentage' => '', 'links' => ''],
+            'leaseCount' => ['title' => 'Total Leases', 'icon' => '', 'value' => $leaseCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'activeleases' => ['title' => 'Active', 'icon' => '', 'value' => $activeleases, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'open' => ['title' => 'Open Leases', 'icon' => '', 'value' => $open, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'fixed' => ['title' => 'Closed Leases', 'icon' => '', 'value' => $fixed, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'inactive Units' => ['title' => 'Inactive / Suspended', 'icon' => '', 'value' => $inactive, 'amount' => '', 'percentage' => '', 'links' => ''],
         ];
         return $cards;
     }
@@ -217,8 +217,8 @@ class CardService
         $cards =  [
             'invoicecount' => ['title' => 'Total Invoices', 'value' => $invoiceCount, 'amount' => '', 'percentage' => '', 'links' => ''],
             'paymentCount' => ['title' => 'Total Payments', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
-            'amountinvoiced' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'pecentage' => '', 'links' => ''],
-            'invoicepaid' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $invoicepaid, 'pecentage' => '', 'links' => ''],
+            'amountinvoiced' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'percentage' => '', 'links' => ''],
+            'invoicepaid' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $invoicepaid, 'percentage' => '', 'links' => ''],
             'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'links' => ''],
             'payRate' => ['title' => 'Payment Percentage', 'value' => '', 'amount' => '', 'percentage' => $payRate, 'links' => ''],
         ];
@@ -266,6 +266,63 @@ class CardService
         ];
         return $cards;
     }
+
+    
+    public function unitchargeCard($unitcharge)
+    {
+
+
+       
+        // Get the count of reccuring charges that are for sale
+        $recurring = $unitcharge->filter(function ($unitcharge) {
+            return $unitcharge->recurring_charge === 'yes';
+        })->count();
+         // Get the count of units that are for sale
+        $fixedRate = $unitcharge->filter(function ($unitcharge) {
+            return $unitcharge->charge_type === 'fixed';
+        })->count();
+        $unitRate = $unitcharge->filter(function ($unitcharge) {
+            return $unitcharge->charge_type === 'units';
+        })->count();
+
+        //  $paymentCount = $invoicePayments->sum('payments_count');
+        // Define the columns for the unit report
+        $cards =  [
+            'recurring' => ['title' => 'Total Recurring Charges', 'icon' => '', 'value' => $recurring, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'fixedRate' => ['title' => 'Charges Per Fixed Rate', 'icon' => '', 'value' => $fixedRate, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'unitRate' => ['title' => 'Charges Per Unit Rate', 'icon' => '', 'value' => $unitRate, 'amount' => '', 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
+    public function meterReadingCard($reading,$filters)
+    {
+       // Convert the dates to Carbon instances
+    $fromDate = isset($filters['from_date']) ? Carbon::parse($filters['from_date']) : null;
+    $toDate = isset($filters['to_date']) ? Carbon::parse($filters['to_date']) : null;
+
+    // Check if both dates are valid before calculating the difference in months
+    if ($fromDate && $toDate) {
+        $months = $fromDate->diffInMonths($toDate) + 1;
+    } else {
+        // Handle the case where one or both dates are not provided
+        $months = 1;
+    }
+
+       $expectedReadings = Unitcharge::where('charge_type','units')->count();
+       $totalExpectedReadings = $expectedReadings * $months;
+        // Get the count of reccuring charges that are for sale
+        $totalReadings = $reading->count();
+        $difference = $totalExpectedReadings - $totalReadings;
+        $cards =  [
+            'expectedReadings' => ['title' => 'Expected Readings', 'icon' => '', 'value' => $totalExpectedReadings, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'totalReadings' => ['title' => 'Actual Readings', 'icon' => '', 'value' => $totalReadings, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'unitRate' => ['title' => 'Charges Without Readings', 'icon' => '', 'value' => $difference, 'amount' => '', 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
+
 
     public function invoiceChart($invoices = null)
     {

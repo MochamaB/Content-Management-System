@@ -1,6 +1,7 @@
 @extends('layouts.admin.admin')
 
 @section('content')
+@include('admin.CRUD.timeline_horizontal')
 <div class="row">
     <div class="col-md-7">
 

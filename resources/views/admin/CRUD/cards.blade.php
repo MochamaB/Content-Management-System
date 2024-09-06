@@ -9,7 +9,7 @@
         }
     }
 </style>
-<div class="row statistics-details " style="margin: 10px 0px; padding:15px 10px 0px 10px; ">
+<div class="row statistics-details " style="margin: 10px 0px; padding:15px 10px 0px 0px; ">
     @foreach($cardData as $cardType => $card)
     <!-- TOTAL CARDS -->
     <div class="col text-left pb-2">
@@ -19,7 +19,7 @@
             <span style="padding-left: 5px;">{{ $card['title'] }}</span>
         </p> <!--Title -->
 
-        <h3 class="rate-percentage">
+        <h3 class="rate-percentage text-center">
             {{ $card['value'] ?? 0 }}
         </h3>
         @elseif(!empty($card['amount']) || $card['amount'] === 0)

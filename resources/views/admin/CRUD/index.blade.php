@@ -10,7 +10,7 @@
 -->
 
 
-<form class="" method="GET" action="{{ url()->current() }}">
+<form class="filterForm" method="GET" action="{{ url()->current() }}">
     @if (isset($cardData))
     <div class=" contwrapper mb-2">
         <div class="row">

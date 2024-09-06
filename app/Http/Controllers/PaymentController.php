@@ -70,7 +70,7 @@ class PaymentController extends Controller
 
         return View(
             'admin.CRUD.form',
-            compact('tableData', 'controller','cardData','filterdata',),
+            compact('tableData', 'controller','cardData','filterdata','filters'),
             //  $viewData,
             [
                 //   'cardData' => $cardData,
