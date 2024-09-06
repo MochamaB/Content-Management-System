@@ -15,7 +15,7 @@
                 @endforeach
         </h3>
         @if ($routeCount > 1 && $routeParts[1] != 'index')
-        <button type="button" onclick="history.back()" class="btn btn-outline-primary ms-auto mb-0 me-0">
+        <button type="button" onclick="history.back()" class="btn btn-outline-primary ms-auto mb-0 me-0 d-none d-lg-block">
             <i class="mdi mdi-arrow-left-bold-circle mdi-24"> BACK</i>
         </button>
         @elseif(isset($controller)  && (Auth::user()->can($controller[0].'.create') || Auth::user()->id === 1) 

@@ -1,6 +1,5 @@
-
 @if(($routeParts[1] === 'create'))
-<h4>Login Acess</h4>
+<h6>Login Access</h6>
 <hr>
 <div class="col-md-6">
     <div class="form-group">
@@ -39,46 +38,50 @@
     </div>
 </div>
 @elseif(($routeParts[1] === 'edit'))
-<h4 style="text-transform: capitalize;">{{$routeParts[0]}} Password Reset &nbsp; 
-@if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
-<a href="" class="editLink">Edit</a></h4>
-@endif
-<hr>
-<div class="col-md-6">
-    <div class="form-group">
-        <label class="label">Password<span class="requiredlabel">*</span></label>
-        <div class="input-group">
-            <input type="password" name="password" id="password" class="form-control" value="property123" required />
-            <div class="input-group-prepend">
-                <span class="input-group-text bg-primary text-white">
-                    <i class="mdi mdi-eye" id="password-toggle"></i>
-                </span>
+<form method="POST" action="{{ url($routeParts[0].'/'.$editUser->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
+    @method('PUT')
+    @csrf
+    <h4 style="text-transform: capitalize;">{{$routeParts[0]}} Password Reset &nbsp;
+        @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
+        <a href="" class="editLink"> &nbsp;&nbsp;<i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a>
+    </h4>
+    @endif
+    <hr>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="label">Password<span class="requiredlabel">*</span></label>
+            <div class="input-group">
+                <input type="password" name="password" id="password" class="form-control" value="property123" required />
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-primary text-white">
+                        <i class="mdi mdi-eye" id="password-toggle"></i>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="col-md-6">
-    <div class="form-group">
-        <label class="label">Confirm Password<span class="requiredlabel">*</span></label>
-        <div class="input-group">
-            <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" value="property123" required />
-            <div class="input-group-prepend">
-                <span class="input-group-text bg-primary text-white">
-                    <i class="mdi mdi-eye" id="password_confirmation-toggle"></i>
-                </span>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="label">Confirm Password<span class="requiredlabel">*</span></label>
+            <div class="input-group">
+                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" value="property123" required />
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-primary text-white">
+                        <i class="mdi mdi-eye" id="password_confirmation-toggle"></i>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
-<br />
+    <br />
 
-                    <div class="col-md-6  ">
-                        <button type="submit" class="btn btn-primary  btn-lg text-white mb-0 me-0 submitBtn" id="">Edit: Reset Password</button>
-                    </div>
-   
+    <div class="col-md-6  ">
+        <button type="submit" class="btn btn-primary  btn-lg text-white mb-0 me-0 submitBtn" id="">Edit: Reset Password</button>
+    </div>
 
+</form>
 @endif
 <script>
     $(document).ready(function() {

@@ -30,9 +30,9 @@
       </li>
     </ul>
     <ul class="navbar-nav ms-auto">
-      <li class="nav-item">
+      <li class="nav-item" >
         <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
-          <span class="mdi mdi-menu"></span>
+          <span class="mdi mdi-menu" style="padding-right: 15px;"></span>
         </button>
       </li>
       <li class="nav-item d-none d-lg-block">
@@ -49,7 +49,7 @@
       $avatarUrl = $user ? $user->getFirstMediaUrl('avatar') : null;
       $avatarUrl = empty($avatarUrl) ? 'uploads/images/avatar.png' : $avatarUrl;
       @endphp
-      <li class="nav-item dropdown  user-dropdown">
+      <li class="nav-item dropdown  user-dropdown d-none d-lg-block">
         <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
 
           <img class="img-xs rounded-circle" src="{{  url($avatarUrl) }}" alt="Profile image"> </a>
@@ -70,8 +70,8 @@
           </form>
         </div>
       </li>
-      <li class="nav-item font-weight-semibold d-none d-lg-block ms-0"></br>
-        <p class=""> &nbsp;Hi, <span class="text-black fw-bold">{{$user->firstname ?? 'Firstname'}}</span></p>
+      <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">Welcome Back</br>
+        <p class=""> &nbsp;<span class="text-black fw-bold">{{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'lastname'}}</span></p>
       </li>
 
     </ul>

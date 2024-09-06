@@ -72,7 +72,7 @@
             <div class="form-group">
                 <label class="label">Assign To &nbsp;&nbsp;&nbsp;
                     @if( Auth::user()->can('ticket.assign') || Auth::user()->id === 1)
-                    <a class="" href="{{ url('ticket/assign/'.$tickets->id) }}"><i class="mdi mdi-lead-pencil text-primary">Edit</i></a>
+                    <a class="" href="{{ url('ticket/assign/'.$tickets->id) }}"> <i class="mdi mdi-lead-pencil text-primary"></i></a>
                     @endif
                 </label>
                 <input type="hidden" name="user_id" value="{{$tickets->assigned_id}}">

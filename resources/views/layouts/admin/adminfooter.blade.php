@@ -145,8 +145,10 @@
       $submitBtn.toggle();
 
       // Toggle "Edit" link text between "Edit" and "Cancel"
-      $editLink.text(function(index, text) {
-        return text === "Edit" ? "Cancel" : "Edit";
+      $editLink.html(function(index, html) {
+        return html.includes("mdi-lead-pencil") 
+          ? '&nbsp;&nbsp;<i class="mdi mdi-close-circle mdi-16px text-danger" style="font-size:18px"></i>'
+          : '&nbsp;&nbsp;<i class="mdi mdi-lead-pencil mdi-16px text-primary" style="font-size:18px"></i>';
       });
     });
 

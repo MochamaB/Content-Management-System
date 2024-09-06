@@ -2,7 +2,7 @@
 <div class=" contwrapper">
     <h4 style="text-transform: capitalize;"> {{ $groupName }} Settings &nbsp;
         @if( Auth::user()->can('setting.system') || Auth::user()->id === 1)
-        <a href="" class="editLink"> Edit</a>
+        <a href="" class="editLink"> &nbsp;&nbsp;<i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a>
     </h4>
     @endif
     <hr>

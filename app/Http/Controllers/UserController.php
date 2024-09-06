@@ -350,11 +350,11 @@ class UserController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Roles') {
-                $tabContents[] = View('admin.User.user_roles', compact('roles', 'user', 'userRole'))->render();
+                $tabContents[] = View('admin.User.user_roles', compact('roles', 'editUser', 'userRole'))->render();
             } elseif ($title === 'Contact Information') {
-                $tabContents[] = View('admin.User.user_contactinfo', compact('user'))->render();
+                $tabContents[] = View('admin.User.user_contactinfo', compact('editUser'))->render();
             } elseif ($title === 'Login Access') {
-                $tabContents[] = View('admin.User.user_logins', compact('user'))->render();
+                $tabContents[] = View('admin.User.user_logins', compact('editUser'))->render();
             } elseif ($title === 'Property Access') {
                 $tabContents[] = View('admin.User.user_property', compact('editUser','userRole', 'propertyaccess', 'assignedproperties', 'assignedUnits'))->render();
             }
@@ -376,17 +376,21 @@ class UserController extends Controller
         // Get the list of fillable fields from the model
 
 
-        $user->syncRoles($request->get('role'));
-
         $user->update($request->all());
         $this->uploadMediaAction->handle($user, 'profilepicture', 'avatar', $request);
 
         
        // $this->attachDetachUserFromUnitAction->assignFromView($user, $unitIds, $request);
-
-
-
       
+    }
+
+    public function updateRole(Request $request, $id)
+    {
+        $user = User::find($id);
+        // Get the list of fillable fields from the model
+        $user->syncRoles($request->get('role'));
+
+        return redirect()->back()->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     public function updateAssignedUnits(Request $request, $id)

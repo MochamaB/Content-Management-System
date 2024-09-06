@@ -10,9 +10,9 @@
 </style>
 <div class=" contwrapper">
 
-    <h4>Edit Payment Method
-        <a href="" class="editLink">Edit</a>
-    </h4>
+    <h5>Edit Payment Method
+        <a href="" class="editLink"> &nbsp;&nbsp;<i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a>
+    </h5>
     <hr>
     <form action="{{ url('payment-method/'. $paymentMethod->id) }}" method="POST">
         @csrf

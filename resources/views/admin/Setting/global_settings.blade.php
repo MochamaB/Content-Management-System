@@ -3,7 +3,7 @@
 
     <h6 style="text-transform: capitalize;">All {{$className = class_basename($setting->model_type)}} Settings &nbsp;
         @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
-        <a href="#" class="editLink">Edit</a>
+        <a href="#" class="editLink"> &nbsp;&nbsp;<i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a>
     </h6>
     @endif
     <hr>
