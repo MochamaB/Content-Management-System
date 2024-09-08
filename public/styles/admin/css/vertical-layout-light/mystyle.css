@@ -1085,6 +1085,11 @@ a .badge:hover {
   font-size: 18px;
   color: #000;
 }
+.bootstrap-table .fixed-table-pagination>.pagination-detail .pagination-info {
+  line-height: 34px;
+  margin-right: 5px;
+  font-size: 14px;
+}
 .footer {
   background: #ffffff;
   padding: 20px 2.45rem;

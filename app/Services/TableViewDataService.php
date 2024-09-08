@@ -360,8 +360,8 @@ class TableViewDataService
             if ($item->charge_type == 'units') {
                 // Use the relationship to check for meter readings
                 $checkMeterReadings = $item->meterReading()
-                    ->where('startdate', '>=', $updatedFormatted)
-                    ->where('enddate', '<=', $nextdateFormatted)
+                    ->where('startdate', '<=', $nextdateFormatted)
+                    ->where('enddate', '>=', $updatedFormatted)
                     ->exists();
                 if (!$checkMeterReadings) {
                     $MeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $item->unit_id, 'model' => 'units']) . '" class="badge badge-warning mt-2">Add Reading</a>';
@@ -386,8 +386,8 @@ class TableViewDataService
 
                     if ($child->charge_type == 'units') {
                         $childCheckMeterReadings = $child->meterReading()
-                            ->where('startdate', '>=', $updatedFormatted)
-                            ->where('enddate', '<=', $nextdateFormatted)
+                            ->where('startdate', '<=', $nextdateFormatted)
+                            ->where('enddate', '>=', $updatedFormatted)
                             ->exists();
                         if (!$childCheckMeterReadings) {
                             $childMeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $child->unit_id, 'model' => 'units']) . '" class="badge badge-warning mt-2">Add Reading</a>';

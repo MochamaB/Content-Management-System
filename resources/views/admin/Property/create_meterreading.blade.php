@@ -66,16 +66,16 @@
                             {{ $latestread ? 'readonly' : '' }}>
                         </td>
                         <td  class="text-center" style="padding:0px">
-                            <input type="number" class="form-control @error('lastreading.' . $key) is-invalid @enderror" name="lastreading[]" id='' value="{{$latestread->currentreading ?? 0.00 }}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
+                            <input type="number" class="form-control  @if(session('statuserror')) is-invalid @endif" name="lastreading[]" id='' value="{{$latestread->currentreading ?? 0.00 }}" required {{ Auth::user()->id === 1 ||  Auth::user()->can($routeParts[0].'.edit') ? '' : 'readonly' }}>
                             @error('reading')
                             <div class="invalid-feedback">Error</div>
                             @enderror
                         </td>
                         <td  class="text-center" style="padding:0px">
-                            <input type="date" class="form-control @error('enddate.' . $key) is-invalid @enderror" name="enddate[]" id="enddate" value="{{ old('enddate.' . $key) ??  now()->toDateString() }}" required>
+                            <input type="date" class="form-control  @if(session('statuserror')) is-invalid @endif" name="enddate[]" id="enddate" value="{{ old('enddate.' . $key) ??  now()->toDateString() }}" required>
                         </td>
                         <td  class="text-center" style="padding:0px">
-                            <input type="number" class="form-control" name="currentreading[]" id="currentreading" value="{{ old('currentreading.' . $key)}}"required>
+                            <input type="number" class="form-control  @if(session('statuserror')) is-invalid @endif" name="currentreading[]" id="currentreading" value="{{ old('currentreading.' . $key)}}"required>
                             <input type="hidden" name="rate_at_reading[]" value="{{ $item->rate }}">
                         </td>
                     </tr>

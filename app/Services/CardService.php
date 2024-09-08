@@ -319,7 +319,7 @@ class CardService
         $cards =  [
             'expectedReadings' => ['title' => 'Expected Readings', 'icon' => '', 'value' => $totalExpectedReadings, 'amount' => '', 'percentage' => '', 'links' => ''],
             'totalReadings' => ['title' => 'Actual Readings', 'icon' => '', 'value' => $totalReadings, 'amount' => '', 'percentage' => '', 'links' => ''],
-            'unitRate' => ['title' => 'Charges Without Readings', 'icon' => '', 'value' => $difference, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'unitRate' => ['title' => 'Missing Readings', 'icon' => '', 'value' => $difference, 'amount' => '', 'percentage' => '', 'links' => ''],
         ];
         return $cards;
     }

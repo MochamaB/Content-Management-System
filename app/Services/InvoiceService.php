@@ -47,7 +47,7 @@ class InvoiceService
     {
         return Unitcharge::where('recurring_charge', 'Yes') /// ONly recurrent charges
             ->where('parent_id', null)  /// Only parent charges
-            //   ->whereMonth('nextdate', now()->month)
+               ->whereMonth('nextdate', now()->month)
             ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
             })
@@ -197,11 +197,11 @@ class InvoiceService
             $amount = 0.00;
             $meterReadings = MeterReading::where('unit_id', $unitcharge->unit_id)
                 ->where('unitcharge_id', $unitcharge->id)
-                ->where('startdate', '>=', $updatedFormatted) // Check readings after updated_at
-                ->where('enddate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
+                ->where('startdate', '<=', $nextdateFormatted)
+                ->where('enddate', '>=', $updatedFormatted)
                 ->get();
-
-
+            
+            // TODO: find out why its generating wrong amounts
             foreach ($meterReadings as $reading) {
                 // Calculate the amount based on meter readings and assign it to $amount
                 // If theres more than one reading,Accumulate the amount from each reading

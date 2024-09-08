@@ -86,10 +86,12 @@
                     ->whereDate('created_at', '>=', $invoice->created_at)
                     ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
                         ->first();
+                    $used = $meterReadings->currentreading - $meterReadings->lastreading;
                         @endphp
                         <ul class="list-unstyled text-left">
                             <li><i>Current Reading: {{$meterReadings->currentreading ?? ' 0'}} Units</i> </li>
                             <li><i>Last Reading: {{$meterReadings->lastreading ?? ' 0'}} Units</i> </li>
+                            <li><i>Used: {{$used?? ' 0'}} Units *  Rate:{{$meterReadings->rate_at_reading}}</i> </li>
                             <ul>
                                 @endif
                 </td>
