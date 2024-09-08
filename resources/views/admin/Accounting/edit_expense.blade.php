@@ -13,7 +13,8 @@
     
     <hr>
     <form method="POST" action="{{ url('expense/'.$instance->id) }}" class="myForm" novalidate>
-        @csrf
+    @csrf
+    @method('PUT')
         <div class="row">
             <!--- --------- ROW 1 ----->
             <div class="col-md-6" style="border-right: 2px solid #dee2e6;padding-right:30px">
@@ -74,7 +75,7 @@
                     </small>
                     </h5>
                     <select name="model_id" class="formcontrol2 " placeholder="Select" required>
-                        <option value="">{{ $instance->model->name}}</option>
+                        <option value="{{ $instance->model->id}}">{{ $instance->model->name}}</option>
                         <option value="">Select Vendor</option>
                         @foreach($vendors as $vendor)
                         <option value="{{$vendor->id}}">{{$vendor->name}}</option>
@@ -88,10 +89,11 @@
                     <label class="label"> Due on Date<span class="requiredlabel">*</span></label>
                     <h5>
                     <small class="text-muted" style="text-transform: capitalize;">
-                        {{ $instance->duedate}}
+                        {{ \Carbon\Carbon::parse($instance->duedate)->format('Y-m-d')}}
                     </small>
                     </h5>
-                    <input type="date" class="form-control" id="duedate" name="duedate" value="{{ $instance->duedate}}" required>
+                    <input type="date" class="form-control" id="duedate" name="duedate" value="{{ $instance->duedate ? \Carbon\Carbon::parse($instance->duedate)->format('Y-m-d') : '' }}" required>
+
                 </div>
 
             </div>
@@ -112,7 +114,7 @@
         @include('admin.Accounting.edit_table')
         <hr>
         <div class="col-md-6">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Add Expense</button>
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit Expense</button>
         </div>
     </form>
 </div>

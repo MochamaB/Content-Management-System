@@ -23,7 +23,7 @@
         @elseif(($routeParts[1] === 'edit'))
         <h4 style="text-transform: capitalize;"> Role Summary &nbsp;
             @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
-            <a href="" class="editLink">Edit</a>
+            <a href="" class="editLink"> &nbsp;&nbsp;<i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a>
         </h4>
         @endif
         <hr>

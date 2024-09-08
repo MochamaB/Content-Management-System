@@ -17,6 +17,7 @@ use App\Models\Unitcharge;
 use Carbon\Carbon;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class RecordTransactionAction
 {
@@ -69,7 +70,7 @@ class RecordTransactionAction
                     $creditAccountId = $transactionType->creditaccount_id;
                 }
             }
-            $transaction = Transaction::create([
+            $transaction = new Transaction([
                 'property_id' => $model->property_id,
                 'unit_id' => $model->unit_id ?? null,
                 'unitcharge_id' =>  $unitcharge->id ?? $chargeid->unitcharge_id ??  null,
@@ -80,27 +81,42 @@ class RecordTransactionAction
                 'debitaccount_id' => $debitAccountId, ///Increase the Income Accounts
                 'creditaccount_id' => $creditAccountId, /// Decrease the Accounts Payable that was increased wehn invoices
                 'amount' => $item->amount,
+                'created_at' => $model->created_at, // Set the created_at timestamp to match the model
+                'updated_at' => $model->created_at // Optionally, set the updated_at timestamp to match the model as well
             ]);
+            // Set the created_at and updated_at explicitly
+            $transaction->created_at = $model->created_at;
+
+            // Save the transaction
+            $transaction->save();
 
             // Record ledger entry for debit
-            LedgerEntry::create([
+             $ledgerone = new LedgerEntry([
                 'property_id' => $transaction->property_id,
                 'unit_id' => $transaction->unit_id,
                 'chartofaccount_id' => $debitAccountId,
                 'transaction_id' => $transaction->id,
                 'amount' => $transaction->amount,
                 'entry_type' => 'debit',
+                'created_at' => $transaction->created_at, // Set the created_at timestamp to match the model
+                'updated_at' => $transaction->created_at 
             ]);
+            $ledgerone->created_at = $model->created_at;
+            $ledgerone->save();
 
             // Record ledger entry for credit
-            LedgerEntry::create([
+            $ledgertwo = new LedgerEntry([
                 'property_id' => $transaction->property_id,
                 'unit_id' => $transaction->unit_id,
                 'chartofaccount_id' => $creditAccountId, // Change this to the appropriate account ID
                 'transaction_id' => $transaction->id,
                 'amount' => $transaction->amount,
                 'entry_type' => 'credit',
+                'created_at' => $transaction->created_at, // Set the created_at timestamp to match the model
+                'updated_at' => $transaction->created_at 
             ]);
+            $ledgertwo->created_at = $model->created_at;
+            $ledgertwo->save();
         }
     }
 
@@ -264,4 +280,21 @@ class RecordTransactionAction
             'amount' => $payment->totalamount,
         ]);
     }
+
+    //Edit Transaction -->
+    public function updateTransaction(Model $model)
+    {
+        Transaction::where('transactionable_id', $model->id)
+            ->where('transactionable_type', get_class($model))
+            ->delete();
+
+             // Create new transactions
+            $this->transaction($model);
+        
+            
+    }  
+   
+
+
+
 }

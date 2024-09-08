@@ -14,6 +14,8 @@ use App\Models\Deposit;
 use App\Actions\CalculateInvoiceTotalAmountAction;
 use App\Models\DepositItems;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DepositService
 {
@@ -36,19 +38,19 @@ class DepositService
         $DepositData = $this->getDepositHeaderData($model, $user, $validatedData);
 
         //1. Create Deposit Header Data
-       
+
         $deposit = $this->createDeposit($DepositData);
 
         //2. Create Deposit items
-            $this->createDepositItems($deposit, $model, $validatedData);
+        $this->createDepositItems($deposit, $model, $validatedData);
 
         //3. Update Total Amount in Payment Header
-            $this->calculateTotalAmountAction->total($deposit);
+        $this->calculateTotalAmountAction->total($deposit);
 
         //4. Create Transactions for ledger
 
 
-            $this->recordTransactionAction->transaction($deposit, $model);
+        $this->recordTransactionAction->transaction($deposit, $model);
 
         //  $this->recordTransactionAction->voucherCharges($Deposit, $model);
 
@@ -104,33 +106,31 @@ class DepositService
     {
 
         if (!is_null($validatedData)) {
-                // Create deposit items from the form input names
-                foreach ($validatedData['chartofaccount_id'] as $index => $item) {
-                    $depositItem = new DepositItems([
-                        'deposit_id' => $deposit->id,
-                        'unitcharge_id' => null,
-                        'chartofaccount_id' => $item ?? null,
-                        'description' => $validatedData['description'][$index] ?? null,
-                        'amount' => $validatedData['amount'][$index] ?? null,
-                    ]);
-                    $depositItem->save();
-                }
-            
-        } else {
-            // Get items from the model (e.g., invoices)
-           // $items = $model->getItems();
-
-            // Create deposit items from the model items
-            
+            // Create deposit items from the form input names
+            foreach ($validatedData['chartofaccount_id'] as $index => $item) {
                 $depositItem = new DepositItems([
                     'deposit_id' => $deposit->id,
-                    'unitcharge_id' => $model->unitcharge_id ?? $model->id,
-                    'chartofaccount_id' => $model->chartofaccounts_id,
-                    'description' => $model->charge_name,
-                    'amount' => $model->rate,
+                    'unitcharge_id' => null,
+                    'chartofaccount_id' => $item ?? null,
+                    'description' => $validatedData['description'][$index] ?? null,
+                    'amount' => $validatedData['amount'][$index] ?? null,
                 ]);
                 $depositItem->save();
-            
+            }
+        } else {
+            // Get items from the model (e.g., invoices)
+            // $items = $model->getItems();
+
+            // Create deposit items from the model items
+
+            $depositItem = new DepositItems([
+                'deposit_id' => $deposit->id,
+                'unitcharge_id' => $model->unitcharge_id ?? $model->id,
+                'chartofaccount_id' => $model->chartofaccounts_id,
+                'description' => $model->charge_name,
+                'amount' => $model->rate,
+            ]);
+            $depositItem->save();
         }
     }
 
@@ -147,5 +147,76 @@ class DepositService
 
         //4. Create Transactions for ledger
         $this->recordTransactionAction->transaction($deposit);
+    }
+
+    public function updateDeposit($depositId, $validatedData, $user)
+    {
+        DB::beginTransaction();
+
+        try {
+            $deposit = Deposit::findOrFail($depositId);
+
+            // Update deposit header
+            $headerData = $this->getDepositHeaderData(null, $user, $validatedData);
+            $deposit->update($headerData);
+
+            // Update or create deposit items
+            $this->updateDepositItems($deposit, $validatedData);
+
+            //3. Update Total Amount in Payment Header
+            $this->calculateTotalAmountAction->total($deposit);
+
+            // Update associated transaction
+            $this->recordTransactionAction->updateTransaction($deposit);
+
+        // Update associated ledger entries
+            $this->recordTransactionAction->updateLedgerEntries($deposit);
+
+            DB::commit();
+            return $deposit;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error updating deposit: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    private function updateDepositItems($deposit, $validatedData)
+    {
+        // Get all current deposit items
+        $currentItems = $deposit->getItems()->get();
+        
+        // Keep track of updated and new item IDs
+        $updatedItemIds = [];
+    
+        foreach ($validatedData['chartofaccount_id'] as $index => $chartOfAccountId) {
+            $itemData = [
+                'chartofaccount_id' => $chartOfAccountId,
+                'description' => $validatedData['description'][$index] ?? null,
+                'amount' => $validatedData['amount'][$index] ?? null,
+            ];
+    
+            // Check if there's a matching existing item
+            $existingItem = $currentItems->first(function ($item) use ($chartOfAccountId, $itemData) {
+                return $item->chartofaccount_id == $chartOfAccountId &&
+                       $item->description == $itemData['description'];
+            });
+    
+            if ($existingItem) {
+                // Update existing item
+                $existingItem->update($itemData);
+                $updatedItemIds[] = $existingItem->id;
+            } else {
+                // Create new item
+                $newItem = $deposit->getItems()->create($itemData);
+                $updatedItemIds[] = $newItem->id;
+            }
+        }
+    
+        // Delete items that weren't updated or created
+        $deposit->getItems()->whereNotIn('id', $updatedItemIds)->delete();
+    
+        // Refresh the deposit relationship
+        $deposit->load('getItems');
     }
 }

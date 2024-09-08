@@ -20,7 +20,11 @@
         <span class="badge badge-filter d-flex align-items-center">
             <i class="mdi mdi-calendar" style="font-size: 16px;vertical-align: middle; padding-left: 5px;"></i>
             <span style="vertical-align: middle; padding-left: 5px;">
-                This month
+            @if(isset($filterScope) && $filterScope === '6_months')
+                    Last 6 months
+                @else
+                    This Month
+                @endif
             </span>
         </span>
         @endif

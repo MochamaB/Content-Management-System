@@ -23,9 +23,11 @@ class CardService
     private $paymentRepository;
     private $unitRepository;
 
-    public function __construct(InvoiceRepository $invoiceRepository, PaymentRepository $paymentRepository,
-    UnitRepository $unitRepository)
-    {
+    public function __construct(
+        InvoiceRepository $invoiceRepository,
+        PaymentRepository $paymentRepository,
+        UnitRepository $unitRepository
+    ) {
         $this->invoiceRepository = $invoiceRepository;
         $this->paymentRepository = $paymentRepository;
         $this->unitRepository = $unitRepository;
@@ -38,16 +40,16 @@ class CardService
         // Filter invoices for the current month and sum their total amount
         $invoices = $units->flatMap(function ($unit) use ($filters) {
             return $unit->invoices()
-                ->ApplyDateFilters($filters)
+                ->ApplyCurrentMonthFilters($filters)
                 ->get();
         })->sum('totalamount');
-       // Filter payments for the current month and sum their total amount
-       $payments = $units->flatMap(function ($unit) use ($filters) {
-        return $unit->payments()
-            ->ApplyDateFilters($filters)
-            ->get();
+        // Filter payments for the current month and sum their total amount
+        $payments = $units->flatMap(function ($unit) use ($filters) {
+            return $unit->payments()
+                ->ApplyCurrentMonthFilters($filters)
+                ->get();
         })->sum('totalamount');
-       
+
         $balance = $invoices - $payments;
         //   $invoicepaid =  $invoices->filter(function ($invoice) {
         //        return $invoice->payments !== null;
@@ -124,8 +126,8 @@ class CardService
                 return $ticket->status !== 'completed'; // Filter out tickets with the status "completed"
             });
         })->count();
-        
-       
+
+
         $cards =  [
             'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
             'Residential' => ['title' => 'Residential', 'value' => $residentialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
@@ -133,7 +135,7 @@ class CardService
             'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
             'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
             'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '', 'desc' => ''],
-           
+
         ];
         return $cards;
     }
@@ -146,7 +148,7 @@ class CardService
         $forRent = $units->filter(function ($unit) {
             return $unit->unit_type === 'rent';
         })->count();
-         // Get the count of units that are for sale
+        // Get the count of units that are for sale
         $forSale = $units->filter(function ($unit) {
             return $unit->unit_type === 'sale';
         })->count();
@@ -175,7 +177,7 @@ class CardService
         $activeleases = $lease->filter(function ($lease) {
             return $lease->status === 'Active';
         })->count();
-         // Get the count of units that are for sale
+        // Get the count of units that are for sale
         $open = $lease->filter(function ($lease) {
             return $lease->lease_period === 'open';
         })->count();
@@ -253,8 +255,8 @@ class CardService
 
         $cheque = $chequePayments->sum('totalamount');
         $chequeCount = $chequePayments->count();
-        
-     
+
+
         $cards =  [
             'paymentcount' => ['title' => 'Total Payments', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
             'totalpay' => ['title' => 'Total Amount ', 'value' => '', 'amount' => $totalpay, 'percentage' => '', 'links' => ''],
@@ -262,22 +264,22 @@ class CardService
             'mpesa' => ['title' => 'M-Pesa (' . $mpesaCount . ')', 'value' => '', 'amount' => $mpesa, 'percentage' => '', 'links' => ''],
             'bank' => ['title' => 'Bank (' . $bankCount . ')', 'value' => '', 'amount' => $bank, 'percentage' => '', 'links' => ''],
             'cheque' => ['title' => 'Cheque (' . $chequeCount . ')', 'value' => '', 'amount' => $cheque, 'percentage' => '', 'links' => ''],
-            
+
         ];
         return $cards;
     }
 
-    
+
     public function unitchargeCard($unitcharge)
     {
 
 
-       
+
         // Get the count of reccuring charges that are for sale
         $recurring = $unitcharge->filter(function ($unitcharge) {
             return $unitcharge->recurring_charge === 'yes';
         })->count();
-         // Get the count of units that are for sale
+        // Get the count of units that are for sale
         $fixedRate = $unitcharge->filter(function ($unitcharge) {
             return $unitcharge->charge_type === 'fixed';
         })->count();
@@ -295,22 +297,22 @@ class CardService
         return $cards;
     }
 
-    public function meterReadingCard($reading,$filters)
+    public function meterReadingCard($reading, $filters)
     {
-       // Convert the dates to Carbon instances
-    $fromDate = isset($filters['from_date']) ? Carbon::parse($filters['from_date']) : null;
-    $toDate = isset($filters['to_date']) ? Carbon::parse($filters['to_date']) : null;
+        // Convert the dates to Carbon instances
+        $fromDate = isset($filters['from_date']) ? Carbon::parse($filters['from_date']) : null;
+        $toDate = isset($filters['to_date']) ? Carbon::parse($filters['to_date']) : null;
 
-    // Check if both dates are valid before calculating the difference in months
-    if ($fromDate && $toDate) {
-        $months = $fromDate->diffInMonths($toDate) + 1;
-    } else {
-        // Handle the case where one or both dates are not provided
-        $months = 1;
-    }
+        // Check if both dates are valid before calculating the difference in months
+        if ($fromDate && $toDate) {
+            $months = $fromDate->diffInMonths($toDate) + 1;
+        } else {
+            // Handle the case where one or both dates are not provided
+            $months = 1;
+        }
 
-       $expectedReadings = Unitcharge::where('charge_type','units')->count();
-       $totalExpectedReadings = $expectedReadings * $months;
+        $expectedReadings = Unitcharge::where('charge_type', 'units')->count();
+        $totalExpectedReadings = $expectedReadings * $months;
         // Get the count of reccuring charges that are for sale
         $totalReadings = $reading->count();
         $difference = $totalExpectedReadings - $totalReadings;
@@ -318,6 +320,44 @@ class CardService
             'expectedReadings' => ['title' => 'Expected Readings', 'icon' => '', 'value' => $totalExpectedReadings, 'amount' => '', 'percentage' => '', 'links' => ''],
             'totalReadings' => ['title' => 'Actual Readings', 'icon' => '', 'value' => $totalReadings, 'amount' => '', 'percentage' => '', 'links' => ''],
             'unitRate' => ['title' => 'Charges Without Readings', 'icon' => '', 'value' => $difference, 'amount' => '', 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
+    public function expenseCard($expense)
+    {
+
+        $expenseCount = $expense->count();
+        $totaldue = $expense->sum('totalamount');
+        // Get the count of reccuring charges that are for sale
+        $totalPaid =  $expense->flatMap(function ($expense) {
+            return $expense->payments;
+        })->sum('totalamount');
+        $difference = $totaldue - $totalPaid;
+        $cards =  [
+            'expenseCount' => ['title' => 'Total Expenses', 'icon' => '', 'value' => $expenseCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'totaldue' => ['title' => 'Total Amount Due', 'icon' => '', 'value' => '', 'amount' => $totaldue, 'percentage' => '', 'links' => ''],
+            'totalPaid' => ['title' => 'Total Amount Paid', 'icon' => '', 'value' => '', 'amount' => $totalPaid, 'percentage' => '', 'links' => ''],
+            'difference' => ['title' => 'Balance', 'icon' => '', 'value' => '', 'amount' => $difference, 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
+    public function depositCard($deposit)
+    {
+
+        $depositCount = $deposit->count();
+        $totaldue = $deposit->sum('totalamount');
+        // Get the count of reccuring charges that are for sale
+        $totalPaid =  $deposit->flatMap(function ($deposit) {
+            return $deposit->payments;
+        })->sum('totalamount');
+        $difference = $totaldue - $totalPaid;
+        $cards =  [
+            'depositCount' => ['title' => 'Total Deposits', 'icon' => '', 'value' => $depositCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'totaldue' => ['title' => 'Total Amount Received', 'icon' => '', 'value' => '', 'amount' => $totaldue, 'percentage' => '', 'links' => ''],
+            'totalPaid' => ['title' => 'Total Amount Paid Offs', 'icon' => '', 'value' => '', 'amount' => $totalPaid, 'percentage' => '', 'links' => ''],
+            'difference' => ['title' => 'Balance', 'icon' => '', 'value' => '', 'amount' => $difference, 'percentage' => '', 'links' => ''],
         ];
         return $cards;
     }
@@ -332,5 +372,4 @@ class CardService
         $chart->description = "This is the description of the invoice chart."; // Example description
         return $chart;
     }
-    
 }

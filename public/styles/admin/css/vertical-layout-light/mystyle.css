@@ -27,7 +27,7 @@
 .navbar .navbar-menu-wrapper{
   background: #ffffff;
   box-shadow: 3px 2px 4px 2px rgba(0, 0, 0, 0.1);
-  height: 60px; /* Set the height for the menu wrapper */
+  height: 70px; /* Set the height for the menu wrapper */
   align-self: flex-start;
  
 }
@@ -1087,6 +1087,7 @@ a .badge:hover {
 }
 .footer {
   background: #ffffff;
+  padding: 20px 2.45rem;
 }
 
   /*------------------------ Responsiveness ----------------------------------------------------------  */

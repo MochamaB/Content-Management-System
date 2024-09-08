@@ -8,9 +8,11 @@ use App\Models\Property;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use App\Models\Unitcharge;
+use App\Models\User;
 use App\Models\Vendor;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
+use App\Services\CardService;
 use App\Services\DepositService;
 use App\Traits\FormDataTrait;
 use Carbon\Carbon;
@@ -30,10 +32,10 @@ class DepositController extends Controller
     private $tableViewDataService;
     private $filterService;
     private $depositService;
-   
+    private $cardService;
 
     public function __construct(TableViewDataService $tableViewDataService,
-    FilterService $filterService, DepositService $depositService)
+    FilterService $filterService, DepositService $depositService, CardService $cardService)
     {
         $this->model = Deposit::class;
         $this->controller = collect([
@@ -44,6 +46,7 @@ class DepositController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
         $this->depositService = $depositService;
+        $this->cardService = $cardService;
        
     }
     public function index(Request $request)
@@ -53,11 +56,12 @@ class DepositController extends Controller
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
         $depositdata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
-     
+        $cardData = $this->cardService->depositCard($depositdata);
+        $filterScope = '6_months'; // Default scope
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getDepositData($depositdata,true);
         
-        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller'),
+        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller','cardData','filters','filterScope'),
       //  $viewData,
         [
          //   'cardData' => $cardData,
@@ -166,9 +170,28 @@ class DepositController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Deposit $deposit)
     {
-        //
+        $user = Auth::user();
+        $pageheadings = collect([
+            '0' => $deposit->name,
+            '1' => $deposit->referenceno,
+            '2' => $deposit->status,
+        ]);
+        $instance = $deposit;
+
+        $property = Property::with('units')->find($deposit->property_id);
+        $unit = $property->units;
+        $account = Chartofaccount::whereIn('account_type', ['Liability'])->get();
+        $accounts = $account->groupBy('account_type');
+        $vendors = Vendor::all();
+
+        $users = User::ApplyFilterUsers()->get();
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
+
+        return View('admin.Accounting.edit_deposit', compact('pageheadings','instance','property', 'unit', 'accounts','vendors','users'));
     }
 
     /**
@@ -180,7 +203,22 @@ class DepositController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+         //// INSERT DATA TO THE PAYMENT VOUCHER
+         $validationRules = Deposit::$validation;
+         $validatedData = $request->validate($validationRules);
+         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+         $updatedDeposit = $this->depositService->updateDeposit($id, $validatedData, auth()->user());
+
+         return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
+    
+         /*
+        try {
+            $updatedDeposit = $this->depositService->updateDeposit($id, $validatedData, auth()->user());
+            return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
+        } catch (\Exception $e) {
+            return redirect($redirectUrl)->with('statuserror', $this->controller['1'] . ' The was an error editing the deposit');
+        }
+            */
     }
 
     /**

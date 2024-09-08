@@ -12,7 +12,7 @@
 
                 <div class="col-md-6">
                     <div class="box-for overflow">                         
-                        <div class="col-md-12 col-xs-12 login-blocks">
+                        <div class="col-md-12 col-xs-12 login-blocks" style="padding:25px">
                             <h2>Login : </h2> 
                             
                                 <!-- Session Status -->

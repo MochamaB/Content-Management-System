@@ -52,8 +52,8 @@
                 </td>
                 @if( $routeParts[1] === 'edit')
                 <td class="text-center" style="background-color:#fff;padding-right:20px">
-                    <h5><a class=" split_rent" id="addexpense"><i class="menu-icon mdi mdi-plus-circle"> Add Item </a></i>
-                    </h5>
+                    <h6><a class=" split_rent" id="addexpense"><i class="menu-icon mdi mdi-plus-circle"> Add Item </a></i>
+                    </h6>
                 </td>
                 @endif
 

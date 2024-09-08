@@ -20,6 +20,7 @@ use App\Actions\RecordTransactionAction;
 use App\Actions\UploadMediaAction;
 
 
+
 class ExpenseController extends Controller
 {
     /**
@@ -61,10 +62,13 @@ class ExpenseController extends Controller
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
         $expensedata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
+        // Variable to track the applied scope
+        $filterScope = '6_months'; // Default scope
+        $cardData = $this->cardService->expenseCard($expensedata);
         $controller = $this->controller;
         $tableData = $this->tableViewDataService->getExpenseData($expensedata,true);
            
-           return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller'));
+           return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller','cardData','filters','filterScope'));
         //
     }
 
@@ -182,7 +186,13 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        //// INSERT DATA TO THE PAYMENT VOUCHER
+        $validationRules = Expense::$validation;
+        $validatedData = $request->validate($validationRules);
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+        $updatedDeposit = $this->expenseService->updateExpense($id, $validatedData, auth()->user());
+
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**
