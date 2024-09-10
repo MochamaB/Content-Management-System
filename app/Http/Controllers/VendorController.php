@@ -96,9 +96,15 @@ class VendorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Vendor $vendor)
     {
-        //
+        $specialvalue = collect([
+            'property_id' => $vendor->property->property_name, // Use a string for the controller name
+            'vendorcategory_id' => $vendor->vendorCategory->vendor_category,
+        ]);
+        $viewData = $this->formData($this->model,$vendor,$specialvalue);
+        
+        return View('admin.CRUD.details',$viewData);
     }
 
     /**
@@ -107,9 +113,15 @@ class VendorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Vendor $vendor)
     {
-        //
+        $specialvalue = collect([
+            'property_id' => $vendor->property->property_name, // Use a string for the controller name
+            'vendorcategory_id' => $vendor->vendorCategory->vendor_category,
+        ]);
+       $viewData = $this->formData($this->model,$vendor,$specialvalue);
+        
+       return View('admin.CRUD.form',$viewData);
     }
 
     /**
@@ -119,9 +131,17 @@ class VendorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Vendor $vendor)
     {
-        //
+        $validationRules = Vendor::$validation;
+        $validatedData = $request->validate($validationRules);
+      //  dd($vendorCategory);
+        // Fill the model with validated data
+        $vendor->fill($validatedData);
+
+        // Save the updated model to the database
+        $vendor->save();
+        return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**

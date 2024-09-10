@@ -11,7 +11,7 @@ trait SoftDeleteScope
         $user = auth()->user();
 
         if ($user && $user->id === 1 || stripos($user->roles->first()->name, 'admin') !== false) {
-            $query->withTrashed();
+            $query->withTrashed()->orderBy('deleted_at', 'asc');
         } else {
             $query->withoutTrashed();
         }

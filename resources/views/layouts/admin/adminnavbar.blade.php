@@ -70,8 +70,8 @@
           </form>
         </div>
       </li>
-      <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">Welcome Back</br>
-        <p class=""> &nbsp;<span class="text-black fw-bold">{{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'lastname'}}</span></p>
+      <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+        
       </li>
 
     </ul>

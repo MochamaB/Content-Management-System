@@ -87,11 +87,16 @@ class InvoiceController extends Controller
         //    })
         //    ->get();
         $unitchargedata = $this->invoiceService->getUnitCharges();
-
+        $info = null; // Initialize the variable
+        if ($unitchargedata->isEmpty()) {
+            // If no data, return the view with the info message
+           $info =  'Invoices for this month already generated successfully';
+        }
 
         $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata, true);
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-        return View('admin.Lease.invoice', ['tableData' => $tableData, 'controller' => ['unitcharge']]);
+        
+        return View('admin.Lease.invoice', ['tableData' => $tableData,'info' => $info, 'controller' => ['unitcharge']]);
     }
 
     

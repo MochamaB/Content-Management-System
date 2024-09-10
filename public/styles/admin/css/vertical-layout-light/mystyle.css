@@ -27,7 +27,7 @@
 .navbar .navbar-menu-wrapper{
   background: #ffffff;
   box-shadow: 3px 2px 4px 2px rgba(0, 0, 0, 0.1);
-  height: 70px; /* Set the height for the menu wrapper */
+  height: 60px; /* Set the height for the menu wrapper */
   align-self: flex-start;
  
 }
@@ -67,11 +67,16 @@
     left: 0;
     width: 220px; /* Sidebar width */
     height: 100vh; /* Full height of the viewport */
-    overflow-y: auto; /* Enable scrolling inside the sidebar */
+    overflow-y: hidden; /* Enable scrolling inside the sidebar */
     z-index: 1000; /* Ensure it stays on top */
     transition: width 0.25s ease; /* Smooth transition for collapse/expand */
     scrollbar-color: orange #c8c8c9;
-    scrollbar-width: thin;
+    scrollbar-width: none;
+}
+/* Show the scrollbar when hovering over the sidebar */
+.sidebar:hover {
+  overflow-y: auto; /* Enable scrolling */
+  scrollbar-width: thin; /* Show the thin scrollbar */
 }
 
 .main-panel {
@@ -900,6 +905,12 @@ a .badge:hover {
   color: #10a939;
   background-color: #baf7bf;
   border-color: #10a939;
+}
+
+.alert-info {
+  color: #215266;
+  background-color: #dcf5ff;
+  border-color: #cbf0ff;
 }
 
 .btn-success {

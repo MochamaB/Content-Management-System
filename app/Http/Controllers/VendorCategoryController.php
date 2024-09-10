@@ -102,9 +102,16 @@ class VendorCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(VendorCategory $vendorCategory)
     {
-        //
+        $pageheadings = collect([
+            '0' => $vendorCategory->vendor_category,
+            '1' => $vendorCategory->vendor_type,
+            '2' => '',
+        ]);
+        $viewData = $this->formData($this->model,$vendorCategory,);
+        
+        return View('admin.CRUD.details',$viewData);
     }
 
     /**

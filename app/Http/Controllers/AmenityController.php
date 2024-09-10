@@ -132,27 +132,13 @@ class AmenityController extends Controller
      */
     public function destroy($id)
     {
-        // Retrieve the property
-        $model = $this->model::findOrFail($id);
-    
-        // Get all relationships defined on the model
-        $relationships = ['properties'];
-        $blockingRelationships = [];
-    
-        foreach ($relationships as $relationship) {
-            if ($model->$relationship()->exists()) {
-                $blockingRelationships[] = $relationship;
-            }
-        }
-    
-        if (!empty($blockingRelationships)) {
-            $blockingRelationshipsString = implode(', ', $blockingRelationships);
-            return back()->with('statuserror', 'Cannot delete ' . $this->controller['1'] . ' because the following related records exist:' . $blockingRelationshipsString . '.');
-        }
-    
-        // Perform deletion
-        $model->delete();
-    
-        return back()->with('status', $this->controller['1'] . ' deleted successfully.');
+         // Retrieve the model instance
+         $model = $this->model::findOrFail($id);
+
+         // Define the relationships to check
+         $relationships = ['properties'];
+ 
+         // Call the destroy method from the DeletionService
+         return $this->tableViewDataService->destroy($model, $relationships, 'Model Name');
     }
 }

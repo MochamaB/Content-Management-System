@@ -80,7 +80,7 @@ class Vendor extends Model
 
     public function vendorCategory()
     {
-        return $this->belongsTo(VendorCategory::class);
+        return $this->belongsTo(VendorCategory::class, 'vendorcategory_id');
     }
 
     public function vendorSubscription()
@@ -90,7 +90,7 @@ class Vendor extends Model
 
     public function modelrequests()
     {
-        return $this->morphMany(Request::class, 'assigned');
+        return $this->morphMany(Ticket::class, 'assigned');
     }
 
 }

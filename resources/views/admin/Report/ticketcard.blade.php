@@ -33,7 +33,7 @@ $statusClasses = [
                                         </label>
                                         <div class="d-flex mt-0 mb-2">
                                             <div class="ps-4 text-small me-3">
-                                                {{ \Carbon\Carbon::createFromTimestamp($ticket->created_at)->format('d F Y') }}
+                                                {{ \Carbon\Carbon::parse($ticket->created_at)->format('Y M') }}
                                             </div>
                                             <div class="badge badge-{{ $statusClasses[$ticket->status] ?? 'secondary' }} me-3">
                                                 {{ $ticket->status }}

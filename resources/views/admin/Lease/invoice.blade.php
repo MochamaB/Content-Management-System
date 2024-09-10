@@ -4,7 +4,7 @@
 
 
 <div class=" contwrapper">
-    <h4 style="text-transform: capitalize;"><b> Charges Due for Invoice Generation</b></h4>
+    <h6 style="text-transform: capitalize;"><b> Charges Due for Invoice Generation</b></h6>
     <hr>
     @if( Auth::user()->can($controller[0].'.create') || Auth::user()->id === 1)
     <form method="POST" action="{{ url('generateinvoice') }}" class="myForm" enctype="multipart/form-data" novalidate>

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\View;
+use Illuminate\Database\Eloquent\Model;
 
 
 
@@ -93,10 +94,10 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFERENCE NO', ' DATES', 'TYPE', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
-        // If $Extra columns is true, insert 'Unit Details' at position 3
+        $headers = ['REFNO','AMOUNT','STATUS', ' DATE', 'TYPE', 'PAID', 'BALANCE', 'ACTIONS'];
+        // If $Extra columns is true, insert 'Unit Details' at position 5
         if ($extraColumns) {
-            array_splice($headers, 2, 0, ['UNIT DETAILS']);
+            array_splice($headers, 4, 0, ['BILLING DETAILS']);
         }
 
         $tableData = [
@@ -164,12 +165,12 @@ class TableViewDataService
 
             $row = [
                 'id' => $item->id,
-                $invoiceStatus . '</br></br>' . $item->referenceno,
-                '<span class="text-muted" style="font-weight:500;font-style: italic"> Issue Date  -  Due Date</span></br>' .
-                    Carbon::parse($item->created_at)->format('Y-m-d') . ' - ' . Carbon::parse($item->duedate)->format('Y-m-d'),
+                $item->referenceno,
+                $this->sitesettings->site_currency . '. ' . number_format($item->totalamount, 0, '.', ','),
+                $invoiceStatus,
+                Carbon::parse($item->created_at)->format('F Y'),
                 $item->name,
-                $this->sitesettings->site_currency . '. ' . number_format($item->totalamount, 2, '.', ','),
-                $this->sitesettings->site_currency . '. ' . number_format($totalPaid, 2, '.', ',') . $receipttext . '' . $paymentLinks,
+                $this->sitesettings->site_currency . '. ' . number_format($totalPaid, 0, '.', ',') . $receipttext . '' . $paymentLinks,
                 $balanceStatus . ' </br>' . $payLink,
                 'isDeleted' => $isDeleted,
 
@@ -177,15 +178,15 @@ class TableViewDataService
             ];
 
 
-            // If $Extra Columns is true, insert unit details at position 3
+            // If $Extra Columns is true, insert unit details at position 5
             if ($extraColumns) {
                 array_splice(
                     $row,
-                    3,
+                    5,
                     0,
                     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
                 <div>
-                  <h6>' . $item->unit->unit_number . ' - ' . $item->property->property_name . '</h6>
+                  <h6> ' . $item->property->property_name . ' - ' . $item->unit->unit_number . '</h6>
                 <p>' . $item->model->firstname . ' ' . $item->model->lastname .
                         '</p>
                 </div>
@@ -543,7 +544,7 @@ class TableViewDataService
         //   $invoicedata->load('user');
 
         /// TABLE DATA ///////////////////////////
-        $headers = ['', 'AMENITIES', 'ATTACHED PROPERTY', 'ACTIONS'];
+        $headers = ['AMENITIES', 'ATTACHED PROPERTY', 'ACTIONS'];
 
         $tableData = [
             'headers' => $headers,
@@ -559,7 +560,6 @@ class TableViewDataService
             $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
-                $key+1,
                 $item->amenity_name,
                 $names,
                 'isDeleted' => $isDeleted,
@@ -575,11 +575,11 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['NAME', 'ROLE', 'EMAIL', 'ACCOUNT STATUS', 'ACTIONS'];
+        $headers = ['NAME', 'ROLE', 'EMAIL', 'STATUS', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
-            array_splice($headers, 2, 0, ['DETAILS']);
+            array_splice($headers, 2, 0, ['ASSIGNED UNITS']);
         }
 
         $tableData = [
@@ -588,6 +588,7 @@ class TableViewDataService
         ];
 
         foreach ($userdata as $item) {
+           
             $unit = $item->units->first();
             //  $property = $item->properties->first();
             $roleNames = $item->roles->first();
@@ -601,10 +602,12 @@ class TableViewDataService
             //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $name =     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
             <div>
-            ' . $item->firstname . ' ' . $item->lastname .
-                '
+             <p>' . $item->firstname . ' ' . $item->lastname .
+                '</p>
             </div>
           </div>';
+          
+          $userStatus = $item->status === 'Active' ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-warning">Inactive</span>';
             $isDeleted = $item->deleted_at !== null;
 
             $row = [
@@ -612,7 +615,7 @@ class TableViewDataService
                 $name,
                 $roleNames->name ?? 'Super Admin',
                 $item->email,
-                $item->status,
+                $userStatus,
                 'isDeleted' => $isDeleted,
                 
 
@@ -1076,5 +1079,29 @@ class TableViewDataService
         }
 
         return $tableData;
+    }
+
+    /// Delete Method
+    public function destroy($model, array $relationships, $modelName)
+    {
+        $blockingRelationships = [];
+
+        // Check each relationship for existing related records
+        foreach ($relationships as $relationship) {
+            if ($model->$relationship()->exists()) {
+                $blockingRelationships[] = $relationship;
+            }
+        }
+
+        // If there are blocking relationships, return with an error message
+        if (!empty($blockingRelationships)) {
+            $blockingRelationshipsString = implode(', ', $blockingRelationships);
+            return back()->with('statuserror', 'Cannot delete ' . $modelName . ' because the following related records exist: ' . $blockingRelationshipsString . '.');
+        }
+
+        // Perform deletion
+        $model->delete();
+
+        return back()->with('status', $modelName . ' deleted successfully.');
     }
 }
