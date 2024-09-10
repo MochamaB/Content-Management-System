@@ -1,16 +1,16 @@
 
 <ul class="nav nav-tabs mb-0" id="fx1" role="tablist">
 @foreach($tabTitles as $index => $title)
-        <li class="nav-item" role="presentation">
+        <li class="nav-item " role="presentation">
         <a class="nav-link @if($loop->first) active @endif" 
             id="fx1-tab-{{ $loop->iteration }}" 
             data-bs-toggle="tab" href="#fx1-tabs-{{ $loop->iteration }}" 
             role="tab" aria-controls="fx1-tabs-{{ $loop->iteration }}" 
             aria-selected="{{ $loop->first ? 'true' : 'false' }}"
             data-tab="{{ $title }}"
-            style="font-size:0.85rem">
+            style="font-size:0.85rem;padding:0px 20px 14px 20px">
 
-                {{ $title }}
+                {{ $title }} ({{ $tabCounts[$title] ?? 0 }})
             </a>
         </li>
     @endforeach

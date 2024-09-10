@@ -247,6 +247,16 @@
 
 <!---- SHOW PDF OR TXT WHEN FILE IS UPLOADED----->
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.js') }}"></script>
+<script src="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/extensions/mobile/bootstrap-table-mobile.min.js') }}"></script>
+<script src="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
+<script src="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js') }}"></script>
+
 <!-- plugins:js -->
 <script src="{{ asset('styles/admin/vendors/js/vendor.bundle.base.js') }}"></script>
 <!-- endinject -->

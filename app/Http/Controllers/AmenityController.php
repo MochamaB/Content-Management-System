@@ -132,13 +132,14 @@ class AmenityController extends Controller
      */
     public function destroy($id)
     {
-         // Retrieve the model instance
-         $model = $this->model::findOrFail($id);
-
-         // Define the relationships to check
-         $relationships = ['properties'];
- 
-         // Call the destroy method from the DeletionService
-         return $this->tableViewDataService->destroy($model, $relationships, 'Model Name');
+              // Retrieve the model instance
+              $model = $this->model::findOrFail($id);
+              $modelName = class_basename($model);
+     
+              // Define the relationships to check
+              $relationships = ['properties'];
+      
+              // Call the destroy method from the DeletionService
+              return $this->tableViewDataService->destroy($model, $relationships,  $modelName);
     }
 }

@@ -47,7 +47,7 @@
 </div>
 @endif
 
-<div class="collapse" id="collapseExample" style="margin-bottom:20px;">
+<div class="collapse collapseExample" id="collapseExample" style="margin-bottom:20px;">
     <div class="filterbody">
 
         <div class="row">
@@ -142,7 +142,7 @@
 
             if ($input.val() !== "") {
                 // If yes, show the collapsible div
-                $("#collapseExample").collapse("show");
+                $(".collapseExample").collapse("show");
 
                 // For debugging, you can alert the value of the input
                 //  alert($input.val());

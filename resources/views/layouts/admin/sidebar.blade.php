@@ -1,4 +1,15 @@
 <nav class="sidebar sidebar-offcanvas" >
+
+<div class="" style="padding:10px 20px; width: 220px;height: 100px;">
+      <a class="" href="">
+        @if ($sitesettings)
+        <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: 100%; width: 100%;">
+        @else
+        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 100%; width: 100%;">
+        @endif
+      </a>
+    </div>
+
   <ul class="nav">
     <li class="nav-item">
       <a class="nav-link" href="{{ url('/dashboard') }}">

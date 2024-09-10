@@ -5,20 +5,12 @@
         <span class="icon-menu"></span>
       </button>
     </div>
-    <div class="divlogo" style=" width: 80%;height: 80%;">
+    <div>
       <a class="navbar-brand brand-logo" href="">
-        @if ($sitesettings)
-        <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: 100%; width: 100%;">
-        @else
-        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 100%; width: 100%;">
-        @endif
+        <img src="{{url('uploads/images/Bridgetechlogo2.png')}}" alt="No Image" style="height: 90%; width: 100%;">
       </a>
       <a class="navbar-brand brand-logo-mini" href="" style=" width: 100%;height: 100%;">
-        @if ($sitesettings)
-        <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 100%; width: 100%;">
-        @else
-        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 100%; width: 100%;">
-        @endif
+      <img src="{{url('uploads/images/Bridgetechlogo2.png')}}" alt="No Image" style="height: 90%; width: 100%;">
       </a>
     </div>
   </div>
@@ -35,12 +27,7 @@
           <span class="mdi mdi-menu" style="padding-right: 15px;"></span>
         </button>
       </li>
-      <li class="nav-item d-none d-lg-block">
-        <form class="search-form" action="#">
-          <i class="icon-search"></i>
-          <input type="search" class="form-control" placeholder="Search Here" title="Search here">
-        </form>
-      </li>
+      
 
       @include('layouts.admin.notification')
 

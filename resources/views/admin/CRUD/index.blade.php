@@ -25,11 +25,14 @@
     <div class=" contwrapper">
         <div class="row">
             @include('layouts.admin.master-filter')
-
+            </div>
             <hr>
-
+            @if (isset($tabTitles))
+            @include('admin.CRUD.tabs_horizontal_show')
+            @else
             @include('admin.CRUD.table', ['data' => $tableData])
-        </div>
+            @endif
+        
 
     </div>
 

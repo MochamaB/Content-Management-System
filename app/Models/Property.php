@@ -23,6 +23,16 @@ class Property extends Model implements HasMedia
         'property_status',
 
     ];
+    protected $relationships = [
+        'units',
+        'leases',
+        'utilities',
+        'payments',
+        'paymentMethods',
+        'tickets',
+        'expenses',
+        'deposits'
+    ];
     ////////// FIELDS FOR CREATE AND EDIT METHOD
     public static $fields = [
         'property_type' => ['label' => 'Property Type', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => true],
@@ -73,39 +83,18 @@ class Property extends Model implements HasMedia
 
     ///// Data for populating cards
     /////Card options
-    public static $card = [
-        'All Properties' => 'information',
-        'Total Units' => 'detail',
-        'All Utilities' => 'information',
-        'No of Tenants' => 'detail',
-        // Add more cards as needed
-    ];
+ 
 
-    public static function getCardData($card)
+    public function getRelationships()
     {
-        switch ($card) {
-
-            case 'All Properties':
-                $propertyCount = Property::count();
-                return $propertyCount;
-            case 'Total Units':
-                $unitCount = Unit::count();
-                return $unitCount;
-            case 'All Utilities':
-                $utilityCount = Utility::count();
-                return $utilityCount;
-            case 'No of Tenants':
-                $users = User::with('roles')->get();
-                $tenantUsers = $users->filter(function ($user) {
-                    return $user->hasRole('Tenant');
-                });
-                $tenantCount = $tenantUsers->count();
-                return $tenantCount;
-        }
+        return $this->relationships;
     }
+    
     /**
      * The amenities that belong to the property.
      */
+
+     
     public function propertyType()
     {
         return $this->belongsTo(PropertyType::class, 'property_type');

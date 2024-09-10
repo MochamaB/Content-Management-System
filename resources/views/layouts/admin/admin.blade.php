@@ -17,7 +17,7 @@
     <!-- partial:partials/_navbar.html -->
     @include('layouts.admin.adminnavbar')
     <!-- partial -->
-    <div class="container-fluid page-body-wrapper">
+    <div class="container-fluid page-body-wrapper pt-0">
       <!-- partial:partials/_settings-panel.html -->
       <div class="theme-setting-wrapper">
         <div id="settings-trigger"><i class="ti-settings"></i></div>
@@ -43,7 +43,7 @@
       <!-- partial:partials/_sidebar.html -->
       @include('layouts.admin.sidebar')
       <!-- partial -->
-      <div class="main-panel" style="background-color: #F4F5F7;padding-top:0px">
+      <div class="main-panel" style="background-color: #F4F5F7;padding-top:80px">
         <div class="content-wrapper" style="background-color: #F4F5F7;padding-top:0px">
               <div class="home-tab">
                   <!-- Breadcrumb -->

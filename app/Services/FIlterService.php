@@ -121,8 +121,7 @@ class FilterService
         return [
             'property_id' => ['label' => 'Properties', 'values' => $properties, 'inputType' => 'select', 'filtertype' => 'main'],
             'unit_id' => ['label' => 'Units', 'values' => $units, 'inputType' => 'select', 'filtertype' => 'main'],
-            'status' => ['label' => 'Status', 'values' => $status, 'inputType' => 'select', 'filtertype' => 'main'],
-            'unitcharge_id' => ['label' => 'Charge', 'values' => $unitcharge, 'inputType' => 'select', 'filtertype' => 'advanced'],
+            'unitcharge_id' => ['label' => 'Charge', 'values' => $unitcharge, 'inputType' => 'select', 'filtertype' => 'main'],
             'from_date' => ['label' => 'From', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced'],
             'to_date' => ['label' => 'To', 'values' => '', 'inputType' => 'date', 'filtertype' => 'advanced']
         ];

@@ -317,28 +317,16 @@ class PropertyController extends Controller
      */
     public function destroy($id)
     {
-        // Retrieve the Model
-        $model = $this->model::findOrFail($id);
-    
-        // Get all relationships defined on the model
-        $relationships = ['units', 'leases','utilities','payments','paymentMethods','tickets','expenses','deposits'];
-        $blockingRelationships = [];
-    
-        foreach ($relationships as $relationship) {
-            if ($model->$relationship()->exists()) {
-                $blockingRelationships[] = $relationship;
-            }
-        }
-    
-        if (!empty($blockingRelationships)) {
-            $blockingRelationshipsString = implode(', ', $blockingRelationships);
-            return back()->with('statuserror', 'Cannot delete ' . $this->controller['1'] . ' because the following related records exist:' . $blockingRelationshipsString . '.');
-        }
-    
-        // Perform deletion
-        $model->delete();
-    
-        return back()->with('status', $this->controller['1'] . ' deleted successfully.');
+         // Retrieve the model instance
+         $model = $this->model::findOrFail($id);
+         $modelName = class_basename($model);
+
+            // Get the relationships from the model
+        $relationships = $model->getRelationships();
+ 
+         // Call the destroy method from the DeletionService
+         return $this->tableViewDataService->destroy($model, $relationships, $modelName);
+
     }
 
 

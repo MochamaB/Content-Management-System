@@ -56,15 +56,44 @@ class InvoiceController extends Controller
     {
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getInvoiceFilters();
-        $invoices = Invoice::with('unit','property','payments')->ApplyCurrentMonthFilters($filters)->get();
-        $cardData = $this->cardService->invoiceCard($invoices);
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getInvoiceData($invoices, true);
+        $baseQuery = Invoice::with('unit', 'property', 'payments')->ApplyCurrentMonthFilters($filters);
+        $cardData = $this->cardService->invoiceCard($baseQuery->get());
+        $tabTitles = ['All', 'Paid', 'Unpaid', 'Overdue'];
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'Paid':
+                    $query->where('status', 'paid');
+                    break;
+                case 'Unpaid':
+                    $query->where('status', 'unpaid');
+                    break;
+                case 'Overdue':
+                    $query->where('status', 'unpaid')
+                          ->where('duedate', '<', now());
+                    break;
+                // 'All' doesn't need any additional filters
+            }
+            $invoices = $query->get();
+            $count = $invoices->count();
+            $tableData = $this->tableViewDataService->getInvoiceData($invoices, true);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
+       
       //  dd($filterData);
-        return view('admin.CRUD.form', array_merge(
-            compact('tableData', 'controller','filterdata','filters','cardData')
+     //   return view('admin.CRUD.form', array_merge(
+      //      compact('tableData', 'controller','filterdata','filters','cardData')
           //  ,['cardData' => $cardData]
-        ));
+      //  ));
+
+        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','cardData','tabCounts'));
     }
 
 
