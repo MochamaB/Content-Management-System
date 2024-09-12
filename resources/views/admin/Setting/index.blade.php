@@ -12,11 +12,11 @@
     @endphp
         <div class="col-md-6" style="padding:15px 15px 15px 15px;">
             <a class="table" href="{{ url('setting/'.$className) }}">
-                <h5 style="text-transform: capitalize;">{{$className}} Settings</h5>
+                <h6 style="text-transform: capitalize;">{{$className}} Settings</h6>
             </a>
-            <span class="text-muted" style="font-weight:500;font-style: italic">
+            <p class="text-muted">
             {{$item->first()->info}}
-            </span>
+            </p>
         </div>
         @endforeach
     </div>

@@ -4,26 +4,25 @@
 
 <div class=" contwrapper">
     <h4></h4>
-    <hr>
     @foreach($reports as $module => $submodules)
     <div class="d-flex align-items-center">
 
-        <h3 class="mb-0" style="font-weight:800">{{ $module }} Reports</h3>
+        <h5 class="mb-0" style="font-weight:600">{{ $module }} Reports</h5>
     </div>
-
+    <hr>
     <div class="row">
         @foreach($submodules as $report)
         <div class="col-md-6" style="padding:15px 15px 15px 15px;">
             <a class="table" href="{{ url('report/'.$report->id) }}">
-                <h5 style="text-transform: capitalize;">{{$report->title}}</h5>
+                <h6 style="text-transform: capitalize;">{{$report->title}}</h6>
             </a>
-            <span class="text-muted" style="font-weight:500;font-style: italic">
+            <p class="text-muted">
                 {{$report->description}}
-            </span>
+            </p>
         </div>
         @endforeach
     </div>
-    <hr>
+    
     @endforeach
 
 </div>

@@ -48,7 +48,7 @@ class LeaseController extends Controller
     private $invoiceService;
     private $recordTransactionAction;
     private $tableViewDataService;
-    protected $filterService;
+    private $filterService;
     private $cardService;
 
 
