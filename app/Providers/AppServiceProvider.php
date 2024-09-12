@@ -105,7 +105,12 @@ class AppServiceProvider extends ServiceProvider
             $routeParts = explode('.', $routeName);
             $urlParts = explode('/', url()->current());
             $currentUrl = url()->current();
-            $user = auth()->user();
+
+                    // Only pass the authenticated user if it's not already set in the view
+            if (!$view->offsetExists('user')) {
+                $user = auth()->user();
+                $view->with('user', $user);
+            }
             $view->with([
                 'routeName' => $routeName,
                 'routeParts' => $routeParts,
@@ -116,7 +121,6 @@ class AppServiceProvider extends ServiceProvider
                     'company_name' => 'Default Company',
                     'initials' => 'DC',
                 ],
-                'user'=>$user,
             ]);
         });
       
