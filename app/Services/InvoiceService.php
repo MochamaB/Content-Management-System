@@ -45,15 +45,20 @@ class InvoiceService
     }
     public function getUnitCharges()
     {
-        return Unitcharge::where('recurring_charge', 'Yes') /// ONly recurrent charges
-            ->where('parent_id', null)  /// Only parent charges
-               ->whereMonth('nextdate', now()->month)
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+    
+        return Unitcharge::where('recurring_charge', 'Yes')
+            ->where('parent_id', null)
             ->whereHas('unit.lease', function ($query) {
                 $query->where('status', 'Active');
             })
-            //   ->whereDoesntHave('invoices', function ($query) {
-            //       $query->whereMonth('created_at', now()->month);
-            //   })
+            ->where(function ($query) use ($startOfMonth, $endOfMonth) {
+                $query->whereMonth('nextdate', now()->month)
+                    ->orWhereDoesntHave('invoices', function ($subQuery) use ($startOfMonth, $endOfMonth) {
+                        $subQuery->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+                    });
+            })
             ->get();
     }
     public function chargesForInvoiceGeneration()
