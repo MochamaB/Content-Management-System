@@ -44,7 +44,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    @if ($sitesettings)
+                    @if (isset($sitesettings))
                     <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
                     @else
                     <img src="noimage.jpg" alt="No Image">

@@ -4,7 +4,7 @@
 <ul class="nav nav-tabs mb-3" id="ex1" role="tablist" >
   <li class="nav-item" role="presentation">
     <a class="nav-link active" id="ex1-tab-1" data-bs-toggle="tab" href="#ex1-tabs-1" role="tab" aria-controls="ex1-tabs-1"aria-selected="true"
-      >General Settings</a>
+      >Branding </a>
   </li>
   <li class="nav-item" role="presentation">
     <a class="nav-link" id="ex1-tab-2"data-bs-toggle="tab"href="#ex1-tabs-2" role="tab" aria-controls="ex1-tabs-2" aria-selected="false">
@@ -101,7 +101,7 @@
 
             <div class="col-md-4">
                         <div class="form-group">
-                            <label class="label">Website Logos</label>
+                            <label class="label">Company Logo</label>
                             <input type="file" name="company_logo" value="{{ old('company_logo') }}" class="form-control" id="logo"  required/>
                             <img id="logo-image-before-upload" src="{{ url('uploads/images/noimage.jpg') }}"
                                             style="height: 200px; width: 300px;">

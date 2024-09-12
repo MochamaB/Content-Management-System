@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 use Illuminate\Http\Request;
 use App\Services\FilterService;
 use App\Services\TableViewDataService;

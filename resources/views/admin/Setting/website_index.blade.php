@@ -11,9 +11,9 @@
             Logos</a>
     </li>
 </ul>
-@if(empty($sitesettings))
+@if(empty($sitesettings->site_name))
 
-<button class="btn btn-primary btn-lg text-white mb-0 me-0" style="float:right" type="button" onclick="window.location='{{ url("/websitesetting/create") }}'">
+<button class="btn btn-primary btn-lg text-white mb-0 me-0" style="float:right" type="button" onclick="window.location='{{ url("/Website/create") }}'">
     Add Site Information</button>
 <br /><br /><br />
 <div class=" contwrapper">
@@ -30,7 +30,7 @@
 
 </div>
 @else
-<form method="POST" action="{{ url('websitesetting/1') }}" class="myForm" enctype="multipart/form-data">
+<form method="POST" action="{{ url('Website/1') }}" class="myForm" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 use Illuminate\Http\Request;
 
-class WebsiteSettingController extends Controller
+class WebsiteController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +14,28 @@ class WebsiteSettingController extends Controller
      */
     public function index()
     {
-        $sitesettings = WebsiteSetting::first();
-        return View('admin.Setting.websitesetting_index', compact('sitesettings'));
+        $tabTitles = collect([
+            'Overview',
+            'Branding',
+            'Logos',
+        ]);
+
+        $tabContents = [];
+
+        $sitesettings = Website::first();
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
+            if ($title === 'Overview') {
+                $tabContents[] = View('admin.Setting.overview', compact('sitesettings'))->render();
+            } elseif ($title === 'Branding') {
+                $tabContents[] = View('admin.Setting.branding', compact('sitesettings'))->render();
+            }elseif ($title === 'Logos') {
+                $tabContents[] = View('admin.Setting.Logo', compact('sitesettings'))->render();
+            }
+        }
+
+
+        return View('admin.CRUD.show', compact('tabTitles', 'tabContents'));
     }
 
 
@@ -26,7 +46,7 @@ class WebsiteSettingController extends Controller
      */
     public function create()
     {
-        return View('admin.Setting.websitesetting_create');
+        return View('admin.Setting.website_create');
     }
 
     /**
@@ -38,7 +58,7 @@ class WebsiteSettingController extends Controller
     public function store(Request $request)
     {
         // dd($request->file('company_logo'));
-        $settingSite = new WebsiteSetting();
+        $settingSite = new Website();
         $settingSite->fill($request->all());
 
         if ($request->file('company_logo')) {
@@ -53,7 +73,7 @@ class WebsiteSettingController extends Controller
         }
 
         $settingSite->save();
-        return redirect('websitesetting')->with('status', 'Site Settings Added Successfully');
+        return redirect('Website')->with('status', 'Site Settings Added Successfully');
     }
 
     /**
@@ -88,7 +108,7 @@ class WebsiteSettingController extends Controller
 
     public function update(Request $request, $id)
     {
-        $settingSite = WebsiteSetting::find($id);
+        $settingSite = Website::find($id);
         $settingSite->fill($request->all());
 
         if ($request->file('company_logo')) {
@@ -102,7 +122,7 @@ class WebsiteSettingController extends Controller
         }
 
         $settingSite->update();
-        return redirect('websitesetting')->with('status', 'Site Settings Updated Successfully');
+        return redirect('Website')->with('status', 'Site Settings Updated Successfully');
     }
 
 

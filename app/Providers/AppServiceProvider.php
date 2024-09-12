@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Invoice;
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 use App\Models\Slider;
 use App\Models\Testimonial;
 use App\Models\Lease;
@@ -97,7 +97,7 @@ class AppServiceProvider extends ServiceProvider
       
       if (Schema::hasTable('website_settings')) {
         // Fetch the website settings once and share with all views
-        $websitesettings = WebsiteSetting::first();
+        $websitesettings = Website::first();
       
         /////////// GLOBAL VIEW COMPOSERS
         view()->composer('*', function ($view)  use ($websitesettings) {
@@ -111,7 +111,11 @@ class AppServiceProvider extends ServiceProvider
                 'routeParts' => $routeParts,
                 'urlParts' => $urlParts,
                 'currentUrl' => $currentUrl,
-                'sitesettings' => $websitesettings,
+               'sitesettings' => $websitesettings ? $websitesettings : (object)[
+                    'site_currency' => 'KSH', // Set default values
+                    'company_name' => 'Default Company',
+                    'initials' => 'DC',
+                ],
                 'user'=>$user,
             ]);
         });
@@ -221,7 +225,7 @@ class AppServiceProvider extends ServiceProvider
                 ]],
 
                 'Website' => ['icon' => 'web', 'submodules' => [
-                    'websitesetting' => ['display' => 'Site Information'],
+                    'Website' => ['display' => 'Site Information'],
                     'slider' => ['display' => 'Picture Sliders'],
                     'testimonial' => ['display' => 'Client Testimonials'],
                     'amenity' => ['display' => 'Property Amenities'],

@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 class LeaseAgreementNotification extends Notification implements ShouldQueue
 {
     use Queueable;
@@ -27,7 +27,7 @@ class LeaseAgreementNotification extends Notification implements ShouldQueue
     public function __construct($user)
     {
         $this->user = $user;
-        $this->company = WebsiteSetting::pluck('company_name')->first();
+        $this->company = Website::pluck('company_name')->first();
         $this->subject = 'New Lease Agreement created';
         $this->heading = 'Welcome! Your Lease is ready';
         $this->linkmessage = 'Go To Site';

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 use Illuminate\Http\Request;
 
 use App\Services\FilterService;
@@ -31,7 +31,7 @@ class IncomeStatementController extends Controller
 
     public function index(Request $request)
     {
-        $sitesettings = WebsiteSetting::all();
+        $sitesettings = Website::all();
         $filterdata = $this->filterService->getIncomeStatementFilters();
         $filters = $request->except(['tab', '_token', '_method']);
 

@@ -4,7 +4,7 @@ namespace App\Notifications;
 
 // Rest of the code goes here
 
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -33,7 +33,7 @@ class PaymentNotification extends Notification implements ShouldQueue
     {
         $this->payment = $payment;
         $this->user = $user;
-        $this->company = WebsiteSetting::pluck('company_name')->first();
+        $this->company = Website::pluck('company_name')->first();
         $this->subject = $this->payment->model->name . ' Receipt' . \Carbon\Carbon::parse($this->payment->created_at)->format('d M Y');
         $this->heading =  'New ' . $this->payment->model->type . ' Payment';
         $this->linkmessage = 'Go To Site';

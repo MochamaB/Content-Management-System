@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Models\Property;
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 
 class UtilityController extends Controller
 {
@@ -34,7 +34,7 @@ class UtilityController extends Controller
     public function getUtilitiesData($utilitiesdata)
     {
         /// TABLE DATA ///////////////////////////
-        $sitesettings = WebsiteSetting::first();
+        $sitesettings = Website::first();
         $tableData = [
             'headers' => ['UTILITY', 'PROPERTY', 'TYPE', 'RATE', 'ACTIONS'],
             'rows' => [],

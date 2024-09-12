@@ -9,7 +9,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Traits\MediaUpload;
 
-class WebsiteSetting extends Model implements HasMedia
+class Website extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, MediaUpload;
     protected $table = 'website_settings';
@@ -40,6 +40,15 @@ class WebsiteSetting extends Model implements HasMedia
         //add options
     
         
+    }
+
+    public function getInitialsAttribute() {
+        $words = explode(' ', $this->company_name);
+        $initials = '';
+        foreach ($words as $word) {
+            $initials .= strtoupper($word[0]);  // Get the first letter of each word
+        }
+        return $initials;
     }
 
     

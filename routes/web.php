@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\client\HomeController;
-use App\Http\Controllers\WebsiteSettingController;
+use App\Http\Controllers\WebsiteController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SettingController;
@@ -77,7 +77,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::group(['groupName' => 'Website'], function () {
         Route::resource('amenity', AmenityController::class);
         Route::resource('propertytype', PropertyTypeController::class);
-        Route::resource('websitesetting', WebsiteSettingController::class);
+        Route::resource('Website', WebsiteController::class);
         Route::resource('slider', SliderController::class);
         Route::resource('testimonial', TestimonialController::class);
     });

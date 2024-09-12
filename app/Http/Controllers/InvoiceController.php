@@ -17,7 +17,7 @@ use App\Notifications\InvoiceGeneratedNotification;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Services\CardService;
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Session;
 

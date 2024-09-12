@@ -17,7 +17,7 @@ class MediaAccessScope implements Scope
 
         if ($user && $user->id !== 1 /*&& $userRole !== 'Administrator'*/) {
             // Filter units based on the logged-in user's unit_ids
-            $builder->where('model_type', 'App\Models\WebsiteSetting');
+            $builder->where('model_type', 'App\Models\Website');
         }
     }
 }

@@ -152,6 +152,29 @@
   background: #adb5bd;
   color: #fff;
 }
+.company-details {
+  display: flex;
+  align-items: center;
+}
+
+.company-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffaf00;  ; /* Blue background for the icon */
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.company-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: white;
+}
 
 
 .home-tab .nav-tabs {

@@ -1,14 +1,13 @@
 <nav class="sidebar sidebar-offcanvas" >
 
-<div class="" style="padding:10px 20px; width: 220px;height: 100px;">
-      <a class="" href="">
-        @if ($sitesettings)
-        <img src="{{  $sitesettings->getFirstMediaUrl('logo') }}" alt="Logo" style="height: 100%; width: 100%;">
-        @else
-        <img src="{{url('uploads/images/logo7Copy.png')}}" alt="No Image" style="height: 100%; width: 100%;">
-        @endif
-      </a>
-    </div>
+<div class="company-details" style="padding:10px 20px; width: 220px;height: 100px;">
+<span class="company-icon">
+        {{ $sitesettings->initials }}
+    </span>
+    <span class="company-name">
+        {{ $sitesettings->company_name }}
+    </span>
+</div>
 
   <ul class="nav">
     <li class="nav-item">

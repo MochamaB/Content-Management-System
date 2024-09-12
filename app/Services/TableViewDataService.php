@@ -8,7 +8,7 @@ use App\Models\Invoice;
 use App\Models\Unitcharge;
 use App\Models\Unit;
 use App\Models\Lease;
-use App\Models\WebsiteSetting;
+use App\Models\Website;
 use App\Models\MeterReading;
 use App\Models\InvoiceItems;
 use App\Models\Property;
@@ -48,7 +48,7 @@ class TableViewDataService
 
     public function __construct()
     {
-        $this->sitesettings = WebsiteSetting::first();
+        $this->sitesettings = Website::first();
         $this->user = Auth::user();
     }
 
