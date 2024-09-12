@@ -30,7 +30,7 @@ class WebsiteController extends Controller
             } elseif ($title === 'Branding') {
                 $tabContents[] = View('admin.Setting.branding', compact('sitesettings'))->render();
             }elseif ($title === 'Logos') {
-                $tabContents[] = View('admin.Setting.Logo', compact('sitesettings'))->render();
+                $tabContents[] = View('admin.Setting.logo', compact('sitesettings'))->render();
             }
         }
 
