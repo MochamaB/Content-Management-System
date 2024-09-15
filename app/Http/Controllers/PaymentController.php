@@ -18,8 +18,10 @@ use Carbon\Carbon;
 use App\Notifications\PaymentNotification;
 use App\Services\TableViewDataService;
 use App\Actions\RecordTransactionAction;
+use App\Models\Transaction;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Services\InvoiceService;
 
 
 class PaymentController extends Controller
@@ -38,10 +40,12 @@ class PaymentController extends Controller
     private $recordTransactionAction;
     private $filterService;
     private $cardService;
+    private $invoiceService;
 
 
     public function __construct(PaymentService $paymentService, TableViewDataService $tableViewDataService,
-    RecordTransactionAction $recordTransactionAction, FilterService $filterService, CardService $cardService)
+    RecordTransactionAction $recordTransactionAction, FilterService $filterService, CardService $cardService,
+    InvoiceService $invoiceService)
     {
         $this->model = Payment::class;
         $this->controller = collect([
@@ -54,6 +58,7 @@ class PaymentController extends Controller
         $this->recordTransactionAction = $recordTransactionAction;
         $this->filterService = $filterService;
         $this->cardService = $cardService;
+        $this->invoiceService = $invoiceService;
     }
 
     public function index(Request $request)
@@ -163,12 +168,31 @@ class PaymentController extends Controller
         ]);
         $tabTitles = collect([
             'Overview',
+            'Account Statement',
         ]);
+         /// Data for the Account Statement
+         if($payment->model instanceof Invoice)
+         {
+            $invoice = $payment->model;
+            $unitchargeId = $payment->model->getItems->pluck('unitcharge_id')->first();
+            //    dd($unitchargeIds);
+            $sixMonths = now()->subMonths(6);
+            $transactions = Transaction::where('created_at', '>=', $sixMonths)
+                ->where('unit_id', $payment->model->unit_id)
+                ->where('unitcharge_id', $unitchargeId)
+                ->get();
+            $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
+    
+            ////Opening Balance
+            $openingBalance = $this->invoiceService->calculateOpeningBalance($payment->model);
+        }
 
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Overview') {
                 $tabContents[] = View('admin.Lease.payment_view', compact('payment'))->render();
+            } elseif ($title === 'Account Statement' && $payment->model instanceof Invoice) {
+                $tabContents[] = View('admin.Lease.statement_view', compact('invoice', 'transactions', 'openingBalance'))->render();
             }
         }
         return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));

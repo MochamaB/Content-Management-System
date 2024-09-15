@@ -230,7 +230,7 @@
                 </tr>
             </tfoot>
         </table>
-
+@if(isset($PaymentMethod))
         <h4><b>PAYMENT OPTIONS AVAILABLE </b></h4>
         @foreach($PaymentMethod as $key=> $item)
         <ul style="list-style-type: none; padding: 0; text-align: left;">
@@ -244,6 +244,7 @@
             @endif
         </ul>
         @endforeach
+@endif
     </div>
     <div class="footer">
         <i style="color:#1F3BB3">Powered By<a href="http://www.bridgetech.co.ke" target="_blank"> <b>Bridgtech Properties</b></a> Admin.</i>

@@ -27,7 +27,7 @@
         </button>
         @elseif(isset($controller)  && (Auth::user()->can($controller[0].'.create') || Auth::user()->id === 1) 
             && $controller[0] !== '' && $controller[0] !== 'media' && $controller[0] !== 'payment' )
-            <a href="{{ url($controller[0].'/create', ['id' => $id ?? '','model' => $model ?? '']) }}" class="btn btn-primary btn-lg text-white ms-auto mb-3 me-0" role="button" style="text-transform: capitalize;">
+            <a href="{{ url($controller[0].'/create', ['id' => $id ?? '','model' => $model ?? '']) }}" class="btn btn-primary btn-lg text-white ms-auto me-0" role="button" style="text-transform: capitalize;">
                 <i class="mdi mdi-plus-circle-outline"></i>
                 Add {{$controller[1] ?? $controller[0] }}
             </a>

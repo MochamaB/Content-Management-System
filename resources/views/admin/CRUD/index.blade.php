@@ -15,24 +15,24 @@
     <div class=" contwrapper mb-2">
         <div class="row">
             @include('admin.CRUD.card_title')
-          
+
             @include('admin.CRUD.cards')
 
-           
+
         </div>
     </div>
     @endif
     <div class=" contwrapper">
         <div class="row">
             @include('layouts.admin.master-filter')
-            </div>
-            <hr>
-            @if (isset($tabTitles))
-            @include('admin.CRUD.tabs_horizontal_show')
-            @else
-            @include('admin.CRUD.table', ['data' => $tableData])
-            @endif
-        
+        </div>
+        <hr>
+        @if (isset($tabTitles))
+        @include('admin.CRUD.tabs_horizontal_show')
+        @else
+        @include('admin.CRUD.table', ['data' => $tableData])
+        @endif
+
 
     </div>
 

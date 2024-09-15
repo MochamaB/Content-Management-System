@@ -210,6 +210,24 @@
 
   text-align: justify;
 }
+/* Add a wrapper around the tabs */
+.tab-container {
+    overflow-x: auto; /* Allow horizontal scrolling */
+    white-space: nowrap; /* Prevent the tabs from wrapping onto a new line */
+    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on mobile */
+}
+
+
+/* Ensure the tabs don't stack */
+.nav-tabs {
+    display: inline-flex; /* Keep tabs in one line */
+    flex-wrap: nowrap; /* Disable wrapping of flex items */
+}
+
+/* Ensure the tab items are displayed inline */
+.nav-item {
+    flex-shrink: 0; /* Prevent items from shrinking when they overflow */
+}
 
 .contwrapper {
 
@@ -1104,6 +1122,7 @@ a .badge:hover {
   margin-right: 5px;
   font-size: 14px;
 }
+
 .footer {
   background: #ffffff;
   padding: 20px 2.45rem;
@@ -1148,7 +1167,7 @@ a .badge:hover {
       -moz-transition: width 0.25s ease, background 0.25s ease;
       -ms-transition: width 0.25s ease, background 0.25s ease;
       width: 180px;
-      height: 40px;
+      height: 50px;
       padding: 20px 5px;
     }
 
@@ -1164,7 +1183,7 @@ a .badge:hover {
       padding-top: 30px;
       padding-bottom: 25px;
       width: calc(100% - 180px);
-      height: 40px;
+      height: 50px;
       box-shadow: none;
     }
     .contwrapper {
@@ -1199,11 +1218,17 @@ a .badge:hover {
       padding: 1rem;
     }
     .row > .col {
-      flex: 0 0 33.33%;
-      max-width: 33.33%;
+      flex: 0 0 50%;
+      max-width: 50%;
+      border-bottom: 2px solid #F4F5F7;
+      margin-bottom: 1rem;
      
   }
     .home-tab .statistics-details {
       margin-bottom: 15px;
   }
+  .btn.btn-lg {
+    font-size: 0.75rem !important;
+    padding: 1rem;
+}
   }

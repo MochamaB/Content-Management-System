@@ -2,10 +2,17 @@
     .row .col:not(:first-child) {
         border-left: 2px solid #F4F5F7;
     }
-     /* Screen size under 576px (phone) */
-     @media (max-width: 576px) {
+
+    /* Screen size under 576px (phone) */
+    @media (max-width: 576px) {
         .row .col:not(:first-child) {
             border-left: none;
+        }
+
+        .row .col:last-child,
+        .row .col:nth-last-child(2) {
+            border-bottom: none;
+            /* Remove border-bottom for last and second-to-last children */
         }
     }
 </style>

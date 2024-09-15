@@ -1,4 +1,4 @@
-
+<div class="tab-container">
 <ul class="nav nav-tabs mb-0" id="ex1" role="tablist">
 @foreach($tabTitles as $index => $title)
         <li class="nav-item" role="presentation">
@@ -14,7 +14,7 @@
         </li>
     @endforeach
 </ul>
-
+</div>
 
 <div class="tab-content" id="ex1-content" style="padding-top:1.6rem;">
             <!----------- ------------------>

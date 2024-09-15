@@ -1,164 +1,211 @@
-      <!-- partial -->
- 
-                      <div class="row">
-                          <div class="col-12">
-                              <div class="table-responsive">
-                                  <table id="order-listing" class="table">
-                                      <thead>
-                                          <tr>
-                                              <th>Order #</th>
-                                              <th>Purchased On</th>
-                                              <th>Customer</th>
-                                              <th>Ship to</th>
-                                              <th>Base Price</th>
-                                              <th>Purchased Price</th>
-                                              <th>Status</th>
-                                              <th>Actions</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody>
-                                          <tr>
-                                              <td>1</td>
-                                              <td>2012/08/03</td>
-                                              <td>Edinburgh</td>
-                                              <td>New York</td>
-                                              <td>$1500</td>
-                                              <td>$3200</td>
-                                              <td>
-                                                  <label class="badge badge-info">On hold</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>2</td>
-                                              <td>2015/04/01</td>
-                                              <td>Doe</td>
-                                              <td>Brazil</td>
-                                              <td>$4500</td>
-                                              <td>$7500</td>
-                                              <td>
-                                                  <label class="badge badge-danger">Pending</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>3</td>
-                                              <td>2010/11/21</td>
-                                              <td>Sam</td>
-                                              <td>Tokyo</td>
-                                              <td>$2100</td>
-                                              <td>$6300</td>
-                                              <td>
-                                                  <label class="badge badge-success">Closed</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>4</td>
-                                              <td>2016/01/12</td>
-                                              <td>Sam</td>
-                                              <td>Tokyo</td>
-                                              <td>$2100</td>
-                                              <td>$6300</td>
-                                              <td>
-                                                  <label class="badge badge-success">Closed</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>5</td>
-                                              <td>2017/12/28</td>
-                                              <td>Sam</td>
-                                              <td>Tokyo</td>
-                                              <td>$2100</td>
-                                              <td>$6300</td>
-                                              <td>
-                                                  <label class="badge badge-success">Closed</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>6</td>
-                                              <td>2000/10/30</td>
-                                              <td>Sam</td>
-                                              <td>Tokyo</td>
-                                              <td>$2100</td>
-                                              <td>$6300</td>
-                                              <td>
-                                                  <label class="badge badge-info">On-hold</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>7</td>
-                                              <td>2011/03/11</td>
-                                              <td>Cris</td>
-                                              <td>Tokyo</td>
-                                              <td>$2100</td>
-                                              <td>$6300</td>
-                                              <td>
-                                                  <label class="badge badge-success">Closed</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>8</td>
-                                              <td>2015/06/25</td>
-                                              <td>Tim</td>
-                                              <td>Italy</td>
-                                              <td>$6300</td>
-                                              <td>$2100</td>
-                                              <td>
-                                                  <label class="badge badge-info">On-hold</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>9</td>
-                                              <td>2016/11/12</td>
-                                              <td>John</td>
-                                              <td>Tokyo</td>
-                                              <td>$2100</td>
-                                              <td>$6300</td>
-                                              <td>
-                                                  <label class="badge badge-success">Closed</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                          <tr>
-                                              <td>10</td>
-                                              <td>2003/12/26</td>
-                                              <td>Tom</td>
-                                              <td>Germany</td>
-                                              <td>$1100</td>
-                                              <td>$2300</td>
-                                              <td>
-                                                  <label class="badge badge-danger">Pending</label>
-                                              </td>
-                                              <td>
-                                                  <button class="btn btn-outline-primary">View</button>
-                                              </td>
-                                          </tr>
-                                      </tbody>
+  <div class="table-responsive  mt-1">
+                                  <table class="table select-table">
+                                    <thead>
+                                      <tr>
+                                        <th>
+                                          <div class="form-check form-check-flat mt-0">
+                                            <label class="form-check-label">
+                                              <input type="checkbox" class="form-check-input" aria-checked="false"
+                                                id="check-all"><i class="input-helper"></i></label>
+                                          </div>
+                                        </th>
+                                        <th>Customer</th>
+                                        <th>Company</th>
+                                        <th>Progress</th>
+                                        <th>Status</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>
+                                          <div class="form-check form-check-flat mt-0">
+                                            <label class="form-check-label">
+                                              <input type="checkbox" class="form-check-input" aria-checked="false"><i
+                                                class="input-helper"></i></label>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="d-flex ">
+                                            <img src="../assets/images/faces/face1.jpg" alt="">
+                                            <div>
+                                              <h6>Brandon Washington</h6>
+                                              <p>Head admin</p>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <h6>Company name 1</h6>
+                                          <p>company type</p>
+                                        </td>
+                                        <td>
+                                          <div>
+                                            <div
+                                              class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                              <p class="text-success">79%</p>
+                                              <p>85/162</p>
+                                            </div>
+                                            <div class="progress progress-md">
+                                              <div class="progress-bar bg-success" role="progressbar" style="width: 85%"
+                                                aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="badge badge-opacity-warning">In progress</div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>
+                                          <div class="form-check form-check-flat mt-0">
+                                            <label class="form-check-label">
+                                              <input type="checkbox" class="form-check-input" aria-checked="false"><i
+                                                class="input-helper"></i></label>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="d-flex">
+                                            <img src="../assets/images/faces/face2.jpg" alt="">
+                                            <div>
+                                              <h6>Laura Brooks</h6>
+                                              <p>Head admin</p>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <h6>Company name 1</h6>
+                                          <p>company type</p>
+                                        </td>
+                                        <td>
+                                          <div>
+                                            <div
+                                              class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                              <p class="text-success">65%</p>
+                                              <p>85/162</p>
+                                            </div>
+                                            <div class="progress progress-md">
+                                              <div class="progress-bar bg-success" role="progressbar" style="width: 65%"
+                                                aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="badge badge-opacity-warning">In progress</div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>
+                                          <div class="form-check form-check-flat mt-0">
+                                            <label class="form-check-label">
+                                              <input type="checkbox" class="form-check-input" aria-checked="false"><i
+                                                class="input-helper"></i></label>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="d-flex">
+                                            <img src="../assets/images/faces/face3.jpg" alt="">
+                                            <div>
+                                              <h6>Wayne Murphy</h6>
+                                              <p>Head admin</p>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <h6>Company name 1</h6>
+                                          <p>company type</p>
+                                        </td>
+                                        <td>
+                                          <div>
+                                            <div
+                                              class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                              <p class="text-success">65%</p>
+                                              <p>85/162</p>
+                                            </div>
+                                            <div class="progress progress-md">
+                                              <div class="progress-bar bg-warning" role="progressbar" style="width: 38%"
+                                                aria-valuenow="38" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="badge badge-opacity-warning">In progress</div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>
+                                          <div class="form-check form-check-flat mt-0">
+                                            <label class="form-check-label">
+                                              <input type="checkbox" class="form-check-input" aria-checked="false"><i
+                                                class="input-helper"></i></label>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="d-flex">
+                                            <img src="../assets/images/faces/face4.jpg" alt="">
+                                            <div>
+                                              <h6>Matthew Bailey</h6>
+                                              <p>Head admin</p>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <h6>Company name 1</h6>
+                                          <p>company type</p>
+                                        </td>
+                                        <td>
+                                          <div>
+                                            <div
+                                              class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                              <p class="text-success">65%</p>
+                                              <p>85/162</p>
+                                            </div>
+                                            <div class="progress progress-md">
+                                              <div class="progress-bar bg-danger" role="progressbar" style="width: 15%"
+                                                aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="badge badge-opacity-danger">Pending</div>
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>
+                                          <div class="form-check form-check-flat mt-0">
+                                            <label class="form-check-label">
+                                              <input type="checkbox" class="form-check-input" aria-checked="false"><i
+                                                class="input-helper"></i></label>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="d-flex">
+                                            <img src="../assets/images/faces/face5.jpg" alt="">
+                                            <div>
+                                              <h6>Katherine Butler</h6>
+                                              <p>Head admin</p>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <h6>Company name 1</h6>
+                                          <p>company type</p>
+                                        </td>
+                                        <td>
+                                          <div>
+                                            <div
+                                              class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                                              <p class="text-success">65%</p>
+                                              <p>85/162</p>
+                                            </div>
+                                            <div class="progress progress-md">
+                                              <div class="progress-bar bg-success" role="progressbar" style="width: 65%"
+                                                aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                        <td>
+                                          <div class="badge badge-opacity-success">Completed</div>
+                                        </td>
+                                      </tr>
+                                    </tbody>
                                   </table>
-                              </div>
-                          </div>
-                      </div>
+                                </div>

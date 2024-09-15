@@ -10,15 +10,18 @@ use App\Actions\UpdateDueDateAction;
 use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
 use App\Actions\CalculateTaxAction;
+use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\PaymentItems;
 use App\Models\PaymentMethod;
+use App\Models\Transaction;
 use App\Notifications\InvoiceGeneratedNotification;
 use App\Notifications\PaymentNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use \Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
+use App\Services\InvoiceService;
 
 class PaymentService
 {
@@ -27,6 +30,7 @@ class PaymentService
     private $updateDueDateAction;
     private $updateNextDateAction;
     private $recordTransactionAction;
+    private $invoiceService;
 
 
     public function __construct(
@@ -34,13 +38,15 @@ class PaymentService
         UpdateNextDateAction $updateNextDateAction,
         UpdateDueDateAction $updateDueDateAction,
         RecordTransactionAction $recordTransactionAction,
-        CalculateTaxAction $calculateTaxAction
+        CalculateTaxAction $calculateTaxAction,
+        InvoiceService $invoiceService
     ) {
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
         $this->updateNextDateAction = $updateNextDateAction;
         $this->updateDueDateAction = $updateDueDateAction;
         $this->recordTransactionAction = $recordTransactionAction;
         $this->calculateTaxAction = $calculateTaxAction;
+        $this->invoiceService = $invoiceService;
     }
 
     ///////// ALLOCATED PAYMENTS /////////////////////
@@ -153,14 +159,35 @@ class PaymentService
     /////////Send Email
     public function paymentEmail($payment)
     {
-
-
         $user = $payment->model->model;
 
-
+        if($payment->model instanceof Invoice)
+         {
+            $invoice = $payment->model;
+            $unitchargeId = $payment->model->getItems->pluck('unitcharge_id')->first();
+            //    dd($unitchargeIds);
+            $sixMonths = now()->subMonths(6);
+            $transactions = Transaction::where('created_at', '>=', $sixMonths)
+                ->where('unit_id', $payment->model->unit_id)
+                ->where('unitcharge_id', $unitchargeId)
+                ->get();
+            $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
+    
+            ////Opening Balance
+            $openingBalance = $this->invoiceService->calculateOpeningBalance($payment->model);
+                //// Data for the Payment Methods
+            $viewContent = View::make('email.statement', [
+                'user' => $user,
+                'invoice' => $invoice,
+                'transactions' => $transactions,
+                'groupedInvoiceItems' => $groupedInvoiceItems,
+                'openingBalance' => $openingBalance,
+                ])->render();
+        }else{
         $viewContent = View::make('email.payment', [
             'payment' => $payment,
         ])->render();
+        }
 
         try {
             $user->notify(new PaymentNotification($payment, $user, $viewContent));
