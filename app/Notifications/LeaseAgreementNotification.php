@@ -35,7 +35,7 @@ class LeaseAgreementNotification extends Notification implements ShouldQueue
             "line 1" => "Welcome to the ".$this->company." property management system",
             "line 2" => "A new lease has been created for you so now you can manage and view all property data from the comfort of your computer",
             "line 3" => "By receiving this email in it means you have agreeed to all the terms and conditions in your lease agreement and signed off on it",
-            "line 4" => "The default password is <b>property123</b>",
+            "line 4" => "The default password is: property123",
             "line 5" => "To view and manage your units, you can login to our client area here:",
             "action" => "/dashboard",
         ]);

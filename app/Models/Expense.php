@@ -72,6 +72,18 @@ class Expense extends Model
     {
         return $this->hasMany(ExpenseItems::class);
     }
+    public function getInitialsAttribute() {
+        if ($this->property) { // Check if the relationship exists
+            $words = explode(' ', $this->property->property_name);
+            $initials = '';
+            foreach ($words as $word) {
+                $initials .= strtoupper($word[0]);  // Get the first letter of each word
+            }
+            return $initials;
+        }
+    
+        return '';  // Return an empty string or some default value if property is null
+    }
 
     // Define creating event to generate reference number
     protected static function boot()
@@ -92,13 +104,14 @@ class Expense extends Model
 
             // Construct the reference number
             $doc = 'EXP-';
-            $propertyNumber = 'P' . str_pad($expense->property_id, 2, '0', STR_PAD_LEFT);
+            $propertyInitials = $expense->initials;
+          //  $propertyNumber = 'P' . str_pad($expense->property_id, 2, '0', STR_PAD_LEFT);
             $unit = Unit::find($expense->unit_id);
             $unitNumber = $unit ? $unit->unit_number : 'N';
             $date = now()->format('ymd');
 
             // Assign the reference number to the expense model
-            $expense->referenceno = $doc . '-' . $Id . '-' . $propertyNumber . $unitNumber;
+            $expense->referenceno = $doc . '-' . $propertyInitials . $unitNumber. '-'. $Id ;
         });
     }
 }

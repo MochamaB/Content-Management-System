@@ -8,8 +8,15 @@
             $routeParts = explode('.', $routeName);
             $routeCount = count($routeParts);
             @endphp
+
             @foreach($routeParts as $index => $part)
-            <span style="text-transform:capitalize;">{{ $part }}</span>
+            <span style="text-transform:capitalize;">
+                @if($part === 'index')
+                    Manage
+                @else
+                    {{ $part }}
+                @endif
+            </span>
             @if($index < $routeCount - 1) <span style="font-size:20px;">/</span>
                 @endif
                 @endforeach

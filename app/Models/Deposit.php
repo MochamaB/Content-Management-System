@@ -75,6 +75,19 @@ class Deposit extends Model
         return $this->hasMany(DepositItems::class);
     }
 
+    public function getInitialsAttribute() {
+        if ($this->property) { // Check if the relationship exists
+            $words = explode(' ', $this->property->property_name);
+            $initials = '';
+            foreach ($words as $word) {
+                $initials .= strtoupper($word[0]);  // Get the first letter of each word
+            }
+            return $initials;
+        }
+    
+        return '';  // Return an empty string or some default value if property is null
+    }
+
     protected static function boot()
     {
         parent::boot();
@@ -93,13 +106,14 @@ class Deposit extends Model
 
             // Construct the reference number
             $doc = 'DEP-';
-            $propertyNumber = 'P' . str_pad($deposit->property_id, 2, '0', STR_PAD_LEFT);
+            $propertyInitials = $deposit->initials;
+         //   $propertyNumber = 'P' . str_pad($deposit->property_id, 2, '0', STR_PAD_LEFT);
             // Load the unit model using the unit_id
             $unit = Unit::find($deposit->unit_id);
             $unitNumber = $unit ? $unit->unit_number : 'N';
 
             // Assign the reference number to the expense model
-            $deposit->referenceno = $doc . '-' . $Id . '-' . $propertyNumber . $unitNumber;
+            $deposit->referenceno = $doc . '-' . $propertyInitials . $unitNumber. '-'. $Id ;
         });
     }
 }

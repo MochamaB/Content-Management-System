@@ -49,7 +49,7 @@
         </div>
         <div class="col-md-6">
             <div class="form-group">
-                <label class="label">Payment Code</label>
+                <label class="label">Payment Ref Number</label>
                 <input type="text" class="form-control" name="payment_code" id="payment_code" value="">
             </div>
         </div>

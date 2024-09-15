@@ -147,6 +147,19 @@ class Invoice extends Model
         return $this->getTransactions()->groupBy('unitcharge_id');
     }
 
+    public function getInitialsAttribute() {
+        if ($this->property) { // Check if the relationship exists
+            $words = explode(' ', $this->property->property_name);
+            $initials = '';
+            foreach ($words as $word) {
+                $initials .= strtoupper($word[0]);  // Get the first letter of each word
+            }
+            return $initials;
+        }
+    
+        return '';  // Return an empty string or some default value if property is null
+    }
+
     /// Creating the Reference Number
     protected static function boot()
     {
@@ -166,12 +179,14 @@ class Invoice extends Model
 
             // Construct the reference number
             $doc = 'INV-';
-            $propertyNumber = 'P' . str_pad($invoice->property_id, 2, '0', STR_PAD_LEFT);
+            $property = Property::find($invoice->property_id);  // Fetch the property record
+            // Call the accessor to get the initials
+            $propertyInitials = $invoice->initials;
             $unit = Unit::find($invoice->unit_id);
             $unitNumber = $unit ? $unit->unit_number : 'N';
 
             // Assign the reference number to the expense model
-            $invoice->referenceno = $doc . '-' . $Id . '-' . $propertyNumber . $unitNumber;
+            $invoice->referenceno = $doc . '-' . $propertyInitials . $unitNumber. '-'. $Id ;
         });
     }
 }

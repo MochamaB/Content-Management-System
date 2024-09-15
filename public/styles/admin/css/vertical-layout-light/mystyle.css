@@ -1118,10 +1118,11 @@ a .badge:hover {
       display: none;
       position: fixed;
       max-height: calc(100vh - 97px);
-      top: 97px;
+      top: 0;
       bottom: 0;
       overflow: auto;
-      right: -200px;
+      right: -250px;
+      z-index: 9999; /* High z-index to place it on top */
       /* Adjust the sidebar width accordingly */
       -webkit-transition: all 0.25s ease-out;
       -o-transition: all 0.25s ease-out;
@@ -1141,18 +1142,18 @@ a .badge:hover {
     }
 
     .navbar .navbar-brand-wrapper {
-      background: #F4F5F7;
+      background: #ffff;
       transition: width 0.25s ease, background 0.25s ease;
       -webkit-transition: width 0.25s ease, background 0.25s ease;
       -moz-transition: width 0.25s ease, background 0.25s ease;
       -ms-transition: width 0.25s ease, background 0.25s ease;
       width: 180px;
-      height: 97px;
+      height: 40px;
       padding: 20px 5px;
     }
 
     .navbar .navbar-menu-wrapper {
-      background: #F4F5F7;
+      background: #fff;
       transition: width 0.25s ease;
       -webkit-transition: width 0.25s ease;
       -moz-transition: width 0.25s ease;
@@ -1163,7 +1164,7 @@ a .badge:hover {
       padding-top: 30px;
       padding-bottom: 25px;
       width: calc(100% - 180px);
-      height: 97px;
+      height: 40px;
       box-shadow: none;
     }
     .contwrapper {
