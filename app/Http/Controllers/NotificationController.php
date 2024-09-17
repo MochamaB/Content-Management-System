@@ -124,6 +124,7 @@ class NotificationController extends Controller
     $username = env('AT_USERNAME');
     $apiKey = env('AT_KEY');
 
+   
     // Create a new instance of the Africa's Talking SDK
     $AT = new AfricasTalking($username, $apiKey);
 
@@ -134,7 +135,7 @@ class NotificationController extends Controller
        
       // Send the SMS using the Africa's Talking SMS API
         $result = $sms->send([
-            'to'      => '+254710025', // Replace with the recipient phone number
+            'to'      => '+254723710025', // Replace with the recipient phone number
             'message' => 'This is a test message',
             'from'    => 'YourSenderID' // Optional, can be left out for Africa's Talking defaults
         ]);

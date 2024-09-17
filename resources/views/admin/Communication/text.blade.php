@@ -4,7 +4,6 @@
 
 <form action="{{ url('notification/text/sendText') }}" method="POST" style="display: inline;">
     @csrf
-    @method('POST')
     <button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0  float-end" role="button" style="text-transform: capitalize;" style="border:0px;" data-toggle="modal" data-target="#sendTextModal">
         <i class="mdi mdi-message-text-outline"></i> New Text Message</button>
 
