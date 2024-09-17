@@ -112,7 +112,7 @@ class NotificationController extends Controller
     public function text(Request $request)
     {
 
-        return view('admin.Communication.Text');
+        return view('admin.Communication.text');
 
     }
     public function sendText(Request $request)
