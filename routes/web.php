@@ -84,12 +84,15 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 
 //<!-------------------------------- Communication Module ---------------------------------------------->////
     Route::group(['groupName' => 'Communication'], function () {
-        Route::get('email/{id}', [NotificationController::class, 'show'])
+      
+        Route::get('notification/email', [NotificationController::class, 'email'])->name('notification.email');
+        Route::get('notification/email/{id}', [NotificationController::class, 'showEmail'])
         ->where('id', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
         ->name('notification.show');
-        Route::resource('notification', NotificationController::class, ['except' => 'show']);
-        Route::get('email', [NotificationController::class, 'email'])->name('notification.email');
-        Route::get('text', [NotificationController::class, 'text'])->name('notification.text');
+        Route::get('notification/text', [NotificationController::class, 'text'])->name('notification.email');
+        Route::post('notification/text/sendText', [NotificationController::class, 'sendText']);
+        Route::resource('notification', NotificationController::class);
+        
        
     });
 

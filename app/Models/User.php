@@ -154,6 +154,7 @@ class User extends Authenticatable implements HasMedia
             ->addMediaCollection('avatar')
             ->singleFile();
     }
+    
 
     /**
      * The units that belong to the user.
@@ -342,7 +343,7 @@ class User extends Authenticatable implements HasMedia
 
     public function modelrequests()
     {
-        return $this->morphMany(Request::class, 'assigned');
+        return $this->morphMany(Ticket::class, 'assigned');
     }
     public function scopeSameUnit($query, $user)
     {

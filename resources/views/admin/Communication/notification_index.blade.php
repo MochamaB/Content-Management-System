@@ -3,7 +3,7 @@
 @section('content')
 <div class=" contwrapper">
 
-    <a href="" class="btn btn-primary btn-lg text-white mb-0 me-0  float-end" role="button" style="text-transform: capitalize;">
+    <a href="{{ url($routeParts[0]) }}" class="btn btn-primary btn-lg text-white mb-0 me-0  float-end" role="button" style="text-transform: capitalize;">
         <i class="mdi mdi-plus-circle-outline"></i>
         Send Notification
     </a><br />
@@ -28,7 +28,7 @@
                 <div class="card  mb-2" style="border-left:5px solid blue;margin-bottom:15px !important">
                     <div class="card-body p-3">
                         <div class="media d-flex align-items-center">
-                            <a href="{{ url('notification/email') }}" class="genlink d-flex align-items-center text-decoration-none">
+                            <a href="{{ url('notification/text') }}" class="genlink d-flex align-items-center text-decoration-none">
                                 <i class="ti-comment-alt icon-lg me-3"></i>
                                 <div class="media-body">
                                     Text Messages

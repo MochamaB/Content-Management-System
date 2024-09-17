@@ -202,8 +202,8 @@ class AppServiceProvider extends ServiceProvider
 
                 'Messages' => ['icon' => 'email-open', 'submodules' => [
                     'notification' => ['display' => 'Notification Center'],
-                    'email' => ['display' => 'Emails'],
-                    'text' => ['display' => 'Text Messages'],
+                    'notification/email' => ['display' => 'Emails'],
+                    'notification/text' => ['display' => 'Text Messages'],
                 ]],
 
                 'Maintenance' => ['icon' => 'broom', 'submodules' => [

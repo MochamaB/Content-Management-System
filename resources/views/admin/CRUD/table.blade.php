@@ -72,44 +72,45 @@
 
                 <td style="padding-right:15px;">
                     @if ($row[0] && $row['isDeleted'])
-                    <a href="" class="" data-toggle="tooltip" data-placement="bottom" title="View Summary">
-                        <span class="badge badge-danger">DELETED</span>
-                    </a>
+                        <a href="" class="" data-toggle="tooltip" data-placement="bottom" title="View Summary">
+                            <span class="badge badge-danger">DELETED</span>
+                        </a>
                     @else
-                    <!-- SHOW BUTTON -->
-                    <a href="{{url($controller[0].'/'.$row['id'])}}" class="" data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-eye mdi-24px text-dark"></i></a>
-                    <!-- EDIT BUTTON -->
-                    @if( Auth::user()->can($controller[0].'.edit') || Auth::user()->id === 1)
-                    <a href="{{url($controller[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
-                    @endif
-                    <!-- DELETE BUTTON -->
-                    @if( Auth::user()->can($controller[0].'.destroy') || Auth::user()->id === 1)
-                    <form action="{{ url($controller[0].'/'.$row['id']) }}" method="POST" style="display: inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="button" class="" style="border:0px;" data-toggle="modal" data-target="#deleteConfirmationModal{{$controller[0].$row['id'] }}"><i class="mdi mdi-delete mdi-24px text-danger"></i></button>
+                        <!-- SHOW BUTTON -->
+                        <a href="{{url($controller[0].'/'.$row['id'])}}" class="" data-toggle="tooltip" data-placement="bottom" title="View Summary"><i class="mdi mdi-eye mdi-24px text-dark"></i></a>
+                        <!-- EDIT BUTTON -->
+                        @if( Auth::user()->can($controller[0].'.edit') || Auth::user()->id === 1)
+                        <a href="{{url($controller[0].'/'.$row['id'].'/edit')}}" class=""><i class="mdi mdi-lead-pencil mdi-24px text-primary"></i></a>
+                        @endif
+                        <!-- DELETE BUTTON -->
+                        @if( Auth::user()->can($controller[0].'.destroy') || Auth::user()->id === 1)
+                        <form action="{{ url($controller[0].'/'.$row['id']) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="" style="border:0px;" data-toggle="modal" data-target="#deleteConfirmationModal{{$controller[0].$row['id'] }}"><i class="mdi mdi-delete mdi-24px text-danger"></i></button>
 
-                        <div class="modal fade" id="deleteConfirmationModal{{$controller[0].$row['id'] }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header" style="background-color:red;">
-                                        <h5 class="modal-title" id="deleteConfirmationModalLabel" style="color:white;">Confirm Deletion</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true" style="font-size: 40px; color: white;">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Are you sure you want to delete this {{$controller[0]}}?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-danger btn-lg text-danger mb-0 me-0" data-dismiss="modal">Cancel</button>
-                                        <button type="submit" class="btn btn-danger btn-lg text-white mb-0 me-0">Delete</button>
+                            <div class="modal fade" id="deleteConfirmationModal{{$controller[0].$row['id'] }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header" style="background-color:red;">
+                                            <h5 class="modal-title" id="deleteConfirmationModalLabel" style="color:white;">Confirm Deletion</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true" style="font-size: 40px; color: white;">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this {{$controller[0]}}?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-danger btn-lg text-danger mb-0 me-0" data-dismiss="modal">Cancel</button>
+                                            <button type="submit" class="btn btn-danger btn-lg text-white mb-0 me-0">Delete</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </form>
-                    @endif
+                        </form>
+                        @endif
+                    <!--- End Delete -->
                     @endif
                 </td>
             </tr>

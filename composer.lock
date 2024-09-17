@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cb4226899fd2ef9d1b666ceada14cb14",
+    "content-hash": "3e45cb356bd7184103710b8ad6f51fe3",
     "packages": [
         {
             "name": "africastalking/africastalking",
-            "version": "v3.0.1",
+            "version": "v3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AfricasTalkingLtd/africastalking-php.git",
-                "reference": "eaa02a84d5743692bd212d1cc9874c0906d9ec3c"
+                "reference": "8345423ee70b07b36cedcce61c85c9bc679e3666"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AfricasTalkingLtd/africastalking-php/zipball/eaa02a84d5743692bd212d1cc9874c0906d9ec3c",
-                "reference": "eaa02a84d5743692bd212d1cc9874c0906d9ec3c",
+                "url": "https://api.github.com/repos/AfricasTalkingLtd/africastalking-php/zipball/8345423ee70b07b36cedcce61c85c9bc679e3666",
+                "reference": "8345423ee70b07b36cedcce61c85c9bc679e3666",
                 "shasum": ""
             },
             "require": {
@@ -30,8 +30,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "AfricasTalking\\SDK\\": "src/",
-                    "AfricasTalking\\SDK\\Tests\\": "tests"
+                    "AfricasTalking\\SDK\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -58,9 +57,9 @@
             ],
             "support": {
                 "issues": "https://github.com/AfricasTalkingLtd/africastalking-php/issues",
-                "source": "https://github.com/AfricasTalkingLtd/africastalking-php/tree/v3.0.1"
+                "source": "https://github.com/AfricasTalkingLtd/africastalking-php/tree/v3.0.2"
             },
-            "time": "2023-11-07T11:35:25+00:00"
+            "time": "2024-03-07T12:27:18+00:00"
         },
         {
             "name": "asm89/stack-cors",
@@ -1647,23 +1646,23 @@
         },
         {
             "name": "laravel-notification-channels/africastalking",
-            "version": "v5.1",
+            "version": "v6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel-notification-channels/africastalking.git",
-                "reference": "8b73afc0dd824e7f9e0a9bb537b3784100a9f7ce"
+                "reference": "5c23d44c29afdb7e71c7167926fc8accffd18b90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel-notification-channels/africastalking/zipball/8b73afc0dd824e7f9e0a9bb537b3784100a9f7ce",
-                "reference": "8b73afc0dd824e7f9e0a9bb537b3784100a9f7ce",
+                "url": "https://api.github.com/repos/laravel-notification-channels/africastalking/zipball/5c23d44c29afdb7e71c7167926fc8accffd18b90",
+                "reference": "5c23d44c29afdb7e71c7167926fc8accffd18b90",
                 "shasum": ""
             },
             "require": {
                 "africastalking/africastalking": "^3.0",
                 "guzzlehttp/guzzle": "^6.2 || ^7.0",
-                "illuminate/notifications": "5.5 - 10",
-                "illuminate/support": "5.5 - 10",
+                "illuminate/notifications": "5.5 - 11.0",
+                "illuminate/support": "5.5 - 11.0",
                 "php": ">=7.2.5"
             },
             "require-dev": {
@@ -1706,9 +1705,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel-notification-channels/africastalking/issues",
-                "source": "https://github.com/laravel-notification-channels/africastalking/tree/v5.1"
+                "source": "https://github.com/laravel-notification-channels/africastalking/tree/v6.0"
             },
-            "time": "2023-10-18T16:46:47+00:00"
+            "time": "2024-08-13T14:12:39+00:00"
         },
         {
             "name": "laravel/framework",
