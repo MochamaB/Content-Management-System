@@ -118,34 +118,45 @@ class NotificationController extends Controller
     public function sendText(Request $request)
     {
         // Get the user (test user or any user in your database)
-    $user = User::find(6);
+    $user = User::find(2);
+    // send notification 
+    $user->notify(new NewsWasPublished());
 
+        /*
     // Africa's Talking API credentials
     $username = env('AT_USERNAME');
     $apiKey = env('AT_KEY');
 
-   
-    // Create a new instance of the Africa's Talking SDK
-    $AT = new AfricasTalking($username, $apiKey);
-
-    // Get the SMS service
-    $sms = $AT->sms();
+    $client = new Client([
+        'verify' => false,
+        'base_uri' => 'https://api.sandbox.africastalking.com'
+    ]);
 
     try {
-       
-      // Send the SMS using the Africa's Talking SMS API
-        $result = $sms->send([
-            'to'      => '+254723710025', // Replace with the recipient phone number
-            'message' => 'This is a test message',
-            'from'    => 'YourSenderID' // Optional, can be left out for Africa's Talking defaults
+        $response = $client->post('/version1/messaging', [
+            'form_params' => [
+                'username' => $username,  // Required field
+                'to' => '+254723710025', // The number you want to test with
+                'message' => 'This is a second test message from the sandbox',
+                'from' => '21763', // Your short code
+            ],
+            'headers' => [
+                'apiKey' => $apiKey,
+                'Content-Type' => 'application/x-www-form-urlencoded'
+            ]
         ]);
+
+        $result = json_decode($response->getBody(), true);
         print_r($result);
 
         return 'SMS sent successfully';
     } catch (\Exception $e) {
-        // Catch any errors that occur and return the message
         return 'Error: ' . $e->getMessage();
-        }
+    }
+        */
+
+   
+
     }
 
     /**

@@ -335,6 +335,8 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->morphMany(Invoice::class, 'model');
     }
+    
+    // Africas Talking Config
 
     public function routeNotificationForAfricasTalking($notification)
     {
