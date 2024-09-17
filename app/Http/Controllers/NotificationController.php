@@ -118,6 +118,7 @@ class NotificationController extends Controller
     public function sendText(Request $request)
     {
         // Get the user (test user or any user in your database)
+        dd(config('services.africastalking'));
     $user = User::find(2);
     // send notification 
     $user->notify(new NewsWasPublished());

@@ -1,6 +1,6 @@
 <nav class="sidebar sidebar-offcanvas" >
 
-<div class="company-details" style="padding:10px 20px; width: 220px;height: 100px;">
+<div class="company-details" style="">
 <span class="company-icon">
         {{ $sitesettings->initials }}
     </span>
@@ -24,7 +24,7 @@
     $hasPermission = $userPermissions->contains('module', $module);
     @endphp
     @if ($hasPermission || Auth::user()->id === 1)
-          <li class="nav-item nav-category"></li>
+         
           <li class="nav-item" >
             <a class="nav-link" data-bs-toggle="collapse" href="#{{$module}}" aria-expanded="false" aria-controls="{{$module}}">
               <i class="menu-icon mdi mdi mdi-{{$moduleData['icon']}}"></i>
