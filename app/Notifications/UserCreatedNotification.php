@@ -6,6 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
+use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
+
 
 class UserCreatedNotification extends Notification 
 //implements ShouldQueue
@@ -25,12 +28,12 @@ class UserCreatedNotification extends Notification
     public function __construct($user)
     {
         $this->user = $user;
-        $this->subject = 'New User Created';
+        $this->subject = 'New User Added';
         $this->heading = 'Welcome! Your Account is ready';
         $this->linkmessage = 'Go To Site';
         $this->data = ([
-            "line 1" => "Welcome to the property management system",
-            "line 2" => "Manage and view all property data from the comfort of your computer",
+            "line 1" => "Welcome to the property management system.You have been added by your property owner.",
+            "line 2" => "Now you can manage and view all property data from the comfort of your computer",
             "line 3" => "The Default password is property123",
             "line 4" => "To view and manage your units, you can login to our client area here:",
             "action" => "/dashboard",
@@ -45,7 +48,7 @@ class UserCreatedNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail', 'database', AfricasTalkingChannel::class];
     }
 
     /**
@@ -62,6 +65,14 @@ class UserCreatedNotification extends Notification
         )
         ->subject($this->subject);
     }
+
+     // SMS Notification using AfricasTalking
+     public function toAfricasTalking($notifiable)
+     {
+         return (new AfricasTalkingMessage())
+                     ->content("Hi {$this->user->firstname}, welcome to our property management system. 
+                     You can log in with your email and password 'property123'. Access your account at: " . url('/dashboard'));
+     }
 
     /**
      * Get the array representation of the notification.

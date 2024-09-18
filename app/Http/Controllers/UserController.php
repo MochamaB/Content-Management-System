@@ -275,6 +275,7 @@ class UserController extends Controller
 
         //2. GET THE TITLES FOR THE TABS
         $tabTitles = collect([
+            'Profile',
             'Invoices',
             'Payments',
             //    'Maintenance',
@@ -300,7 +301,9 @@ class UserController extends Controller
         //3. LOAD THE PAGES FOR THE TABS
         $tabContents = [];
         foreach ($tabTitles as $title) {
-            if ($title === 'Invoices') {
+            if ($title === 'Profile') {
+                $tabContents[] = View('admin.User.user_profile', compact('showUser'))->render();
+            }elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.User.user_tabs', ['tableData' => $invoiceTableData, 'controller' => ['invoice']])->render();
             } elseif ($title === 'Payments') {
                 $tabContents[] = View('admin.User.user_tabs', ['tableData' => $paymentTableData, 'controller' => ['payment']])->render();
@@ -309,7 +312,7 @@ class UserController extends Controller
             }
         }
 
-        return View('admin.User.user_profile', compact('pageheadings', 'tabTitles', 'tabContents', 'showUser'));
+        return View('admin.User.profile', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
     /**

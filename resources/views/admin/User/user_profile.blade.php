@@ -1,6 +1,4 @@
-@extends('layouts.admin.admin')
 
-@section('content')
 @php
 $avatarUrl = Auth::user()->getFirstMediaUrl('avatar');
 $avatarUrl = empty($avatarUrl) ? 'uploads/images/avatar.png' : $avatarUrl;
@@ -29,10 +27,6 @@ $avatarUrl = empty($avatarUrl) ? 'uploads/images/avatar.png' : $avatarUrl;
 
     </div>
    
-</div>
-<div class=" contwrapper">
-    @include('admin.CRUD.tabs_horizontal')
-
 </div>
 <script>
     $(document).ready(function() {
@@ -74,4 +68,3 @@ $avatarUrl = empty($avatarUrl) ? 'uploads/images/avatar.png' : $avatarUrl;
         // For example, you can handle form submission to update the data in the database
     });
 </script>
-@endsection

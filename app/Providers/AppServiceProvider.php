@@ -172,7 +172,10 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
             $userRoles = auth()->user()->roles;
             $userPermissions = $userRoles->map->permissions->flatten();
+
             $sidebar = collect([
+                ////Main Menu Items
+                'Main' => [
                 'Property' => ['icon' => 'bank', 'submodules' => [
                     'property' => ['display' => 'Property / Company'],
                     'unit' => ['display' => 'Units'],
@@ -186,6 +189,12 @@ class AppServiceProvider extends ServiceProvider
                     'unitcharge' => ['display' => 'All Utility Charges'],
                     'payment' => ['display' => 'Payments'],
                     'meter-reading' => ['display' => 'Meter Readings'],
+                ]],
+
+                'Maintenance' => ['icon' => 'broom', 'submodules' => [
+                    'vendor-category' => ['display' => 'Vendor Categories'],
+                    'vendors' => ['display' => 'Vendors'],
+                    'ticket' => ['display' => 'All Tickets'],
                 ]],
 
                 'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
@@ -205,29 +214,23 @@ class AppServiceProvider extends ServiceProvider
                     'notification/email' => ['display' => 'Emails'],
                     'notification/text' => ['display' => 'Text Messages'],
                 ]],
-
-                'Maintenance' => ['icon' => 'broom', 'submodules' => [
-                    'vendor-category' => ['display' => 'Vendor Categories'],
-                    'vendors' => ['display' => 'Vendors'],
-                    'ticket' => ['display' => 'All Tickets'],
-                ]],
-
-                'Tasks' => ['icon' => 'timetable', 'submodules' => [
-                    'task' => ['display' => 'System Tasks'],
-                ]],
-
                 'Files' => ['icon' => 'file-multiple', 'submodules' => [
                     'media' => ['display' => 'All Files'],
                 ]],
                 'Reports' => ['icon' => 'chart-line', 'submodules' => [
                     'report' => ['display' => 'All Reports'],
                 ]],
-                'User' => ['icon' => 'account-circle-outline', 'submodules' => [
-                    'user' => ['display' => 'Manage Users'],
-                    'role' => ['display' => 'User Roles'],
-                    'permission' => ['display' => 'System Permissions']
-                ]],
+                
 
+
+               
+            ],
+            //// Secondary Menu Items
+            'Secondary' => [
+
+                'Tasks' => ['icon' => 'timetable', 'submodules' => [
+                    'task' => ['display' => 'System Tasks'],
+                ]],
                 'Website' => ['icon' => 'web', 'submodules' => [
                     'Website' => ['display' => 'Site Information'],
                     'slider' => ['display' => 'Picture Sliders'],
@@ -235,11 +238,21 @@ class AppServiceProvider extends ServiceProvider
                     'amenity' => ['display' => 'Property Amenities'],
                     'propertytype' => ['display' => 'Property Categories']
                 ]],
+                
 
                 'Settings' => ['icon' => 'settings', 'submodules' => [
                     'setting' => ['display' => 'Application Settings'],
                     'system-setting' => ['display' => 'System Settings']
                 ]],
+                ],
+            'Other' => [
+                    'User' => ['icon' => 'account-circle-outline', 'submodules' => [
+                    'user' => ['display' => 'Manage Users'],
+                    'role' => ['display' => 'User Roles'],
+                    'permission' => ['display' => 'System Permissions']
+                ]],
+
+            ]
             ]);
             //  $notifications = $user->notifications;
             // Pass the authenticated user data to the 'layouts.admin' view
