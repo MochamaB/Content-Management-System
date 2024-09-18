@@ -12,6 +12,8 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Services\TableViewDataService;
 use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
+use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
+use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
 class InvoiceGeneratedNotification extends Notification implements ShouldQueue
 //implements ShouldQueue
@@ -49,7 +51,7 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail', 'database', AfricasTalkingChannel::class];
     }
 
     /**
@@ -78,6 +80,20 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
             )
             ->subject($this->subject)
             ->attachData($invoicepdf->output(), $invoicefilename);
+    }
+
+    // send SMS ///
+    public function toAfricasTalking($notifiable)
+    {
+        // Assuming $this->invoice contains the invoice details
+    $invoiceRef = $this->invoice->referenceno;
+    $propertyName = $this->invoice->property->property_name;
+    $unitNumber = $this->invoice->unit->unit_number;
+    $invoiceName = $this->invoice->name;
+    $amountDue = $this->invoice->totalamount;
+    $paymentLink = url('/invoice/' . $this->invoice->id); // Replace with actual payment link
+    return (new AfricasTalkingMessage())
+            ->content("{$invoiceName}Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber} of Amount: \${$amountDue} is due. Click here to pay: {$paymentLink}");
     }
 
     /**

@@ -81,7 +81,7 @@
                 <label class="label">Charge Type <span class="requiredlabel">*</span></label>
                 <select name="charge_type" id="charge_type" class="formcontrol2" placeholder="Select" required>
                     <option value="fixed"> Fixed</option>
-                    <option value="rate">Rate</option>
+                    <option value="units">Per Unit</option>
                 </select>
             </div>
         </div>

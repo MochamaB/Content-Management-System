@@ -153,7 +153,7 @@
   background: #adb5bd;
   color: #fff;
 }
-.sidebar .company-details {
+.company-details {
   display: flex;
   align-items: center;
   padding:30px 20px 10px; 
@@ -221,7 +221,15 @@
     overflow-x: auto; /* Allow horizontal scrolling */
     white-space: nowrap; /* Prevent the tabs from wrapping onto a new line */
     -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on mobile */
+    scrollbar-color: rgb(59, 59, 59) #F4F5F7;
+    scrollbar-width: none;
 }
+.tab-container:hover {
+  overflow-x: auto; /* Enable scrolling */
+  scrollbar-width: thin; /* Show the thin scrollbar */
+}
+
+
 
 
 /* Ensure the tabs don't stack */

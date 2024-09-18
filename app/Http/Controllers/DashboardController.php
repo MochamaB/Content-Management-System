@@ -73,16 +73,16 @@ class DashboardController extends Controller
             $tabContents = [];
             foreach ($tabTitles as $title) {
                 if ($title === 'Dashboard') {
-                    $tabContents[] = View('admin.Report.dashboardall',
+                    $tabContents[] = View('admin.Dashboard.dashboardall',
                     compact('properties','cardData','chartData','tickets'))->render();
                 } elseif ($title === 'Properties') {
-                    $tabContents[] = View('admin.Report.dashboardproperties' ,compact('propertyCard'))->render();
+                    $tabContents[] = View('admin.Dashboard.dashboardproperties' ,compact('propertyCard'))->render();
                 } elseif ($title === 'Financials') {
-                    $tabContents[] = View('admin.Report.dashboardfinancials', compact('properties'))->render();
+                    $tabContents[] = View('admin.Dashboard.dashboardfinancials', compact('properties'))->render();
                 }
             }
 
-        return View('admin.Report.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents'));
+        return View('admin.Dashboard.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents'));
     }
 
     /**

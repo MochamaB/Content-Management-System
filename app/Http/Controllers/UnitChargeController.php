@@ -52,6 +52,8 @@ class UnitChargeController extends Controller
 
     public function index(Request $request)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $unitChargeData = $this->model::with('property', 'unit')->whereNull('parent_id')->applyFilters($filters)->get();
         $filterdata = $this->filterService->getUnitChargeFilters($request);
@@ -82,7 +84,10 @@ class UnitChargeController extends Controller
         $accounts = $account->groupBy('account_type');
 
 
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+         ///SESSION /////
+         if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
         return View('admin.Lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts','model'));
     }
@@ -105,7 +110,7 @@ class UnitChargeController extends Controller
             ->where('charge_name', $chargeName)
             ->exists();
 
-        if ($utilityNameExists || $chargeNameExists) {
+        if ($utilityNameExists && $chargeNameExists) {
             return redirect()->back()->with('statuserror', 'Charge already attached to the unit or to the property in system.');
         }
         //// INSERT DATA TO THE UNITCHARGE
@@ -124,8 +129,8 @@ class UnitChargeController extends Controller
             $this->DepositService->generateDeposit($unitcharge);
         }
 
-        $previousUrl = Session::get('previousUrl');
-        return redirect($previousUrl)->with('status', 'Unitcharge Entered Successfully');
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+        return redirect($redirectUrl)->with('status', 'Unitcharge Entered Successfully');
     }
 
 
