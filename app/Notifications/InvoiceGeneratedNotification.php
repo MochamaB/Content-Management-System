@@ -92,8 +92,9 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
     $invoiceName = $this->invoice->name;
     $amountDue = $this->invoice->totalamount;
     $paymentLink = url('/invoice/' . $this->invoice->id); // Replace with actual payment link
+    $smsContent = "Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, {$invoiceName} Amount Due: \KSH{$amountDue}. Click here to pay: {$paymentLink}";    
     return (new AfricasTalkingMessage())
-            ->content("{$invoiceName}Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber} of Amount: \${$amountDue} is due. Click here to pay: {$paymentLink}");
+            ->content($smsContent);
     }
 
     /**

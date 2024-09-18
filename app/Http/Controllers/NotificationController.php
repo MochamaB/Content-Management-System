@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Config;
 use GuzzleHttp\Client;
 use AfricasTalking\SDK\AfricasTalking;
+use App\Models\Invoice;
 
 class NotificationController extends Controller
 {
@@ -115,15 +116,25 @@ class NotificationController extends Controller
         return view('admin.Communication.text');
 
     }
+    
     public function sendText(Request $request)
     {
         // Get the user (test user or any user in your database)
         
-    $user = User::find(2);
+  //  $user = User::find(2);
     // send notification 
-    $user->notify(new NewsWasPublished());
-
-        /*
+   // $user->notify(new NewsWasPublished());
+    // Assuming $this->invoice contains the invoice details
+    $invoice = Invoice::find(1);
+  
+    $invoiceRef = $invoice->referenceno;
+    $propertyName = $invoice->property->property_name; // Assuming there's a relationship with Property
+    $unitNumber = $invoice->unit->unit_number;         // Assuming there's a relationship with Unit
+    $invoiceName = $invoice->name;
+    $amountDue = $invoice->totalamount;
+    $paymentLink = url('/invoice/' . $invoice->id);  // Replace with actual payment link
+    $smsContent = "Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, {$invoiceName} Amount Due: \KSH{$amountDue}. Click here to pay: {$paymentLink}";    
+        
     // Africa's Talking API credentials
     $username = env('AT_USERNAME');
     $apiKey = env('AT_KEY');
@@ -138,7 +149,7 @@ class NotificationController extends Controller
             'form_params' => [
                 'username' => $username,  // Required field
                 'to' => '+254723710025', // The number you want to test with
-                'message' => 'This is a second test message from the sandbox',
+                'message' => $smsContent,
                 'from' => '21763', // Your short code
             ],
             'headers' => [
@@ -154,7 +165,7 @@ class NotificationController extends Controller
     } catch (\Exception $e) {
         return 'Error: ' . $e->getMessage();
     }
-        */
+        
 
    
 
