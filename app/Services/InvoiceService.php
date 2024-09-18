@@ -303,11 +303,11 @@ class InvoiceService
             'PaymentMethod' => $PaymentMethod,
         ])->render();
 
-    //    try {
+        try {
             $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
-   //     } catch (\Exception $e) {
+        } catch (\Exception $e) {
             // Log the error or perform any necessary actions
-     //      Log::error('Failed to send payment notification: ' . $e->getMessage());
-     //   }
+            Log::error('Failed to send payment notification: ' . $e->getMessage());
+        }
     }
 }

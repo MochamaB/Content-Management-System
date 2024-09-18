@@ -103,7 +103,7 @@ class Expense extends Model
            $Id = str_repeat('0', $paddingLength) . $lastId;
 
             // Construct the reference number
-            $doc = 'EXP-';
+            $doc = 'EXP';
             $propertyInitials = $expense->initials;
           //  $propertyNumber = 'P' . str_pad($expense->property_id, 2, '0', STR_PAD_LEFT);
             $unit = Unit::find($expense->unit_id);

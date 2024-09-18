@@ -178,7 +178,7 @@ class Invoice extends Model
             $Id = str_repeat('0', $paddingLength) . $lastId;
 
             // Construct the reference number
-            $doc = 'INV-';
+            $doc = 'INV';
             $property = Property::find($invoice->property_id);  // Fetch the property record
             // Call the accessor to get the initials
             $propertyInitials = $invoice->initials;

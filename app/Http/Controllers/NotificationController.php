@@ -133,7 +133,7 @@ class NotificationController extends Controller
     $invoiceName = $invoice->name;
     $amountDue = $invoice->totalamount;
     $paymentLink = url('/invoice/' . $invoice->id);  // Replace with actual payment link
-    $smsContent = "Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, {$invoiceName} Amount Due: \KSH{$amountDue}. Click here to pay: {$paymentLink}";    
+    $smsContent = "Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, {$invoiceName} Amount Due: KSH{$amountDue}. Click here to pay: {$paymentLink}";    
         
     // Africa's Talking API credentials
     $username = env('AT_USERNAME');

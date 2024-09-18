@@ -105,7 +105,7 @@ class Deposit extends Model
            $Id = str_repeat('0', $paddingLength) . $lastId;
 
             // Construct the reference number
-            $doc = 'DEP-';
+            $doc = 'DEP';
             $propertyInitials = $deposit->initials;
          //   $propertyNumber = 'P' . str_pad($deposit->property_id, 2, '0', STR_PAD_LEFT);
             // Load the unit model using the unit_id

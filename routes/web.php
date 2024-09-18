@@ -325,5 +325,11 @@ Route::get('/invoiceview', function () {
 
    return View('email.payment',compact('payment'));
 });
+Route::get('/testview', function () {
+
+
+
+   return View('Admin.Accounting.test');
+});
 
 require __DIR__ . '/auth.php';

@@ -1,5 +1,12 @@
 
-
+<form id="dateRangeForm" action="{{ url($routeParts[0]) }}" method="GET" style="margin-bottom:0px" class="d-flex justify-content-end">
+        <div class="form-group mr-4" style="margin-bottom:0px">
+            <input type="text" class="form-control" id="daterange" name="daterange" style="max-width: 250px;" />
+        </div>
+        <input type="hidden" name="from_date" id="from_date">
+        <input type="hidden" name="to_date" id="to_date">
+    </form>
+    
             <form action="{{  url($routeParts[0]) }}" method="GET" style="margin-bottom:0px" class="d-flex justify-content-end">
                 <div class="form-group mr-4" style="margin-bottom:0px">
                 <input type="date" class="form-control" id="" name="from_date" value="{{ request('from_date', now()->startOfMonth()->toDateString()) }}" style="max-width: 150px;" />
