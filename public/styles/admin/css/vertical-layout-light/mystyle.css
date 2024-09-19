@@ -786,6 +786,28 @@ select:focus {
   border-left: none;
 }
 
+.input-group .spancalendar {
+  border-right: none;
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 0px;
+}
+
+.input-group .calendar {
+  background-color: #fff !important;/* Light gray background */
+  border: 2px solid #E9E9E9 !important;/* Border with the same background color */
+  font-size: 0.8rem;                   /* Font size */
+  line-height: 25px;                   /* Line height to match the badge-like style */
+  text-transform: capitalize;          /* Capitalize the text */
+  height: 30px;                        /* Shorter height for a more compact look */
+  padding: 0 8px;                      /* Padding for some spacing inside */
+  border-radius: 0px;                 /* Rounded corners for the badge effect */
+  display: inline-block;               /* Ensures the element behaves like an inline element */
+  box-sizing: border-box;              /* Makes sure padding and border are included in width/height */
+  max-width: 200px;                    /* Control the max width */
+  border-left: none !important;        /* Remove the left border */
+}
+
 
 
 /*--------------- badges */
@@ -1244,5 +1266,22 @@ a .badge:hover {
   .btn.btn-lg {
     font-size: 0.75rem !important;
     padding: 1rem;
-}
+    
+  }
+  input.form-control.form-control-sm.search-input {
+    border-radius: 0px;
+    border: 2px solid #b6b6b6;
+    color: #212121;
+    font-weight: 900;
+    text-transform: uppercase;
+    width: 230px;
+    transition: width 0.3s;
+    display: block !important;
+    /* Add a smooth transition effect for width changes */
+  }
+  input.form-control.form-control-sm.search-input:hover {
+    border: 2px solid #ffaf00;
+    width: 270px;
+    /* Set the desired width on hover */
+  }
   }

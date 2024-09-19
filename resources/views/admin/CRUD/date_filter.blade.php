@@ -1,22 +1,25 @@
-
-<form id="dateRangeForm" action="{{ url($routeParts[0]) }}" method="GET" style="margin-bottom:0px" class="d-flex justify-content-end">
-        <div class="form-group mr-4" style="margin-bottom:0px">
-            <input type="text" class="form-control" id="daterange" name="daterange" style="max-width: 250px;" />
+<form id="dateRangeForm" action="{{ url($routeParts[0]) }}" method="GET">
+    <div class="d-flex align-items-center">
+        <!-- Select Input -->
+        <div class="form-group mr-2 mb-0" style="color: #000;font-weight: 600;font-size: 0.8rem;">
+            @foreach($filterdata as $key => $filter)
+            <select name="{{ $key }}" id="property" class="formcontrol2 calendar" style="min-width: 200px;">
+                <option value="">All {{ $filter['label'] }}</option>
+                @foreach ($filter['values'] as $id => $value)
+                <option value="{{ $id }}" {{ request($key) == $id ? 'selected' : '' }}>{{ $value }}</option>
+                @endforeach
+            </select>
+            @endforeach
         </div>
-        <input type="hidden" name="from_date" id="from_date">
-        <input type="hidden" name="to_date" id="to_date">
-    </form>
-    
-            <form action="{{  url($routeParts[0]) }}" method="GET" style="margin-bottom:0px" class="d-flex justify-content-end">
-                <div class="form-group mr-4" style="margin-bottom:0px">
-                <input type="date" class="form-control" id="" name="from_date" value="{{ request('from_date', now()->startOfMonth()->toDateString()) }}" style="max-width: 150px;" />
-                </div>
+        <!-- Date Range Input -->
+        <div class="input-group">
+            <span class="input-group-text" style="border-right: none; background-color: #ffffff; border: 1px solid #ced4da;">
+                <i class="mdi mdi-calendar" style="font-size: 16px;"></i>
+            </span>
+            <input type="text" class="form-control calendar" id="daterange" name="" style="max-width: 200px; border-left: none; height: calc(2.25rem + 2px);" />
+        </div>
 
-                <div class="form-group mr-4" style="margin-bottom:0px">
-                <input type="date" class="form-control" id="" name="to_date" value="{{ request('to_date', now()->toDateString())  }}" style="max-width: 150px;" />
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0">
-                <i class="mdi mdi-filter mdi-24" style="font-size: 12px;color:white"></i>
-                Filter</button>
-            </form>
+        <input type="hidden" name="from_date" id="from_date" value="">
+        <input type="hidden" name="to_date" id="to_date" value="">
+    </div>
+</form>

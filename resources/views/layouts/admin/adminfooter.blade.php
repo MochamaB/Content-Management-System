@@ -224,8 +224,61 @@
   });
 </script>
 
+<script type="text/javascript">
+  
+$(document).ready(function() {
+  // Get the initial from_date and to_date values from the request or set to null if not provided
+  var fromDate = "{{ request('from_date', null) }}";
+    var toDate = "{{ request('to_date', null) }}";
+
+    // If from_date and to_date are not provided (i.e., on first page load), display "This Month"
+    if (!fromDate || !toDate) {
+        $('#daterange').val('This Month');
+    } else {
+        // If from_date and to_date are present (i.e., after filtering), display the date range
+        $('#daterange').val(moment(fromDate).format('YYYY MMM') + ' - ' + moment(toDate).format('YYYY MMM'));
+    }
+    // Initialize Date Range Picker
+    $('#daterange').daterangepicker({
+      startDate: fromDate ? moment(fromDate) : moment().startOf('month'),  // Set start date from request or default
+        endDate: toDate ? moment(toDate) : moment().endOf('month'),    
+        locale: {
+            format: 'YYYY MMM',               // Format: 2024 August
+            separator: ' - ',                  // Date range separator
+        },
+        autoUpdateInput: false,                 // Automatically update the input field
+        showDropdowns: true,                   // Show year/month dropdowns
+        alwaysShowCalendars: true,
+    }, function(start, end) {
+        // Set the hidden fields with the start and end date
+        $('#from_date').val(start.format('YYYY-MM-DD'));
+        $('#to_date').val(end.format('YYYY-MM-DD'));
+
+          // Disable the input field to prevent it from being submitted
+          $('#daterange').prop('disabled', true);
+
+        // Submit the form after selecting the date range
+        $('#dateRangeForm').submit();
+    });
+     // Submit the form when any of the select inputs change
+     $('#property').on('change', function() {
+        $('#dateRangeForm').submit();
+    });
+
+    // Re-enable the daterange input after form submission
+    $('#dateRangeForm').on('submit', function() {
+        $('#daterange').prop('disabled', false);
+    });
+
+    // Set default values for hidden inputs on page load
+    $('#from_date').val(moment().startOf('month').format('YYYY-MM-DD'));
+    $('#to_date').val(moment().endOf('month').format('YYYY-MM-DD'));
+});
+</script>
 
 <!---- SHOW PDF OR TXT WHEN FILE IS UPLOADED----->
+
+ 
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
@@ -260,3 +313,6 @@
 <script src="{{ asset('styles/admin/js/myscript.js') }}"></script>
 <script src="{{ asset('styles/admin/js/data-table.js') }}"></script>
 <!-- End custom js for this page-->
+  
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>

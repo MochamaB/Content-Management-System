@@ -14,6 +14,7 @@ use App\Models\Payment;
 use App\Models\Ticket;
 use App\Services\TableViewDataService;
 use App\Services\CardService;
+use App\Services\FilterService;
 use Carbon\Carbon;
 
 
@@ -28,8 +29,10 @@ class DashboardController extends Controller
     protected $model;
     private $tableViewDataService;
     private $cardService;
+    private $filterService;
 
-    public function __construct(TableViewDataService $tableViewDataService, CardService $cardService)
+    public function __construct(TableViewDataService $tableViewDataService, CardService $cardService,
+    FilterService $filterService)
     {
         $this->model = Unit::class;
         $this->controller = collect([
@@ -39,6 +42,7 @@ class DashboardController extends Controller
 
         $this->tableViewDataService = $tableViewDataService;
         $this->cardService = $cardService;
+        $this->filterService = $filterService;
     }
 
     public function index(Request $request)
@@ -51,7 +55,7 @@ class DashboardController extends Controller
         $controller = $this->controller;
         $user = auth()->user();
         $filters = $request->except(['tab','_token','_method']);
-
+        $filterdata = $this->filterService->getDashboardFilters();
         $properties = Property::with('units', 'leases', 'invoices')->applyFilters($filters)->get();
         $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
        // dd($user->roles);
@@ -82,7 +86,7 @@ class DashboardController extends Controller
                 }
             }
 
-        return View('admin.Dashboard.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents'));
+        return View('admin.Dashboard.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents','filterdata'));
     }
 
     /**

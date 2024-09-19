@@ -11,9 +11,9 @@
         <div class="col-md-6">
             <div class="form-group">
                 
-                <input type="hidden" class="form-control" name="module" value="{{$setting->module}}" required>
-                <input type="hidden" class="form-control" name="name" value="{{$setting->name}}" required>
-                <input type="hidden" class="form-control" name="model_type" value="{{$setting->model_type}}" required>
+                <input type="text" class="form-control" name="module" value="{{$setting->module}}" required>
+                <input type="text" class="form-control" name="name" value="{{$setting->name}}" required>
+                <input type="text" class="form-control" name="model_type" value="{{$setting->model_type}}" required>
             </div>
         </div>
         <div class="col-md-6">

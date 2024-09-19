@@ -24,8 +24,8 @@
 
       
         <div class="btn-wrapper d-flex align-items-center justify-content-end">
-        <label class="defaulttext pr-2 mr-5 d-none d-lg-block" id=""><b>FROM - T0 &nbsp; &nbsp;</b> </label>
         @include('admin.CRUD.date_filter')
+        
         </div>
       
 </div>

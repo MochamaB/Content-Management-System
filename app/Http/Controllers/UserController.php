@@ -23,6 +23,7 @@ use App\Actions\AttachDetachUserFromUnitAction;
 use App\Actions\UploadMediaAction;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Notifications\UserCreatedTextNotification;
 use App\Services\TableViewDataService;
 use Illuminate\Support\Facades\Log;
 
@@ -246,6 +247,7 @@ class UserController extends Controller
         //6. SEND NEW USER A WELCOME EMAIL
         try {
             $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
+            $user->notify(new UserCreatedTextNotification($user)); ///// Send welcome Text
                } catch (\Exception $e) {
             // Log the error or perform any necessary actions
                    Log::error('Failed to send payment notification: ' . $e->getMessage());

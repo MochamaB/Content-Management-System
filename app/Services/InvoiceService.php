@@ -19,6 +19,7 @@ use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
 use App\Jobs\SendInvoiceEmailJob;
 use App\Models\PaymentMethod;
+use App\Models\Setting;
 use App\Models\Transaction;
 use App\Notifications\InvoiceGeneratedNotification;
 use Illuminate\Support\Facades\Log;
@@ -284,6 +285,7 @@ class InvoiceService
 
 
         $user = $invoice->model;
+        $lease = $invoice->lease;
         $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
         $sixMonths = now()->subMonths(6);
         $transactions = Transaction::where('created_at', '>=', $sixMonths)
@@ -303,8 +305,14 @@ class InvoiceService
             'PaymentMethod' => $PaymentMethod,
         ])->render();
 
+        //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
+        $emailNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoiceemail');
+
         try {
+            if ($emailNotificationsEnabled === 'YES') {
+                // Send notifications
             $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
+            }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
             Log::error('Failed to send payment notification: ' . $e->getMessage());

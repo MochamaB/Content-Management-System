@@ -26,6 +26,8 @@ use App\Services\DepositService;
 use App\Services\InvoiceService;
 use App\Services\TableViewDataService;
 use App\Actions\UploadMediaAction;
+use App\Models\Setting;
+use App\Notifications\LeaseAgreementTextNotification;
 use Illuminate\Support\Facades\Log;
 use App\Services\FilterService;
 use App\Services\CardService;
@@ -267,10 +269,15 @@ class LeaseController extends Controller
         $unit->users()->attach($user, ['property_id' => $propertyId]);
 
         //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
+        $notificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'leasenotifications');
         $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
         try {
+            if ($notificationsEnabled === 'YES') {
+                // Send notifications
             $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
+            $user->notify(new LeaseAgreementTextNotification($user)); ///// Send Lease Agreement
+            }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
             Log::error('Failed to send payment notification: ' . $e->getMessage());

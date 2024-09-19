@@ -65,21 +65,12 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($name = null)
+    public function create($model= null)
     {
-        if ($name) {
-            $setting = Setting::where('name', $name)->first();
-            if ($setting->model_type === 'App\Models\Property') {
-                $options =  Property::pluck('property_name', 'id')->toArray();
-            } else if ($setting->model_type === 'App\Model\Lease') {
-                $options = Lease::with('units')->pluck('units.unit_number', 'id')->toArray();
-            }
-        } else {
-        }
+        
+       
 
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
-
-        return View('admin.Setting.create', compact('name', 'setting', 'options'));
+        return View('admin.Setting.create_override', compact('model', 'setting', 'options'));
     }
 
     /**

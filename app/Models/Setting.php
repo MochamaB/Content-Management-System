@@ -45,4 +45,24 @@ class Setting extends Model
     {
         return $this->morphTo();
     }
+
+    public static function getSettingForModel($modelType, $modelId, $key)
+    {
+        // First, try to get the setting for the specific model (override)
+        $setting = self::where('model_type', $modelType)
+                        ->where('model_id', $modelId)
+                        ->where('key', $key)
+                        ->first();
+
+        // If no override is found, fall back to the global setting
+        if (!$setting) {
+            $setting = self::where('model_type', $modelType)
+                            ->whereNull('model_id')
+                            ->where('key', $key)
+                            ->first();
+        }
+
+        // Return the setting value or null if not found
+        return $setting ? $setting->value : null;
+    }
 }

@@ -1,6 +1,6 @@
 <div class="d-sm-flex justify-content-between align-items-start">
     <div>
-        <h5 class="card-title card-title-dash pt-1"><b>Summary Overview</b></h5>
+        <h5 class="card-title card-title-dash pt-1"><b>Overview</b></h5>
     </div>
     @if(isset($filters))
     <div>
