@@ -9,19 +9,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use App\Services\TableViewDataService;
+use Carbon\Carbon;
+use Illuminate\Queue\SerializesModels;
+use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
+use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
-
-class InvoiceGeneratedNotification extends Notification implements ShouldQueue
+class InvoiceGeneratedTextNotification extends Notification implements ShouldQueue
 //implements ShouldQueue
 {
     use Queueable;
 
     protected $invoice;
     protected $user;
-    protected $openingBalance;
-    protected $subject;
-    protected $heading;
-    protected $view;
 
 
     /**
@@ -34,9 +34,6 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
 
         $this->invoice = $invoice;
         $this->user = $user;
-        $this->subject = $this->invoice->name . ' Invoice ' . \Carbon\Carbon::parse($this->invoice->created_at)->format('d M Y');
-        $this->heading =  'New ' . $this->invoice->name . ' Invoice';
-        $this->view = $view; 
     }
 
     /**
@@ -47,7 +44,7 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['database', AfricasTalkingChannel::class];
     }
 
     /**
@@ -56,29 +53,21 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
-    {
-
-        $invoicepdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
-        // $statementpdf = PDF::loadView('email.invoice', ['invoice' => $this->invoice]);
-        // Create a filename using invoice values
-        $referenceno = $this->invoice->referenceno;
-        $invoicefilename = $referenceno. ' invoice.pdf';
-
-
-
-        return (new MailMessage)
-            ->view(
-                'email.invoicenotification',
-                [
-                    'viewContent' => $this->view,
-                ]
-            )
-            ->subject($this->subject)
-            ->attachData($invoicepdf->output(), $invoicefilename);
-    }
 
     // send SMS ///
+    public function toAfricasTalking($notifiable)
+    {
+        // Assuming $this->invoice contains the invoice details
+    $invoiceRef = $this->invoice->referenceno;
+    $propertyName = $this->invoice->property->property_name;
+    $unitNumber = $this->invoice->unit->unit_number;
+    $invoiceName = $this->invoice->name;
+    $amountDue = $this->invoice->totalamount;
+    $paymentLink = url('/invoice/' . $this->invoice->id); // Replace with actual payment link
+    $smsContent = "Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, {$invoiceName} Amount Due: KSH{$amountDue}. Click here to pay: {$paymentLink}";    
+    return (new AfricasTalkingMessage())
+            ->content($smsContent);
+    }
 
     /**
      * Get the array representation of the notification.

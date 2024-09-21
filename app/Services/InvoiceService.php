@@ -307,12 +307,16 @@ class InvoiceService
 
         //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
         $emailNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoiceemail');
-
+         //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
+        $textNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoicetexts');
+        
         try {
             if ($emailNotificationsEnabled === 'YES') {
-                // Send notifications
             $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
             }
+            if ($textNotificationsEnabled === 'YES') {
+                $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
+                }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
             Log::error('Failed to send payment notification: ' . $e->getMessage());
