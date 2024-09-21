@@ -22,6 +22,7 @@ use App\Models\PaymentMethod;
 use App\Models\Setting;
 use App\Models\Transaction;
 use App\Notifications\InvoiceGeneratedNotification;
+use App\Notifications\InvoiceGeneratedTextNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 
@@ -309,13 +310,13 @@ class InvoiceService
         $emailNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoiceemail');
          //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
         $textNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoicetexts');
-        
+
         try {
             if ($emailNotificationsEnabled === 'YES') {
             $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
             }
             if ($textNotificationsEnabled === 'YES') {
-                $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
+                $user->notify(new InvoiceGeneratedTextNotification($invoice, $user, $viewContent));
                 }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions

@@ -22,6 +22,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
 
     protected $invoice;
     protected $user;
+    protected $view;
 
 
     /**
@@ -34,6 +35,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
 
         $this->invoice = $invoice;
         $this->user = $user;
+        $this->view = $view; 
     }
 
     /**
@@ -53,7 +55,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-
+ 
     // send SMS ///
     public function toAfricasTalking($notifiable)
     {
