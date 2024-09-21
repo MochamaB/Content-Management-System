@@ -914,7 +914,7 @@ class TableViewDataService
             ->get();
 
         $settingsTableData = $this->getSettingData($individualSetting, true);
-        $id = $setting->model_type;
+        $id = class_basename($setting->model_type);
 
         $tabContents = [];
 

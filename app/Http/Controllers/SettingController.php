@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Lease;
 use App\Models\Property;
 use App\Models\Setting;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use App\Services\TableViewDataService;
@@ -65,12 +66,33 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($model= null)
+    public function create($model_type= null)
     {
-        
+        $modelClass =  'App\\Models\\'.$model_type;
+        $setting = Setting::where('model_type', $modelClass)->get();
        
+            switch ($model_type) {
+                case 'Lease':
+                    $options = Lease::with(['unit', 'property']) // Load the 'unit' relationship
+                    ->get()                    // Fetch the data as a collection
+                    ->mapWithKeys(function ($lease) {
+                        // Build the value as "property_name - unit_number"
+                        $value = optional($lease->property)->property_name . ' - ' . optional($lease->unit)->unit_number;
+                        return [$lease->id => $value];
+                    })
+                    ->filter()                  // Optionally remove leases without a unit number
+                    ->toArray();                // Convert to an array
+                    break;
+                case 'Property':
+                    $options =  Property::pluck('property_name', 'id')->toArray();
+                    break;
+                default:
+                    break; // or handle this case differently
+            }
 
-        return View('admin.Setting.create_override', compact('model', 'setting', 'options'));
+          
+   
+        return View('admin.Setting.create_override', compact('setting', 'options','modelClass'));
     }
 
     /**

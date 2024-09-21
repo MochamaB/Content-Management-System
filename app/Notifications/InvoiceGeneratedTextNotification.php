@@ -66,7 +66,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     $invoiceName = $this->invoice->name;
     $amountDue = $this->invoice->totalamount;
     $paymentLink = url('/invoice/' . $this->invoice->id); // Replace with actual payment link
-    $smsContent = "Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, {$invoiceName} Amount Due: KSH{$amountDue}. Click here to pay: {$paymentLink}";    
+    $smsContent = "{$invoiceName} Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, Amount Due: KSH{$amountDue} Click here to pay: {$paymentLink}";    
     return (new AfricasTalkingMessage())
             ->content($smsContent);
     }

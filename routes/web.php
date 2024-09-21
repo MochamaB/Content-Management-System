@@ -222,7 +222,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
     Route::group(['groupName' => 'Settings'], function () {
 
 
-        Route::get('setting/create/{model?}', [
+        Route::get('setting/create/{model_type?}', [
             'as' => 'setting.create',
             'uses' => 'App\Http\Controllers\SettingController@create'
         ]);
