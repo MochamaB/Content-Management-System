@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Setting extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, SoftDeleteScope;
     protected $table = 'settings';
     protected $fillable = [
         'model_type',
@@ -58,7 +60,7 @@ class Setting extends Model
         if ($overrideSetting) {
             return $overrideSetting->value;
         }
-        /* If no override, fallback to the global setting (model_id is null)
+        // If no override, fallback to the global setting (model_id is null)
         $globalSetting = self::where('model_type', $modelType)
         ->whereNull('model_id')
         ->where('key', $key)
@@ -66,6 +68,5 @@ class Setting extends Model
 
         // Return the global setting value or null if no setting is found
         return $globalSetting ? $globalSetting->value : null;
-        */
     }
 }

@@ -11,12 +11,15 @@ use App\Actions\UpdateNextDateAction;
 use App\Actions\RecordTransactionAction;
 use App\Actions\CalculateTaxAction;
 use App\Models\Invoice;
+use App\Models\Lease;
 use App\Models\Payment;
 use App\Models\PaymentItems;
 use App\Models\PaymentMethod;
+use App\Models\Setting;
 use App\Models\Transaction;
 use App\Notifications\InvoiceGeneratedNotification;
 use App\Notifications\PaymentNotification;
+use App\Notifications\PaymentTextNotification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use \Illuminate\Support\Facades\Log;
@@ -164,6 +167,7 @@ class PaymentService
         if($payment->model instanceof Invoice)
          {
             $invoice = $payment->model;
+            $lease = Lease::where('unit_id',$invoice->unit_id)->first();
             $unitchargeId = $payment->model->getItems->pluck('unitcharge_id')->first();
             //    dd($unitchargeIds);
             $sixMonths = now()->subMonths(6);
@@ -183,14 +187,24 @@ class PaymentService
                 'groupedInvoiceItems' => $groupedInvoiceItems,
                 'openingBalance' => $openingBalance,
                 ])->render();
-        }else{
-        $viewContent = View::make('email.payment', [
-            'payment' => $payment,
-        ])->render();
-        }
+
+                //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
+                $emailNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoiceemail');
+                //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
+               $textNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoicetexts');
+                }else{
+            $viewContent = View::make('email.payment', [
+                'payment' => $payment,
+            ])->render();
+            }
 
         try {
-            $user->notify(new PaymentNotification($payment, $user, $viewContent));
+            if ($emailNotificationsEnabled !== 'NO') {
+                $user->notify(new PaymentNotification($payment, $user, $viewContent));
+            }
+            if ($textNotificationsEnabled !== 'NO') {
+                $user->notify(new PaymentTextNotification($payment, $user, $viewContent));
+            }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
             Log::error('Failed to send payment notification: ' . $e->getMessage());

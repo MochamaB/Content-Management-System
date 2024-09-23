@@ -18,6 +18,7 @@ use App\Services\TableViewDataService;
 use App\Services\DepositService;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Actions\UpdateNextDateAction;
 
 class UnitChargeController extends Controller
 {
@@ -33,9 +34,10 @@ class UnitChargeController extends Controller
     private $DepositService;
     private $filterService;
     private $cardService;
+    private $updateNextDateAction;
 
     public function __construct(TableViewDataService $tableViewDataService, DepositService $DepositService,
-    FilterService $filterService, CardService $cardService)
+    FilterService $filterService, CardService $cardService, UpdateNextDateAction $updateNextDateAction)
     {
         $this->model = unitcharge::class;
         $this->controller = collect([
@@ -46,6 +48,7 @@ class UnitChargeController extends Controller
         $this->DepositService = $DepositService;
         $this->filterService = $filterService;
         $this->cardService = $cardService;
+        $this->updateNextDateAction = $updateNextDateAction;
     }
 
 
@@ -127,6 +130,9 @@ class UnitChargeController extends Controller
         if ($request->charge_cycle === "Once") {
            // dd($request->charge_cycle);
             $this->DepositService->generateDeposit($unitcharge);
+        }else{
+            //Update Next nad Updated Date in the Unitcharge
+            $this->updateNextDateAction->invoicenextdate($unitcharge);
         }
 
         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);

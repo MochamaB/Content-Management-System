@@ -446,6 +446,12 @@
   text-transform: uppercase;
   background-color: #F4F5F7;
 }
+
+.custom-table,
+.custom-table th,
+.custom-table td {
+    border: 1px solid #ccc !important; /* Force black borders */
+}
 a.table:link {
   color: #1F3BB3;
   font-weight: 500;

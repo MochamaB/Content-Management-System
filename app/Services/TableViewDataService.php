@@ -926,6 +926,7 @@ class TableViewDataService
             // If no individual setting is passed, perform the query to fetch them
             $individualSetting = Setting::where('model_type', $modelType)
                 ->whereNotNull('model_id')
+                ->showSoftDeleted()
                 ->get();
         } else {
             // If $individualsetting is provided, use it directly
@@ -1105,17 +1106,21 @@ class TableViewDataService
     {
         $blockingRelationships = [];
 
-        // Check each relationship for existing related records
-        foreach ($relationships as $relationship) {
-            if ($model->$relationship()->exists()) {
-                $blockingRelationships[] = $relationship;
-            }
-        }
+            // Check if there are any relationships to check
+            if (!empty($relationships) && $relationships[0] !== '') {
+                // Check each relationship for existing related records
+                foreach ($relationships as $relationship) {
+                    // Ensure the relationship method exists on the model before calling it
+                    if (method_exists($model, $relationship) && $model->$relationship()->exists()) {
+                        $blockingRelationships[] = $relationship;
+                    }
+                }
 
         // If there are blocking relationships, return with an error message
-        if (!empty($blockingRelationships)) {
-            $blockingRelationshipsString = implode(', ', $blockingRelationships);
-            return back()->with('statuserror', 'Cannot delete ' . $modelName . ' because the following related records exist: ' . $blockingRelationshipsString . '.');
+            if (!empty($blockingRelationships)) {
+                $blockingRelationshipsString = implode(', ', $blockingRelationships);
+                return back()->with('statuserror', 'Cannot delete ' . $modelName . ' because the following related records exist: ' . $blockingRelationshipsString . '.');
+            }
         }
 
         // Perform deletion
