@@ -242,7 +242,7 @@ class AppServiceProvider extends ServiceProvider
 
                 'Settings' => ['icon' => 'settings', 'submodules' => [
                     'setting' => ['display' => 'Application Settings'],
-                    'system-setting' => ['display' => 'System Settings']
+                    'system-setting' => ['display' => 'System Configurations']
                 ]],
                 ],
             'Other' => [

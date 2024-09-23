@@ -19,7 +19,7 @@ class CreateSettingsTable extends Migration
             $table->unsignedBigInteger('model_id')->nullable(); // ID of the specific model instance
             $table->string('info');
             $table->string('name');
-            $table->string('key')->unique();
+            $table->string('key');
             $table->text('value')->nullable();
             $table->text('description');
 

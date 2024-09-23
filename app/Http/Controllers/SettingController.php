@@ -73,15 +73,11 @@ class SettingController extends Controller
        
             switch ($model_type) {
                 case 'Lease':
-                    $options = Lease::with(['unit', 'property']) // Load the 'unit' relationship
-                    ->get()                    // Fetch the data as a collection
-                    ->mapWithKeys(function ($lease) {
-                        // Build the value as "property_name - unit_number"
-                        $value = optional($lease->property)->property_name . ' - ' . optional($lease->unit)->unit_number;
+                    $leases = Lease::with(['unit', 'property'])->get();
+                    $options = $leases->mapWithKeys(function ($lease) {
+                        $value = $lease->property->property_name . ' - ' . optional($lease->unit)->unit_number;
                         return [$lease->id => $value];
-                    })
-                    ->filter()                  // Optionally remove leases without a unit number
-                    ->toArray();                // Convert to an array
+                    })->toArray();// Convert to an array
                     break;
                 case 'Property':
                     $options =  Property::pluck('property_name', 'id')->toArray();
@@ -89,10 +85,24 @@ class SettingController extends Controller
                 default:
                     break; // or handle this case differently
             }
+            
+      ///SESSION /////
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
           
    
         return View('admin.Setting.create_override', compact('setting', 'options','modelClass'));
+    }
+
+    public function fetchSetting(Request $request)
+    {
+
+        $data = Setting::where('key', $request->key)
+            ->first();
+
+        return response()->json($data);
     }
 
     /**
@@ -103,6 +113,7 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
+        /// CHECK IF SETTING FOR THE MODEL_ID EXISTS
         $exists = Setting::where('name', $request->name)
             ->where('model_id', $request->model_id)
             ->where('key', $request->key)
@@ -111,26 +122,25 @@ class SettingController extends Controller
             // Setting already exists, handle accordingly
             return redirect()->back()->with('statuserror', 'Override setting with this item already in system'); 
         }
-        $validationRules = Setting::$validation;
-        $validatedData = $request->validate($validationRules);
-        $setting = new Setting();
-        $setting->fill($validatedData);
-        $setting->save();
+        //GET THE SETTING ////
+        $setting = Setting::where('key', $request->key)
+        ->first();
+        Setting::create([
+            'model_type' => $setting->model_type,
+            'model_id' => $request->model_id, // Lease ID 2
+            'info' => $setting->info,
+            'name' => $setting->name,
+            'key' => $request->key,
+            'value' => $request->value, // Disable notifications for this lease as well
+            'description' => $setting->description,
+        ]);
 
-        $previousUrl = Session::get('previousUrl');
-        if ($previousUrl) {
-            return redirect($previousUrl)->with('status', 'Your Override setting has been saved successfully');
-        } else {
-            return redirect('setting/' . $request->name)->with('status', ' Setting Added Successfully');
-        }
+        $redirectUrl = session()->pull('previousUrl', 'setting');
+        return redirect($redirectUrl)->with('status', 'Override Setting Added Successfully');
+       
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+   
     public function show(Request $request, $model_type)
     {
         $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure

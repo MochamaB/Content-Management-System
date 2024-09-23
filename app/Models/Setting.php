@@ -49,20 +49,23 @@ class Setting extends Model
     public static function getSettingForModel($modelType, $modelId, $key)
     {
         // First, try to get the setting for the specific model (override)
-        $setting = self::where('model_type', $modelType)
-                        ->where('model_id', $modelId)
-                        ->where('key', $key)
-                        ->first();
+        $overrideSetting = self::where('model_type', $modelType)
+            ->where('model_id', $modelId)
+            ->where('key', $key)
+            ->first();
 
-        // If no override is found, fall back to the global setting
-        if (!$setting) {
-            $setting = self::where('model_type', $modelType)
-                            ->whereNull('model_id')
-                            ->where('key', $key)
-                            ->first();
+        // If there's an override, return its value
+        if ($overrideSetting) {
+            return $overrideSetting->value;
         }
+        /* If no override, fallback to the global setting (model_id is null)
+        $globalSetting = self::where('model_type', $modelType)
+        ->whereNull('model_id')
+        ->where('key', $key)
+        ->first();
 
-        // Return the setting value or null if not found
-        return $setting ? $setting->value : null;
+        // Return the global setting value or null if no setting is found
+        return $globalSetting ? $globalSetting->value : null;
+        */
     }
 }

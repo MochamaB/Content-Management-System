@@ -366,6 +366,16 @@ class LeaseController extends Controller
         $id = $unit;
         $model = 'units';
 
+         //5. SETTINGS
+         $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure
+         // Combine the namespace with the class name
+         $modelType = $namespace . 'Lease';
+         $individualsetting = $lease->settings;
+         $setting = Setting::where('model_type', $modelType)->first();
+        
+         $settingTableData = $this->tableViewDataService->generateSettingTabContents($modelType, $setting, $individualsetting);
+       
+
 
         $tabTitles = collect([
             'Summary',
@@ -375,6 +385,7 @@ class LeaseController extends Controller
             'Meter Readings',
             'Tickets',
             'Files',
+            'Settings'
         ]);
         $tabContents = [];
         foreach ($tabTitles as $title) {
@@ -392,6 +403,12 @@ class LeaseController extends Controller
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $ticketTableData, 'controller' => ['ticket']], compact('id', 'model'))->render();
             } elseif ($title === 'Files') {
                 $tabContents[] =  View('admin.CRUD.index_show', ['tableData' => $mediaTableData, 'controller' => ['']], compact('id'))->render();
+            }elseif ($title === 'Settings') {
+                $tabContents[] = View('admin.CRUD.tabs_horizontal_show', 
+                ['tabTitles' => $settingTableData['tabTitles'], 
+                'tabContents' => $settingTableData['tabContents'],
+                'controller' => ['setting']], 
+                compact('model','id'))->render();
             }
         }
 

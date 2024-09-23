@@ -286,7 +286,7 @@ class InvoiceService
 
 
         $user = $invoice->model;
-        $lease = $invoice->lease;
+        $lease = Lease::where('unit_id',$invoice->unit_id)->first();
         $unitchargeId = $invoice->invoiceItems->pluck('unitcharge_id')->first();
         $sixMonths = now()->subMonths(6);
         $transactions = Transaction::where('created_at', '>=', $sixMonths)
@@ -307,15 +307,17 @@ class InvoiceService
         ])->render();
 
         //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
+       
         $emailNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoiceemail');
          //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
         $textNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoicetexts');
+      //  dd($emailNotificationsEnabled);
 
         try {
-            if ($emailNotificationsEnabled === 'YES') {
+            if ($emailNotificationsEnabled !== 'NO') {
             $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
             }
-            if ($textNotificationsEnabled === 'YES') {
+            if ($textNotificationsEnabled !== 'NO') {
                 $user->notify(new InvoiceGeneratedTextNotification($invoice, $user, $viewContent));
                 }
         } catch (\Exception $e) {

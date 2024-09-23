@@ -290,6 +290,7 @@ Route::post('api/check-chargename', [LeaseController::class, 'checkchargename'])
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);
 Route::post('api/fetch-propertyMeterReading', [MeterReadingController::class, 'fetchpropertyMeterReading']);
 Route::post('api/fetch-allunits', [MeterReadingController::class, 'fetchAllUnits']);
+Route::post('api/fetch-setting', [SettingController::class, 'fetchSetting']);
 Route::post('closewizard/{routePart}', [SettingController::class, 'closewizard'])->name('closewizard');
 
 Route::get('mpesareceipt/{payment}', [MpesaSTKPUSHController::class, 'Receipt'])->name('mpesa.receipt');

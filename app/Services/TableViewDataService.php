@@ -863,7 +863,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['NAME', 'KEY', 'VALUE', 'ACTIONS'];
+        $headers = ['NAME', 'KEY', 'VALUE','DESCRIPTION', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -876,6 +876,18 @@ class TableViewDataService
         ];
 
         foreach ($settingdata as $item) {
+            $class= class_basename($item->model_type);
+            switch ($class) {
+                case 'Lease':
+                    $value = $item->model->property->property_name . ' - ' . $item->model->unit->unit_number;
+                         // Convert to an array
+                    break;
+                case 'Property':
+                    $value = $item->model->property_name;
+                    break;
+                default:
+                    break; // or handle this case differently
+                }
             $isDeleted = $item->deleted_at !== null;
             $row = [
                 'id' => $item->id,
@@ -889,7 +901,7 @@ class TableViewDataService
             ];
             // If $Extra Columns is true, insert unit details at position 3
             if ($extraColumns) {
-                array_splice($row, 3, 0, $item->property->property_name); // Replace with how you get unit details
+                array_splice($row, 3, 0, $value); // Replace with how you get unit details
             }
             $tableData['rows'][] = $row;
         }
@@ -897,7 +909,7 @@ class TableViewDataService
         return $tableData;
     }
 
-    public function generateSettingTabContents($modelType, $setting)
+    public function generateSettingTabContents($modelType, $setting, $individualsetting = null)
     {
 
         $tabTitles = collect([
@@ -907,11 +919,18 @@ class TableViewDataService
         $controller = 'setting';
         $globalSettings = Setting::where('model_type', $modelType)
             ->whereNull('model_id')
-            ->get();
+        ->get();
 
-        $individualSetting = Setting::where('model_type', $modelType)
-            ->whereNotNull('model_id')
-            ->get();
+        // Check if $individualsetting is passed and is null, then perform the query
+        if (is_null($individualsetting)) {
+            // If no individual setting is passed, perform the query to fetch them
+            $individualSetting = Setting::where('model_type', $modelType)
+                ->whereNotNull('model_id')
+                ->get();
+        } else {
+            // If $individualsetting is provided, use it directly
+            $individualSetting = $individualsetting;
+            }
 
         $settingsTableData = $this->getSettingData($individualSetting, true);
         $id = class_basename($setting->model_type);
