@@ -58,7 +58,7 @@ class UnitChargeController extends Controller
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
-        $unitChargeData = $this->model::with('property', 'unit')->whereNull('parent_id')->applyFilters($filters)->get();
+        $unitChargeData = $this->model::with('property', 'unit')->whereNull('parent_id')->showSoftDeleted()->applyFilters($filters)->get();
         $filterdata = $this->filterService->getUnitChargeFilters($request);
         $cardData = $this->cardService->unitchargeCard($unitChargeData);
       //  $mainfilter =  $this->model::pluck('charge_type')->toArray();
@@ -245,8 +245,16 @@ class UnitChargeController extends Controller
      * @param  \App\Models\unitcharge  $unitcharge
      * @return \Illuminate\Http\Response
      */
-    public function destroy(unitcharge $unitcharge)
+    public function destroy($id)
     {
-        //
+        // Retrieve the model instance
+        $model = $this->model::findOrFail($id);
+        $modelName = class_basename($model);
+
+        // Define the relationships to check
+        $relationships = ['meterReading','invoices','childrencharge'];
+
+        // Call the destroy method from the DeletionService
+        return $this->tableViewDataService->destroy($model, $relationships,  $modelName);
     }
 }

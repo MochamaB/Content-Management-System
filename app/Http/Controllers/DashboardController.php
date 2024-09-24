@@ -11,12 +11,14 @@ use App\Models\Property;
 use App\Models\Lease;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\PropertyType;
+use App\Models\Tax;
 use App\Models\Ticket;
 use App\Services\TableViewDataService;
 use App\Services\CardService;
 use App\Services\FilterService;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -58,7 +60,10 @@ class DashboardController extends Controller
         $filterdata = $this->filterService->getDashboardFilters();
         $properties = Property::with('units', 'leases', 'invoices')->applyFilters($filters)->get();
         $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
-       // dd($user->roles);
+
+
+      
+        //dd($taxesByCategory);
 
        ///1. Dashboard Tab
         if ($user && $user->id !== 1 && $user->roles->first()->name === "Tenant") {
@@ -70,6 +75,9 @@ class DashboardController extends Controller
         $chartData = $this->getInvoiceChartData($filters);
         // TICKET DATA ////
         $tickets = Ticket::latest()->take(3)->get();
+         //TOTAL TAXES
+       //  $taxesByCategory = $this->showTaxWidget();
+       //  dd($taxesByCategory);
 
         //2. Property Tab
         $propertyCard = $this->cardService->propertyCard($properties);
@@ -122,68 +130,38 @@ class DashboardController extends Controller
         ];
     }
 
-    private function getAdminCardData($month, $year)
+    public function showTaxWidget()
     {
-        $invoiceQuery = Invoice::query();
-        $paymentQuery = Payment::query();
-        $this->tableViewDataService->applyDateRangeFilter($invoiceQuery, $month, $year);
-        $this->tableViewDataService->applyDateRangeFilter($paymentQuery, $month, $year);
+        $propertyTypeCategories = PropertyType::with('taxes.taxable')->get()
+        ->groupBy(function ($propertyType) {
+            return $propertyType->property_category;
+        });
 
-        $propertyCount = Property::count();
-        $unitCount = Unit::count();
-        $leaseCount = Lease::count();
-        $percentage = ($unitCount > 0) ? round(($leaseCount / $unitCount) * 100) : 0;
-        $informationCardInfo = 'Total Units';
+    $data = [];
+    foreach ($propertyTypeCategories as $categoryName => $propertyTypes) {
+        $taxes = [];
+        $totalTaxAmount = 0;
 
-        $invoiceCount = $invoiceQuery->count();
-        $paymentCount = $paymentQuery->count();
-        $paymentSum = $paymentQuery->sum('totalamount');
-        $invoiceSum = $invoiceQuery->sum('totalamount');
-        $totalCardInfo1 = 'Generated';
-        $totalCardInfo2 = 'Paid';
-        //   dd($invoiceSum);
-        // Structure the data with card type information.
-        $cards = [
-            'All Properties' => 'information',
-            'Leases' => 'progress',
-            'Invoices' => 'total',
-            'Payments' => 'cash'
-            // Add other card types for admin role.
+        foreach ($propertyTypes as $propertyType) {
+            foreach ($propertyType->taxes as $tax) {
+                $taxAmount = $tax->taxable->taxamount;
+                $taxes[$tax->name]['amount'] = $taxAmount ?? 0;
+                $totalTaxAmount += $taxAmount ?? 0;
+            }
+        }
+
+        $data[] = [
+            'category_name' => $categoryName,
+            'taxes' => $taxes,
+            'total_tax_amount' => $totalTaxAmount,
         ];
-
-        $data = [
-            'All Properties' => [
-                'modelCount' => $propertyCount,
-                'modeltwoCount' => $unitCount,
-                'informationCardInfo' => $informationCardInfo,
-            ],
-            'Leases' => [
-                'modelCount' => $unitCount,
-                'modeltwoCount' => $leaseCount,
-                'percentage' => $percentage,
-                // Add other data points related to maintenanceCount card.
-            ],
-            'Invoices' => [
-                'modelCount' => $invoiceCount,
-                'modeltwoCount' => $paymentCount,
-                'totalCardInfo1' => $totalCardInfo1,
-                'totalCardInfo2' => $totalCardInfo2,
-                // Add other data points related to maintenanceCount card.
-            ],
-            'Payments' => [
-                'modelCount' => $paymentSum,
-                'modeltwoCount' => $invoiceSum,
-                'totalCardInfo1' => $totalCardInfo1,
-                'totalCardInfo2' => $totalCardInfo2,
-                // Add other data points related to maintenanceCount card.
-            ],
-            // Add other card data for admin role.
-        ];
-
-        return ['cards' => $cards, 'data' => $data];
     }
 
-
+    return $data;
+        // Return the grouped data
+     
+    }
+    
 
 
     public function create()

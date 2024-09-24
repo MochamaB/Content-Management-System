@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Unitcharge extends Model
 {
-    use HasFactory;
-    use FilterableScope;
+    use HasFactory,FilterableScope,  SoftDeletes, SoftDeleteScope;
     protected $table = 'unitcharges';
     protected $fillable = [
         'property_id',

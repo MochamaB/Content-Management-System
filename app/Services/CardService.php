@@ -43,12 +43,17 @@ class CardService
                 ->ApplyCurrentMonthFilters($filters)
                 ->get();
         })->sum('totalamount');
-        // Filter payments for the current month and sum their total amount
+        // Filter payments that are specifically linked to the invoices for the current month
         $payments = $units->flatMap(function ($unit) use ($filters) {
-            return $unit->payments()
-                ->ApplyCurrentMonthFilters($filters)
-                ->get();
-        })->sum('totalamount');
+                return $unit->invoices() // Filter payments through invoices
+                ->with(['payments' => function ($query) use ($filters) {
+                    $query->ApplyCurrentMonthFilters($filters);
+                }])
+                ->get()
+                ->flatMap(function ($invoice) {
+                    return $invoice->payments;
+                });
+            })->sum('totalamount');
 
         $balance = $invoices - $payments;
         //   $invoicepaid =  $invoices->filter(function ($invoice) {
@@ -60,7 +65,8 @@ class CardService
         $cards =  [
             'propertyCount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '/property'],
             'unitCount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '/unit'],
-            'invoices' => ['title' => 'Invoiced Amount', 'value' => '', 'amount' => $invoices, 'percentage' => '', 'links' => '/invoice'],
+            'invoices' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $invoices, 'percentage' => '', 'links' => '/invoice'],
+            'payments' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $payments, 'percentage' => '', 'links' => '/payments'],
             'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'links' => '/payment'],
         ];
         return $cards;

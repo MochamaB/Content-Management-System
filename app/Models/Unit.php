@@ -13,13 +13,15 @@ use App\Traits\FilterableScope;
 use App\Traits\SoftDeleteScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
 
 
 
-class Unit extends Model implements HasMedia
+class Unit extends Model implements HasMedia, Auditable
 {
-    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope;
+    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
     protected $table = 'units';
     protected $fillable = [
         'property_id',
@@ -36,6 +38,8 @@ class Unit extends Model implements HasMedia
     protected $attributes = [
         'description' => 'Spacious Unit Available', // Replace 'default_description_value'
     ];
+
+
 
     public static $fields = [
         'property_id' => ['label' => 'Property Name', 'inputType' => 'select', 'required' => true, 'readonly' => true],
@@ -65,6 +69,33 @@ class Unit extends Model implements HasMedia
 
 
     ];
+
+    protected $auditInclude = [
+        'property_id',
+        'unit_number',
+        'unit_type',
+        'rent',
+        'security_deposit',
+        'size',
+        'bathrooms',
+        'bedrooms',
+        'description',
+        'selling_price',
+        // Add other attributes you want to audit here.
+    ];
+
+    protected $auditThreshold = 10;
+    public function resolveValues(array $old, array $new): array
+    {
+        $values = parent::resolveValues($old, $new);
+
+        // Add the custom fields to the $values array
+        $values['property_id'] = $this->property_id;
+        $values['unit_id'] = $this->unit_id;
+
+        return $values;
+    }
+
     public static function getFieldData($field)
     {
         switch ($field) {
@@ -99,7 +130,7 @@ class Unit extends Model implements HasMedia
         switch ($card) {
 
             case 'All units':
-              //  $modelCount =  $modeldata ? $modeldata->count() : Unit::count();
+                //  $modelCount =  $modeldata ? $modeldata->count() : Unit::count();
                 $unitCount =  $modeldata ? $modeldata->count() : Unit::count();
                 return $unitCount;
             case 'Units Leased':
@@ -113,7 +144,7 @@ class Unit extends Model implements HasMedia
                     'modeltwoCount' => $leaseCount,
                     'percentage' => $percentage,
                 ];
-             //   $data = compact('unitCount', 'leaseCount', 'percentage');
+                //   $data = compact('unitCount', 'leaseCount', 'percentage');
                 return $data;
             case 'No of Tenants':
                 $users = User::with('roles')->get();
@@ -127,6 +158,7 @@ class Unit extends Model implements HasMedia
                 return $unitsWithoutLeasesCount;
         }
     }
+
 
 
     public function property()
@@ -214,6 +246,4 @@ class Unit extends Model implements HasMedia
             ->height(150)
             ->sharpen(10);
     }
-
-    
 }

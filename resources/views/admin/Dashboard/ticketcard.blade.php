@@ -16,10 +16,7 @@ $statusClasses = [
                     <div class="col-lg-12">
                         <div class="d-flex justify-content-between align-items-center">
                             <h4 class="card-title card-title-dash">Recent Tickets</h4>
-                            <div class="add-items d-flex mb-0">
-                                <!-- <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?"> -->
-                                <button class="add btn btn-icons btn-rounded btn-primary todo-list-add-btn text-white me-0 pl-12p"><i class="mdi mdi-plus"></i></button>
-                            </div>
+                            
                         </div>
                         <div class="list-wrapper">
                             <ul class="todo-list todo-list-rounded">
@@ -48,7 +45,11 @@ $statusClasses = [
                             <div class="text-center mt-3">
                                 <h6>
                                 <a class="" href="{{ url('/ticket') }}">
-                                    View More
+                                    @if(isset($ticket))
+                                    <p>View More</p>
+                                    @else
+                                    <p>Add Ticket</p>
+                                    @endif
                                 </a></h6>
                             </div>
                         </div>

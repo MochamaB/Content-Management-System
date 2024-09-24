@@ -15,7 +15,8 @@ class Tax extends Model
     protected $fillable = [
         'property_type_id',
         'name',
-        'model_type',
+        'taxable_type',
+        'taxable_id',
         'rate',
         'status',
         'description'
@@ -24,7 +25,7 @@ class Tax extends Model
     public static $fields = [
         'property_type_id' => ['label' => 'Property Category', 'inputType' => 'selectgroup', 'required' => true, 'readonly' => ''],
         'name' => ['label' => 'Tax Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
-        'model_type' => ['label' => 'Apply To', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
+        'taxable_type' => ['label' => 'Apply To', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'rate' => ['label' => 'Tax Rate', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
         'status' => ['label' => 'Status', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' => false, 'readonly' => ''],
@@ -35,7 +36,8 @@ class Tax extends Model
     public static $validation = [
         'property_type_id' => 'required',
         'name' => 'required',
-        'model_type' => 'required',
+        'taxable_type' => 'required',
+        'taxable_id' => 'nullable',
         'rate' => 'required|numeric',
         'status' => 'required',
         'description' => 'nullable',
@@ -54,7 +56,7 @@ class Tax extends Model
                 }
                 return $data;
                 //  return Property::pluck('property_name','id')->toArray();
-            case 'model_type':
+            case 'taxable_type':
                 return [
                     'App\\Models\\Invoice' => 'Invoices',
                     'App\\Models\\Payment' => 'Payments',

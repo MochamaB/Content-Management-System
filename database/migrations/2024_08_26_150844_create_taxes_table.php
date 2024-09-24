@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('property_type_id')->index();
             $table->string('name')->nullable();
-            $table->string('model_type')->nullable();
+            $table->string('taxable_type')->nullable();
+            $table->unsignedBigInteger('taxable_id')->nullable(); // ID of the specific model instance
             $table->decimal('rate')->nullable();
             $table->string('status')->nullable();
             $table->text('description')->nullable();

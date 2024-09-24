@@ -87,9 +87,10 @@
         <!--link -->
         <!--- Footer -->
         @if (!empty($card['links']))
-        <p class="text-muted">
-            {{ $card['links'] }}
-        </p>
+        <h6 class="text-muted">
+                        <a class="text-muted text-small" href="{{ url($card['links']) }}">
+                            View More</a>
+                </h6>
         @endif
 
     </div>
