@@ -85,15 +85,12 @@ class Unit extends Model implements HasMedia, Auditable
     ];
 
     protected $auditThreshold = 10;
-    public function resolveValues(array $old, array $new): array
+    public function transformAudit(array $data): array
     {
-        $values = parent::resolveValues($old, $new);
-
-        // Add the custom fields to the $values array
-        $values['property_id'] = $this->property_id;
-        $values['unit_id'] = $this->unit_id;
-
-        return $values;
+        $data['property_id'] = $this->property_id;
+        $data['unit_id'] = $this->id; // Assuming you want to store the unit's own ID
+    
+        return $data;
     }
 
     public static function getFieldData($field)

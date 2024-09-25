@@ -105,7 +105,7 @@ class NotificationController extends Controller
   {
     $notificationData = Notification::find($uuid);
     // dd($notification);
-    return view('admin.Communication.notification ', [
+    return view('admin.Communication.email_details ', [
       'notificationData' => $notificationData,
     ]);
  }
