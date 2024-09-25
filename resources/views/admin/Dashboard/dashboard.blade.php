@@ -16,7 +16,7 @@
                         aria-selected="{{ $loop->first ? 'true' : 'false' }}"
                         data-tab="{{ $title }}">
 
-                            {{ $title }}
+                        <i class="{{ $tabIcons[$title] }}"></i>&nbsp; {{ $title }}
                         </a>
                     </li>
                 @endforeach

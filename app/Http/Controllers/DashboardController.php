@@ -54,6 +54,11 @@ class DashboardController extends Controller
             'Properties',
             'Financials',
         ]);
+        $tabIcons = collect([
+            'Dashboard' => 'icon-chart', 
+            'Properties' => 'icon-home',
+            'Financials' => 'icon-calculator',
+        ]);
         $controller = $this->controller;
         $user = auth()->user();
         $filters = $request->except(['tab','_token','_method']);
@@ -62,8 +67,8 @@ class DashboardController extends Controller
         $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
 
 
-      
-        //dd($taxesByCategory);
+      $tax = Tax::with('taxable')->get();
+      //  dd($tax);
 
        ///1. Dashboard Tab
         if ($user && $user->id !== 1 && $user->roles->first()->name === "Tenant") {
@@ -76,8 +81,8 @@ class DashboardController extends Controller
         // TICKET DATA ////
         $tickets = Ticket::latest()->take(3)->get();
          //TOTAL TAXES
-       //  $taxesByCategory = $this->showTaxWidget();
-       //  dd($taxesByCategory);
+         $taxSummary = $this->showTaxesWidget();
+        // dd($taxesByCategory);
 
         //2. Property Tab
         $propertyCard = $this->cardService->propertyCard($properties);
@@ -86,7 +91,7 @@ class DashboardController extends Controller
             foreach ($tabTitles as $title) {
                 if ($title === 'Dashboard') {
                     $tabContents[] = View('admin.Dashboard.dashboardall',
-                    compact('properties','cardData','chartData','tickets'))->render();
+                    compact('properties','cardData','chartData','tickets','taxSummary'))->render();
                 } elseif ($title === 'Properties') {
                     $tabContents[] = View('admin.Dashboard.dashboardproperties' ,compact('propertyCard'))->render();
                 } elseif ($title === 'Financials') {
@@ -94,7 +99,7 @@ class DashboardController extends Controller
                 }
             }
 
-        return View('admin.Dashboard.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents','filterdata'));
+        return View('admin.Dashboard.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents','tabIcons','filterdata'));
     }
 
     /**
@@ -130,37 +135,80 @@ class DashboardController extends Controller
         ];
     }
 
-    public function showTaxWidget()
-    {
-        $propertyTypeCategories = PropertyType::with('taxes.taxable')->get()
-        ->groupBy(function ($propertyType) {
-            return $propertyType->property_category;
-        });
+    public function showTaxesByCategory()
+{
+    // Fetch PropertyTypes with their properties and related payments
+    $propertyTypes = PropertyType::with(['property.payments'])->get();
 
-    $data = [];
-    foreach ($propertyTypeCategories as $categoryName => $propertyTypes) {
-        $taxes = [];
+    $taxSummary = [];
+
+    foreach ($propertyTypes as $propertyType) {
         $totalTaxAmount = 0;
 
-        foreach ($propertyTypes as $propertyType) {
-            foreach ($propertyType->taxes as $tax) {
-                $taxAmount = $tax->taxable->taxamount;
-                $taxes[$tax->name]['amount'] = $taxAmount ?? 0;
-                $totalTaxAmount += $taxAmount ?? 0;
-            }
+        foreach ($propertyType->property as $property) {
+            // Sum all tax amounts from the payments of the property
+            $propertyTaxAmount = $property->payments->sum('taxamount');
+            $totalTaxAmount += $propertyTaxAmount;
         }
 
-        $data[] = [
-            'category_name' => $categoryName,
-            'taxes' => $taxes,
-            'total_tax_amount' => $totalTaxAmount,
+        // Prepare a summary for each PropertyType
+        $taxSummary[] = [
+            'category' => $propertyType->property_category,
+            'taxes' => $propertyType->taxes->map(function ($tax) use ($totalTaxAmount) {
+                return [
+                    'tax_name' => $tax->name,  // Tax name from the Tax model
+                    'tax_amount' => $totalTaxAmount  // Total tax amount for the properties in this category
+                ];
+            }),
+            'total_tax_amount' => $totalTaxAmount
         ];
     }
 
-    return $data;
-        // Return the grouped data
-     
+    // Pass the tax summary to the view
+        return $taxSummary;
+}
+
+public function showTaxesWidget()
+{
+    // Fetch PropertyTypes with their properties and related payments
+    $propertyTypes = PropertyType::with(['property.payments'])
+        ->get()
+        ->groupBy('property_category'); // Group by the property_category column
+
+    $taxSummary = [];
+
+    foreach ($propertyTypes as $category => $types) {
+        $categorySummary = [
+            'category' => $category,
+            'taxes' => []
+        ];
+
+        $totalTaxAmount = 0;
+
+        foreach ($types as $propertyType) {
+            foreach ($propertyType->property as $property) {
+                // Sum all tax amounts from the payments of the property
+                $propertyTaxAmount = $property->payments->sum('taxamount');
+                $totalTaxAmount += $propertyTaxAmount;
+            }
+
+            // Prepare a summary for each PropertyType within the category
+            foreach ($propertyType->taxes as $tax) {
+                $categorySummary['taxes'][] = [
+                    'tax_name' => $tax->name, // Tax name from the Tax model
+                    'tax_amount' => $totalTaxAmount // Total tax amount for properties in this category
+                ];
+            }
+        }
+
+        $categorySummary['total_tax_amount'] = $totalTaxAmount;
+        $taxSummary[] = $categorySummary;
     }
+
+    // Pass the tax summary to the view
+    return $taxSummary;
+}
+
     
 
 
