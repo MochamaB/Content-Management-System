@@ -52,11 +52,11 @@ class CalculateTaxAction
                 'name' => $tax->name.' - '.$property->property_name.' - '. $currentMonth->format('F Y'),
                 'status' => 'pending',
                 'duedate' => $currentMonth->endOfMonth(),
-            ],
-            [
-                'totalamount' => $taxAmount, // Will be updated later
             ]
         );
+         // Update the total amount of the Expense by adding the new tax amount
+         $expense->totalamount += $taxAmount;
+         $expense->save();
 
         
         // Find the appropriate Chart of Account for taxes
@@ -67,20 +67,27 @@ class CalculateTaxAction
         }
 
         // Create or update the ExpenseItem
-        $expenseItem = ExpenseItems::updateOrCreate(
-            [
+        // Check if the ExpenseItem already exists
+        $expenseItem = ExpenseItems::where('expense_id', $expense->id)
+            ->where('chartofaccount_id', $taxCoA->id)
+            ->first();
+
+        if ($expenseItem) {
+            // If it exists, increment the amount
+            $expenseItem->amount += $taxAmount;
+        } else {
+            // If it doesn't exist, create a new one
+            $expenseItem = ExpenseItems::create([
                 'expense_id' => $expense->id,
                 'chartofaccount_id' => $taxCoA->id,
-            ],
-            [
                 'description' => $tax->name,
                 'amount' => $taxAmount,
-            ]
-        );
+            ]);
+        }
 
-        // Update the total amount of the Expense
-      //  $expense->totalamount = $expense->expenseItems->sum('amount');
-       // $expense->save();
+        $expenseItem->save();
+
+
        $expenses->push($expense);
     }
 
