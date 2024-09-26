@@ -98,7 +98,7 @@ class PaymentController extends Controller
                 $instance = Deposit::find($id); 
                 break;
             default:
-                $instance = Invoice::with('invoiceItems', 'payments.paymentItems')->find($id);
+                $instance = Invoice::with('invoiceItems')->find($id);
                 break; // or handle this case differently
         }
 

@@ -19,7 +19,15 @@ class Tax extends Model
         'taxable_id',
         'rate',
         'status',
-        'description'
+        'description',
+        'related_model_type',
+        'related_model_condition',
+        'additional_condition'
+    ];
+
+    protected $casts = [
+        'related_model_condition' => 'array',
+        'additional_condition' => 'array',
     ];
 
     public static $fields = [
@@ -29,7 +37,7 @@ class Tax extends Model
         'rate' => ['label' => 'Tax Rate', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
         'status' => ['label' => 'Status', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' => false, 'readonly' => ''],
-       
+
         // Add more fields as needed
     ];
 
@@ -63,21 +71,73 @@ class Tax extends Model
                     'App\\Models\\Deposit' => 'Deposits',
                     'App\\Models\\Expense' => 'Expenses'
                 ];
-                case 'status':
-                    return [
-                        'active' => 'Active',
-                        'Inactive' => 'In Active',
-                    ];
+            case 'status':
+                return [
+                    'active' => 'Active',
+                    'Inactive' => 'In Active',
+                ];
                 // Add more cases for additional filter fields
             default:
                 return [];
         }
     }
 
+    // Existing relationships and methods...
+    // Check if the tax is applicable when this is called
+    public function isApplicable($taxableEntity)
+    {
+        if (get_class($taxableEntity) !== $this->taxable_type) {
+            return false;
+        }
+
+        if ($this->related_model_type) {
+          //  $relatedEntity = $taxableEntity->{$this->getRelatedModelRelationName()};
+            $relatedEntity = $taxableEntity->model;
+            
+
+            if (!$relatedEntity || get_class($relatedEntity) !== $this->related_model_type) {
+                return false;
+            }
+
+            if ($this->related_model_condition) {
+                foreach ($this->related_model_condition as $attribute => $value) {
+                    if (strcasecmp($relatedEntity->{$attribute}, $value) !== 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if ($this->additional_condition) {
+            foreach ($this->additional_condition as $attribute => $value) {
+                if ($taxableEntity->{$attribute} != $value) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+    private function getRelatedModelRelationName()
+    {
+        // Convert "App\Models\Invoice" to "invoice"
+        return lcfirst(class_basename($this->related_model_type));
+    }
+
+    public static function findApplicableTaxes($taxableEntity)
+    {
+        return self::where('taxable_type', get_class($taxableEntity))
+            ->where('status', 'active')
+            ->get()
+            ->filter(function ($tax) use ($taxableEntity) {
+                return $tax->isApplicable($taxableEntity);
+            });
+    }
+
     public function propertyType()
-{
-    return $this->belongsTo(PropertyType::class);
-}
+    {
+        return $this->belongsTo(PropertyType::class);
+    }
 
     public function taxable()
     {

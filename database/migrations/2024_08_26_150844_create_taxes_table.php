@@ -22,6 +22,9 @@ return new class extends Migration
             $table->decimal('rate')->nullable();
             $table->string('status')->nullable();
             $table->text('description')->nullable();
+            $table->string('related_model_type')->nullable();
+            $table->json('related_model_condition')->nullable();
+            $table->json('additional_condition')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

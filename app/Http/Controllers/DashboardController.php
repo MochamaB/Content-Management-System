@@ -67,8 +67,6 @@ class DashboardController extends Controller
         $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
 
 
-      $tax = Tax::with('taxable')->get();
-      //  dd($tax);
 
        ///1. Dashboard Tab
         if ($user && $user->id !== 1 && $user->roles->first()->name === "Tenant") {

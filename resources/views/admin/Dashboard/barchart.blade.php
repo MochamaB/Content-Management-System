@@ -11,8 +11,8 @@
                 </div>
                 <div class="d-sm-flex align-items-center mt-1 justify-content-between">
                     <div class="d-sm-flex align-items-center mt-4 justify-content-between">
+                        <h4 class="me-2">{{ $sitesettings->site_currency }}</h4>
                         <h2 class="me-2 fw-bold" id="firstTotal"></h2>
-                        <h4 class="me-2">{{ $sitesettings->site_currency }}.</h4>
                         <h4 class="text-success" id="percentage"></h4>
                     </div>
                     <div class="me-3">

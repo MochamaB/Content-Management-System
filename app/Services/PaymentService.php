@@ -62,15 +62,19 @@ class PaymentService
         //1. Create Payment Header Data
         $payment = $this->createPayment($paymentData);
 
-       
+
         //2. Update Payment Status in Model Headers
-          $this->calculateTotalAmountAction->payment($payment, $model);
+        $this->calculateTotalAmountAction->payment($payment, $model);
 
         //3. Calculate Taxes payment
-        $this->calculateTaxAction->calculateTax($payment);
+        $taxExpense = $this->calculateTaxAction->calculateTax($payment);
+
 
         //4. Create Transactions for ledger
         $this->recordTransactionAction->payments($payment, $model);
+        if ($taxExpense) {
+            $this->recordTransactionAction->transaction($taxExpense);
+        }
 
         //5. Send Email/Notification to the Tenant containing the receipt.
         $this->paymentEmail($payment);
@@ -164,10 +168,9 @@ class PaymentService
     {
         $user = $payment->model->model;
 
-        if($payment->model instanceof Invoice)
-         {
+        if ($payment->model instanceof Invoice) {
             $invoice = $payment->model;
-            $lease = Lease::where('unit_id',$invoice->unit_id)->first();
+            $lease = Lease::where('unit_id', $invoice->unit_id)->first();
             $unitchargeId = $payment->model->getItems->pluck('unitcharge_id')->first();
             //    dd($unitchargeIds);
             $sixMonths = now()->subMonths(6);
@@ -176,27 +179,27 @@ class PaymentService
                 ->where('unitcharge_id', $unitchargeId)
                 ->get();
             $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
-    
+
             ////Opening Balance
             $openingBalance = $this->invoiceService->calculateOpeningBalance($payment->model);
-                //// Data for the Payment Methods
+            //// Data for the Payment Methods
             $viewContent = View::make('email.statement', [
                 'user' => $user,
                 'invoice' => $invoice,
                 'transactions' => $transactions,
                 'groupedInvoiceItems' => $groupedInvoiceItems,
                 'openingBalance' => $openingBalance,
-                ])->render();
+            ])->render();
 
-                //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
-                $emailNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoiceemail');
-                //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
-               $textNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoicetexts');
-                }else{
+            //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
+            $emailNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoiceemail');
+            //CHECK IF EMAILS FOR THE LEASE ARE ENABLED
+            $textNotificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'invoicetexts');
+        } else {
             $viewContent = View::make('email.payment', [
                 'payment' => $payment,
             ])->render();
-            }
+        }
 
         try {
             if ($emailNotificationsEnabled !== 'NO') {

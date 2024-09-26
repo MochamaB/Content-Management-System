@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             TransactionTypeSeeder::class,
             InvoiceTaskSeeder::class,
             AmenitySeeder::class,
+            TaxesSeeder::class,
         ]);
     }
 }
