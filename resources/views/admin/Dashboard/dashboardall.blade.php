@@ -13,7 +13,7 @@
     @include('admin.Dashboard.barchart', ['data' => $chartData])
     </div>
     <div class="col-lg-4 d-flex flex-column">
-    @include('admin.Dashboard.ticketcard', ['data' => $chartData])
+    @include('admin.Dashboard.paymentType')
     </div>
 </div>
 <!-- Third Level -------->

@@ -164,8 +164,8 @@
 }
 
 .company-icon {
-  width: 50px;
-  height: 50px;
+  width: 38px;
+  height: 38px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -395,6 +395,11 @@
 }
 .card .card-body {
   padding: 1rem 1.5rem;
+}
+.card .card-footer {
+  padding: 1.5rem 1.5rem;
+  background-color: #fff;
+  border-top: none;
 }
 
 .card .card-title {

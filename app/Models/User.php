@@ -19,14 +19,16 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Traits\FilterableScope;
 use App\Traits\SoftDeleteScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
 
 /**
  * @method filterUsers()
  */
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable implements HasMedia, Auditable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
 
     /**
      * The attributes that are mass assignable.

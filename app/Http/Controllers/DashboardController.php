@@ -74,12 +74,14 @@ class DashboardController extends Controller
         } else {
             $cardData = $this->cardService->topCard($properties, $units,$filters);
         }
-        /// CHART DATA
-        $chartData = $this->getInvoiceChartData($filters);
-        // TICKET DATA ////
-        $tickets = Ticket::latest()->take(3)->get();
-         //TOTAL TAXES
-         $taxSummary = $this->showTaxesWidget();
+            ///1.2 CHART DATA
+            $chartData = $this->getInvoiceChartData($filters);
+            //1.3 TICKET DATA ////
+            $tickets = Ticket::latest()->take(3)->get();
+            //1.4 TOTAL TAXES
+            $taxSummary = $this->showTaxesWidget($filters);
+            //1.5 PAYMENT TYPES
+            $paymentType = $this->paymentType($filters);
         // dd($taxesByCategory);
 
         //2. Property Tab
@@ -89,7 +91,7 @@ class DashboardController extends Controller
             foreach ($tabTitles as $title) {
                 if ($title === 'Dashboard') {
                     $tabContents[] = View('admin.Dashboard.dashboardall',
-                    compact('properties','cardData','chartData','tickets','taxSummary'))->render();
+                    compact('properties','cardData','chartData','tickets','taxSummary','paymentType'))->render();
                 } elseif ($title === 'Properties') {
                     $tabContents[] = View('admin.Dashboard.dashboardproperties' ,compact('propertyCard'))->render();
                 } elseif ($title === 'Financials') {
@@ -133,40 +135,8 @@ class DashboardController extends Controller
         ];
     }
 
-    public function showTaxesByCategory()
-{
-    // Fetch PropertyTypes with their properties and related payments
-    $propertyTypes = PropertyType::with(['property.payments'])->get();
 
-    $taxSummary = [];
-
-    foreach ($propertyTypes as $propertyType) {
-        $totalTaxAmount = 0;
-
-        foreach ($propertyType->property as $property) {
-            // Sum all tax amounts from the payments of the property
-            $propertyTaxAmount = $property->payments->sum('taxamount');
-            $totalTaxAmount += $propertyTaxAmount;
-        }
-
-        // Prepare a summary for each PropertyType
-        $taxSummary[] = [
-            'category' => $propertyType->property_category,
-            'taxes' => $propertyType->taxes->map(function ($tax) use ($totalTaxAmount) {
-                return [
-                    'tax_name' => $tax->name,  // Tax name from the Tax model
-                    'tax_amount' => $totalTaxAmount  // Total tax amount for the properties in this category
-                ];
-            }),
-            'total_tax_amount' => $totalTaxAmount
-        ];
-    }
-
-    // Pass the tax summary to the view
-        return $taxSummary;
-}
-
-public function showTaxesWidget()
+public function showTaxesWidget($filters)
 {
     // Fetch PropertyTypes with their properties and related payments
     $propertyTypes = PropertyType::with(['property.payments'])
@@ -185,15 +155,17 @@ public function showTaxesWidget()
 
         foreach ($types as $propertyType) {
             foreach ($propertyType->property as $property) {
+                 // Apply the date filters to the payments and sum the tax amounts
+                 $filteredPayments = $property->payments()->ApplyDateOnlyFilters($filters)->get();
                 // Sum all tax amounts from the payments of the property
-                $propertyTaxAmount = $property->payments->sum('taxamount');
+                $propertyTaxAmount = $filteredPayments->sum('taxamount');
                 $totalTaxAmount += $propertyTaxAmount;
             }
 
             // Prepare a summary for each PropertyType within the category
             foreach ($propertyType->taxes as $tax) {
                 $categorySummary['taxes'][] = [
-                    'tax_name' => $tax->name, // Tax name from the Tax model
+                    'tax_name' => $tax->name ?? 'No Tax', // Tax name from the Tax model
                     'tax_amount' => $totalTaxAmount // Total tax amount for properties in this category
                 ];
             }
@@ -206,6 +178,27 @@ public function showTaxesWidget()
     // Pass the tax summary to the view
     return $taxSummary;
 }
+public function paymentType($filters)
+{
+    // Get the invoices and apply filters (e.g., date range)
+    $invoices = Invoice::with('payments')->ApplyDateFilters($filters)->get();
+
+    // Group the invoices by type and calculate the total payments for each type
+    $invoiceSummary = $invoices->groupBy('name')->map(function ($group) {
+        $totalPayments = $group->sum(function ($invoice) {
+            return $invoice->payments->sum('totalamount'); // Assuming 'amount' is the payment column
+        });
+
+        return [
+            'name' => $group->first()->name, // Get the invoice type from the first invoice in the group
+            'total_payments' => $totalPayments
+        ];
+    })
+    ->take(4); // Limit to 3 records
+
+    return $invoiceSummary; // Pass this data to the view
+}
+
 
     
 

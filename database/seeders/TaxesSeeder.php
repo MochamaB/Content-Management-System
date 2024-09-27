@@ -28,6 +28,17 @@ class TaxesSeeder extends Seeder
                 'related_model_condition' => ['name' => 'rent'],
                 'additional_condition' => null
             ],
+            [  
+                'property_type_id' => 4,
+                'name' => 'VAT',
+                'taxable_type' => 'App\\Models\\Invoice',
+                'rate' => 16.0,
+                'status' => 'active',
+                'description' => 'VAT tax for commercial properties ',
+                'related_model_type' => null,
+                'related_model_condition' => null,
+                'additional_condition' => null
+            ],
            
         ];
 

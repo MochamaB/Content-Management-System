@@ -72,6 +72,14 @@ class TransactionTypeSeeder extends Seeder
                 'debitaccount_id' => '1',
                 'creditaccount_id' => '2',
             ],
+            [
+                'name' => 'Taxes',
+                'description' => 'Tax expenses',
+                'model' => 'Expense',
+                'account_type' => 'Expenses',
+                'debitaccount_id' => '24',
+                'creditaccount_id' => '26',
+            ],
         ];
 
         foreach ($TranactionTypes as $transactionTypeData) {

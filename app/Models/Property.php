@@ -10,10 +10,12 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Traits\FilterableScope;
 use App\Traits\SoftDeleteScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Property extends Model implements HasMedia
+class Property extends Model implements HasMedia, Auditable
 {
-    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope;
+    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
     protected $table = 'properties';
     protected $fillable = [
         'property_name',
@@ -53,13 +55,21 @@ class Property extends Model implements HasMedia
 
     ];
 
-    /////Filter options
-    public static $filter = [
-        'property_location' => 'Type',
-        'property_streetname' => 'Location',
-        'property_status' => 'Status',
-        // Add more filter fields as needed
+    protected $auditInclude = [
+        'property_name',
+        'property_type',
+        'property_location',
+        'property_streetname',
+        'property_status',
+        // Add other attributes you want to audit here.
     ];
+    protected $auditThreshold = 10;
+    public function transformAudit(array $data): array
+    {
+        $data['property_id'] = $this->id;
+    
+        return $data;
+    }
 
 
 

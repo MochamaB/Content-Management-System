@@ -1,22 +1,16 @@
 <nav class="sidebar sidebar-offcanvas">
 
-  <div class="company-details">
-    <span class="company-icon">
-      {{ $sitesettings->initials }}
-    </span>
-    <span class="company-name">
-      {{ $sitesettings->company_name }}
-    </span>
-  </div>
-
+  
   <ul class="nav">
-    <li class="nav-item nav-category" style="border-top: 1px solid rgba(255, 255, 255, 0.13)">Main Menu</li>
-    <li class="nav-item">
+  <li class="nav-item nav-category" style="border-top: 1px solid rgba(255, 255, 255, 0.13)"></li>
+  <li class="nav-item">
       <a class="nav-link" href="{{ url('/dashboard') }}">
         <i class="mdi mdi-grid-large menu-icon"></i>
         <span class="menu-title" style="text-transform: uppercase;">Dashboard</span>
       </a>
     </li>
+    <li class="nav-item nav-category" style="border-top: 1px solid rgba(255, 255, 255, 0.13)">Main Menu</li>
+
     <!-----     -------------------->
     <!-----     -------------------->
     @foreach ($sidebar['Main'] as $module => $moduleData)
@@ -149,6 +143,17 @@
         <span class="menu-title" style="text-transform: uppercase;">PROFILE</span>
       </a>
     </li>
+    @if( Auth::user()->can('account.index') || Auth::user()->id === 1)
+    <li class="nav-item nav-category" style="border-top: 1px solid rgba(255, 255, 255, 0.13)">ACCOUNT</li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url('/account') }}">
+      <span class="company-icon">
+      {{ $sitesettings->initials }}
+    </span>
+        <span class="menu-title" style="text-transform: uppercase;"> {{ $sitesettings->company_name }}</span>
+      </a>
+    </li>
+    @endif
 
   </ul>
 </nav>

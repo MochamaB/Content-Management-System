@@ -16,16 +16,16 @@
                            
                                 <li class="d-block">
                                     <div class="form-check w-100 mt-1 mb-2">
-                                        <label class="form-check-label">
+                                        <label class="form-check-label" style="margin-left: 0px;">
                                             <b>{{$summary['category'] }} Properties</b>
                                            
                                         </label>
                                         @foreach ($summary['taxes'] as $tax)
                                         <div class="d-flex mt-0 mb-2">
-                                            <div class="ps-5 me-3">
+                                            <div class="ps-3 me-3">
                                                <p>{{ $tax['tax_name'] }}</p>
                                             </div>
-                                            <div class="ps-4  text-muted me-3">
+                                            <div class="ps-1  text-muted me-3">
                                             <p>{{ $sitesettings->site_currency }}. {{ $tax['tax_amount'] }}</p>
                                             </div>
                                         </div>
@@ -34,14 +34,17 @@
                                 </li>
                             </ul>
                             @endforeach
-                            <div class="text-center mt-4">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer modern-payment">
+            <div class="text-center mt-4">
                                 <h5 style="font-weight: 600;">
                                 Total Amount &nbsp;<span class="text-primary">{{ $sitesettings->site_currency }}. {{ array_sum(array_column($taxSummary, 'total_tax_amount')) }}</span>
                                 </h5>
                             </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

@@ -58,12 +58,6 @@ class ChartOfAccountsSeeder extends Seeder
                 'account_level' => 'Parent Account',
             ],
             [
-                'account_number' => '35000',
-                'account_type' => 'Liability',
-                'account_name' => 'MRI Tax',
-                'account_level' => 'Parent Account',
-            ],
-            [
                 'account_number' => '41000',
                 'account_type' => 'Income',
                 'account_name' => 'Rent Income',
@@ -169,6 +163,12 @@ class ChartOfAccountsSeeder extends Seeder
                 'account_number' => '99000',
                 'account_type' => 'Expenses',
                 'account_name' => 'Utility Fees',
+                'account_level' => 'Parent Account',
+            ],
+            [
+                'account_number' => '35000',
+                'account_type' => 'Liability',
+                'account_name' => 'Tax Liability',
                 'account_level' => 'Parent Account',
             ],
         ];
