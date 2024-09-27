@@ -1010,7 +1010,7 @@ class TableViewDataService
                 $item->referenceno,
                 $expenseStatus . ' </br></br>' . Carbon::parse($item->duedate)->format('Y-m-d'),
                 $item->name,
-                $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
+                $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 2, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
                 $balanceStatus . ' </br></br> ' . $payLink,
                 'isDeleted' => $isDeleted,
