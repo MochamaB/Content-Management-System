@@ -106,7 +106,15 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        
+        ///1. GET CHARGES WITH RECURRING CHARGE
+       
+    //    $unitchargedata = Unitcharge::where('recurring_charge', 'Yes')
+       //     ->where('parent_id', null)
+        //    ->whereMonth('nextdate', now()->month)
+       //     ->whereHas('unit.lease', function ($query) {
+        //        $query->where('status', 'Active');
+        //    })
+        //    ->get();
         $unitchargedata = $this->invoiceService->getUnitCharges();
         $info = null; // Initialize the variable
         if ($unitchargedata->isEmpty()) {

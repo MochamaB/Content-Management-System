@@ -86,6 +86,40 @@ class User extends Authenticatable implements HasMedia, Auditable
 
         // Add more fields as needed
     ];
+
+    protected $auditInclude = [
+        'firstname',
+        'lastname',
+        'email',
+        'phonenumber',
+        'idnumber',
+        'password',
+        'status',
+        // Add other attributes you want to audit here.
+    ];
+    protected $auditThreshold = 20;
+    public function transformAudit(array $data): array
+    {
+        // Access the user's units with pivot data
+        $units = $this->units;
+    
+        // Check if the user has associated units
+        if ($units->isNotEmpty()) {
+            // Get the first unit (you can adjust this logic depending on your needs)
+            $firstUnit = $units->first();
+    
+            // Access the pivot data for property_id and unit_id
+            $data['property_id'] = $firstUnit->pivot->property_id;
+            $data['unit_id'] = $firstUnit->pivot->unit_id;
+        } else {
+            // If no units are associated, you can set default values
+            $data['property_id'] = null;
+            $data['unit_id'] = null;
+        }
+    
+        return $data;
+    }
+    
     public static function getFilterData($filter)
     {
         $invoice = Invoice::with('property', 'unit', 'model')->get();

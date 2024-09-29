@@ -25,6 +25,9 @@ use App\Models\Invoice;
 use App\Models\Payment;
 use App\Notifications\UserCreatedTextNotification;
 use App\Services\TableViewDataService;
+use App\Services\FilterService;
+use App\Services\CardService;
+
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
@@ -41,12 +44,16 @@ class UserController extends Controller
     protected $attachDetachUserFromUnitAction;
     protected $uploadMediaAction;
     private $tableViewDataService;
+    protected $filterService;
+    private $cardService;
+
 
     public function __construct(
         UserRoleAction $userRoleAction,
         AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction,
         UploadMediaAction $uploadMediaAction,
-        TableViewDataService $tableViewDataService
+        TableViewDataService $tableViewDataService,
+        FilterService $filterService, CardService $cardService
     ) {
         $this->model = User::class;
         $this->controller = collect([
@@ -58,34 +65,79 @@ class UserController extends Controller
         $this->attachDetachUserFromUnitAction = $attachDetachUserFromUnitAction;
         $this->uploadMediaAction = $uploadMediaAction;
         $this->tableViewDataService = $tableViewDataService;
+        $this->filterService = $filterService;
+        $this->cardService = $cardService;
+    }
+
+    public function getRoles(){
+        $loggeduser = Auth::user();
+        $loggeduserRoles = $loggeduser->roles;
+        $loggedUserPermissions = $loggeduserRoles->flatMap(function ($role) {
+            return $role->permissions;
+        });
+         // Retrieve all roles and their associated permissions
+         $allRoles = Role::with('permissions')->get();
+         // Filter roles with lesser permissions
+         $filteredRoles = $allRoles->filter(function ($role) use ($loggedUserPermissions) {
+             $rolePermissions = $role->permissions;
+ 
+             // Compare the number of permissions in the role with the logged-in user's permissions
+             return $rolePermissions->count() < $loggedUserPermissions->count();
+         });
+         if (!$loggeduser || $loggeduser->id === 1 || stripos($loggeduser->roles->first()->name, 'admin') !== false) {
+            $roles = Role::orderBy('id', 'desc')->get();
+        }else {
+            $roles = $filteredRoles->sortByDesc('id')->all();
+        }
+        return $roles;
+
+
     }
 
 
-    public function index()
+    public function index(Request $request)
     {
-        /** @var \App\Models\User $user */
-        /*
-        $user = Auth::user();
-        if (Gate::allows('view-all', $user)) {
-        
-                // Superadmin can see all users
-                $users = $this->model::all();
-          
-        }else if(Gate::allows('admin', $user))  {
-            $users = $this->model::where('id', '<>', 1)
-            ->where('id', '<>', $user->id)->get();
-        }else {
-            $users = $user->filterUsers();
-        }
-            */
-        $users = User::with('properties','units')->ApplyFilterUsers()->get();
-        $mainfilter =  Role::pluck('name')->toArray();
-        $filterData = $this->filterData($this->model);
+       
+        $baseQuery = User::with('properties','units','roles')->ApplyFilterUsers();
+        $filters = $request->except(['tab','_token','_method']);
+        $filterdata = $this->filterService->getPropertyFilters($request);
+        $cardData = $this->cardService->userCard($baseQuery->get());
         $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getUserData($users, false);
+        $roles = $this->getRoles();
+        // Define the tab titles as the role names
+        $tabTitles = $roles->pluck('name')->toArray();
+        array_unshift($tabTitles, 'All Users'); // Adds 'All Users' at the first position
+        // Remove 'Super Admin' from the list
+        $tabTitles = array_diff($tabTitles, ['SuperAdmin']);
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'All Users':
+                    $query;
+                    break;
+                // Add more cases as needed for other roles
+                default:
+                // For any other role, use a generic query
+                    $query->role($title);
+                break;
+                    // 'All' doesn't need any additional filters
+            }
+            $users = $query->get();
+            $count = $users->count();
+            $tableData = $this->tableViewDataService->getUserData($users, true);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
+    //    $tableData = $this->tableViewDataService->getUserData($users, false);
         // $userviewData = compact('tableData', 'mainfilter', 'controller');
 
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'), $filterData);
+        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','cardData','tabCounts'));
     }
 
 
@@ -386,6 +438,7 @@ class UserController extends Controller
 
         
        // $this->attachDetachUserFromUnitAction->assignFromView($user, $unitIds, $request);
+       return redirect()->back()->with('status', $this->controller['1'] . ' Edited Successfully');
       
     }
 

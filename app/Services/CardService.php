@@ -378,4 +378,27 @@ class CardService
         $chart->description = "This is the description of the invoice chart."; // Example description
         return $chart;
     }
+    public function userCard($users)
+    {
+
+        $userCount = $users->count();
+        $active = $users->filter(function ($user) {
+            return $user->status === 'Active';
+        })->count();
+        $inactive = $users->filter(function ($user) {
+            return $user->status !== 'Active';
+        })->count();
+        // Get the count of reccuring charges that are for sale
+        $tenants = $users->filter(function ($user) {
+            return $user->hasRole('Tenant'); // Check if the user has the 'tenant' role
+        })->count();
+        $cards =  [
+            'userCount' => ['title' => 'Total Users', 'icon' => '', 'value' => $userCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'tenants' => ['title' => 'Total Tenants', 'icon' => '', 'value' => $tenants, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'active' => ['title' => 'Active Users', 'icon' => '', 'value' => $active, 'amount' =>'' , 'percentage' => '', 'links' => ''],
+            'inActive' => ['title' => 'In Active', 'icon' => '', 'value' => $inactive, 'amount' =>'' , 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
 }

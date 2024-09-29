@@ -13,11 +13,14 @@ use App\Traits\MediaUpload;
 use App\Traits\FilterableScope;
 use App\Traits\SoftDeleteScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
 
-class Lease extends Model implements HasMedia
+
+class Lease extends Model implements HasMedia, Auditable
 {
-    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload,FilterableScope, SoftDeleteScope, SoftDeletes;
+    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload,FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
     protected $table = 'leases';
     protected $fillable = [
         'property_id',
@@ -52,6 +55,26 @@ class Lease extends Model implements HasMedia
         'startdate' => 'required|date',
         'enddate' => 'nullable|date',
     ];
+
+    protected $auditInclude = [
+        'property_id',
+        'unit_id',
+        'user_id',
+        'lease_period',
+        'status',
+        'startdate',
+        'enddate',
+        // Add other attributes you want to audit here.
+    ];
+    protected $auditThreshold = 20;
+
+    public function transformAudit(array $data): array
+    {
+        $data['property_id'] = $this->property_id;
+        $data['unit_id'] = $this->unit_id;
+    
+        return $data;
+    }
 
     public static function getFieldData($field)
     {
