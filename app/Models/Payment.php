@@ -4,11 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Payment extends Model
+
+class Payment extends Model implements HasMedia, Auditable
 {
-    use HasFactory, FilterableScope;
+    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
     protected $table = 'payments';
     protected $fillable = [
         'property_id',
@@ -26,6 +34,8 @@ class Payment extends Model
 
     ];
 
+    
+
     public static $validation = [
         'property_id' => 'nullable',
         'unit_id' => 'nullable',
@@ -37,6 +47,33 @@ class Payment extends Model
         'totalamount' => 'nullable',
       
     ];
+
+    protected $auditInclude = [
+        'property_id',
+        'unit_id',
+        'model_type',
+        'model_id',
+        'referenceno',
+        'payment_method_id',
+        'payment_code',
+        'totalamount',
+        'taxamount',
+        'received_by',
+        'reviewed_by',
+        'invoicedate'
+
+        // Add other attributes you want to audit here.
+    ];
+
+    protected $auditThreshold = 30;
+
+    public function transformAudit(array $data): array
+    {
+        $data['property_id'] = $this->property_id;
+        $data['unit_id'] = $this->unit_id;
+    
+        return $data;
+    }
 
     /////Polymorphic Relationship (Payment can belong to an Invoice or Voucher or Charge)
     public function model()

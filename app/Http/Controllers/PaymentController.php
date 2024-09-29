@@ -63,24 +63,47 @@ class PaymentController extends Controller
 
     public function index(Request $request)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPaymentFilters();
-        $payments = $this->model::with('property', 'lease', 'unit')->ApplyCurrentMonthFilters($filters)->get();
-        $cardData = $this->cardService->paymentCard($payments);
-        //   $viewData = $this->formData($this->model);
-        //   $cardData = $this->cardData($this->model,$invoicedata);
-        // dd($cardData);
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getPaymentData($payments, true);
+        $baseQuery = $this->model::with('property', 'lease', 'unit','PaymentMethod')->ApplyCurrentMonthFilters($filters);
+        $cardData = $this->cardService->paymentCard($baseQuery->get());
+        $tabTitles = PaymentMethod::distinct()->pluck('name')->toArray();
+        array_unshift($tabTitles, 'All Payments');
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'All Payments':
+                    $query;
+                    break;
+                // Add more cases as needed for other roles
+                default:
+                // For any other role, use a generic query
+                $query->whereHas('PaymentMethod', function ($q) use ($title) {
+                    $q->where('name', $title);
+                });
+                break;
+                    // 'All' doesn't need any additional filters
+                // 'All' doesn't need any additional filters
+            }
+            $payments = $query->get();
+            $count = $payments->count();
+            $tableData = $this->tableViewDataService->getPaymentData($payments, true);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
+       
 
         return View(
             'admin.CRUD.form',
-            compact('tableData', 'controller','cardData','filterdata','filters'),
-            //  $viewData,
-            [
-                //   'cardData' => $cardData,
-            ]
-        );
+            compact('tabTitles', 'tabContents','tableData', 'controller','cardData','filterdata','filters','tabCounts'));
     }
 
     /**
@@ -111,9 +134,10 @@ class PaymentController extends Controller
        // Use the reference number from the instance
         $referenceno = $instance->referenceno;
 
-
-
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+      ///SESSION /////
+      if (!session()->has('previousUrl')) {
+        session()->put('previousUrl', url()->previous());
+    }
         return View('admin.Lease.payment', compact('PaymentMethod', 'instance', 'className', 'referenceno', 'model'));
     }
 
@@ -206,7 +230,16 @@ class PaymentController extends Controller
      */
     public function edit($id)
     {
-        //
+        $instance = Payment::findOrFail($id);
+        $PaymentMethod = PaymentMethod::where('property_id', $instance->property_id)->get();
+        $className = get_class($instance);
+       
+      ///SESSION /////
+      if (!session()->has('previousUrl')) {
+        session()->put('previousUrl', url()->previous());
+    }
+    return View('admin.Lease.payment_edit', compact('PaymentMethod', 'instance', 'className'));
+
     }
 
     public function sendPayment(Payment $payment)

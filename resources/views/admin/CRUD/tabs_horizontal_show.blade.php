@@ -8,7 +8,7 @@
             role="tab" aria-controls="fx1-tabs-{{ $loop->iteration }}" 
             aria-selected="{{ $loop->first ? 'true' : 'false' }}"
             data-tab="{{ $title }}"
-            style="font-size:0.95rem;padding:0px 20px 14px 20px">
+            style="font-size:0.95rem;padding:0px 20px 14px 20px; text-transform:capitalize">
 
                 {{ $title }} ({{ $tabCounts[$title] ?? 0 }})
             </a>

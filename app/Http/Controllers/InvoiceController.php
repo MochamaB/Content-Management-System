@@ -257,7 +257,7 @@ class InvoiceController extends Controller
      */
     public function edit(Invoice $invoice)
     {
-        //
+        return redirect()->back()->with('statuserror', 'A system generated Invoice cannot be edited');
     }
 
     /**

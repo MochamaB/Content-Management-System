@@ -273,6 +273,22 @@
   font-size: 0.825rem;
 }
 
+.form-check {
+  position: relative;
+  display: block;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-left: 0px;
+  min-height: 0px;
+}
+.form-check .form-check-label {
+  min-height: 14px;
+  display: block;
+  margin-left: 0.15rem;
+  font-size: 0.812rem;
+  line-height: 0.2rem;
+}
+
 .checkboxlabel {
   font-size: 0.875rem;
   font-weight: 600;
