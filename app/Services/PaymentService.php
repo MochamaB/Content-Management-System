@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use \Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use App\Services\InvoiceService;
+use Illuminate\Support\Facades\DB;
 
 class PaymentService
 {
@@ -213,4 +214,43 @@ class PaymentService
             Log::error('Failed to send payment notification: ' . $e->getMessage());
         }
     }
+
+    public function updatePayment($paymentId, $validatedData, $user)
+    {
+        DB::beginTransaction();
+
+        try {
+            $payment = Payment::findOrFail($paymentId);
+            
+
+            // Update Payment header
+            $headerData = $this->getPaymentHeaderData($payment->model, $validatedData, null);
+            $payment->update($headerData);
+
+            
+            //3. Update Total Amount in Payment Header
+            $this->calculateTotalAmountAction->payment($payment, $payment->model);
+
+            //4. Update the Tax and Expense
+            $taxExpense = $this->calculateTaxAction->calculateTax($payment);
+          
+            //5. Update associated transactions
+            $this->recordTransactionAction->updatePaymentTransaction($payment, $payment->model);
+            if ($taxExpense) {
+                $this->recordTransactionAction->updateTransaction($taxExpense);
+            }
+
+
+            DB::commit();
+            return $payment;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error updating expense: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    
+
+
 }

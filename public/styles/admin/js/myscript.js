@@ -1,4 +1,4 @@
-
+/// LOGO UPDATE
 $(document).ready(function (e) {
 
 
@@ -85,3 +85,36 @@ $(document).ready(function (e) {
         });
     }
 });
+
+//// EXPORT FUNCTION IN TABLE
+$(function() {
+    var $table = $('#table'); // Ensure $table is defined here
+    $('#table').bootstrapTable({
+        showExport: true,
+        exportOptions: {
+            formatExportButton: function(button) {
+                return '<button class="btn btn-primary btn-sm" type="button">' +
+                    '<i class="fas fa-download"></i> Export Data</button>';
+            }
+        }
+        // ... other options
+    });
+     // Show or hide the Bulk Actions button based on selected rows
+     $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+        console.log('Checkbox state changed'); // Debug log
+        alert();
+        var selectedRows = $table.bootstrapTable('getSelections'); // Get selected rows
+        var bulkActionButton = $('#bulk-action-btn');
+
+        if (selectedRows.length > 0) {
+            bulkActionButton.css('display', 'inline-block'); // Show the button
+        } else {
+            bulkActionButton.css('display', 'none'); // Hide the button
+        }
+    });
+     
+});
+
+
+
+

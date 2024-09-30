@@ -311,8 +311,9 @@ $(document).ready(function() {
 <script src="{{ asset('styles/admin/js/dashboard.js') }}"></script>
 <script src="{{ asset('styles/admin/js/Chart.roundedBarCharts.js') }}"></script>
 <script src="{{ asset('styles/admin/js/myscript.js') }}"></script>
-<script src="{{ asset('styles/admin/js/data-table.js') }}"></script>
+
 <!-- End custom js for this page-->
   
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  

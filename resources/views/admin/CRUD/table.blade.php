@@ -22,7 +22,33 @@
             margin-right: 5px;
             /* Adjust spacing as needed */
         }
+        .fixed-table-toolbar .bulkaction .btn::before {
+            content: "Bulk Actions";
+            /* Replace with your desired text */
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 5px;
+            /* Adjust spacing as needed */
+        }
     </style>
+    <div class="fixed-table-toolbar">
+        <div class="columns columns-right btn-group float-right">
+            <div class="bulkaction btn-group" style="padding-top: 10px;">
+                <button id="bulk-action-btn" class="btn btn-primary btn-sm dropdown-toggle text-white" 
+                aria-label="Bulk Actions" data-toggle="dropdown" type="button" style="padding:13px 10px;display:none">
+                    
+                    <span class="caret"></span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="#" id="bulk-edit" data-url="{{ url($controller[0].'/bulkEdit') }}">Edit</a>
+                <a class="dropdown-item" href="#" id="bulk-delete" data-url="{{ url($controller[0].'/bulkDelete') }}">Delete</a>
+                <a class="dropdown-item" href="#" id="other-action">Other</a>
+                
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     <table style="background-color: #ffffff;" id="table"
@@ -41,6 +67,7 @@
         data-page-size="100"
         data-show-footer="false"
         data-side-pagination="client"
+        data-checkbox="true"
         data-show-export="true"
         data-export-types="['json','xml','csv','txt','sql','excel']"
         data-export-text=" Export Data"
@@ -57,12 +84,7 @@
         class="table">
         <thead>
             <tr>
-                <th>
-                    <div class="form-check form-check-flat mt-0">
-                        <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input" aria-checked="false" id="check-all"><i class="input-helper"></i><i class="input-helper"></i></label>
-                    </div>
-                </th>
+                <th data-checkbox="true"></th>
                 @foreach($data['headers'] as $header)
                 <th data-sortable="true">{{ $header }}</th>
                 @endforeach
@@ -71,12 +93,7 @@
         <tbody>
             @foreach($data['rows'] as $key => $row)
             <tr>
-                <td>
-                    <div class="form-check form-check-flat mt-0">
-                        <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i><i class="input-helper"></i></label>
-                    </div>
-                </td>
+                <td></td>
                 <td><a class="table" href="{{url($controller[0].'/'.$row['id'])}}">{!! $row[0] !!}</a></td>
                 @foreach(array_slice($row, 2, -1) as $cell)
                 <td style="text-transform: capitalize; ">{!! $cell !!}</td>
@@ -129,29 +146,5 @@
             @endforeach
         </tbody>
     </table>
-    <script>
-        $(document).ready(function() {
-            $('#table').bootstrapTable({
-                showExport: true,
-                exportOptions: {
-                    formatExportButton: function(button) {
-                        return '<button class="btn btn-primary btn-sm" type="button">' +
-                            '<i class="fas fa-download"></i> Export Data</button>';
-                    }
-                }
-                // ... other options
-            });
-        });
-    </script>
-    <script>
-    $(document).ready(function() {
-        // When header checkbox is clicked
-        $('#check-all').click(function() {
-            alert();
-            var isChecked = $(this).prop('checked'); // Get the checked state
-            // Set all body checkboxes to the same state as the header checkbox
-            $('.check-item').prop('checked', isChecked);
-        });
-    });
-</script>
+
 </div>

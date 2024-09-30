@@ -231,6 +231,11 @@ class PaymentController extends Controller
     public function edit($id)
     {
         $instance = Payment::findOrFail($id);
+        $pageheadings = collect([
+            '0' => class_basename( $instance->model),
+            '1' => $instance->referenceno,
+            '2' =>$instance->model->name,
+        ]);
         $PaymentMethod = PaymentMethod::where('property_id', $instance->property_id)->get();
         $className = get_class($instance);
        
@@ -238,7 +243,7 @@ class PaymentController extends Controller
       if (!session()->has('previousUrl')) {
         session()->put('previousUrl', url()->previous());
     }
-    return View('admin.Lease.payment_edit', compact('PaymentMethod', 'instance', 'className'));
+    return View('admin.Lease.payment_edit', compact('pageheadings','PaymentMethod', 'instance', 'className'));
 
     }
 
@@ -266,7 +271,15 @@ class PaymentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+         //// INSERT DATA TO THE PAYMENT VOUCHER
+         $payment = $id ? Payment::find($id) : new Payment();
+         $validationRules = $payment->getValidationRules();
+         $validatedData = $request->validate($validationRules);
+
+         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
+         $updatedPayment = $this->paymentService->updatePayment($id, $validatedData, auth()->user());
+ 
+         return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
     }
 
     /**

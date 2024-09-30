@@ -10,6 +10,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Traits\FilterableScope;
 use App\Traits\SoftDeleteScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\Rule;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
@@ -73,6 +74,33 @@ class Payment extends Model implements HasMedia, Auditable
         $data['unit_id'] = $this->unit_id;
     
         return $data;
+    }
+
+    public function getValidationRules()
+    {
+        // Get base validation rules
+        $rules = self::$validation;
+
+        // Check if the model exists (update scenario) or is new (create scenario)
+        if ($this->exists) {
+            // If the model exists, apply the 'unique' rule while ignoring the current record ID
+            $rules['payment_code'] = [
+                'nullable',
+                Rule::unique('payments')->ignore($this->id)
+            ];
+        } else {
+            // If it's a create scenario, apply the regular unique rule
+            $rules['payment_code'] = 'nullable|unique:payments';
+        }
+
+        return $rules;
+    }
+
+    // Validation method to be called in controller
+    public function validate($data)
+    {
+        // Call Laravel validator with the rules
+        return validator($data, $this->getValidationRules())->validate();
     }
 
     /////Polymorphic Relationship (Payment can belong to an Invoice or Voucher or Charge)

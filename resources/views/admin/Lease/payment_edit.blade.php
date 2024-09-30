@@ -13,9 +13,11 @@
     </h5>
     @endif
     <hr>
-    <form method="POST" action="{{ url('payment') }}" class="myForm" novalidate>
-        @csrf
+    <form method="POST" action="{{ url('payment/'.$instance->id) }}" class="myForm" novalidate>
+    @csrf
+    @method('PUT')
         <input type="hidden" name="instanceId" value="{{ $instance->id }}">
+        <input type="hidden" name="referenceno" value="{{ $instance->referenceno }}">
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Property Name</label>
@@ -73,14 +75,27 @@
               
             </div>
         </div>
-
+        
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="label">Payment Amount<span class="requiredlabel">*</span></label>
+                <h6>
+                    <small class="text-muted" style="text-transform: capitalize;">
+                    {{$sitesettings->site_currency}} {{$instance->totalamount ?? '0'}}
+                    </small>
+                </h6>
+                <input type="number" class="form-control money" name="totalamount" value="{{$instance->totalamount}}">
+            </div>
+              
+            </div>
+        
         <!------- THIRD LEVEL INVOICE ITEMS -->
 
 
 
         <hr>
         <div class="col-md-6">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Add Payment</button>
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Edit Payment</button>
         </div>
 
     </form>

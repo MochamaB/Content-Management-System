@@ -22,6 +22,8 @@ class CalculateTaxAction
     public function calculateTax(Model $model)
     {
         $applicableTaxes = Tax::findApplicableTaxes($model);
+       // Get the old tax amount before recalculating the new one
+        $oldTax = $model->taxamount ?? 0;
         $totalTax = 0;
         foreach ($applicableTaxes  as $tax) {
             $totalTax += $model->totalamount * ($tax->rate / 100);
@@ -30,10 +32,11 @@ class CalculateTaxAction
         $model->update(['taxamount' => $totalTax]);
         // Create Tax Expense
        // Handle the Expense creation/update and return the Expense
-       return $this->handleTaxExpense($model, $totalTax, $applicableTaxes);
+       return $this->handleTaxExpense($model, $oldTax, $totalTax, $applicableTaxes);
     }
+    
 
-    public function handleTaxExpense($model, $totalTax, $applicableTaxes)
+    public function handleTaxExpense($model, $oldTax, $totalTax, $applicableTaxes)
     {
         // Assuming $model is the taxable entity (e.g., Payment or Invoice)
         $property = $model->property;
@@ -54,6 +57,10 @@ class CalculateTaxAction
                 'duedate' => $currentMonth->endOfMonth(),
             ]
         );
+         // Subtract the old tax amount (if it's not null or zero)
+         if ($oldTax > 0) {
+            $expense->totalamount -= $oldTax;
+        }
          // Update the total amount of the Expense by adding the new tax amount
          $expense->totalamount += $taxAmount;
          $expense->save();
@@ -71,6 +78,9 @@ class CalculateTaxAction
         $expenseItem = ExpenseItems::where('expense_id', $expense->id)
             ->where('chartofaccount_id', $taxCoA->id)
             ->first();
+            if ($oldTax > 0) {
+                $expenseItem->amount -= $oldTax;
+            }
 
         if ($expenseItem) {
             // If it exists, increment the amount
