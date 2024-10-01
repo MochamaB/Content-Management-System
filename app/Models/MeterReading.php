@@ -8,10 +8,12 @@ use Carbon\Carbon;
 use App\Traits\FilterableScope;
 use App\Traits\SoftDeleteScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class MeterReading extends Model
+class MeterReading extends Model implements Auditable
 {
-    use HasFactory, FilterableScope, SoftDeletes, SoftDeleteScope;
+    use HasFactory, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
     protected $table = 'meter_readings';
     protected $fillable = [
         'property_id',
@@ -52,6 +54,29 @@ class MeterReading extends Model
         'enddate' => 'required',
         'recorded_by' => 'nullable',
     ];
+
+    protected $auditInclude = [
+        'property_id',
+        'unit_id',
+        'unitcharge_id',
+        'lastreading',
+        'currentreading',
+        'rate_at_reading',
+        'amount',
+        'startdate',
+        'enddate',
+        'recorded_by',
+        // Add other attributes you want to audit here.
+    ];
+    protected $auditThreshold = 20;
+
+    public function transformAudit(array $data): array
+    {
+        $data['property_id'] = $this->property_id;
+        $data['unit_id'] = $this->unit_id;
+    
+        return $data;
+    }
 
     public static function getFieldData($field)
     {

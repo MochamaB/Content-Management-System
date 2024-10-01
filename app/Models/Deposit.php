@@ -4,11 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Traits\MediaUpload;
 use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Deposit extends Model
+class Deposit extends Model implements HasMedia, Auditable
 {
-    use HasFactory, FilterableScope;
+    use HasFactory, InteractsWithMedia, MediaUpload,FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
     protected $table = 'deposits';
     protected $fillable = [
         'property_id',
@@ -36,6 +44,27 @@ class Deposit extends Model
         'amount' => 'required',
     ];
 
+    protected $auditInclude = [
+        'property_id',
+        'unit_id',
+        'model_type',
+        'model_id',
+        'referenceno',
+        'name',
+        'totalamount',
+        'status',
+        'duedate'
+        // Add other attributes you want to audit here.
+    ];
+    protected $auditThreshold = 20;
+
+    public function transformAudit(array $data): array
+    {
+        $data['property_id'] = $this->property_id;
+        $data['unit_id'] = $this->unit_id;
+    
+        return $data;
+    }
 
     public function model()
     {

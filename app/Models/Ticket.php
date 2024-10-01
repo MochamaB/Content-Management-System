@@ -8,10 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Traits\FilterableScope;
+use App\Traits\SoftDeleteScope;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
+use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class Ticket extends Model implements HasMedia
+
+class Ticket extends Model implements HasMedia, Auditable
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, InteractsWithMedia,FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
     protected $table = 'tickets';
     protected $fillable = [
         'property_id',
@@ -52,6 +58,32 @@ class Ticket extends Model implements HasMedia
         'priority' => 'required',
 
     ];
+    protected $auditInclude = [
+        'property_id',
+        'unit_id',
+        'chartofaccount_id',
+        'subject',
+        'category',
+        'description',
+        'status',
+        'priority',
+        'raised_by',
+        'assigned_type',
+        'assigned_id',
+        'charged_to',
+        'totalamount',
+        'duedate',
+        // Add other attributes you want to audit here.
+    ];
+    protected $auditThreshold = 20;
+
+    public function transformAudit(array $data): array
+    {
+        $data['property_id'] = $this->property_id;
+        $data['unit_id'] = $this->unit_id;
+    
+        return $data;
+    }
 
     public static function getFieldData($field)
     {

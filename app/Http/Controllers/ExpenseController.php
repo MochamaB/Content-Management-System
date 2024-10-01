@@ -60,7 +60,7 @@ class ExpenseController extends Controller
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
-        $filterdata = $this->filterService->getPropertyFilters($request);
+        $filterdata = $this->filterService->getExpenseFilters($request);
         $expensedata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
         // Variable to track the applied scope
         $filterScope = '6_months'; // Default scope

@@ -119,7 +119,8 @@ class AppServiceProvider extends ServiceProvider
                'sitesettings' => $websitesettings ? $websitesettings : (object)[
                     'site_currency' => 'KSH', // Set default values
                     'company_name' => 'Default Company',
-                    'initials' => 'DC',
+                    'initials' => 'BP',
+                     'logo' => 'noimage.jpg',
                 ],
             ]);
         });
