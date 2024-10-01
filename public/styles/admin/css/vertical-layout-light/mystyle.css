@@ -273,31 +273,6 @@
   font-size: 0.825rem;
 }
 
-.form-check {
-  position: relative;
-  display: block;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  padding-left: 0px;
-  min-height: 0px;
-}
-.form-check .form-check-label {
-  min-height: 14px;
-  display: block;
-  margin-left: 0.15rem;
-  font-size: 0.812rem;
-  line-height: 0.2rem;
-}
-.form-check-input::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: white;
-  border: 1px solid #ccc;
-}
 
 .checkboxlabel {
   font-size: 0.875rem;
@@ -533,6 +508,9 @@ a.genlink {
 a.genlink:hover {
   color: #ffaf00;
   font-size: 0.875rem;
+}
+a.badge {
+  text-decoration: none;
 }
 
 

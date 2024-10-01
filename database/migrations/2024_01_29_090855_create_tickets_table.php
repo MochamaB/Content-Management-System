@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('category');
             $table->string('subject');
             $table->string('description');
-            $table->string('status');
+            $table->unsignedTinyInteger('status')->default(1);
             $table->string("priority");
             $table->string('assigned_type')->nullable(); // Either user or vendor //////
             $table->unsignedBigInteger('assigned_id')->nullable();

@@ -7,8 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-//class TicketNotification extends Notification implements ShouldQueue
-class TicketNotification extends Notification implements ShouldQueue
+class TicketAddedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $user;
@@ -28,15 +27,14 @@ class TicketNotification extends Notification implements ShouldQueue
     {
         $this->user = $user;
         $this->ticket = $ticket;
-        $this->subject = 'New Ticket Added';
-        $this->heading = 'Your ticket has been sent';
+        $this->subject = 'Support Ticket Added';
+        $this->heading = 'A new support ticket has been created';
         $this->linkmessage = 'Check Ticket:';
         $this->ticketno = 'Ticket Number:'.$this->ticket->id;
         $this->data = ([
-            "line 1" => "This is just a quick note to inform you that we received your ".$this->ticket->category." and have already started working on resolving your issue.",
-            "line 2" => "Your Ticket Number is ".$this->ticketno,
-            "line 3" => "If you have any further questions or concerns, please let us know. We are available round-the-clock and always happy to help.",
-            "line 4" => "To view the progress of the ticket, Click here",
+            "line 1" => "A new support ticket has been added in the system. The ticket no is ".$this->ticketno,
+            "line 2" => "The details of the ticket are ".$this->ticket->description,
+            "line 2" => "To view more details of the ticket, Click here",
             'action' => 'ticket/' . $this->ticket->id,
             "line 5" => "",
         ]);

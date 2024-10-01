@@ -74,7 +74,7 @@ class PropertyController extends Controller
                 'isDeleted' => $isDeleted,
             ];
         }
-
+       
         return view('admin.CRUD.form', [
             'tableData' => $tableData,
             'controller' => $this->controller,

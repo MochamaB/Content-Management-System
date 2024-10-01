@@ -12,8 +12,10 @@ use App\Models\Vendor;
 use App\Models\VendorCategory;
 use App\Models\Workorder;
 use App\Notifications\AdminTicketNotification;
+use App\Notifications\TicketAddedNotification;
 use App\Notifications\TicketAssignNotification;
 use App\Notifications\TicketNotification;
+use App\Notifications\TicketTextNotification;
 use Illuminate\Http\Request;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Auth;
@@ -27,6 +29,7 @@ use Spatie\Permission\Traits\HasRoles;
 use App\Services\InvoiceService;
 use App\Services\ExpenseService;
 use App\Services\FilterService;
+
 class TicketController extends Controller
 {
     /**
@@ -43,9 +46,12 @@ class TicketController extends Controller
     private $filterService;
 
 
-    public function __construct(TableViewDataService $tableViewDataService,InvoiceService $invoiceService,
-    ExpenseService $expenseService, FilterService $filterService)
-    {
+    public function __construct(
+        TableViewDataService $tableViewDataService,
+        InvoiceService $invoiceService,
+        ExpenseService $expenseService,
+        FilterService $filterService
+    ) {
         $this->model = Ticket::class;
         $this->controller = collect([
             '0' => 'ticket', // Use a string for the controller name
@@ -58,11 +64,13 @@ class TicketController extends Controller
     }
     public function index(Request $request)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $user = Auth::user();
-        $filters = $request->except(['tab','_token','_method']);
-      
+        $filters = $request->except(['tab', '_token', '_method']);
+
         $tickets = Ticket::applyFilters($filters)->get();
-        
+
         $filterdata = $this->filterService->getUnitChargeFilters($request);
         $mainfilter =  Ticket::pluck('category')->toArray();
         //   $filterData = $this->filterData($this->model);
@@ -116,31 +124,38 @@ class TicketController extends Controller
         $validatedData = $request->validate($validationRules);
         $ticketData = new Ticket;
         $ticketData->fill($validatedData);
-        $ticketData->status = 'New';
+        $ticketData->status = Ticket::STATUS_PENDING;
         $ticketData->user_id = $user->id;
         $ticketData->save();
 
 
-        ///Create Notification for to the User/Tenant
+        ///Create Notification for to the Admins and User/Tenant
         $property = Property::find($request->property_id);
-        //     $attachedUsers = $property->users()->whereDoesntHave('roles', function ($query) {
-        //        $query->whereIn('name', ['staff', 'tenant']);
-        //     })->get();
+        $attachedUsers = $property->users()->whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'tenant'); // Exclude tenants
+        })->distinct()->get();
+
         $loggeduser = User::find($ticketData->user_id);
         try {
-            $loggeduser->notify(new TicketNotification($user, $ticketData));
+            $loggeduser->notify(new TicketNotification($user, $ticketData)); //Email
+            $loggeduser->notify(new TicketTextNotification($user, $ticketData)); //Text
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
             Log::error('Failed to send ticket notification: ' . $e->getMessage());
         }
 
-
-        //   foreach ($attachedUsers as $individualUser) {
-        //       $individualUser->notify(new AdminTicketNotification($individualUser, $ticketData));
-        //    }
+        // Notify each user (staff/admins)
+        foreach ($attachedUsers as $user) {
+            try {
+                $user->notify(new TicketAddedNotification($user, $ticketData));
+                $user->notify(new TicketTextNotification($user, $ticketData)); //Text
+            } catch (\Exception $e) {
+                Log::error('Failed to send ticket notification to user ' . $user->id . ': ' . $e->getMessage());
+            }
+        }
 
         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
-         
+
         return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
     }
 
@@ -216,10 +231,10 @@ class TicketController extends Controller
         $tenantRole = ModelsRole::where('name', 'tenant')->first();
         // Get all users except those with the "tenant" role
         $users =  User::ApplyFilterUsers()
-        ->whereDoesntHave('roles', function ($query) use ($tenantRole) {
-            $query->where('role_id', $tenantRole->id);
-        })->get();
-        
+            ->whereDoesntHave('roles', function ($query) use ($tenantRole) {
+                $query->where('role_id', $tenantRole->id);
+            })->get();
+
 
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
 
@@ -236,7 +251,7 @@ class TicketController extends Controller
 
         $ticket = Ticket::find($id);
         $ticket->fill($validatedData);
-        $ticket->status = 'Assigned';
+        $ticket->status = Ticket::STATUS_IN_PROGRESS;
         $ticket->update();
 
         ///Send email on update or Assign
@@ -251,12 +266,11 @@ class TicketController extends Controller
             // Log the error or perform any necessary actions
             Log::error('Failed to send payment notification: ' . $e->getMessage());
         }
-       
+
 
         ///Create a charge when ticket is completed.
-      
-            return redirect('ticket/'.$ticket->id)->with('status', $this->controller['1'] . ' Edited Successfully');
-        
+
+        return redirect('ticket/' . $ticket->id)->with('status', $this->controller['1'] . ' Edited Successfully');
     }
     /**
      * Update the specified resource in storage.
@@ -277,13 +291,12 @@ class TicketController extends Controller
         /// If charge is to tenant create unit charge and generate invoice
         if ($request->chartofaccount_id && $request->charged_to === 'tenant') {
             $this->createCharge($ticket);
-        }else if($request->chartofaccount_id && $request->charged_to === 'property'){
-            $this->expenseService->generateExpense($ticket,null,null,null,null);
+        } else if ($request->chartofaccount_id && $request->charged_to === 'property') {
+            $this->expenseService->generateExpense($ticket, null, null, null, null);
         }
-        
+
         ///Create a charge when ticket is completed.
-        return redirect()->back()->with('status','The ticket has been edited successfully');
-        
+        return redirect()->back()->with('status', 'The ticket has been edited successfully');
     }
 
     /**
@@ -306,7 +319,7 @@ class TicketController extends Controller
             'charge_name' => $ticket->category,
             'charge_cycle' => 'once', ///Charge cycle is same to the rent cycle
             'charge_type' => 'fixed',
-            'rate' =>$ticket->totalamount,
+            'rate' => $ticket->totalamount,
             'parent_id' => null, ///Add temporary uniqueid
             'recurring_charge' => 'no',
             'startdate' => now(),
@@ -315,11 +328,8 @@ class TicketController extends Controller
             'updated_at' => now(),
         ]);
 
-        $this->invoiceService->generateInvoice($unitcharge,$ticket);
+        $this->invoiceService->generateInvoice($unitcharge, $ticket);
     }
 
-    public function createExpense()
-    {
-
-    }
+    public function createExpense() {}
 }

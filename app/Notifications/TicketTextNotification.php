@@ -6,9 +6,12 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
+use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
+
 
 //class TicketNotification extends Notification implements ShouldQueue
-class TicketNotification extends Notification implements ShouldQueue
+class TicketTextNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $user;
@@ -50,7 +53,7 @@ class TicketNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['database', AfricasTalkingChannel::class];
     }
 
     /**
@@ -59,16 +62,16 @@ class TicketNotification extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
+    public function toAfricasTalking($notifiable)
     {
-        return (new MailMessage)->view(
-            'email.template',
-            ['user' => $this->user,
-            'data'=> $this->data,
-            'linkmessage' => $this->linkmessage,
-            'heading' =>$this->heading]
-        )
-        ->subject($this->subject);
+        $ticketRef = $this->ticket->id;
+        $propertyName = $this->ticket->property->property_name;
+        $unitNumber = $this->ticket->unit->unit_number ?? null;
+        $ticketcategory = $this->ticket->category;
+        $ticketLink = url('/ticket/' . $this->ticket->id); // Replace with actual payment link
+        $smsContent = "A new {$ticketcategory} ticket Id: {$ticketRef} for {$propertyName}, Unit {$unitNumber}, has beeb added. Click here for progress: {$paymentLink}";    
+        return (new AfricasTalkingMessage())
+        ->content($smsContent);
     }
 
     /**

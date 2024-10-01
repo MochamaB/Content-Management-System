@@ -19,6 +19,19 @@ class Ticket extends Model implements HasMedia, Auditable
 {
     use HasFactory, InteractsWithMedia,FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
     protected $table = 'tickets';
+    const STATUS_PENDING = 1;
+    const STATUS_IN_PROGRESS = 2;
+    const STATUS_COMPLETED = 3;
+    const STATUS_ON_HOLD = 4;
+    const STATUS_CANCELLED = 5;
+
+    public static $statusLabels = [
+        self::STATUS_PENDING => 'Pending',
+        self::STATUS_IN_PROGRESS => 'In Progress',
+        self::STATUS_COMPLETED => 'Completed',
+        self::STATUS_ON_HOLD => 'On Hold',
+        self::STATUS_CANCELLED => 'Cancelled',
+    ];
     protected $fillable = [
         'property_id',
         'unit_id',
@@ -84,6 +97,11 @@ class Ticket extends Model implements HasMedia, Auditable
     
         return $data;
     }
+    /// GET THE STATUS TEXT
+    public function getStatusLabel()
+{
+    return self::$statusLabels[$this->status] ?? 'Unknown Status';
+}
 
     public static function getFieldData($field)
     {

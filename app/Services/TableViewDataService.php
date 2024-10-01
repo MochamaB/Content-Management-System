@@ -704,13 +704,13 @@ class TableViewDataService
         foreach ($ticketdata as $item) {
             $statusClasses = [
                 'Completed' => 'active',
-                'New' => 'warning',
-                'OverDue' => 'error',
+                'Pending' => 'warning',
+                'Cancelled' => 'error',
                 'In Progress' => 'information',
-                'Assigned' => 'dark',
+                'On Hold' => 'dark',
             ];
 
-            $status = $item->status;
+            $status = $item->getStatusLabel();
             $statusClass = $statusClasses[$status] ?? 'Reported';
             $priority = $item->priority;
             $priorityClass = $this->getBadgeClass($priority);
@@ -721,7 +721,7 @@ class TableViewDataService
             $raisedby =  $item->users->firstname . ' ' . $item->users->lastname;
             $url = url('ticket/assign/' . $item->id);
             if (Auth::user()->can('work-order.create') || Auth::user()->id === 1) {
-                $assignLink = '<a href="' .  $url . '" class="badge badge-information"><i class="mdi mdi-lead-pencil mdi-12px text-primary">ASSIGN</i>  </a>';
+                $assignLink = '<a href="' .  $url . '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i> Assign Ticket  </a>';
             } else {
                 // Empty link or any other fallback content
                 $assignLink = '<a href="" class="badge badge-warning"><i class="mdi mdi-lead-pencil mdi-12px text-warning"> NOT ASSIGNED</i>  </a>';
