@@ -306,6 +306,20 @@
 
 }
 
+.formcontrolnoedit {
+  padding: .4375rem .75rem;
+  border: 1px solid #dee2e6;
+  font-weight: 400;
+  font-size: 14px;
+  border-radius: 0px;
+  height: 2rem;
+  color: #777;
+  padding-right: 10px;
+  width: 100%;
+
+
+}
+
 .table-formcontrol2 {
   padding: .4375rem .75rem;
   border: none;

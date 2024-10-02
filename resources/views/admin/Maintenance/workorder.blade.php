@@ -1,9 +1,14 @@
-@if( Auth::user()->can('work-order.create') || Auth::user()->id === 1 )
+@php
+        $statusvalue = $tickets->status;
+        $assign = $tickets->assigned_type;
+        $isAdmin = Auth::user()->id === 1;
+    @endphp
+@if((Auth::user()->can('work-order.create') || $isAdmin) && $statusvalue === \App\Models\Ticket::STATUS_IN_PROGRESS && !is_null($assign))
 <a href="{{ url('workorder-expense/create/'.$tickets->id) }}" class="btn btn-outline-primary btn-lg mb-0 me-3 float-end" role="button" style="text-transform: capitalize;">
     <i class="mdi mdi-plus-circle-outline"></i>
     Add Expense
 </a>
-<a href="{{ url('work-order/create/'.$tickets->id,) }}" class="btn btn-primary btn-lg text-white mb-0 me-3 float-end" role="button" style="text-transform: capitalize;">
+<a href="{{ url('work-order/create/'.$tickets->id) }}" class="btn btn-primary btn-lg text-white mb-0 me-3 float-end" role="button" style="text-transform: capitalize;">
     <i class="mdi mdi-plus-circle-outline"></i>
     Add Work order Item
 </a>

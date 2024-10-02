@@ -331,5 +331,4 @@ class TicketController extends Controller
         $this->invoiceService->generateInvoice($unitcharge, $ticket);
     }
 
-    public function createExpense() {}
 }
