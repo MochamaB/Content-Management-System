@@ -19,11 +19,10 @@ class CalculateTaxAction
 {
     use AsAction;
 
-    public function calculateTax(Model $model)
+    public function calculateTax(Model $model, $oldTax = null)
     {
         $applicableTaxes = Tax::findApplicableTaxes($model);
        // Get the old tax amount before recalculating the new one
-        $oldTax = $model->taxamount ?? 0;
         $totalTax = 0;
         foreach ($applicableTaxes  as $tax) {
             $totalTax += $model->totalamount * ($tax->rate / 100);

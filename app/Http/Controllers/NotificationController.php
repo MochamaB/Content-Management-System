@@ -150,7 +150,7 @@ class NotificationController extends Controller
                 'username' => $username,  // Required field
                 'to' => '+254723710025', // The number you want to test with
                 'message' => $smsContent,
-                'from' => 'bridgetech', // Your short code
+                'from' => 'AFRICASTKNG', // Your short code
             ],
             'headers' => [
                 'apiKey' => $apiKey,

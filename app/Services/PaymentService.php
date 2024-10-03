@@ -222,6 +222,9 @@ class PaymentService
         try {
             $payment = Payment::findOrFail($paymentId);
             
+             // Store old values before update
+             $oldTotalAmount = $payment->totalamount;
+             $oldTaxAmount = $payment->taxamount;
 
             // Update Payment header
             $headerData = $this->getPaymentHeaderData($payment->model, $validatedData, null);
@@ -232,7 +235,7 @@ class PaymentService
             $this->calculateTotalAmountAction->payment($payment, $payment->model);
 
             //4. Update the Tax and Expense
-            $taxExpense = $this->calculateTaxAction->calculateTax($payment);
+            $taxExpense = $this->calculateTaxAction->calculateTax($payment,$oldTaxAmount);
           
             //5. Update associated transactions
             $this->recordTransactionAction->updatePaymentTransaction($payment, $payment->model);

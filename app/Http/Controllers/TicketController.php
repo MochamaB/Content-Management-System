@@ -68,23 +68,49 @@ class TicketController extends Controller
         session()->forget('previousUrl');
         $user = Auth::user();
         $filters = $request->except(['tab', '_token', '_method']);
-
-        $tickets = Ticket::applyFilters($filters)->get();
-
         $filterdata = $this->filterService->getUnitChargeFilters($request);
-        $mainfilter =  Ticket::pluck('category')->toArray();
-        //   $filterData = $this->filterData($this->model);
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getTicketData($tickets, false);
+        $baseQuery = Ticket::applyFilters($filters);
 
-        return View(
-            'admin.CRUD.form',
-            compact('filterdata', 'tableData', 'controller'),
-            //  $filterData,
-            [
-                //   'cardData' => $cardData,
-            ]
-        );
+        $tabTitles = ['All', 'Pending', 'In Progress','Over Due','Completed','On Hold','Cancelled'];
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'Pending':
+                    $query->where('status', Ticket::STATUS_PENDING);
+                    break;
+                case 'In Progress':
+                    $query->where('status', Ticket::STATUS_IN_PROGRESS);
+                    break;
+                case 'Over Due':
+                    $query->where('status', Ticket::STATUS_IN_PROGRESS)
+                          ->where('duedate', '<', now());
+                    break;
+                case 'Completed':
+                    $query->where('status', Ticket::STATUS_COMPLETED);
+                    break;
+                case 'On Hold':
+                        $query->where('status', Ticket::STATUS_ON_HOLD);
+                        break;
+                case 'Cancelled':
+                    $query->where('status', Ticket::STATUS_CANCELLED);
+                    break;
+            // 'All' doesn't need any additional filters
+            }
+            $tickets = $query->get();
+            $count = $tickets->count();
+            $tableData = $this->tableViewDataService->getTicketData($tickets, true);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
+    
+
+        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','tabCounts'));
     }
 
     /**

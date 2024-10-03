@@ -400,8 +400,14 @@ class MpesaSTKPUSHController extends Controller
     {
       //  $id = 1;
         $payment = Payment::find($id);
-        return View('email.payment', compact('payment'));
+        // Check if the payment exists
+    if (!$payment) {
+        // Handle the case where the payment is not found, maybe throw a 404 error
+        abort(404, 'Payment not found');
+    }
 
+    // Redirect to the show method in PaymentController with the payment ID
+    return redirect()->action([PaymentController::class, 'show'], ['payment' => $payment->id]);
     }
 
     protected function getPaymentMethod($invoice_id)

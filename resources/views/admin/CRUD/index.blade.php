@@ -21,6 +21,8 @@
 
         </div>
     </div>
+    @else
+        @include('admin.CRUD.cards_two')
     @endif
     <div class=" contwrapper">
         <div class="row">
