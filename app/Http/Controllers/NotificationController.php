@@ -141,7 +141,7 @@ class NotificationController extends Controller
 
     $client = new Client([
         'verify' => false,
-        'base_uri' => 'https://api.sandbox.africastalking.com'
+        'base_uri' => 'https://api.africastalking.com/version1/messaging/bulk'
     ]);
 
     try {
