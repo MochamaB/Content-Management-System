@@ -141,7 +141,7 @@ class NotificationController extends Controller
 
     $client = new Client([
         'verify' => false,
-        'base_uri' => 'https://api.africastalking.com/version1/messaging/bulk'
+        'base_uri' => 'https://api.africastalking.com'
     ]);
 
     try {
@@ -150,7 +150,7 @@ class NotificationController extends Controller
                 'username' => $username,  // Required field
                 'to' => '+254723710025', // The number you want to test with
                 'message' => $smsContent,
-                'from' => '21763', // Your short code
+                'from' => 'bridgetech', // Your short code
             ],
             'headers' => [
                 'apiKey' => $apiKey,
