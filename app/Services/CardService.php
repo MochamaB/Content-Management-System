@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Chartofaccount;
 use App\Models\Lease;
 use App\Models\Property;
+use App\Models\Ticket;
 use App\Models\Unit;
 use App\Models\Unitcharge;
 use App\Models\User;
@@ -397,6 +398,37 @@ class CardService
             'tenants' => ['title' => 'Total Tenants', 'icon' => '', 'value' => $tenants, 'amount' => '', 'percentage' => '', 'links' => ''],
             'active' => ['title' => 'Active Users', 'icon' => '', 'value' => $active, 'amount' =>'' , 'percentage' => '', 'links' => ''],
             'inActive' => ['title' => 'In Active', 'icon' => '', 'value' => $inactive, 'amount' =>'' , 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
+    public function ticketCard($tickets)
+    {
+        $totalTicketCount = $tickets->count();
+        $completed = $tickets->filter(function ($ticket) {
+            return $ticket->status === Ticket::STATUS_COMPLETED;
+        })->count();
+        $inProgress = $tickets->filter(function ($ticket) {
+            return $ticket->status === Ticket::STATUS_IN_PROGRESS;
+        })->count();
+        $pending = $tickets->filter(function ($ticket) {
+            return $ticket->status === Ticket::STATUS_PENDING;
+        })->count();
+        $onhold = $tickets->filter(function ($ticket) {
+            return $ticket->status === Ticket::STATUS_ON_HOLD;
+        })->count();
+       
+        // Calculate percentages for each status
+    $inProgressPercentage = $totalTicketCount > 0 ? ($inProgress / $totalTicketCount) * 100 : 0;
+    $pendingPercentage = $totalTicketCount > 0 ? ($pending / $totalTicketCount) * 100 : 0;
+    $completedPercentage = $totalTicketCount > 0 ? ($completed / $totalTicketCount) * 100 : 0;
+    $onholdPercentage = $totalTicketCount > 0 ? ($onhold / $totalTicketCount) * 100 : 0;
+        $cards =  [
+            'totalCount' => ['title' =>'Total Tickets', 'total' =>$totalTicketCount],
+            'completed' => ['title' => 'Completed', 'class' => 'success', 'value' => $completed, 'amount' =>'', 'percentage' => round($completedPercentage), 'links' => '', 'tooltip' => round($completedPercentage)."% of tickets are completed"],
+            'inProgress' => ['title' => 'In Progress', 'class' => 'primary', 'value' => $inProgress, 'amount' => '', 'percentage' =>  round($inProgressPercentage), 'links' => '', 'tooltip' => round($inProgressPercentage)."% of tickets in progress"],
+            'pending' => ['title' => 'Pending', 'class' => 'warning', 'value' => $pending, 'amount' =>'', 'percentage' => round($pendingPercentage), 'links' => '', 'tooltip' => round($pendingPercentage)."% of tickets are pending"],
+            'onhold' => ['title' => 'On Hold', 'class' => 'dark', 'value' => $onhold, 'amount' =>'', 'percentage' => round($onholdPercentage), 'links' => '', 'tooltip' => round($onholdPercentage)."% of tickets are on hold"],
         ];
         return $cards;
     }

@@ -29,6 +29,7 @@ use Spatie\Permission\Traits\HasRoles;
 use App\Services\InvoiceService;
 use App\Services\ExpenseService;
 use App\Services\FilterService;
+use App\Services\CardService;
 
 class TicketController extends Controller
 {
@@ -44,13 +45,15 @@ class TicketController extends Controller
     private $invoiceService;
     private $expenseService;
     private $filterService;
+    private $cardService;
 
 
     public function __construct(
         TableViewDataService $tableViewDataService,
         InvoiceService $invoiceService,
         ExpenseService $expenseService,
-        FilterService $filterService
+        FilterService $filterService,
+        CardService $cardService
     ) {
         $this->model = Ticket::class;
         $this->controller = collect([
@@ -61,6 +64,7 @@ class TicketController extends Controller
         $this->invoiceService = $invoiceService;
         $this->expenseService = $expenseService;
         $this->filterService = $filterService;
+        $this->cardService = $cardService;
     }
     public function index(Request $request)
     {
@@ -70,7 +74,7 @@ class TicketController extends Controller
         $filters = $request->except(['tab', '_token', '_method']);
         $filterdata = $this->filterService->getUnitChargeFilters($request);
         $baseQuery = Ticket::applyFilters($filters);
-
+        $cardDashboad = $this->cardService->ticketCard($baseQuery->get());
         $tabTitles = ['All', 'Pending', 'In Progress','Over Due','Completed','On Hold','Cancelled'];
         $tabContents = [];
         $tabCounts = [];
@@ -110,7 +114,7 @@ class TicketController extends Controller
         }
     
 
-        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','tabCounts'));
+        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','cardDashboad','tabCounts'));
     }
 
     /**

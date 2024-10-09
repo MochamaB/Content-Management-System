@@ -22,7 +22,7 @@
         </div>
     </div>
     @else
-        @include('admin.CRUD.cards_two')
+        @include('admin.CRUD.cardDashboard')
     @endif
     <div class=" contwrapper">
         <div class="row">
