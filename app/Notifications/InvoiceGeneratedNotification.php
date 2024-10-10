@@ -22,6 +22,7 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
     protected $subject;
     protected $heading;
     protected $view;
+    protected $model;
 
 
     /**
@@ -37,6 +38,8 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
         $this->subject = $this->invoice->name . ' Invoice ' . \Carbon\Carbon::parse($this->invoice->created_at)->format('d M Y');
         $this->heading =  'New ' . $this->invoice->name . ' Invoice';
         $this->view = $view; 
+        // Set the model name using class_basename
+        $this->model = class_basename($invoice); // This will return the model's class name, e.g., "Invoice"
     }
 
     /**
@@ -90,6 +93,8 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
     {
         return [
             'user_id' => $this->user->id,
+            'modelname' => $this->model, // Use the model name set in the constructor
+            'model_id' => $this->invoice->id ?? null, // Assuming invoice ID is the model ID
             'phonenumber' => $this->user->phonenumber,
             'user_email' => $this->user->email,
             'subject' => $this->subject ?? null,

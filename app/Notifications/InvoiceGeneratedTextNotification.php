@@ -23,6 +23,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     protected $invoice;
     protected $user;
     protected $view;
+    protected $model;
 
 
     /**
@@ -36,6 +37,8 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
         $this->invoice = $invoice;
         $this->user = $user;
         $this->view = $view; 
+        // Set the model name using class_basename
+        $this->model = class_basename($invoice); // This will return the model's class name, e.g., "Invoice"
     }
 
     /**
@@ -81,6 +84,8 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     {
         return [
             'user_id' => $this->user->id,
+            'modelname' => $this->model, // Use the model name set in the constructor
+            'model_id' => $this->invoice->id ?? null, // Assuming invoice ID is the model ID
             'phonenumber' => $this->user->phonenumber,
             'user_email' => $this->user->email,
             'subject' => $this->subject ?? null,

@@ -25,6 +25,7 @@ class PaymentTextNotification extends Notification implements ShouldQueue
     protected $linkmessage;
     protected $data;
     protected $company;
+    protected $model;
 
     /**
      * Create a new notification instance.
@@ -40,6 +41,8 @@ class PaymentTextNotification extends Notification implements ShouldQueue
         $this->heading =  'New ' . $this->payment->model->type . ' Payment';
         $this->linkmessage = 'Go To Site';
         $this->view = $view;
+        // Set the model name using class_basename
+        $this->model = class_basename($payment); // This will return the model's class name, e.g., "Invoice"
 
         $paymentdate = Carbon::parse($this->payment->created)->format('Y-m-d');
     }
@@ -85,6 +88,8 @@ class PaymentTextNotification extends Notification implements ShouldQueue
     {
         return [
             'user_id' => $this->user->id,
+            'modelname' => $this->model, // Use the model name set in the constructor
+            'model_id' => $this->payment->id ?? null, // Assuming invoice ID is the model ID
             'phonenumber' => $this->user->phonenumber,
             'user_email' => $this->user->email,
             'subject' => $this->subject ?? null,

@@ -32,9 +32,6 @@
 </div>
 <form action="{{ url('notification/text/sendText') }}" method="POST" style="display: inline;">
     @csrf
-    <button type="button" class="btn btn-primary btn-lg text-white mb-0 me-0  float-end" role="button" style="text-transform: capitalize;" style="border:0px;" data-toggle="modal" data-target="#sendTextModal">
-        <i class="mdi mdi-message-text-outline"></i> New Text Message</button>
-
     <div class="modal fade" id="sendTextModal" tabindex="-1" role="dialog" aria-labelledby="sendTextModallLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

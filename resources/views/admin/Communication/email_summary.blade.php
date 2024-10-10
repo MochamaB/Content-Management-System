@@ -34,25 +34,20 @@
               </table>
 
           </div>
-
-      <script>
-        $(document).ready(function () {
-            $(".clickable-row").click(function () {
-                window.location = $(this).data("href");
-            });
-        });
-    </script>
-    <script>
-    $(document).ready(function() {
-        $('.clickable-row').on('click', function() {
-            var notificationId = $(this).data('id');
+          <script>
+    $(document).ready(function () {
+        // Attach the click event handler to rows
+        $('.clickable-row').on('click', function(event) {
+            event.preventDefault(); // Prevent default behavior of the row click (such as navigation)
             
-            // Perform the AJAX call
+            var notificationId = $(this).data('id'); // Retrieve the notification ID from the data-id attribute
+            
+            // Perform the AJAX call to fetch email details
             $.ajax({
-                url: '/notification/email/' + notificationId, // Your route to fetch email details
+                url: '/notification/email/' + notificationId, // Construct the correct URL for fetching email details
                 method: 'GET',
                 success: function(response) {
-                    // Replace the current content with the new email details
+                    // Replace the content with the new email details
                     $('#v-pills-tabContent').html(response);
                 },
                 error: function() {
