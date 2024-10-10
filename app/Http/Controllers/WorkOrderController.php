@@ -50,7 +50,7 @@ class WorkOrderController extends Controller
             return redirect()->back()->with('statuserror', ' First assign this ticket to create work orders.');
         }
 
-        $statuses = ['completed', 'closed', 'cancelled'];
+        $statuses = [Ticket::STATUS_PENDING,Ticket::STATUS_COMPLETED,Ticket::STATUS_ON_HOLD,Ticket::STATUS_CANCELLED];
         if (in_array($tickets->status, $statuses)) {
             return redirect()->back()->with('statuserror', ' Change status to in-progress to add a workorder.');
         }
@@ -144,9 +144,9 @@ class WorkOrderController extends Controller
     public function expense($id)
     {
         $ticket = Ticket::find($id);
-        $statuses = ['completed', 'closed', 'cancelled'];
+        $statuses = [Ticket::STATUS_PENDING,Ticket::STATUS_COMPLETED,Ticket::STATUS_ON_HOLD,Ticket::STATUS_CANCELLED];
         if (in_array($ticket->status, $statuses)) {
-            return redirect()->back()->with('statuserror', ' Change status to in-progress to add a workorder.');
+            return redirect()->back()->with('statuserror', ' Change status to in-progress to add a workorder expense.');
         }
         Session::flash('previousUrl', request()->server('HTTP_REFERER'));
         return View('admin.Maintenance.expense', compact('ticket'));

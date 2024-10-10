@@ -11,17 +11,14 @@
 
 
 <form class="filterForm" method="GET" action="{{ url()->current() }}">
-    @if (isset($cardData))
+    @if (isset($cardData)) <!-- ONE CARD COVERS WHOLE AREA --->
     <div class=" contwrapper mb-2">
         <div class="row">
             @include('admin.CRUD.card_title')
-
             @include('admin.CRUD.cards')
-
-
         </div>
     </div>
-    @else
+    @elseif(isset($cardDashboad)) <!-- MANY CARDS SIDE SIDE --->
         @include('admin.CRUD.cardDashboard')
     @endif
     <div class=" contwrapper">

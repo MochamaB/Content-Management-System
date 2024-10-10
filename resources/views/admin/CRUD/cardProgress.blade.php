@@ -1,4 +1,24 @@
 <style>
+    .statistics-details {
+        display: flex;
+        /* Use Flexbox for layout */
+        flex-wrap: wrap;
+        /* Allow items to wrap if necessary */
+    }
+
+    .statistics-details .col {
+        display: flex;
+        /* Use Flexbox within each column */
+        flex-direction: column;
+        /* Stack content vertically */
+        justify-content: space-between;
+        /* Distribute content evenly */
+        box-sizing: border-box;
+        /* Ensure padding and border are included in width/height */
+        min-height: 50px;
+        /* Set a minimum height for cards */
+    }
+
     .row .col:not(:first-child) {
         border-left: 2px solid #F4F5F7;
     }
@@ -16,15 +36,7 @@
         }
     }
 </style>
-<div class="row flex-grow">
-    <div class="col-12 grid-margin stretch-card">
-        <!-- TICKETS ----------------->
-        <div class="card" style="padding:0px 10px">
-            <div class="card-body">
-                <div>
-                    <h5 class="card-title card-title-dash pt-1"><b>Overview</b></h5>
-                </div>
-                <div class="row">
+<div class="row statistics-details " style="margin: 10px 0px; padding:15px 10px 0px 0px; ">
                     @foreach($cardData as $cardType => $card)
                     @if($cardType !== 'totalCount')
                     <!-- TOTAL CARDS -->
@@ -76,7 +88,3 @@
                     </div>
 
                 </div>
-            </div>
-        </div>
-    </div>
-</div>

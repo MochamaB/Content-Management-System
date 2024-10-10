@@ -33,7 +33,7 @@
 
 <div class="container">
 
-    <div class="row">
+    <div class="row d-none d-lg-block">
         <div class="col-md-4">
             <img class="" style="height: 140px; width: 180px;" src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'resources/uploads/images/noimage.jpg' }}" alt="Logo">
 

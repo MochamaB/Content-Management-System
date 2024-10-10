@@ -58,7 +58,7 @@ class InvoiceController extends Controller
         $filterdata = $this->filterService->getInvoiceFilters();
         $baseQuery = Invoice::with('unit', 'property', 'payments')->ApplyCurrentMonthFilters($filters);
         $cardData = $this->cardService->invoiceCard($baseQuery->get());
-        $tabTitles = ['All', 'Paid', 'Unpaid', 'Overdue'];
+        $tabTitles = ['All', 'Paid', 'Unpaid', 'Overdue','Partially Paid','Over Paid'];
         $tabContents = [];
         $tabCounts = [];
         foreach ($tabTitles as $title) {
@@ -72,9 +72,15 @@ class InvoiceController extends Controller
                     break;
                 case 'Overdue':
                     $query->where('status', 'unpaid')
-                          ->where('duedate', '<', now());
+                        ->where('duedate', '<', now());
                     break;
-                // 'All' doesn't need any additional filters
+                case 'Partially Paid':
+                    $query->where('status', 'partially_paid');
+                    break;
+                case 'Over Paid':
+                    $query->where('status', 'over_paid');
+                    break;
+                    // 'All' doesn't need any additional filters
             }
             $invoices = $query->get();
             $count = $invoices->count();

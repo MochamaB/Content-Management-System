@@ -72,8 +72,8 @@ class TicketController extends Controller
         session()->forget('previousUrl');
         $user = Auth::user();
         $filters = $request->except(['tab', '_token', '_method']);
-        $filterdata = $this->filterService->getUnitChargeFilters($request);
-        $baseQuery = Ticket::applyFilters($filters);
+        $filterdata = $this->filterService->getTicketFilters($request);
+        $baseQuery = Ticket::ApplyDateFilters($filters);
         $cardDashboad = $this->cardService->ticketCard($baseQuery->get());
         $tabTitles = ['All', 'Pending', 'In Progress','Over Due','Completed','On Hold','Cancelled'];
         $tabContents = [];
