@@ -1101,6 +1101,77 @@ class TableViewDataService
         return $tableData;
     }
 
+    public function getAuditData($auditData, $extraColumns = false)
+    {
+         /// TABLE DATA ///////////////////////////
+
+         $headers = ['DATE', 'EVENT TYPE','DONE BY', 'DETAILS','ACTIONS'];
+
+         // If $Extra columns is true, insert 'Unit Details' at position 3
+         if ($extraColumns) {
+            array_splice($headers, 0, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($auditData as $item) {
+            $event = class_basename($item->auditable_type).' '.$item->event;
+            $firstname = $item->user->firstname ??'System';
+            $lastname = $item->user->lastname ??'Generated';
+            $user = $firstname.' '.$lastname; 
+             // Decode the old_values and new_values JSON
+            $oldValues = $item->old_values;
+            $newValues = $item->new_values;
+            $description = '';
+            // Handle the event type
+                switch ($item->event) {
+                    case 'created':
+                        $description = "A new record was created with values: </br>";
+                        foreach ($newValues as $key => $value) {
+                            $description .= ucfirst($key) . " - " . ($value !== null ? $value : 'null') . ".</br> ";
+                        }
+                        break;
+
+                    case 'updated':
+                        $description = "The following fields were updated:</br> ";
+                        foreach ($oldValues as $key => $oldValue) {
+                            // Check if the value has changed
+                            $newValue = $newValues[$key] ?? null; // Get new value, or null if not set
+                            if ($oldValue != $newValue) {
+                                // Construct a description for each field that changed
+                                $description .= ucfirst($key) . " From " . ($oldValue !== null ? $oldValue : 'null') . " to " . ($newValue !== null ? $newValue : 'null') . ".</br> ";
+                            }
+                        }
+                        break;
+
+                    default:
+                        $description = "An unknown event occurred.";
+                        break;
+                }
+
+            $isDeleted = $item->deleted_at !== null;
+
+            $row = [
+                'id' => $item->id,
+                Carbon::parse($item->created_at)->format('Y-m-d'),
+                $event,
+                $user,
+                $description,
+                'isDeleted' => $isDeleted,
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 1, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
+
     /// Delete Method
     public function destroy($model, array $relationships, $modelName)
     {
@@ -1128,4 +1199,6 @@ class TableViewDataService
 
         return back()->with('status', $modelName . ' deleted successfully.');
     }
+
+    
 }

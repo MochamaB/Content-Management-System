@@ -120,6 +120,11 @@ class Property extends Model implements HasMedia, Auditable
         return $this->hasMany(Utility::class);
     }
 
+    public function events()
+    {
+        return $this->hasMany(Audit::class);
+    }
+
     public function units()
     {
         return $this->hasMany(Unit::class);

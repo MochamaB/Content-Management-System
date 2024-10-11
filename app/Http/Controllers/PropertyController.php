@@ -140,6 +140,7 @@ class PropertyController extends Controller
         $property->load([
             'amenities',
             'units',
+            'events',
             'users',
             'utilities',
             'paymentMethods',
@@ -161,6 +162,7 @@ class PropertyController extends Controller
             'Summary',
             'Units',
             'Users',
+            'Events',
             'Utilities',
             'Pay Methods',
             'Meter Readings',
@@ -186,6 +188,12 @@ class PropertyController extends Controller
         //3. USERS
         $users = $property->users()->distinct()->get();
         $userTableData = $this->tableViewDataService->getUserData($users);
+
+        // EVENTS
+        $events = $property->events;
+        $eventTableData = $this->tableViewDataService->getAuditData($events);
+
+
         //3.UTILITIES
         $utilities = $property->utilities;
         $utilityController = new UtilityController();
@@ -241,6 +249,9 @@ class PropertyController extends Controller
                 $tabContents[] = View('admin.Property.show_summary', $viewData, compact('amenities', 'allamenities','specialvalue','property'))->render();
             } elseif ($title === 'Units') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
+                compact('amenities', 'allamenities'))->render();
+            }elseif ($title === 'Events') {
+                $tabContents[] = View('admin.CRUD.table', ['data' => $eventTableData,'controller' => ['audit']], 
                 compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Users') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $userTableData,'controller' => ['user']], 

@@ -36,4 +36,18 @@ class Audit extends BaseAudit
 
         return $data;
     }
+
+    public function property()
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
+    }
+    public function user()
+    {
+        return $this->morphTo();
+    }
 }
