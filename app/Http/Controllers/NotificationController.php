@@ -100,6 +100,9 @@ class NotificationController extends Controller
                 $tabContents[] = View('admin.Communication.email_summary', compact('notifications', 'unreadNotifications', 'readNotifications'))->render();
             }
         }
+        if ($request->ajax()) {
+            return $tabContents[0]; // Return just the content for AJAX requests
+        }
         return View('admin.Communication.email', compact('tabTitles', 'tabContents'));
     }
 
@@ -109,12 +112,17 @@ class NotificationController extends Controller
        // Retrieve the notification using Laravel's DatabaseNotification model
        $notification = Notification::findOrFail($uuid);
        // Decode the notification data
-       $notificationData = $notification->data;
-      //  dd($notificationData);
-
+       $notificationData = json_decode($notification->data, true); // Decoding to an associative array
+       // dd($notificationData);
+        // Mark as read if it hasn't been read yet
+       // if (is_null($notification->read_at)) {
+       //     $notification->markAsRead();
+     //   }
         // Initialize model object
         $model = null;
         $emailContent = null;
+        $templateData = [];
+        $templateView = null;
         // Check if modelname and model_id exist in the notification data
         if (isset($notificationData['modelname']) && isset($notificationData['model_id'])) {
             $modelName = $notificationData['modelname'];
@@ -124,35 +132,57 @@ class NotificationController extends Controller
             switch ($modelName) {
                 case 'Invoice':
                     $model = Invoice::find($modelId);
-                    $emailContent = view("email.invoice", compact('model'))->render();
+                    $templateData =  [
+                        'model' => $model,  // Email is here
+                    ];
+                    $templateView = 'email.invoice';
+                  //  $emailContent = view("email.invoice", compact('model'))->render();
                     break;
                 case 'Payment':
                     $model = Payment::find($modelId);
-                    $emailContent = view("email.payment", compact('model'))->render();
+                    $templateData =  [
+                        'model' => $model,  // Email is here
+                    ];
+                    $templateView = 'email.payment';
+                   // $emailContent = view("email.payment", compact('model'))->render();
                     break;
                     // Add cases for other models you expect to handle
                 default:
-                    $model = null; // If no matching model is found, leave model null
+                $templateView = 'admin.Communication.template';
+                $templateData =  [
+                    'user' => $notificationData['user_email'] ?? null,  // Email is here
+                    'data' => $notificationData['data'] ?? [],          // This holds the lines
+                    'linkmessage' => $notificationData['linkmessage'] ?? '',
+                    'heading' => $notificationData['heading'] ?? ''
+                ];
                     break;
             }
         } else {
-            // For notifications without modelname and model_id, use the default template
-            $emailContent = view("email.template", [
-                'user' => $notificationData['user'] ?? null,
-                'data' => $notificationData['data'] ?? [],
+            $templateView = 'admin.Communication.template';
+            $templateData =  [
+                'user' => $notificationData['user_email'] ?? null,  // Email is here
+                'data' => $notificationData['data'] ?? [],          // This holds the lines
                 'linkmessage' => $notificationData['linkmessage'] ?? '',
                 'heading' => $notificationData['heading'] ?? ''
-            ])->render();
+            ];
+            // For notifications without modelname and model_id, use the default template
         }
          // Mark notification as read
       //  $notification->markAsRead();
         
         // Load email content or view based on the model retrieved
        
-        return view('admin.Communication.email_details ', [
-            'notificationData' => $notificationData,
-            'emailContent' =>$emailContent
-          ]);
+      //  return view('admin.Communication.email_details',compact('notificationData','emailContent'));
+      // For direct URL access, return the full layout with the email details
+    $tabTitles = ['Inbox', 'Sent', 'Drafts', 'Trash'];
+    $tabContents = [
+        view('admin.Communication.email_details', compact('notificationData', 'templateView','templateData'))->render(),
+        'Sent Content',
+        'Drafts Content',
+        'Trash Content'
+    ];
+    
+    return view('admin.Communication.email', compact('tabTitles', 'tabContents'));
     }
 
     public function text(Request $request)
