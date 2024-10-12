@@ -180,6 +180,17 @@ class Property extends Model implements HasMedia, Auditable
         return $this->hasMany(MeterReading::class);
     }
 
+    // Define the inverse relationship of audit
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->property_name;
+    }
+
 
     /// scope showing properties with units
     public function scopeWithUnitUser($query)

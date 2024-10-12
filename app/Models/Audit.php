@@ -50,4 +50,9 @@ class Audit extends BaseAudit
     {
         return $this->morphTo();
     }
+    // Define the polymorphic relationship
+    public function auditable()
+    {
+        return $this->morphTo();
+    }
 }

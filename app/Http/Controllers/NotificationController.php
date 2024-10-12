@@ -17,6 +17,8 @@ use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Ticket;
+use Illuminate\Support\Facades\View;
+use ReflectionClass;
 
 class NotificationController extends Controller
 {
@@ -51,59 +53,83 @@ class NotificationController extends Controller
 
     public function email(Request $request)
     {
-        $tabTitles = collect([
-            'Inbox',
-            'Sent',
-            'Draft',
-            'Outbox',
-        ]);
 
         $user = Auth::user();
+        // Check if the user has permission to view all notifications
         if (Gate::allows('view-all', $user)) {
-            $notifications = Notification::all();
-            $mailNotifications = Notification::whereJsonContains('data->channels', ['mail'])->get();
+           // $notifications = Notification::all();
+            $mailNotifications = Notification::whereJsonContains('data->channels', ['mail'])
+            ->orderBy('created_at', 'desc')->get();
 
             $unreadNotifications = $mailNotifications->where('read_at', null);
             $readNotifications = $mailNotifications->where('read_at', '!=', null);
-            //  dd($unreadNotifications);
+       
         } else {
+             // For users with restricted access, filter their notifications
             $unreadNotifications = $user->unreadNotifications->filter(function ($notification) {
                 return in_array('mail', json_decode($notification->data, true)['channels']);
-            });
+            })->sortByDesc('created_at');
             $readNotifications = $user->readNotifications->filter(function ($notification) {
                 return in_array('mail', json_decode($notification->data, true)['channels']);
-            });
+            })->sortByDesc('created_at');
         }
-        /*
-        $emailview = collect([
-          'Roles',
-          'Contact Information',
-          'Property Access',
-          'Review Details',
-        ]);
-    
-        return view('admin.Communication.notification ', [
-          'notifications' => $mailNotifications,
-          'unreadNotifications' => $unreadNotifications,
-          'readNotifications' => $readNotifications,
-        ]);
-        */
-        $tabContents = [];
-        foreach ($tabTitles as $title) {
-            if ($title === 'Inbox') {
-                $tabContents[] = View('admin.Communication.email_summary', compact('notifications', 'unreadNotifications', 'readNotifications'))->render();
-            } elseif ($title === 'Sent') {
-                $tabContents[] = View('admin.Communication.email_summary', compact('notifications', 'unreadNotifications', 'readNotifications'))->render();
-            } elseif ($title === 'Drafts') {
-                $tabContents[] = View('admin.Communication.email_summary', compact('notifications', 'unreadNotifications', 'readNotifications'))->render();
-            } elseif ($title === 'Outbox') {
-                $tabContents[] = View('admin.Communication.email_summary', compact('notifications', 'unreadNotifications', 'readNotifications'))->render();
+
+        $inboxNotifications = $unreadNotifications->concat($readNotifications)->map(function ($notification) {
+            $data = json_decode($notification->data, true);
+            $notificationType = $notification->type;
+            
+            try {
+                $reflection = new ReflectionClass($notificationType);
+                $instance = $reflection->newInstanceWithoutConstructor();
+                $toMailMethod = $reflection->getMethod('toMail');
+                $mailMessage = $toMailMethod->invoke($instance, $notification->notifiable);
+                
+                if (method_exists($mailMessage, 'view')) {
+                    if (isset($data['data']['modelname']) && isset($data['data']['model_id'])) {
+                        $modelName = $data['data']['modelname'];
+                        $modelId = $data['data']['model_id'];
+                        switch ($modelName) {
+                            case 'Invoice':
+                                $invoice = Invoice::find($modelId);
+                                $viewData = [
+                                    'invoice' => $invoice,
+                                ];
+                            case 'Payment':
+                                $payment = Payment::find($modelId);
+                                $viewData = [
+                                    'payment' => $payment,
+                                ];
+                                break;
+                                // Add cases for other models you expect to handle
+                            default:
+                            
+                        }
+                    }else{
+                    $viewData = [
+                        'user' => $notification->notifiable,
+                        'data' => $data['data'] ?? [],
+                        
+                    ];
+                }
+               
+                    $viewName = $mailMessage->view;
+                    $renderedView = View::make($viewName, $viewData)->render();
+                    $data['body'] = $renderedView;
+                } else {
+                    $data['body'] = 'Email content not available';
+                }
+            } catch (\Exception $e) {
+                $data['body'] = 'Error rendering email content: ' . $e->getMessage();
             }
-        }
-        if ($request->ajax()) {
-            return $tabContents[0]; // Return just the content for AJAX requests
-        }
-        return View('admin.Communication.email', compact('tabTitles', 'tabContents'));
+    
+            $notification->data = json_encode($data);
+            return $notification;
+        });
+    
+
+        
+        
+        return View('admin.Communication.email', compact('inboxNotifications'));
     }
 
 

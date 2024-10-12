@@ -139,4 +139,14 @@ class Payment extends Model implements HasMedia, Auditable
     {
         return $this->morphMany(Tax::class, 'taxable');
     }
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->referenceno;
+    }
+
 }

@@ -236,6 +236,17 @@ class Unit extends Model implements HasMedia, Auditable
         return $this->hasMany(Expense::class);
     }
 
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->unit_number;
+    }
+
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')

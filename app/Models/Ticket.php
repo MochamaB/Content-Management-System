@@ -177,4 +177,14 @@ class Ticket extends Model implements HasMedia, Auditable
     {
         return $this->hasMany(WorkorderExpense::class, 'ticket_id');
     }
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return 'No ' . $this->id;
+    }
+
 }

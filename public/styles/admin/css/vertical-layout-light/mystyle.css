@@ -619,6 +619,23 @@ body {
   background-color: #ffffff;
 }
 
+/* --------Notification Tab -----*/
+.notificationtab {
+  float: left;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  overflow: hidden;
+  height: 1%;
+}
+.notificationtabcontent {
+  float: left;
+  padding: 30px 32px;
+  border: 1px solid #ccc;
+  border-left: none;
+  height: auto;
+  background-color: #ffffff;
+}
+
 /*----------------------- Wizard style the tab content */
 .wizardtab {
   float: left;

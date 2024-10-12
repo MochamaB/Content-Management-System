@@ -114,6 +114,17 @@ class Expense extends Model implements HasMedia, Auditable
         return '';  // Return an empty string or some default value if property is null
     }
 
+    // Define the inverse relationship of audit
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->referenceno;
+    }
+
     // Define creating event to generate reference number
     protected static function boot()
     {

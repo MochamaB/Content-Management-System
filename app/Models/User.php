@@ -77,16 +77,6 @@ class User extends Authenticatable implements HasMedia, Auditable
         }
     }
 
-    public static $filters = [
-        'property' => ['label' => 'Property', 'inputType' => 'select'],
-        'Unit' => ['label' => 'Unit', 'inputType' => 'select'],
-        'role' => ['label' => 'Role', 'inputType' => 'select'],
-        'status' => ['label' => 'Status', 'inputType' => 'select'],
-
-
-        // Add more fields as needed
-    ];
-
     protected $auditInclude = [
         'firstname',
         'lastname',
@@ -119,6 +109,17 @@ class User extends Authenticatable implements HasMedia, Auditable
     
         return $data;
     }
+
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->email;
+    }
+
     
     public static function getFilterData($filter)
     {

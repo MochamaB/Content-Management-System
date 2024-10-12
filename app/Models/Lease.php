@@ -20,7 +20,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
 
 class Lease extends Model implements HasMedia, Auditable
 {
-    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload,FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
+    use HasFactory, Notifiable, InteractsWithMedia, MediaUpload, FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
     protected $table = 'leases';
     protected $fillable = [
         'property_id',
@@ -72,7 +72,7 @@ class Lease extends Model implements HasMedia, Auditable
     {
         $data['property_id'] = $this->property_id;
         $data['unit_id'] = $this->unit_id;
-    
+
         return $data;
     }
 
@@ -135,16 +135,27 @@ class Lease extends Model implements HasMedia, Auditable
     {
         return $this->hasMany(Invoice::class, 'unit_id');
     }
-    
+
     public function deposit()
     {
         return $this->hasMany(Deposit::class, 'unit_id');
     }
 
     public function unitcharges()
-{
-    return $this->hasMany(Unitcharge::class, 'unit_id');
-}
+    {
+        return $this->hasMany(Unitcharge::class, 'unit_id');
+    }
+
+
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->id;
+    }
 
     public function scopeUserUnits($query)
     {

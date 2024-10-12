@@ -126,6 +126,16 @@ class MeterReading extends Model implements Auditable
         return $this->belongsTo(Unitcharge::class);
     }
 
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->created_at->format('Y-m');
+    }
+
     public function scopeApplyFilters($query, $filters)
     {
 

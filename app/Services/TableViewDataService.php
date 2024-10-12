@@ -1118,10 +1118,15 @@ class TableViewDataService
         ];
 
         foreach ($auditData as $item) {
+            $model = class_basename($item->auditable_type);
             $event = class_basename($item->auditable_type).' '.$item->event;
+            $auditItem = $item->auditable->getIdentifier();
             $firstname = $item->user->firstname ??'System';
             $lastname = $item->user->lastname ??'Generated';
             $user = $firstname.' '.$lastname; 
+            $url = url('audit/' . $item->id);
+            $detailLink = '<a href="' .  $url . '" class="" style="font-weight:600">'. $auditItem.'</a>';
+
              // Decode the old_values and new_values JSON
             $oldValues = $item->old_values;
             $newValues = $item->new_values;
@@ -1129,22 +1134,22 @@ class TableViewDataService
             // Handle the event type
                 switch ($item->event) {
                     case 'created':
-                        $description = "A new record was created with values: </br>";
-                        foreach ($newValues as $key => $value) {
-                            $description .= ucfirst($key) . " - " . ($value !== null ? $value : 'null') . ".</br> ";
-                        }
+                        $description = "A new ".$model.' '.$detailLink." record was created";
+                     //   foreach ($newValues as $key => $value) {
+                      //      $description .= ucfirst($key) . " - " . ($value !== null ? $value : 'null') . ".</br> ";
+                      //  }
                         break;
 
                     case 'updated':
-                        $description = "The following fields were updated:</br> ";
-                        foreach ($oldValues as $key => $oldValue) {
+                        $description = "The  ".$model.' '.$detailLink." record was updated </br> ";
+                      //  foreach ($oldValues as $key => $oldValue) {
                             // Check if the value has changed
-                            $newValue = $newValues[$key] ?? null; // Get new value, or null if not set
-                            if ($oldValue != $newValue) {
+                        //    $newValue = $newValues[$key] ?? null; // Get new value, or null if not set
+                         //   if ($oldValue != $newValue) {
                                 // Construct a description for each field that changed
-                                $description .= ucfirst($key) . " From " . ($oldValue !== null ? $oldValue : 'null') . " to " . ($newValue !== null ? $newValue : 'null') . ".</br> ";
-                            }
-                        }
+                       //         $description .= ucfirst($key) . " From " . ($oldValue !== null ? $oldValue : 'null') . " to " . ($newValue !== null ? $newValue : 'null') . ".</br> ";
+                        //    }
+                       // }
                         break;
 
                     default:

@@ -65,4 +65,10 @@ class Amenity extends Model implements Auditable
         return $this->belongsToMany(Property::class, 'properties_amenities');
     }
 
+    // Define the inverse relationship
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
 }

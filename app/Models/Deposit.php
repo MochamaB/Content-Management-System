@@ -104,6 +104,17 @@ class Deposit extends Model implements HasMedia, Auditable
         return $this->hasMany(DepositItems::class);
     }
 
+    // Define the inverse relationship of audit
+    public function audit()
+    {
+        return $this->morphMany(Audit::class, 'auditable');
+    }
+
+    public function getIdentifier()
+    {
+        return $this->referenceno;
+    }
+
     public function getInitialsAttribute() {
         if ($this->property) { // Check if the relationship exists
             $words = explode(' ', $this->property->property_name);

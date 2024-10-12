@@ -3,29 +3,55 @@
 @section('content')
 
 <div class="row" style="margin-left:0px">
-    <div class="col-3 tab" style="padding:0px;">
+    <div class="col-4 notificationtab pt-1" style="padding:0px;">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-            <button class="btn " style="width:70%;margin:15px 20px;line-height: 20px;font-size: 0.85rem;background-color: #ffaf00;"
-            role="button" data-toggle="modal" data-target="#sendTextModal">
-                Compose Email
-            </button>
-            @foreach($tabTitles as $index => $title)
-            @php
-            $isDisabled = ($routeParts[1] === 'create') ? 'disabled' : '';
-            @endphp
-            <button class="tablinks @if($loop->first) active @endif" id="v-pills-{{ $loop->iteration }}-tab" data-toggle="pill" href="#v-pills-{{ $loop->iteration }}" role="tab" aria-controls="v-pills-{{ $loop->iteration }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}" >
-                {{ $title }}
-            </button>
+                @foreach($inboxNotifications as $index => $notification)
+                @php
+                    $data = json_decode($notification->data, true);
+                    $subject = $data['subject'] ?? 'No Subject';
+                    $from = $data['user_email'] ?? 'Unknown';
+                    $date = $notification->created_at->format('M d, Y');
+                @endphp
+                <a class="list-group-item list-group-item-action @if($loop->first) active @endif" 
+                   id="email-{{ $notification->id }}-list" 
+                   data-toggle="list" 
+                   href="#email-{{ $notification->id }}" 
+                   role="tab" 
+                   aria-controls="email-{{ $notification->id }}">
+                   <h6>{{ $subject }}</h6>
+                    <div class="d-flex w-100 justify-content-between">
+                        <p class="mb-1">{{ $from }}</p>
+                        <p>{{ $date }}</p>
+                    </div>
+                </a>
             @endforeach
         </div>
     </div>
-    <div class="col-9 tabcontent " style="padding:0px 0px">
+    <div class="col-8 notificationtabcontent " style="padding:10px 20px">
 
-        <div class="tab-content" id="v-pills-tabContent">
-            @foreach($tabContents as $index => $content)
-            <div class="tab-pane fade @if($loop->first) show active @endif" id="v-pills-{{ $loop->iteration }}" role="tabpanel" aria-labelledby="v-pills-{{ $loop->iteration }}-tab">
-                {!! $content !!}
-            </div>
+        <div class="tab-content" id="nav-tabContent">
+        @foreach($inboxNotifications as $index => $notification)
+                @php
+                    $data = json_decode($notification->data, true);
+                    $subject = $data['subject'] ?? 'No Subject';
+                    $from = $data['from'] ?? 'Unknown';
+                    $to = $data['user_email'] ?? 'Unknown';
+                    $body = $data['body'] ?? 'No content';
+                    $date = $notification->created_at->format('M d, Y H:i:s');
+                @endphp
+                <div class="tab-pane fade @if($loop->first) show active @endif" 
+                     id="email-{{ $notification->id }}" 
+                     role="tabpanel" 
+                     aria-labelledby="email-{{ $notification->id }}-list">
+                    <h5>{{ $subject }}</h5>
+                    <p><strong>From:</strong> {{$sitesettings->company_name }}</p>
+                    <p><strong>To:</strong> {{ $to }}</p>
+                    <p><strong>Date:</strong> {{ $date }}</p>
+                    <hr>
+                    <div class="email-body">
+                        {!! $body !!}
+                    </div>
+                </div>
             @endforeach
         </div>
     </div>

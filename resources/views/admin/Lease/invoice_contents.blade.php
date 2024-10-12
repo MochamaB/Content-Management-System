@@ -1,4 +1,3 @@
-
 <div class=" contwrapper table-responsive table-responsive-sm" id="printMe">
     <!-- FIRST LEVEL -------->
     <div class="row">
@@ -78,17 +77,27 @@
                         <!--- METER READINGS -->
                         @if($item->unitcharge->charge_type == 'units')
                         @php
-                        $meterReadings = $item->meterReadings()
-                        ->whereDate('created_at', '>=', $invoice->created_at)
-                        ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
-                            ->first();
-                            $used = $meterReadings->currentreading - $meterReadings->lastreading;
+                            $meterReadings = $item->meterReadings()
+                                ->whereDate('created_at', '>=', $invoice->created_at)
+                                ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
+                                ->first();
+                                // Default values in case meterReadings is not present
+                                $currentReading = $meterReadings->currentreading ?? 0;
+                                $lastReading = $meterReadings->lastreading ?? 0;
+                                $rateAtReading = $meterReadings->rate_at_reading ?? 0;
+                                $used = $currentReading - $lastReading;
                             @endphp
-                            <ul class="list-unstyled text-left">
-                                <li><i>Current Reading: {{$meterReadings->currentreading ?? ' 0'}} Units</i> </li>
-                                <li><i>Last Reading: {{$meterReadings->lastreading ?? ' 0'}} Units</i> </li>
-                                <li><i>Used: {{$used?? ' 0'}} Units * Rate:{{$meterReadings->rate_at_reading}}</i> </li>
-                                <ul>
+                            @if($meterReadings)
+                                <ul class="list-unstyled text-left">
+                                    <li><i>Current Reading: {{ $currentReading }} Units</i> </li>
+                                    <li><i>Last Reading: {{ $lastReading }} Units</i> </li>
+                                    <li><i>Used: {{ $used }} Units * Rate: {{ $rateAtReading }}</i> </li>
+                                </ul>
+                            @else
+                                <ul class="list-unstyled text-left">
+                                    <li><i>No meter reading available for this period.</i></li>
+                                </ul>
+                            @endif
                                     @endif
                     </td>
                     <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
