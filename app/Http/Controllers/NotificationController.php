@@ -75,67 +75,54 @@ class NotificationController extends Controller
             })->sortByDesc('created_at');
         }
 
-       $inboxNotifications = $unreadNotifications->concat($readNotifications)->map(function ($notification) {
-        $notificationData = json_decode($notification->data, true);
-        $notificationType = $notification->type;
-        
-        try {
-            $reflection = new ReflectionClass($notificationType);
-            $instance = $reflection->newInstanceWithoutConstructor();
-         //  $toMailMethod = $reflection->getMethod('toMail');
-        //    $mailMessage = $toMailMethod->invoke($instance, $notification->notifiable);
-            
-            Log::info('Notification type: ' . $notificationType);
-          //  Log::info('Mail message: ', ['mailMessage' => $mailMessage]);
+        $inboxNotifications = $unreadNotifications->concat($readNotifications)->map(function ($notification) {
+            $notificationData  = json_decode($notification->data, true);
+            $notificationType = $notification->type;
+     
+            try {
+               
+                
+                Log::info('Notification type: ' . $notificationType);
+              
+               
+                if ($notificationData) {
+                   
+                     if (isset($notificationData['modelname']) && isset($notificationData['model_id'])) 
+                        {
+                            $modelName = $notificationData['modelname'];
+                            $modelId = $notificationData['model_id'];
+                            switch ($modelName) {
+                            case 'Invoice':
+                                $invoice = Invoice::find($modelId);
+                                $viewData['invoice'] = $invoice;
+                                $viewName = 'admin.Lease.invoice_contents';
+                            case 'Payment':
+                                $payment = Payment::find($modelId);
+                                $viewData['payment'] = $payment;
+                                $viewName = 'admin.Lease.payment_contents';
+                                break;
+                                // Add cases for other models you expect to handle
+                            }
+                        }else{
+                            $viewName = 'admin.Communication.email_template'; // Default view
+                            $viewData = [
+                                'user' => $notification->notifiable,
+                                'data' => $notificationData['data'] ?? [],
+                            ];
+                        }
 
-           
-
-        //    if (method_exists($mailMessage, 'view')) {
-         //       $viewName = $mailMessage->view;
-         //       Log::info('View name from mailMessage: ' . $viewName);
-        //    }
-
-            if ($notificationType ==='App\Notifications\InvoiceGeneratedTextNotification' || $notificationType ==='App\Notifications\PaymentNotification') {
-                $modelName = $notificationData['data']['modelname'];
-                $modelId = $notificationData['data']['model_id'];
-                Log::info('Model name: ' . $modelName . ', Model ID: ' . $modelId);
-
-                switch ($modelName) {
-                    case 'Invoice':
-                        $invoice = Invoice::find($modelId);
-                        $viewData['invoice'] = $invoice;
-                        $viewName = 'admin.Lease.invoice_contents';
-                        Log::info('Invoice found: ', ['invoice' => $invoice]);
-                        break;
-                    case 'Payment':
-                        $payment = Payment::find($modelId);
-                        $viewData['payment'] = $payment;
-                        Log::info('Payment found: ', ['payment' => $payment]);
-                        break;
+                    $renderedView = View::make($viewName, $viewData)->render();
+                    $notificationData['body'] = $renderedView;
+                } else {
+                    $notificationData['body'] = 'Email content not available';
                 }
-            }else{
-                $viewName = 'email.template'; // Default view
-                $viewData = [
-                    'user' => $notification->notifiable,
-                    'data' => $notificationData['data'] ?? [],
-                ];
+            } catch (\Exception $e) {
+                $notificationData['body'] = 'Error rendering email content: ' . $e->getMessage();
             }
-
-            Log::info('View data: ', $viewData);
-            Log::info('Rendering view: ' . $viewName);
-
-            $renderedView = View::make($viewName, $viewData)->render();
-            $notificationData['body'] = $renderedView;
-
-        } catch (\Exception $e) {
-            Log::error('Error rendering email content: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
-            $notificationData['body'] = 'Error rendering email content: ' . $e->getMessage();
-        }
-
-        $notification->data = json_encode($notificationData);
-        return $notification;
-    });
+    
+            $notification->data = json_encode($notificationData);
+            return $notification;
+        });
     
 
         

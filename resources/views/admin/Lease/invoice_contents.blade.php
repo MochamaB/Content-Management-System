@@ -110,6 +110,7 @@
         <!------- FOURTH LEVEL PAYMENT DETAILS AND TOTALS-->
         <div class="col-md-6 mt-3">
             <h6><b>PAYMENT OPTIONS </b></h6>
+            @if(isset($PaymentMethod))
             @foreach($PaymentMethod as $key=> $item)
             <div class="d-flex justify-content-start" style="text-transform: capitalize;">
                 <p class="text-muted me-3" style="font-size:14px;font-weight:600"> </p>
@@ -123,6 +124,7 @@
                 @endif
             </div>
             @endforeach
+            @endif
 
         </div>
         <div class="col-md-6 mt-3">

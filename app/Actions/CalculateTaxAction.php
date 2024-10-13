@@ -22,6 +22,11 @@ class CalculateTaxAction
     public function calculateTax(Model $model, $oldTax = null)
     {
         $applicableTaxes = Tax::findApplicableTaxes($model);
+        // Check if any tax is applicable.
+        if (!$applicableTaxes || $applicableTaxes->isEmpty()) {
+            // Stop further execution and exit the function
+            return null;
+        }
        // Get the old tax amount before recalculating the new one
         $totalTax = 0;
         foreach ($applicableTaxes  as $tax) {

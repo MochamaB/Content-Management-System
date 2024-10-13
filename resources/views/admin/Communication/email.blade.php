@@ -68,7 +68,7 @@
                     <p><strong>To:</strong> {{ $to }}</p>
                     <p><strong>Date:</strong> {{ $date }}</p>
                     <hr>
-                    <div class="email-body">
+                    <div class="email-body" style="padding:20px;background-color:#F4F5F7">
                         {!! $body !!}
                     </div>
                 </div>
