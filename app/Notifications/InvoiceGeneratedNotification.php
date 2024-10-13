@@ -23,6 +23,7 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
     protected $heading;
     protected $view;
     protected $model;
+    protected $reminder;
 
 
     /**
@@ -30,16 +31,19 @@ class InvoiceGeneratedNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($invoice, $user, $view)
+    public function __construct($invoice, $user, $view,$reminder = null)
     {
 
         $this->invoice = $invoice;
         $this->user = $user;
-        $this->subject = $this->invoice->name . ' Invoice ' . \Carbon\Carbon::parse($this->invoice->created_at)->format('d M Y');
+        $this->reminder = $reminder;
+        // Adjust subject with "Reminder" only if $reminder is true
+        $this->subject = ($this->reminder ? 'Reminder: ' : '') . $this->invoice->name . ' Invoice ' . \Carbon\Carbon::parse($this->invoice->created_at)->format('d M Y');
         $this->heading =  'New ' . $this->invoice->name . ' Invoice';
         $this->view = $view; 
         // Set the model name using class_basename
         $this->model = class_basename($invoice); // This will return the model's class name, e.g., "Invoice"
+       
     }
 
     /**

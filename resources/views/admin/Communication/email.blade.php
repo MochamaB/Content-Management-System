@@ -4,6 +4,17 @@
 
 <div class="row" style="margin-left:0px">
     <div class="col-4 notificationtab pt-1" style="padding:0px;">
+    @if($inboxNotifications->isEmpty())
+    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">     
+                <a class="list-group-item list-group-item-action" >
+                   <h6>No emails in Inbox</h6>
+                    <div class="d-flex w-100 justify-content-between">
+                        <p class="mb-1">None</p>
+                        <p>None</p>
+                    </div>
+                </a>
+        </div>
+        @else
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 @foreach($inboxNotifications as $index => $notification)
                 @php
@@ -26,10 +37,19 @@
                 </a>
             @endforeach
         </div>
+        @endif
     </div>
     <div class="col-8 notificationtabcontent " style="padding:10px 20px">
 
         <div class="tab-content" id="nav-tabContent">
+        @if($inboxNotifications->isEmpty())
+            <h4 style="color:blue; text-align:center;padding-top:15px"> <i>There are no emails in the inbox</i></h4>
+            
+            <!-- Centering the image -->
+            <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                <img class="img-fluid" style="width:450px; height:300px;" src="{{ url('uploads/vectors/noemails.svg') }}">
+            </div>
+        @else
         @foreach($inboxNotifications as $index => $notification)
                 @php
                     $data = json_decode($notification->data, true);
@@ -53,6 +73,7 @@
                     </div>
                 </div>
             @endforeach
+            @endif
         </div>
     </div>
 </div>

@@ -250,7 +250,8 @@ class InvoiceController extends Controller
 
      //   $user = $invoice->model;
      //   $user->notify(new InvoiceGeneratedNotification($invoice, $user));
-        $this->invoiceService->invoiceEmail($invoice);
+        $reminder = true;
+        $this->invoiceService->invoiceEmail($invoice,$reminder);
         return redirect()->back()->with('status', 'Sucess Invoice Reminder Sent to the tenant.');
     }
 

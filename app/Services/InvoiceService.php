@@ -281,7 +281,7 @@ class InvoiceService
         }
     }
 
-    public function invoiceEmail($invoice)
+    public function invoiceEmail($invoice, $reminder = null)
     {
 
 
@@ -315,10 +315,10 @@ class InvoiceService
 
         try {
             if ($emailNotificationsEnabled !== 'NO') {
-            $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent));
+            $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent, $reminder));
             }
             if ($textNotificationsEnabled !== 'NO') {
-                $user->notify(new InvoiceGeneratedTextNotification($invoice, $user, $viewContent));
+                $user->notify(new InvoiceGeneratedTextNotification($invoice, $user, $viewContent, $reminder));
                 }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions

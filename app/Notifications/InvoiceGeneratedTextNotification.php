@@ -24,6 +24,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     protected $user;
     protected $view;
     protected $model;
+    protected $reminder;
 
 
     /**
@@ -31,12 +32,13 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
      *
      * @return void
      */
-    public function __construct($invoice, $user, $view)
+    public function __construct($invoice, $user, $view, $reminder = null)
     {
 
         $this->invoice = $invoice;
         $this->user = $user;
         $this->view = $view; 
+        $this->reminder = $reminder;
         // Set the model name using class_basename
         $this->model = class_basename($invoice); // This will return the model's class name, e.g., "Invoice"
     }
@@ -63,13 +65,14 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     public function toAfricasTalking($notifiable)
     {
         // Assuming $this->invoice contains the invoice details
+    $reminder = $this->reminder ? 'Reminder: ' : '';
     $invoiceRef = $this->invoice->referenceno;
     $propertyName = $this->invoice->property->property_name;
     $unitNumber = $this->invoice->unit->unit_number;
     $invoiceName = $this->invoice->name;
     $amountDue = $this->invoice->totalamount;
     $paymentLink = url('/invoice/' . $this->invoice->id); // Replace with actual payment link
-    $smsContent = "{$invoiceName} Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, Amount Due: KSH{$amountDue} Click here to pay: {$paymentLink}";    
+    $smsContent = "{$reminder} {$invoiceName} Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, Amount Due: KSH{$amountDue} Click here to pay: {$paymentLink}";    
     return (new AfricasTalkingMessage())
             ->content($smsContent);
     }
