@@ -127,22 +127,21 @@
                                                 </tr>
                                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                                     <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                                    Dear {{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'Lastname'}}  
-                                                    @if(isset($data) && is_array($data))
+                                                    Dear {{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'Lastname'}}    
                                                     @foreach ($data as $line => $content)
-                                                        @if(is_string($content))
-                                                            <p>{{ $content }}</p>
-                                                        @elseif(is_array($content) && isset($content['action']))
-                                                            <p><a href="{{ $content['action'] }}">{{ $data['linkmessage'] ?? 'Click here' }}</a></p>
-                                                        @endif
-                                                    @endforeach
-                                                @else
-                                                    <p>No additional information available.</p>
-                                                @endif
+                                                        @if (!empty($content))
+                                                        @if ($line === 'action')
+                                                        <div class="text-center">
 
-                                                @if(isset($data['linkmessage']) && isset($data['action']))
-                                                    <p><a href="{{ $data['action'] }}">{{ $data['linkmessage'] }}</a></p>
-                                                    @endif
+                                                            <a href="{{url($content) }}" class="btn-primary" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 0px; text-transform: capitalize; background-color: #1F3BB3; margin: 0; border-color: #1F3BB3; border-style: solid; border-width: 8px 16px;">
+                                                                {{ $linkmessage ?? 'GO TO SITE'}}
+                                                            </a>
+                                                        </div>
+                                                        @else
+                                                        <p>{{ $content ?? '' }}</p>
+                                                        @endif
+                                                        @endif
+                                                        @endforeach
                                                     </td>
                                                 </tr>
                                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">

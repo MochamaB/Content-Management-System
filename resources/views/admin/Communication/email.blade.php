@@ -4,6 +4,9 @@
 
 <div class="row" style="margin-left:0px">
     <div class="col-4 notificationtab pt-1" style="padding:0px;">
+        <div class="float-left search btn-group" style="padding:15px 20px;width:300px;">
+          <input class="form-control form-control-sm" type="search" placeholder="Search" autocomplete="off">
+        </div>
     @if($inboxNotifications->isEmpty())
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">     
                 <a class="list-group-item list-group-item-action" >
@@ -29,14 +32,18 @@
                    href="#email-{{ $notification->id }}" 
                    role="tab" 
                    aria-controls="email-{{ $notification->id }}">
-                   <h6>{{ $subject }}</h6>
+                   <p><b>{{ $subject }}</b></p>
                     <div class="d-flex w-100 justify-content-between">
                         <p class="mb-1">{{ $from }}</p>
                         <p>{{ $date }}</p>
                     </div>
                 </a>
             @endforeach
+            <div class="mt-3" style="padding: 0px 10px;">
+        {{ $mailNotifications->links('pagination::bootstrap-5') }}
         </div>
+        </div>
+      
         @endif
     </div>
     <div class="col-8 notificationtabcontent " style="padding:10px 20px">

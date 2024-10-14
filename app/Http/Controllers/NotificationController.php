@@ -11,12 +11,14 @@ use App\Services\TableViewDataService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Pagination\LengthAwarePaginator;
 use GuzzleHttp\Client;
 use AfricasTalking\SDK\AfricasTalking;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Ticket;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use ReflectionClass;
@@ -56,23 +58,36 @@ class NotificationController extends Controller
     {
 
         $user = Auth::user();
+        $perPage = 20;
+        $page = Paginator::resolveCurrentPage() ?: 1;
         // Check if the user has permission to view all notifications
         if (Gate::allows('view-all', $user)) {
            // $notifications = Notification::all();
             $mailNotifications = Notification::whereJsonContains('data->channels', ['mail'])
-            ->orderBy('created_at', 'desc')->get();
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
 
             $unreadNotifications = $mailNotifications->where('read_at', null);
             $readNotifications = $mailNotifications->where('read_at', '!=', null);
        
         } else {
              // For users with restricted access, filter their notifications
-            $unreadNotifications = $user->unreadNotifications->filter(function ($notification) {
-                return in_array('mail', json_decode($notification->data, true)['channels']);
-            })->sortByDesc('created_at');
-            $readNotifications = $user->readNotifications->filter(function ($notification) {
-                return in_array('mail', json_decode($notification->data, true)['channels']);
-            })->sortByDesc('created_at');
+             $allNotifications = $user->notifications()
+            ->whereJsonContains('data->channels', ['mail'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            $pagedNotifications = $allNotifications->slice(($page - 1) * $perPage, $perPage);
+
+            $mailNotifications = new LengthAwarePaginator(
+                $pagedNotifications,
+                $allNotifications->count(),
+                $perPage,
+                $page,
+                ['path' => Paginator::resolveCurrentPath()]
+            );
+            $unreadNotifications = $pagedNotifications->where('read_at', null);
+            $readNotifications = $pagedNotifications->where('read_at', '!=', null);
         }
 
         $inboxNotifications = $unreadNotifications->concat($readNotifications)->map(function ($notification) {
@@ -80,11 +95,7 @@ class NotificationController extends Controller
             $notificationType = $notification->type;
      
             try {
-               
-                
-                Log::info('Notification type: ' . $notificationType);
-              
-               
+             
                 if ($notificationData) {
                    
                      if (isset($notificationData['modelname']) && isset($notificationData['model_id'])) 
@@ -96,6 +107,7 @@ class NotificationController extends Controller
                                 $invoice = Invoice::find($modelId);
                                 $viewData['invoice'] = $invoice;
                                 $viewName = 'admin.Lease.invoice_contents';
+                                break;
                             case 'Payment':
                                 $payment = Payment::find($modelId);
                                 $viewData['payment'] = $payment;
@@ -127,7 +139,7 @@ class NotificationController extends Controller
 
         
         
-        return View('admin.Communication.email', compact('inboxNotifications'));
+        return View('admin.Communication.email', compact('inboxNotifications','mailNotifications'));
     }
 
 
@@ -215,56 +227,81 @@ class NotificationController extends Controller
         return view('admin.Communication.text');
     }
 
+
     public function sendText(Request $request)
     {
-        // Get the user (test user or any user in your database)
-
-        //  $user = User::find(2);
-        // send notification 
-        // $user->notify(new NewsWasPublished());
-        // Assuming $this->invoice contains the invoice details
-        $invoice = Invoice::find(1);
-
-        $invoiceRef = $invoice->referenceno;
-        $propertyName = $invoice->property->property_name; // Assuming there's a relationship with Property
-        $unitNumber = $invoice->unit->unit_number;         // Assuming there's a relationship with Unit
-        $invoiceName = $invoice->name;
-        $amountDue = $invoice->totalamount;
-        $paymentLink = url('/invoice/' . $invoice->id);  // Replace with actual payment link
-        $smsContent = "Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, {$invoiceName} Amount Due: KSH{$amountDue}. Click here to pay: {$paymentLink}";
-
-        // Africa's Talking API credentials
+        $smsContent = "Test Message";
         $username = env('AT_USERNAME');
         $apiKey = env('AT_KEY');
-
+        $from = env('AT_FROM');
+        
+        
         $client = new Client([
             'verify' => false,
             'base_uri' => 'https://api.africastalking.com'
         ]);
-
+    
         try {
             $response = $client->post('/version1/messaging', [
                 'form_params' => [
-                    'username' => $username,  // Required field
+                    'username' => $username,
                     'to' => '+254723710025', // The number you want to test with
                     'message' => $smsContent,
-                    'from' => 'AFRICASTKNG', // Your short code
+                    
                 ],
                 'headers' => [
                     'apiKey' => $apiKey,
-                    'Content-Type' => 'application/x-www-form-urlencoded'
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Accept' => 'application/json'
                 ]
             ]);
-
-            $result = json_decode($response->getBody(), true);
-            print_r($result);
-
-            return 'SMS sent successfully';
+    
+            $responseBody = $response->getBody()->getContents();
+            
+            // Try to parse as JSON first
+            $result = json_decode($responseBody, true);
+            
+            if ($result === null && json_last_error() !== JSON_ERROR_NONE) {
+                // If JSON parsing fails, try XML
+                $xml = simplexml_load_string($responseBody);
+                if ($xml === false) {
+                    Log::error('AfricasTalking API Response Parse Error', [
+                        'response' => $responseBody
+                    ]);
+                    return 'Error parsing API response';
+                }
+                $result = $this->xmlToArray($xml);
+            }
+    
+            Log::info('AfricasTalking API Response', ['result' => $result]);
+    
+            if (isset($result['SMSMessageData']['Recipients'][0]['status']) && 
+                $result['SMSMessageData']['Recipients'][0]['status'] === 'Success') {
+                return 'SMS sent successfully';
+            } else {
+                $errorMessage = $result['SMSMessageData']['Message'] ?? 'Unknown error';
+                Log::error('AfricasTalking API Error', ['result' => $result]);
+                return 'SMS sending failed: ' . $errorMessage;
+            }
         } catch (\Exception $e) {
+            Log::error('AfricasTalking API Exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return 'Error: ' . $e->getMessage();
         }
     }
-
+    
+    private function xmlToArray($xml)
+    {
+        $array = json_decode(json_encode((array) $xml), true);
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $array[$key] = $this->xmlToArray($value);
+            }
+        }
+        return $array;
+    }
     /**
      * Show the form for creating a new resource.
      *
