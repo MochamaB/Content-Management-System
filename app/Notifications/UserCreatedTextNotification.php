@@ -21,6 +21,7 @@ class UserCreatedTextNotification extends Notification
     protected $linkmessage;
     protected $data;
     protected $company;
+    protected $smsContent; // Declare a class property to hold the SMS content
 
     /**
      * Create a new notification instance.
@@ -31,6 +32,13 @@ class UserCreatedTextNotification extends Notification
     {
         $this->user = $user;
         $this->company = Website::pluck('company_name')->first();
+        $this->smsContent = $this->generateSmsContent();
+    }
+    protected function generateSmsContent()
+    {
+        $link = url('/dashboard/'); // link
+        return "Hi {$this->user->firstname} {$this->user->lastname}, Welcome to {$this->user->company} property management system. 
+                    Access your portal with your email and default password 'property123'.Click here: {$link}";
     }
 
     /**
@@ -55,9 +63,9 @@ class UserCreatedTextNotification extends Notification
      // SMS Notification using AfricasTalking
      public function toAfricasTalking($notifiable)
      {
+       
          return (new AfricasTalkingMessage())
-                     ->content("Hi {$this->user->firstname}, welcome to {$this->user->company} property management system. 
-                    Click then login with your email and default password 'property123'.using link: " . url('/dashboard'));
+                     ->content($this->smsContent);
      }
 
     /**
@@ -70,12 +78,9 @@ class UserCreatedTextNotification extends Notification
     {
         return [
             'user_id' => $this->user->id,
-            'phonenumber' => $this->user->phonenumber,
-            'user_email' => $this->user->email,
-            'subject' => $this->subject ?? null,
-            'heading' => $this->heading ?? null,
-            'linkmessage' => $this->linkmessage ?? null,
-            'data' => $this->data ?? null,
+            'to' => $this->user->phonenumber,
+            'from' => 'System Generated',
+            'sms_content' => $this->smsContent, // Include the SMS content here
             'channels' => $this->via($notifiable),
         ];
     }

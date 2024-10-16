@@ -213,7 +213,7 @@ class AppServiceProvider extends ServiceProvider
                 'Messages' => ['icon' => 'email-open', 'submodules' => [
                     'notification' => ['display' => 'Notification Center'],
                     'notification/email' => ['display' => 'Emails'],
-                    'notification/text' => ['display' => 'Text Messages'],
+                    'textmessage' => ['display' => 'Text Messages'],
                 ]],
                 'Files' => ['icon' => 'file-multiple', 'submodules' => [
                     'media' => ['display' => 'All Files'],

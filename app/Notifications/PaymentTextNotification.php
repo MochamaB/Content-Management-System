@@ -26,6 +26,7 @@ class PaymentTextNotification extends Notification implements ShouldQueue
     protected $data;
     protected $company;
     protected $model;
+    protected $smsContent; // Declare a class property to hold the SMS content
 
     /**
      * Create a new notification instance.
@@ -43,10 +44,22 @@ class PaymentTextNotification extends Notification implements ShouldQueue
         $this->view = $view;
         // Set the model name using class_basename
         $this->model = class_basename($payment); // This will return the model's class name, e.g., "Invoice"
+        $this->smsContent = $this->generateSmsContent();
 
         $paymentdate = Carbon::parse($this->payment->created)->format('Y-m-d');
     }
 
+    protected function generateSmsContent()
+    {
+        $paymentRef = $this->payment->referenceno;
+        $propertyName = $this->payment->property->property_name;
+        $unitNumber = $this->payment->unit->unit_number;
+        $paymentName = class_basename($this->payment->model);
+        $amountPaid = $this->payment->totalamount;
+        $paymentLink = url('/payment/' . $this->payment->id); // Replace with actual payment link
+        
+        return "Payment received for {$paymentName} Ref: {$paymentRef} for {$propertyName}, Unit {$unitNumber}, Amount Paid: KSH{$amountPaid} Click here for receipt: {$paymentLink}";    
+    }
 
     /**
      * Get the notification's delivery channels.
@@ -67,15 +80,9 @@ class PaymentTextNotification extends Notification implements ShouldQueue
      */
     public function toAfricasTalking($notifiable)
     {
-        $paymentRef = $this->payment->referenceno;
-        $propertyName = $this->payment->property->property_name;
-        $unitNumber = $this->payment->unit->unit_number;
-        $paymentName = class_basename($this->payment->model);
-        $amountPaid = $this->payment->totalamount;
-        $paymentLink = url('/payment/' . $this->payment->id); // Replace with actual payment link
-        $smsContent = "Payment received for {$paymentName} Ref: {$paymentRef} for {$propertyName}, Unit {$unitNumber}, Amount Paid: KSH{$amountPaid} Click here for receipt: {$paymentLink}";    
+        
         return (new AfricasTalkingMessage())
-        ->content($smsContent);
+        ->content($this->smsContent);
     }
 
     /**
@@ -90,12 +97,9 @@ class PaymentTextNotification extends Notification implements ShouldQueue
             'user_id' => $this->user->id,
             'modelname' => $this->model, // Use the model name set in the constructor
             'model_id' => $this->payment->id ?? null, // Assuming invoice ID is the model ID
-            'phonenumber' => $this->user->phonenumber,
-            'user_email' => $this->user->email,
-            'subject' => $this->subject ?? null,
-            'heading' => $this->heading ?? null,
-            'linkmessage' => $this->linkmessage ?? null,
-            'data' => $this->data ?? null,
+            'to' => $this->user->phonenumber,
+            'from' => 'System Generated',
+            'sms_content' => $this->smsContent, // Include the SMS content here
             'channels' => $this->via($notifiable),
         ];
     }

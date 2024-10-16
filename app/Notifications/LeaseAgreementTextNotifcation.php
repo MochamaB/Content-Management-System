@@ -20,7 +20,7 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
     protected $linkmessage;
     protected $data;
     protected $company;
-
+    protected $smsContent; // Declare a class property to hold the SMS content
 
     /**
      * Create a new notification instance.
@@ -31,6 +31,15 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
     {
         $this->user = $user;
         $this->company = Website::pluck('company_name')->first();
+        $this->smsContent = $this->generateSmsContent();
+    }
+
+    protected function generateSmsContent()
+    {
+        $link = url('/dashboard/'); // link
+
+        return  "Hi {$this->user->firstname} {$this->user->lastname}, A lease has been assigned to you in {$this->company} property system . 
+                     Click to access your account: {$link}";
     }
 
     /**
@@ -53,9 +62,9 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
      // SMS Notification using AfricasTalking
      public function toAfricasTalking($notifiable)
      {
+        
          return (new AfricasTalkingMessage())
-                     ->content("Hi {$this->user->firstname},A lease has been assigned to you in {$this->company} property system . 
-                     Click here to login and access your account': " . url('/dashboard'));
+                     ->content($this->smsContent);
      }
 
     /**
@@ -68,12 +77,9 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
     {
         return [
             'user_id' => $this->user->id,
-            'phonenumber' => $this->user->phonenumber,
-            'user_email' => $this->user->email,
-            'subject' => $this->subject ?? null,
-            'heading' => $this->heading ?? null,
-            'linkmessage' => $this->linkmessage ?? null,
-            'data' => $this->data ?? null,
+            'to' => $this->user->phonenumber,
+            'from' => 'System Generated',
+            'sms_content' => $this->smsContent, // Include the SMS content here
             'channels' => $this->via($notifiable),
         ];
     }

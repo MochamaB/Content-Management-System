@@ -38,6 +38,7 @@ use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\TextMessageController;
 use App\Http\Controllers\TransactionTypeController;
 use App\Http\Controllers\VendorCategoryController;
 use App\Http\Controllers\VendorController;
@@ -92,6 +93,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::get('notification/text', [NotificationController::class, 'text'])->name('notification.email');
         Route::post('notification/text/sendText', [NotificationController::class, 'sendText']);
         Route::resource('notification', NotificationController::class);
+        Route::resource('textmessage', TextMessageController::class);
         
        
     });

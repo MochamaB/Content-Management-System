@@ -25,6 +25,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     protected $view;
     protected $model;
     protected $reminder;
+    protected $smsContent; // Declare a class property to hold the SMS content
 
 
     /**
@@ -41,6 +42,20 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
         $this->reminder = $reminder;
         // Set the model name using class_basename
         $this->model = class_basename($invoice); // This will return the model's class name, e.g., "Invoice"
+        $this->smsContent = $this->generateSmsContent();
+    }
+
+    protected function generateSmsContent()
+    {
+    $reminder = $this->reminder ? 'Reminder: ' : '';
+    $invoiceRef = $this->invoice->referenceno;
+    $propertyName = $this->invoice->property->property_name;
+    $unitNumber = $this->invoice->unit->unit_number;
+    $invoiceName = $this->invoice->name;
+    $amountDue = $this->invoice->totalamount;
+    $paymentLink = url('/invoice/' . $this->invoice->id); // Replace with actual payment link
+
+    return "{$reminder} {$invoiceName} Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, Amount Due: KSH{$amountDue} Click here to pay: {$paymentLink}";    
     }
 
     /**
@@ -65,16 +80,9 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     public function toAfricasTalking($notifiable)
     {
         // Assuming $this->invoice contains the invoice details
-    $reminder = $this->reminder ? 'Reminder: ' : '';
-    $invoiceRef = $this->invoice->referenceno;
-    $propertyName = $this->invoice->property->property_name;
-    $unitNumber = $this->invoice->unit->unit_number;
-    $invoiceName = $this->invoice->name;
-    $amountDue = $this->invoice->totalamount;
-    $paymentLink = url('/invoice/' . $this->invoice->id); // Replace with actual payment link
-    $smsContent = "{$reminder} {$invoiceName} Invoice Ref: {$invoiceRef} for {$propertyName}, Unit {$unitNumber}, Amount Due: KSH{$amountDue} Click here to pay: {$paymentLink}";    
+   
     return (new AfricasTalkingMessage())
-            ->content($smsContent);
+            ->content($this->smsContent);
     }
 
     /**
@@ -89,12 +97,9 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
             'user_id' => $this->user->id,
             'modelname' => $this->model, // Use the model name set in the constructor
             'model_id' => $this->invoice->id ?? null, // Assuming invoice ID is the model ID
-            'phonenumber' => $this->user->phonenumber,
-            'user_email' => $this->user->email,
-            'subject' => $this->subject ?? null,
-            'heading' => $this->heading ?? null,
-            'linkmessage' => null,
-            'data' => null,
+            'to' => $this->user->phonenumber,
+            'from' => 'System Generated',
+            'sms_content' => $this->smsContent, // Include the SMS content here
             'channels' => $this->via($notifiable),
         ];
     }
