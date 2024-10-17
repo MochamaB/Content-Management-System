@@ -18,6 +18,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use App\Traits\FilterableScope;
 use App\Traits\SoftDeleteScope;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
@@ -210,6 +211,21 @@ class User extends Authenticatable implements HasMedia, Auditable
             ->withPivot('property_id')
             ->withTimestamps();
     }
+
+    ///  GET ASSIGNED UNITS GROUPED BY PROPERTY
+    public function getAssignedUnitsAndProperties()
+    {
+        return $this->units()
+            ->with('property')
+            ->get()
+            ->groupBy('pivot.property_id')
+            ->map(function ($units) {
+                return [
+                    'property' => $units->first()->property,
+                    'units' => $units
+                ];
+            });
+    }
     public function lease()
     {
         return $this->hasOne(Lease::class, 'user_id');
@@ -257,25 +273,77 @@ class User extends Authenticatable implements HasMedia, Auditable
             });
     }
 
+    public static function getDistinctRolesFromUsers($users): Collection
+    {
+        return $users->flatMap(function ($user) {
+            return $user->roles;
+        })->unique('id')->values();
+    }
+
+    public function getRoles(): Collection
+    {
+        $loggedUserPermissions = $this->getAllPermissions();
+
+        // Retrieve all roles and their associated permissions
+        $allRoles = Role::with('permissions')->get();
+
+        // Check if the user is admin or super admin
+        if ($this->id === 1 || stripos($this->roles->first()->name, 'admin') !== false) {
+            return $allRoles->sortByDesc('id')->values();
+        }
+
+        // Filter roles with lesser permissions
+        return $allRoles->filter(function ($role) use ($loggedUserPermissions) {
+            return $role->permissions->count() < $loggedUserPermissions->count();
+        })->sortByDesc('id')->values();
+    }
+
     public function scopeWithLowerPermissions($query)
     {
+        $loggedInUser = Auth::user();
+        $loggedInUserPermissions = $loggedInUser->getAllPermissions();
 
-        $loggedInUser = Auth::user(); // Assuming you're using this inside a controller or middleware
-
-        $loggedInUserRoles = $loggedInUser->roles;
-        $loggedInUserPermissions = $loggedInUserRoles->flatMap(function ($role) {
-            return $role->permissions;
-        });
-        // Retrieve all users with their roles and associated permissions
-        $allUsers = User::with('roles.permissions')->get();
-
-        return $query->where('id', '=', $loggedInUser->id)
-            ->whereHas('roles.permissions', function ($subquery) use ($loggedInUserPermissions) {
-                $subquery->groupBy('id')
-                    ->selectRaw('COUNT(*) as permission_count, id')
-                    ->having('permission_count', '<', $loggedInUserPermissions->count());
+        return $query->whereHas('roles', function ($roleQuery) use ($loggedInUserPermissions) {
+            $roleQuery->whereHas('permissions', function ($permissionQuery) use ($loggedInUserPermissions) {
+                $permissionQuery->whereNotIn('permissions.id', $loggedInUserPermissions->pluck('id'));
             });
+        })->where('id', '!=', $loggedInUser->id);
     }
+    ///SEE USERS ASSIGNED THE  SAME UNITS
+    public function scopeInSameUnits($query)
+    {
+        $loggedInUser = Auth::user();
+        $assignedUnitIds = $loggedInUser->units->pluck('id');
+
+        return $query->whereHas('units', function ($unitQuery) use ($assignedUnitIds) {
+            $unitQuery->whereIn('units.id', $assignedUnitIds);
+        });
+    }
+
+    public function scopeVisibleToUser($query)
+    {
+        $loggedInUser = Auth::user();
+
+        // If no user is authenticated, return an empty query
+        if (!$loggedInUser) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        // Super admin (id 1) or any admin role can see all users except themselves and id 1
+        if ($loggedInUser->id === 1 || stripos($loggedInUser->roles->first()->name, 'admin') !== false) {
+            return $query->where('id', '!=', 1)
+                         ->where('id', '!=', $loggedInUser->id);
+        }
+
+        // For all other roles, they can only see users with lower permissions in the same units
+        return $query->where('id', '!=', 1)
+                     ->where('id', '!=', $loggedInUser->id)
+                     ->withLowerPermissions()
+                     ->inSameUnits();
+    }
+
+    
+
     public function scopeUserAccess($query)
     {
         $user = auth()->user();

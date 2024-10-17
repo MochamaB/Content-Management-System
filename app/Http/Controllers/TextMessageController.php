@@ -12,6 +12,8 @@ use App\Models\Invoice;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Ticket;
+use App\Models\User;
+use App\Notifications\SendTextNotification;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
@@ -38,6 +40,9 @@ class TextMessageController extends Controller
         ]);
 
         $textContent = $this->textInbox();
+        $users = User::with('units','roles')->visibleToUser()->get();
+        $roles  = User::getDistinctRolesFromUsers($users);
+       // dd($users);
        
         $tabContents = [];
         foreach ($tabTitles as $title) {
@@ -46,7 +51,7 @@ class TextMessageController extends Controller
             }elseif ($title === 'Inbox') {
                 $tabContents[] = View('admin.Communication.text_summary',compact('textContent'))->render();
             }elseif ($title === 'Compose Text') {
-                $tabContents[] = View('admin.Communication.text_inbox')->render();
+                $tabContents[] = View('admin.Communication.send_text',compact('users','roles'))->render();
             }elseif ($title === 'Top up') {
                 $tabContents[] = View('admin.Communication.text_inbox')->render();
             }elseif ($title === 'Transactions') {
@@ -129,7 +134,47 @@ class TextMessageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $loggedUser = Auth::user();
+        $request->validate([
+            'send_to' => 'required',
+            'message' => 'required|string',
+            'users' => 'nullable|array', // In case contacts are selected
+            'group' => 'nullable|string', // In case a group is selected
+        ]);
+    
+        $message = $request->input('message');
+    
+        // If the user chose "contact", get the selected users
+        if ($request->input('send_to') === 'contact') {
+            $selectedUsers = $request->input('users', []); // Array of phone numbers
+    
+            // Trigger the notification for each selected user
+            foreach ($selectedUsers as $phoneNumber) {
+                // Assuming you have a way to retrieve user by phone number
+                $user = User::where('phonenumber', $phoneNumber)->first();
+    
+                if ($user) {
+                    $user->notify(new SendTextNotification($user,$message,$loggedUser));
+                }
+            }
+        }
+    
+        // If the user chose "group", get all users in that group/role
+        elseif ($request->input('send_to') === 'group') {
+            $group = $request->input('group');
+    
+            // Fetch all users associated with the selected role/group
+            $usersInGroup = User::whereHas('roles', function ($query) use ($group) {
+                $query->where('name', $group);
+            })->visibleToUser()->get();
+    
+            // Trigger the notification for each user in the group
+            foreach ($usersInGroup as $user) {
+                $user->notify(new SendTextNotification($user,$message,$loggedUser));
+            }
+        }
+    
+        return redirect()->back()->with('success', 'Notification sent successfully!');
     }
 
     /**

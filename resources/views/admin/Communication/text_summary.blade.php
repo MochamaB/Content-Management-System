@@ -4,7 +4,7 @@
       max-width: 300px; /* Adjust the width as per your design */
       word-wrap: break-word;
       white-space: normal !important; /* Ensures text wraps onto the next line */
-      line-height: 2.6;
+      line-height: 1.6 !important;
   }
 </style>
 
@@ -45,7 +45,7 @@
                   @if($notification->read_at == null)
                   <tr style="height:50px; background: #F4F5F7;border-bottom: 1px solid #ccc;" class="clickable-row" data-id="{{ $notification->id }}">
                       <td></td>
-                      <td class=""><b>{{$user}}</b> </br>
+                      <td class=""><span class="pb-2" style="font-weight: 600;">{{$user}}</span> </br></br>
                         {{ $data['to'] ?? 'Unknown' }}</td>
                       <td class="sms-content-column">{{ $notification['sms_content'] ?? 'Content' }}</td>
                       <td>{{ $data['from'] ?? 'Unknown' }}</td>

@@ -311,6 +311,7 @@ $(document).ready(function() {
 <script src="{{ asset('styles/admin/js/dashboard.js') }}"></script>
 <script src="{{ asset('styles/admin/js/Chart.roundedBarCharts.js') }}"></script>
 <script src="{{ asset('styles/admin/js/myscript.js') }}"></script>
+<script src="{{ asset('styles/admin/js/select2.min.js') }}"></script>
 
 <!-- End custom js for this page-->
   

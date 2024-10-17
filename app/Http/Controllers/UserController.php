@@ -98,12 +98,13 @@ class UserController extends Controller
     public function index(Request $request)
     {
        
-        $baseQuery = User::with('properties','units','roles')->ApplyFilterUsers();
+        $baseQuery = User::with('units','roles')->visibleToUser();
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
         $cardData = $this->cardService->userCard($baseQuery->get());
         $controller = $this->controller;
-        $roles = $this->getRoles();
+        $roles  = User::getDistinctRolesFromUsers($baseQuery->get());
+      //  $roles = $this->getRoles();
         // Define the tab titles as the role names
         $tabTitles = $roles->pluck('name')->toArray();
         array_unshift($tabTitles, 'All Users'); // Adds 'All Users' at the first position

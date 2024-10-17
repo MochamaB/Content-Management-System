@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="{{ asset('styles/admin/vendors/typicons/typicons.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/vendors/simple-line-icons/css/simple-line-icons.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/vendors/css/vendor.bundle.base.css') }}">
+  
 
   <!-- Bootstrap Table CSS -->
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/bootstrap-table/dist/bootstrap-table.min.css') }}">
@@ -22,13 +23,13 @@
 
   <!-- Date Range CSS -->
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
-
+ 
   <!-- Custom styles -->
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/style.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/mystyle.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/wizard.css') }}">
   <link rel="stylesheet" href="{{ asset('styles/admin/css/vertical-layout-light/notification.css') }}">
+  <link rel="stylesheet" href="{{ asset('styles/admin/vendors/select2/select2.min.css') }}">
 
   <link rel="shortcut icon" href="images/favicon.png" />
 

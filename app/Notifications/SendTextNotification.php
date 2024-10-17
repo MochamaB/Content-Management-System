@@ -2,7 +2,6 @@
 
 namespace App\Notifications;
 
-use App\Models\Website;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -10,35 +9,24 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
-
-class UserCreatedTextNotification extends Notification 
-//implements ShouldQueue
+class SendTextNotification extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    protected $message;
     protected $user;
-    protected $subject;
-    protected $heading;
-    protected $linkmessage;
-    protected $data;
-    protected $company;
-    protected $smsContent; // Declare a class property to hold the SMS content
+    protected $loggeduser;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct($user, $message, $loggeduser)
     {
+        $this->message = $message;
         $this->user = $user;
-        $this->company = Website::pluck('company_name')->first();
-        $this->smsContent = $this->generateSmsContent();
-    }
-    protected function generateSmsContent()
-    {
-        $link = url('/dashboard/'); // link
-        return "Hi {$this->user->firstname} {$this->user->lastname}, Welcome to {$this->user->company} property management system. 
-                    Access your portal with your email and default password 'property123'.Click here: {$link}";
+        $this->loggeduser;
     }
 
     /**
@@ -58,16 +46,11 @@ class UserCreatedTextNotification extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
- 
-
-     // SMS Notification using AfricasTalking
-     public function toAfricasTalking($notifiable)
-     {
-       
-         return (new AfricasTalkingMessage())
-                     ->content($this->smsContent);
-                     
-     }
+    public function toAfricasTalking($notifiable)
+    {
+        return (new AfricasTalkingMessage())
+            ->content($this->message);
+    }
 
     /**
      * Get the array representation of the notification.
@@ -77,11 +60,12 @@ class UserCreatedTextNotification extends Notification
      */
     public function toArray($notifiable)
     {
+        $from = $this->loggeduser->firstname.' '.$this->loggeduser->lastname;
         return [
             'user_id' => $this->user->id,
             'to' => $this->user->phonenumber,
-            'from' => 'System Generated',
-            'sms_content' => $this->smsContent, // Include the SMS content here
+            'from' => $from ??'System Generated',
+            'sms_content' => $this->message, // Include the SMS content here
             'channels' => $this->via($notifiable),
         ];
     }
