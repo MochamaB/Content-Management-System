@@ -6,9 +6,19 @@
       white-space: normal !important; /* Ensures text wraps onto the next line */
       line-height: 1.6 !important;
   }
+
+  .fixed-table-toolbar{
+    padding-left: 20px;
+  }
+  .pagination-info {
+    line-height: 34px;
+    margin-right: 5px;
+    font-size: 14px;
+    padding-left: 20px;
+}
 </style>
 
-      <div class="table-responsive" style="border:1px solid #dee2e6;padding:0px 0px 0px 0px">
+      <div class="table-responsive" style="border: 1px solid #ccc;padding:0px 0px 10px 0px;background-color:#fff;margin-top:-4px;">
           <table id="table"
               data-toggle="table"
               data-icon-size="sm"
@@ -27,7 +37,7 @@
               data-side-pagination="client"
               data-checkbox="true"
               class="table ">
-              <thead>
+              <thead style="background-color: #fff !important;">
                   <tr>
                       <th data-checkbox="true"></th>
                       <th>To</th>

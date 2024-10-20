@@ -1,4 +1,15 @@
-<div class="" style="padding:20px">
+<style>
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    color: #ffffff !important;
+    border: 0;
+    border-radius: 3px;
+    padding: 6px;
+    font-size: .725rem;
+    font-family: inherit;
+    line-height: 1.2;
+}
+</style>
+<div class="" style="padding:20px 30px; background-color:#fff;border: 1px solid #ccc;margin-top:-4px;">
     <h4>Send Text Message</h4>
     <hr>
     <form method="POST" action="{{ url('textmessage') }}" class="myForm" novalidate>
@@ -9,7 +20,7 @@
                 <label class="label">Send To</label>
                 <select name="send_to" id="send_to" class="formcontrol2" placeholder="Select" required>
                     <option value="">Select Value</option>
-                    <option value="contact">To Contact</option>
+                    <option value="contact">To Contact(s)</option>
                     <option value="group">To Group</option>
                 </select>
             </div>
@@ -17,7 +28,7 @@
         <div class="col-md-10 contacts" id = "contacts" style="display:none">
             <div class="form-group">
                 <label class="label"> Select Contact(s)<span class="requiredlabel">*</span></label>
-                <select class="js-example-basic-multiple formcontrolnoedit" name="users[]" multiple="multiple">
+                <select class="js-example-basic-multiple formcontrol2" name="users[]" multiple="multiple">
                     @foreach($users as $item)
                     <option value="{{ $item->phonenumber }}">{{ $item->firstname }} {{ $item->lastname }}</option>
                     @endforeach

@@ -11,6 +11,8 @@ use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Notification;
 use App\Models\Payment;
+use App\Models\SmsCredit;
+use App\Models\SmsTopup;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Notifications\SendTextNotification;
@@ -18,6 +20,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use ReflectionClass;
+use App\Services\CardService;
+use App\Services\TableViewDataService;
 
 class TextMessageController extends Controller
 {
@@ -26,6 +30,15 @@ class TextMessageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     private $cardService;
+     private $tableViewDataService;
+
+     public function __construct(TableViewDataService $tableViewDataService, CardService $cardService)
+    {
+        $this->cardService = $cardService;
+        $this->tableViewDataService = $tableViewDataService;
+    }
     public function index()
     {
 
@@ -42,22 +55,27 @@ class TextMessageController extends Controller
         $textContent = $this->textInbox();
         $users = User::with('units','roles')->visibleToUser()->get();
         $roles  = User::getDistinctRolesFromUsers($users);
-       // dd($users);
+        $cardData = $this->cardService->textCard($textContent);
+        $transactions = $this->textTransactions();
+        $tableData = $this->tableViewDataService->getTransactionData($transactions, false);
+        $tariffs = $this->textTariff();
+        $tariffData = $this->tableViewDataService->getTariffData($tariffs, false);
+      //  dd($textContent->count());
        
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Dashboard') {
-                $tabContents[] = View('admin.Communication.text_inbox')->render();
+                $tabContents[] = View('admin.Communication.text_dashboard', compact('cardData'))->render();
             }elseif ($title === 'Inbox') {
                 $tabContents[] = View('admin.Communication.text_summary',compact('textContent'))->render();
             }elseif ($title === 'Compose Text') {
                 $tabContents[] = View('admin.Communication.send_text',compact('users','roles'))->render();
             }elseif ($title === 'Top up') {
-                $tabContents[] = View('admin.Communication.text_inbox')->render();
+                $tabContents[] = View('admin.Communication.text_topup')->render();
             }elseif ($title === 'Transactions') {
-                $tabContents[] = View('admin.Communication.text_inbox')->render();
+                $tabContents[] = View('admin.CRUD.table', ['data' => $tableData,'controller' => ['textMessage']])->render();
             }elseif ($title === 'Tarriffs') {
-                $tabContents[] = View('admin.Communication.text_inbox')->render();
+                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $tariffData,'controller' => ['smsCredit']])->render();
             }
         }
 
@@ -124,6 +142,26 @@ class TextMessageController extends Controller
     public function create()
     {
         //
+    }
+
+    public function textTransactions()
+    {
+        $perPage = 20;
+        $page = Paginator::resolveCurrentPage() ?: 1;
+        $transactions = SmsTopup::orderBy('created_at', 'desc')
+        ->paginate($perPage);
+
+        return $transactions;
+    }
+
+    public function textTariff()
+    {
+        $perPage = 20;
+        $page = Paginator::resolveCurrentPage() ?: 1;
+        $tariffs = SmsCredit::orderBy('created_at', 'desc')
+        ->paginate($perPage);
+
+        return $tariffs;
     }
 
     /**

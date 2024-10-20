@@ -15,7 +15,7 @@
             @endforeach
         </div>
     </div>
-    <div class="col-9 tabcontent" style="padding:0px;">
+    <div class="col-9 tabcontent" style="padding:0px;border:none;background-color:#F4F5F7">
 
         <div class="tab-content" id="v-pills-tabContent">
             @foreach($tabContents as $index => $content)

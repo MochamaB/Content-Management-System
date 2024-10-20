@@ -13,6 +13,7 @@ use App\Models\MeterReading;
 use App\Models\InvoiceItems;
 use App\Models\Property;
 use App\Models\Setting;
+use App\Models\SmsCredit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -1165,6 +1166,85 @@ class TableViewDataService
                 $event,
                 $user,
                 $description,
+                'isDeleted' => $isDeleted,
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 1, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
+
+    public function getTransactionData($transactionData, $extraColumns = false)
+    {
+         /// TABLE DATA ///////////////////////////
+
+         $headers = ['CODE', 'AMOUNT','CREDITS RECEIVED','DATE','LOADED BY','ACTIONS'];
+
+         // If $Extra columns is true, insert 'Unit Details' at position 3
+         if ($extraColumns) {
+            array_splice($headers, 0, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($transactionData as $item) {
+           
+            $isDeleted = $item->deleted_at !== null;
+            $row = [
+                'id' => $item->id,
+                $item->transaction_code,
+                $item->amount,
+                $item->received_credits,
+                'isDeleted' => $isDeleted,
+            ];
+            // If $Extra Columns is true, insert unit details at position 3
+            if ($extraColumns) {
+                array_splice($row, 1, 0, $item->property->property_name); // Replace with how you get unit details
+            }
+            $tableData['rows'][] = $row;
+        }
+
+        return $tableData;
+    }
+
+    public function getTariffData($tariffData, $extraColumns = false)
+    {
+         /// TABLE DATA ///////////////////////////
+
+         $headers = ['TYPE', 'PROPERTY/USER','TARIFF RATE','CREDITS','ACTIONS'];
+
+         // If $Extra columns is true, insert 'Unit Details' at position 3
+         if ($extraColumns) {
+            array_splice($headers, 0, 0, ['PROPERTY']);
+        }
+
+        $tableData = [
+            'headers' => $headers,
+            'rows' => [],
+        ];
+
+        foreach ($tariffData as $item) {
+            $type = '';
+            if($item->credit_type = SmsCredit::TYPE_PROPERTY ){
+                $type = $item->property->property_name;
+            }elseif ($item->credit_type = SmsCredit::TYPE_USER ){
+                $type = $item->user->firstname;
+            }
+           
+            $isDeleted = $item->deleted_at !== null;
+            $row = [
+                'id' => $item->id,
+                \App\Models\SmsCredit::$statusLabels[$item->credit_type],
+                $type,
+                $item->tariff,
+                $item->available_credits,
                 'isDeleted' => $isDeleted,
             ];
             // If $Extra Columns is true, insert unit details at position 3

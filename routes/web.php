@@ -34,6 +34,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SmsCreditController;
 use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TaxController;
 use App\Http\Controllers\TicketController;
@@ -94,6 +95,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('notification/text/sendText', [NotificationController::class, 'sendText']);
         Route::resource('notification', NotificationController::class);
         Route::resource('textmessage', TextMessageController::class);
+        Route::resource('smsCredit', SmsCreditController::class);
         
        
     });

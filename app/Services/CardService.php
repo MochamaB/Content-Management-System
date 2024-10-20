@@ -433,4 +433,17 @@ class CardService
         return $cards;
     }
 
+    public function textCard($text)
+    {
+
+        $sent = $text->count();
+       
+        $cards =  [
+            'credit' => ['title' => 'Available Credit', 'icon' => '', 'value' => 0, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'sent' => ['title' => 'Total Sent', 'icon' => '', 'value' => $sent, 'amount' => '', 'percentage' => '', 'links' => ''],
+           
+        ];
+        return $cards;
+    }
+
 }
