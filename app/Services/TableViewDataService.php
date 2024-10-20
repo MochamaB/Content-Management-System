@@ -1232,10 +1232,14 @@ class TableViewDataService
 
         foreach ($tariffData as $item) {
             $type = '';
-            if($item->credit_type = SmsCredit::TYPE_PROPERTY ){
-                $type = $item->property->property_name;
-            }elseif ($item->credit_type = SmsCredit::TYPE_USER ){
-                $type = $item->user->firstname;
+            if ($item->credit_type == 1) {
+                // Check if property exists before trying to access property_name
+                $type = $item->property ? $item->property->property_name : 'No Property';
+            } elseif ($item->credit_type == 2) {
+                // Check if user exists before trying to access firstname
+                $type = $item->user ? $item->user->firstname : 'No User';
+            } elseif ($item->credit_type == 3) {
+                $type = 'Per Instance';
             }
            
             $isDeleted = $item->deleted_at !== null;

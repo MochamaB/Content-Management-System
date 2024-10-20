@@ -54,6 +54,9 @@
                     </textarea>
                 </div>
         </div>
+        <div class="col-md-6" id="submitBtn" style="display:none">
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="">Send Text</button>
+        </div>
 
 
     </form>
@@ -72,15 +75,19 @@
         $('#contacts').hide();
         $('#groups').hide();
         $('#message').hide();
+        $('#submitBtn').hide();
+
 
         if (selectedValue === 'contact') {
             // Show the contact div and message div when 'contact' is selected
             $('#contacts').show();
             $('#message').show();
+            $('#submitBtn').show();
         } else if (selectedValue === 'group') {
             // Show the group div and message div when 'group' is selected
             $('#groups').show();
             $('#message').show();
+            $('#submitBtn').show();
         }
     });
 });

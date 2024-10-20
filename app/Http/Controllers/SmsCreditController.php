@@ -26,7 +26,7 @@ class SmsCreditController extends Controller
      */
     public function create()
     {
-        $users = User::with('units','roles')->visibleToUser()->get();
+        $users = User::with('units','roles')->visibleToUser()->excludeTenants()->get();
         $properties = Property::all();
         
          ///SESSION /////
@@ -48,6 +48,17 @@ class SmsCreditController extends Controller
     {
         $validationRules = SmsCredit::$validation;
         $validatedData = $request->validate($validationRules);
+
+        // Check if a record with a different credit_type already exists
+        $existingDifferentType = SmsCredit::where('credit_type', '!=', $validatedData['credit_type'])->exists();
+
+        // If another credit_type already exists, block this entry
+        if ($existingDifferentType) {
+            return redirect()->back()->with(
+                'statuserror','A different credit type plan already exists in the system.',
+            )->withInput();
+        }
+        
         $smsCredit = new SmsCredit();
         $smsCredit->fill($validatedData);
       

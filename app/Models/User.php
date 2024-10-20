@@ -341,6 +341,13 @@ class User extends Authenticatable implements HasMedia, Auditable
                      ->withLowerPermissions()
                      ->inSameUnits();
     }
+    public function scopeExcludeTenants($query)
+    {
+        return $query->whereDoesntHave('roles', function ($query) {
+            $query->where('name', 'tenant');
+        });
+    }
+
 
     
 

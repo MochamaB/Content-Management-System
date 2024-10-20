@@ -16,6 +16,7 @@
                 <option value="">Select Tariff Type</option>
                 <option value="{{ \App\Models\SmsCredit::TYPE_PROPERTY }}">{{ \App\Models\SmsCredit::$statusLabels[\App\Models\SmsCredit::TYPE_PROPERTY] }}</option>
                 <option value="{{ \App\Models\SmsCredit::TYPE_USER }}">{{ \App\Models\SmsCredit::$statusLabels[\App\Models\SmsCredit::TYPE_USER] }}</option>
+                <option value="{{ \App\Models\SmsCredit::TYPE_INSTANCE }}">{{ \App\Models\SmsCredit::$statusLabels[\App\Models\SmsCredit::TYPE_INSTANCE] }}</option>
             </select>
         </div>
 
@@ -77,7 +78,12 @@
             $('#user').show();
             $('#tariff').show();
             $('#submitBtn').show();
+        }else if (selectedValue === '3') {
+            // Show the group div and message div when 'group' is selected
+            $('#tariff').show();
+            $('#submitBtn').show();
         }
+
     });
 });
 

@@ -15,18 +15,18 @@ class SendTextNotification extends Notification implements ShouldQueue
 
     protected $message;
     protected $user;
-    protected $loggeduser;
+    protected $loggedUser;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user, $message, $loggeduser)
+    public function __construct($user, $message, $loggedUser)
     {
         $this->message = $message;
         $this->user = $user;
-        $this->loggeduser;
+        $this->loggedUser = $loggedUser;
     }
 
     /**
@@ -60,7 +60,7 @@ class SendTextNotification extends Notification implements ShouldQueue
      */
     public function toArray($notifiable)
     {
-        $from = $this->loggeduser->firstname.' '.$this->loggeduser->lastname;
+        $from = $this->loggedUser->firstname.' '.$this->loggedUser->lastname;
         return [
             'user_id' => $this->user->id,
             'to' => $this->user->phonenumber,
