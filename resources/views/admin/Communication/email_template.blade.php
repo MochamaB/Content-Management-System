@@ -4,7 +4,8 @@
         <div class="details">
             
            <p class="defaulttext"> Dear {{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'Lastname'}}</p>
-            @foreach ($data as $line => $content)
+        @if (is_array($data)) 
+           @foreach ($data as $line => $content)
             @if (!empty($content))
             @if ($line === 'action')
             <div class="text-center">
@@ -18,6 +19,9 @@
             @endif
             @endif
             @endforeach
+            @else
+            <p>{{ $data ?? '' }}</p> <!-- Display the message directly if it's not an array -->
+        @endif
         </div>
     </div>
 </div>

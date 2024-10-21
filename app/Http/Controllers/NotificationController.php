@@ -51,7 +51,7 @@ class NotificationController extends Controller
         //  $filterData = $this->filterData($this->model);
         $controller = $this->controller;
 
-        return View('admin.Communication.notification_index', compact('controller'));
+        return View('admin.Communication.notification_index');
     }
 
     public function email(Request $request)

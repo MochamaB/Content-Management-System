@@ -2,87 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notification;
+use App\Models\User;
+use App\Notifications\NewsWasPublished;
 use Illuminate\Http\Request;
+use App\Traits\FormDataTrait;
+use App\Services\TableViewDataService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Pagination\LengthAwarePaginator;
+use GuzzleHttp\Client;
 use AfricasTalking\SDK\AfricasTalking;
 use App\Models\Expense;
 use App\Models\Invoice;
-use App\Models\Notification;
 use App\Models\Payment;
-use App\Models\SmsCredit;
-use App\Models\SmsTopup;
 use App\Models\Ticket;
-use App\Models\User;
-use App\Notifications\SendTextNotification;
+use App\Notifications\SendEmailNotification;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use ReflectionClass;
-use App\Services\CardService;
-use App\Services\TableViewDataService;
 
-class TextMessageController extends Controller
+
+class EmailController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-
-     private $cardService;
-     private $tableViewDataService;
-
-     public function __construct(TableViewDataService $tableViewDataService, CardService $cardService)
-    {
-        $this->cardService = $cardService;
-        $this->tableViewDataService = $tableViewDataService;
-    }
     public function index()
-    {
-
-
-        $tabTitles = collect([
-            'Dashboard',
-            'Inbox',
-            'Compose Text',
-            'Top up',
-            'Transactions',
-            'Tarriffs',
-        ]);
-
-        $textContent = $this->textInbox();
-        $users = User::with('units','roles')->visibleToUser()->get();
-        $roles  = User::getDistinctRolesFromUsers($users);
-        $transactions = $this->textTransactions();
-        $tableData = $this->tableViewDataService->getTransactionData($transactions, false);
-        $tariffs = $this->textTariff();
-        $tariffData = $this->tableViewDataService->getTariffData($tariffs, false);
-      //  dd($textContent->count());
-       
-        $tabContents = [];
-        foreach ($tabTitles as $title) {
-            if ($title === 'Dashboard') {
-                $tabContents[] = View('admin.Dashboard.smscredit', compact('textContent','tariffs'))->render();
-            }elseif ($title === 'Inbox') {
-                $tabContents[] = View('admin.Communication.text_summary',compact('textContent'))->render();
-            }elseif ($title === 'Compose Text') {
-                $tabContents[] = View('admin.Communication.send_text',compact('users','roles'))->render();
-            }elseif ($title === 'Top up') {
-                $tabContents[] = View('admin.Communication.text_topup')->render();
-            }elseif ($title === 'Transactions') {
-                $tabContents[] = View('admin.CRUD.table', ['data' => $tableData,'controller' => ['textMessage']])->render();
-            }elseif ($title === 'Tarriffs') {
-                $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $tariffData,'controller' => ['smsCredit']])->render();
-            }
-        }
-
-        return View('admin.Communication.text', compact('tabTitles', 'tabContents'));
-        //
-    }
-
-    public function textInbox()
     {
         $user = Auth::user();
         $perPage = 20;
@@ -90,7 +40,7 @@ class TextMessageController extends Controller
         // Check if the user has permission to view all notifications
         if (Gate::allows('view-all', $user)) {
            // $notifications = Notification::all();
-            $mailNotifications = Notification::whereJsonContains('data->channels', ['NotificationChannels\AfricasTalking\AfricasTalkingChannel'])
+            $mailNotifications = Notification::whereJsonContains('data->channels', ['mail'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
 
@@ -100,7 +50,7 @@ class TextMessageController extends Controller
         } else {
              // For users with restricted access, filter their notifications
              $allNotifications = $user->notifications()
-            ->whereJsonContains('data->channels', ['NotificationChannels\AfricasTalking\AfricasTalkingChannel'])
+            ->whereJsonContains('data->channels', ['mail'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -120,17 +70,53 @@ class TextMessageController extends Controller
         $inboxNotifications = $unreadNotifications->concat($readNotifications)->map(function ($notification) {
             $notificationData  = json_decode($notification->data, true);
             $notificationType = $notification->type;
-                // Extract the SMS content from the notification data
-                $smsContent = $notificationData['sms_content'] ?? 'No SMS content available'; // Default if missing
+     
+            try {
+             
+                if ($notificationData) {
+                   
+                     if (isset($notificationData['modelname']) && isset($notificationData['model_id'])) 
+                        {
+                            $modelName = $notificationData['modelname'];
+                            $modelId = $notificationData['model_id'];
+                            switch ($modelName) {
+                            case 'Invoice':
+                                $invoice = Invoice::find($modelId);
+                                $viewData['invoice'] = $invoice;
+                                $viewName = 'admin.Lease.invoice_contents';
+                                break;
+                            case 'Payment':
+                                $payment = Payment::find($modelId);
+                                $viewData['payment'] = $payment;
+                                $viewName = 'admin.Lease.payment_contents';
+                                break;
+                                // Add cases for other models you expect to handle
+                            }
+                        }else{
+                            $viewName = 'admin.Communication.email_template'; // Default view
+                            $viewData = [
+                                'user' => $notification->notifiable,
+                                'data' => $notificationData['data'] ?? [],
+                            ];
+                        }
 
-                // Attach SMS content to the notification object
-                $notification->sms_content = $smsContent;
-
-                return $notification;
+                    $renderedView = View::make($viewName, $viewData)->render();
+                    $notificationData['body'] = $renderedView;
+                } else {
+                    $notificationData['body'] = 'Email content not available';
+                }
+            } catch (\Exception $e) {
+                $notificationData['body'] = 'Error rendering email content: ' . $e->getMessage();
+            }
     
+            $notification->data = json_encode($notificationData);
+            return $notification;
         });
-         // Return inbox notifications
-         return $inboxNotifications;
+    
+
+        
+        
+        return View('admin.Communication.email', compact('inboxNotifications','mailNotifications'));
     }
 
     /**
@@ -140,27 +126,15 @@ class TextMessageController extends Controller
      */
     public function create()
     {
-        //
-    }
+        $users = User::with('units','roles')->visibleToUser()->get();
+        $roles  = User::getDistinctRolesFromUsers($users);
 
-    public function textTransactions()
-    {
-        $perPage = 20;
-        $page = Paginator::resolveCurrentPage() ?: 1;
-        $transactions = SmsTopup::orderBy('created_at', 'desc')
-        ->paginate($perPage);
+         ///SESSION /////
+         if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
 
-        return $transactions;
-    }
-
-    public function textTariff()
-    {
-        $perPage = 20;
-        $page = Paginator::resolveCurrentPage() ?: 1;
-        $tariffs = SmsCredit::orderBy('created_at', 'desc')
-        ->paginate($perPage);
-
-        return $tariffs;
+        return View('admin.Communication.create_email', compact('users','roles'));
     }
 
     /**
@@ -174,24 +148,26 @@ class TextMessageController extends Controller
         $loggedUser = Auth::user();
         $request->validate([
             'send_to' => 'required',
+            'subject' => 'required|string',
             'message' => 'required|string',
             'users' => 'nullable|array', // In case contacts are selected
             'group' => 'nullable|string', // In case a group is selected
         ]);
     
+        $subject = $request->input('subject');
         $message = $request->input('message');
     
         // If the user chose "contact", get the selected users
         if ($request->input('send_to') === 'contact') {
-            $selectedUsers = $request->input('users', []); // Array of phone numbers
+            $selectedUsers = $request->input('users', []); // Array of email
     
             // Trigger the notification for each selected user
-            foreach ($selectedUsers as $phoneNumber) {
+            foreach ($selectedUsers as $email) {
                 // Assuming you have a way to retrieve user by phone number
-                $user = User::where('phonenumber', $phoneNumber)->first();
+                $user = User::where('email', $email)->first();
     
                 if ($user) {
-                    $user->notify(new SendTextNotification($user,$message,$loggedUser));
+                    $user->notify(new SendEmailNotification($user,$subject,$message,$loggedUser));
                 }
             }
         }
@@ -207,11 +183,13 @@ class TextMessageController extends Controller
     
             // Trigger the notification for each user in the group
             foreach ($usersInGroup as $user) {
-                $user->notify(new SendTextNotification($user,$message,$loggedUser));
+                $user->notify(new SendEmailNotification($user,$subject,$message,$loggedUser));
             }
         }
-    
-        return redirect()->back()->with('status', 'Notification sent successfully!');
+
+        $redirectUrl = session()->pull('previousUrl', 'email');
+
+        return redirect($redirectUrl)->with('status','Email  Sent Successfully');
     }
 
     /**

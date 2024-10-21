@@ -66,13 +66,7 @@ class UserCreatedNotification extends Notification
         ->subject($this->subject);
     }
 
-     // SMS Notification using AfricasTalking
-     public function toAfricasTalking($notifiable)
-     {
-         return (new AfricasTalkingMessage())
-                     ->content("Hi {$this->user->firstname}, welcome to our property management system. 
-                     You can log in with your email and password 'property123'. Access your account at: " . url('/dashboard'));
-     }
+    
 
     /**
      * Get the array representation of the notification.

@@ -4,8 +4,11 @@
 
 <div class="row" style="margin-left:0px">
     <div class="col-4 notificationtab pt-1" style="padding:0px;">
-        <div class="float-left search btn-group" style="padding:15px 20px;width:300px;">
-          <input class="form-control form-control-sm" type="search" placeholder="Search" autocomplete="off">
+        <div class="float-left search btn-group" style="padding:15px 10px;">
+          <input class="form-control form-control-sm" type="search" style="width:200px" placeholder="Search" autocomplete="off">
+          <a href="{{url('email/create')}}" class="btn btn-warning btn-lg text-white mb-0 me-0" id="">
+          <i class="mdi mdi-pen"></i>  
+          Compose</a>
         </div>
     @if($inboxNotifications->isEmpty())
     <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">     
@@ -25,13 +28,18 @@
                     $subject = $data['subject'] ?? 'No Subject';
                     $from = $data['user_email'] ?? 'Unknown';
                     $date = $notification->created_at->format('M d, Y');
+                    $backgroundColor =!$loop->first && $notification->read_at ? 'white' : '#F4F5F7';
                 @endphp
-                <a class="list-group-item list-group-item-action @if($loop->first) active @endif" 
-                   id="email-{{ $notification->id }}-list" 
-                   data-toggle="list" 
-                   href="#email-{{ $notification->id }}" 
-                   role="tab" 
-                   aria-controls="email-{{ $notification->id }}">
+
+                <a class="list-group-item list-group-item-action {{ $loop->first ? 'active' : '' }}"
+                    id="email-{{ $notification->id }}-list" 
+                    data-id="{{ $notification->id }}" 
+                    data-toggle="list" 
+                    href="#email-{{ $notification->id }}" 
+                    role="tab" 
+                    aria-controls="email-{{ $notification->id }}"
+                    style="@if(!$loop->first) active background-color: {{ $notification->read_at ? 'white' : '#F4F5F7' }}; @endif"
+                    onclick="markAsRead(this, event)"> <!-- Apply background color except when active -->
                    <p><b>{{ $subject }}</b></p>
                     <div class="d-flex w-100 justify-content-between">
                         <p class="mb-1">{{ $from }}</p>
@@ -106,5 +114,33 @@
         </div>
     </div>
 </form>
+<script>
+function markAsRead(element) {
+    var notificationId = $(element).data('id');
+
+        // Remove active class from all list-group-item links
+        $('.list-group-item').removeClass('active');
+
+        // Add active class to the clicked link
+        $(element).addClass('active');
+
+    $.ajax({
+        url: '/notification/mark-as-read/' + notificationId,
+        type: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'), // Include CSRF token
+        },
+        success: function(response) {
+            if (response.status === 'success' && !$(element).hasClass('active')) {
+                $(element).css('background-color', 'white');
+            }
+        },
+        error: function(response) {
+            console.error('Error:', response);
+        }
+    });
+}
+
+</script>
 
 @endsection

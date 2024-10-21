@@ -269,11 +269,15 @@
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-    color: #999;
+    color: #ffffff;
     cursor: pointer;
     display: inline-block;
     font-weight: bold;
-    margin-right: 2px
+    margin-right: 2px;
+    background-color: unset;
+    border: none;
+    font-size: 1rem;
+    
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {

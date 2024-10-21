@@ -88,7 +88,12 @@ class SmsCreditController extends Controller
      */
     public function edit(SmsCredit $smsCredit)
     {
-        //
+       
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
+
+        return View('admin.Communication.edit_tariff', compact('smsCredit'));
     }
 
     /**
@@ -100,7 +105,16 @@ class SmsCreditController extends Controller
      */
     public function update(Request $request, SmsCredit $smsCredit)
     {
-        //
+        $validatedData = $request->validate([
+            'tariff' => 'required',
+           
+        ]);
+        $smsCredit->fill($validatedData);
+        $smsCredit->update();
+
+        $redirectUrl = session()->pull('previousUrl', 'smsCredit');
+
+        return redirect($redirectUrl)->with('status','Tariff  Edited Successfully');
     }
 
     /**

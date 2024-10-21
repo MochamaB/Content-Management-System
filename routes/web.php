@@ -29,6 +29,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DepositController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\MpesaSTKPUSHController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
@@ -87,15 +88,21 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
 //<!-------------------------------- Communication Module ---------------------------------------------->////
     Route::group(['groupName' => 'Communication'], function () {
       
-        Route::get('notification/email', [NotificationController::class, 'email'])->name('notification.email');
-        Route::get('notification/email/{id}', [NotificationController::class, 'showEmail'])
-        ->where('id', '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
-        ->name('notification.show');
-        Route::get('notification/text', [NotificationController::class, 'text'])->name('notification.email');
         Route::post('notification/text/sendText', [NotificationController::class, 'sendText']);
         Route::resource('notification', NotificationController::class);
+        Route::resource('email', EmailController::class);
         Route::resource('textmessage', TextMessageController::class);
         Route::resource('smsCredit', SmsCreditController::class);
+        Route::post('/notification/mark-as-read/{id}', function($id) {
+            $notification = auth()->user()->notifications()->where('id', $id)->first();
+            
+            if ($notification) {
+                $notification->markAsRead();
+                return response()->json(['status' => 'success']);
+            }
+        
+            return response()->json(['status' => 'error', 'message' => 'Notification not found.'], 404);
+        });
         
        
     });
