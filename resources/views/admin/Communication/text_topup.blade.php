@@ -11,13 +11,13 @@
     @endphp
     <div class="separator">
         <hr>
-        <span>PAY USING M-PESA EXPRESS</span>
+        <span>TOP UP USING M-PESA EXPRESS</span>
         <hr>
     </div>
     <form method="POST" id="initiatepaymentForm" action="{{ route('mpesa.initiate') }}" class="myForm" novalidate>
         @csrf
         <ul class="ml-2 px-3 list-unstyled">
-            <li>1. Confirm or <a href="" style="font-size: 15px; font-weight:600" class="editLink"> Edit</a> the phone number and the amount that you are paying.
+            <li>1. Confirm or <a href="" style="font-size: 15px; font-weight:600" class="editLink"> Edit</a> the phone number and the amount that you are toping up.
             </li>
             <div class="form-group">
                 <label class="label"> Phone Number<span class="requiredlabel">*</span></label>

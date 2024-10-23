@@ -53,6 +53,7 @@ class EmailController extends Controller
             ->whereJsonContains('data->channels', ['mail'])
             ->orderBy('created_at', 'desc')
             ->get();
+            
 
             $pagedNotifications = $allNotifications->slice(($page - 1) * $perPage, $perPage);
 
@@ -68,7 +69,7 @@ class EmailController extends Controller
         }
 
         $inboxNotifications = $unreadNotifications->concat($readNotifications)->map(function ($notification) {
-            $notificationData  = json_decode($notification->data, true);
+            $notificationData = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
             $notificationType = $notification->type;
      
             try {

@@ -96,6 +96,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::post('/notification/mark-as-read/{id}', function($id) {
             $notification = auth()->user()->notifications()->where('id', $id)->first();
             
+            
             if ($notification) {
                 $notification->markAsRead();
                 return response()->json(['status' => 'success']);

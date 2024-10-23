@@ -210,7 +210,7 @@ class AppServiceProvider extends ServiceProvider
                     'transaction-type' => ['display' => 'Transaction Types'],
                 ]],
 
-                'Messages' => ['icon' => 'email-open', 'submodules' => [
+                'Communication' => ['icon' => 'email-open', 'submodules' => [
                     'notification' => ['display' => 'Notification Center'],
                     'email' => ['display' => 'Emails'],
                     'textmessage' => ['display' => 'Text Messages'],

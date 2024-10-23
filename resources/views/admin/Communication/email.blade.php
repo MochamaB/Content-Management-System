@@ -4,8 +4,8 @@
 
 <div class="row" style="margin-left:0px">
     <div class="col-4 notificationtab pt-1" style="padding:0px;">
-        <div class="float-left search btn-group" style="padding:15px 10px;">
-          <input class="form-control form-control-sm" type="search" style="width:200px" placeholder="Search" autocomplete="off">
+        <div class="float-left search btn-group" style="padding:15px 15px;">
+          <input class="form-control form-control-sm" id="search-input" type="search" style="width:200px" placeholder="Search" autocomplete="off">
           <a href="{{url('email/create')}}" class="btn btn-warning btn-lg text-white mb-0 me-0" id="">
           <i class="mdi mdi-pen"></i>  
           Compose</a>
@@ -28,22 +28,23 @@
                     $subject = $data['subject'] ?? 'No Subject';
                     $from = $data['user_email'] ?? 'Unknown';
                     $date = $notification->created_at->format('M d, Y');
-                    $backgroundColor =!$loop->first && $notification->read_at ? 'white' : '#F4F5F7';
+                    $backgroundColor =$notification->read_at ? 'white' : '#F4F5F7';
                 @endphp
 
-                <a class="list-group-item list-group-item-action {{ $loop->first ? 'active' : '' }}"
+                <a class="list-group-item list-group-item-action {{ $loop->first ? 'active' : '' }} notification-item"
                     id="email-{{ $notification->id }}-list" 
                     data-id="{{ $notification->id }}" 
+                    data-read="{{ $notification->read_at ? 'true' : 'false' }}"
                     data-toggle="list" 
                     href="#email-{{ $notification->id }}" 
                     role="tab" 
                     aria-controls="email-{{ $notification->id }}"
-                    style="@if(!$loop->first) active background-color: {{ $notification->read_at ? 'white' : '#F4F5F7' }}; @endif"
+                    style="@if(!$loop->first) background-color: {{ $backgroundColor }}; @endif" 
                     onclick="markAsRead(this, event)"> <!-- Apply background color except when active -->
-                   <p><b>{{ $subject }}</b></p>
+                   <p><b class="subject">{{ $subject }}</b></p>
                     <div class="d-flex w-100 justify-content-between">
-                        <p class="mb-1">{{ $from }}</p>
-                        <p>{{ $date }}</p>
+                        <p class="mb-1 from">{{ $from }}</p>
+                        <p class="date">{{ $date }}</p>
                     </div>
                 </a>
             @endforeach
@@ -118,11 +119,14 @@
 function markAsRead(element) {
     var notificationId = $(element).data('id');
 
-        // Remove active class from all list-group-item links
-        $('.list-group-item').removeClass('active');
-
+       // Remove active class and reset background color for all list-group-item links
+    $('.list-group-item').each(function() {
+        $(this).removeClass('active');
+        $(this).css('background-color', $(this).data('read') ? 'white' : '#F4F5F7'); // Reset background to the original read/unread state
+    });
         // Add active class to the clicked link
         $(element).addClass('active');
+        $(element).css('background-color', '#0d6efd');
 
     $.ajax({
         url: '/notification/mark-as-read/' + notificationId,
@@ -140,6 +144,23 @@ function markAsRead(element) {
         }
     });
 }
+$(document).ready(function() {
+    // Search input keyup event
+    $('#search-input').on('keyup', function() {
+        var searchValue = $(this).val().toLowerCase();
+
+        // Loop through the notifications and filter them
+        $('.notification-item').filter(function() {
+            // Get subject and sender values
+            var subject = $(this).find('.subject').text().toLowerCase();
+            var from = $(this).find('.from').text().toLowerCase();
+            var date = $(this).find('.date').text().toLowerCase();
+
+            // Toggle visibility based on matching search
+            $(this).toggle(subject.includes(searchValue) || from.includes(searchValue) || date.includes(searchValue));
+        });
+    });
+});
 
 </script>
 

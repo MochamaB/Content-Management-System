@@ -30,6 +30,8 @@ use App\Services\InvoiceService;
 use App\Services\ExpenseService;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Services\SmsService;
+
 
 class TicketController extends Controller
 {
@@ -46,6 +48,7 @@ class TicketController extends Controller
     private $expenseService;
     private $filterService;
     private $cardService;
+    protected $smsService;
 
 
     public function __construct(
@@ -53,7 +56,8 @@ class TicketController extends Controller
         InvoiceService $invoiceService,
         ExpenseService $expenseService,
         FilterService $filterService,
-        CardService $cardService
+        CardService $cardService,
+        SmsService $smsService
     ) {
         $this->model = Ticket::class;
         $this->controller = collect([
@@ -65,6 +69,7 @@ class TicketController extends Controller
         $this->expenseService = $expenseService;
         $this->filterService = $filterService;
         $this->cardService = $cardService;
+        $this->smsService = $smsService;
     }
     public function index(Request $request)
     {
@@ -187,6 +192,33 @@ class TicketController extends Controller
         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
 
         return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
+    }
+
+    protected function checkSmsCredits(array $recipients): array
+    {
+        // Dummy message to check credits
+        $dummyMessage = "Credit check";
+        $loggedUser = Auth::user();
+        
+        // Use the sendBulkSms method but only to check credits
+        $result = $this->smsService->sendBulkSms($recipients, $dummyMessage, $loggedUser,TicketTextNotification::class,
+            ['credit_check_only' => true]
+        );
+
+        return [
+            'has_credits' => $result['success'],
+            'message' => $result['message']
+        ];
+    }
+    protected function getNotificationRecipients($propertyId)
+    {
+        $property = Property::find($propertyId);
+        return $property->users()
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'tenant'); // Exclude tenants
+            })
+            ->distinct()
+            ->pluck('phonenumber'); // Assuming phone numbers are in the 'phonenumber' column
     }
 
     /**

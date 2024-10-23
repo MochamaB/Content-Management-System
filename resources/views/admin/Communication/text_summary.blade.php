@@ -50,10 +50,13 @@
                   @foreach ($textContent as $notification)
                   @php
                   $user = $notification->notifiable->firstname.' '.$notification->notifiable->lastname;
-                  $data = json_decode($notification->data, true);
+                  $data = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
+                  $backgroundColor = $notification->read_at ? 'white' : '#F4F5F7';
                   @endphp
-                  @if($notification->read_at == null)
-                  <tr style="height:50px; background: #F4F5F7;border-bottom: 1px solid #ccc;" class="clickable-row" data-id="{{ $notification->id }}">
+                  <tr 
+                  style="height:50px; background-color: {{$backgroundColor}}; border-bottom: 1px solid #ccc;" 
+                  class="clickable-row" 
+                  data-id="{{ $notification->id }}">
                       <td></td>
                       <td class=""><span class="pb-2" style="font-weight: 600;">{{$user}}</span> </br></br>
                         {{ $data['to'] ?? 'Unknown' }}</td>
@@ -61,15 +64,6 @@
                       <td>{{ $data['from'] ?? 'Unknown' }}</td>
                       <td class="time">{{\Carbon\Carbon::parse($notification->created_at)->format('d M Y') }}</td>
                   </tr>
-                  @else
-                  <tr style="height:50px;background: #fff;border-bottom: 1px solid #ccc;" class="clickable-row" data-href="{{ url('email/'.$notification->id) }}">
-                      <td></td>
-                      <td class="">{{ $data['to'] ?? 'Unknown' }}</td>
-                      <td class="sms-content-column">{{ $notification['sms_content'] ?? 'Content' }}</td>
-                      <td>{{ $data['from'] ?? 'Unknown' }}</td>
-                      <td class="time">{{\Carbon\Carbon::parse($notification->created_at)->format('d M Y') }}</td>
-                  </tr>
-                  @endif
                   @endforeach
 
               </tbody>
@@ -77,29 +71,39 @@
 
       </div>
       <script>
-          $(document).ready(function() {
-              // Attach the click event handler to rows
-              $('.clickable-row').on('click', function(event) {
-                  event.preventDefault(); // Prevent default behavior of the row click (such as navigation)
+    $(document).ready(function() {
+        // Delegate the click event handler to the document for dynamically loaded rows
+        $(document).on('click', '.clickable-row', function(event) {
+            event.preventDefault(); // Prevent default behavior of the row click
 
-                  var notificationId = $(this).data('id'); // Retrieve the notification ID from the data-id attribute
+            var notificationId = $(this).data('id'); // Retrieve the notification ID from the data-id attribute
+            var rowElement = $(this); // Store the row element to update the background later
+            
 
-                
-                  // Perform the AJAX call to read sms 
-                  $.ajax({
-                      url: '/' + notificationId, // Construct the correct URL for fetching email details
-                      method: 'GET',
-                      success: function(response) {
-                          // Replace the content with the new email details
-                         // $('#v-pills-tabContent').html(response);
-                      },
-                      error: function() {
-                         // alert('Unable to load email details.');
-                      }
-                  });
-              });
-          });
-      </script>
+            // Perform the AJAX call to mark the notification as read
+            $.ajax({
+                url: '/notification/mark-as-read/' + notificationId,
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        // Optionally, change the row background color to indicate it has been read
+                        rowElement.css('background-color', 'white');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Log the full error details to the console for debugging
+                    console.error('Error Status:', status);
+                    console.error('Error:', error);
+                    console.error('Response Text:', xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
 
 
 

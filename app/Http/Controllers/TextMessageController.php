@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\View;
 use ReflectionClass;
 use App\Services\CardService;
 use App\Services\TableViewDataService;
+use App\Services\SmsService;
 
 class TextMessageController extends Controller
 {
@@ -33,11 +34,13 @@ class TextMessageController extends Controller
 
      private $cardService;
      private $tableViewDataService;
+     protected $smsService;
 
-     public function __construct(TableViewDataService $tableViewDataService, CardService $cardService)
+     public function __construct(TableViewDataService $tableViewDataService, CardService $cardService,SmsService $smsService)
     {
         $this->cardService = $cardService;
         $this->tableViewDataService = $tableViewDataService;
+        $this->smsService = $smsService;
     }
     public function index()
     {
@@ -118,7 +121,7 @@ class TextMessageController extends Controller
         }
 
         $inboxNotifications = $unreadNotifications->concat($readNotifications)->map(function ($notification) {
-            $notificationData  = json_decode($notification->data, true);
+            $notificationData = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
             $notificationType = $notification->type;
                 // Extract the SMS content from the notification data
                 $smsContent = $notificationData['sms_content'] ?? 'No SMS content available'; // Default if missing
@@ -180,20 +183,11 @@ class TextMessageController extends Controller
         ]);
     
         $message = $request->input('message');
+        $recipients = [];
     
         // If the user chose "contact", get the selected users
         if ($request->input('send_to') === 'contact') {
-            $selectedUsers = $request->input('users', []); // Array of phone numbers
-    
-            // Trigger the notification for each selected user
-            foreach ($selectedUsers as $phoneNumber) {
-                // Assuming you have a way to retrieve user by phone number
-                $user = User::where('phonenumber', $phoneNumber)->first();
-    
-                if ($user) {
-                    $user->notify(new SendTextNotification($user,$message,$loggedUser));
-                }
-            }
+            $recipients  = $request->input('users', []); // Array of phone numbers
         }
     
         // If the user chose "group", get all users in that group/role
@@ -201,17 +195,20 @@ class TextMessageController extends Controller
             $group = $request->input('group');
     
             // Fetch all users associated with the selected role/group
-            $usersInGroup = User::whereHas('roles', function ($query) use ($group) {
+            $recipients = User::whereHas('roles', function ($query) use ($group) {
                 $query->where('name', $group);
             })->visibleToUser()->get();
-    
-            // Trigger the notification for each user in the group
-            foreach ($usersInGroup as $user) {
-                $user->notify(new SendTextNotification($user,$message,$loggedUser));
-            }
+        }
+
+        // Check if it's a text or email notification based on request
+        $notificationClass = SendTextNotification::class;
+        $result = $this->smsService->sendBulkSms($recipients, $message, $loggedUser,$notificationClass);
+
+        if (!$result['success']) {
+            return redirect()->back()->with('statuserror', $result['message']);
         }
     
-        return redirect()->back()->with('status', 'Notification sent successfully!');
+        return redirect()->back()->with('status',  $result['message']);
     }
 
     /**
