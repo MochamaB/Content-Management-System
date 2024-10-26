@@ -84,6 +84,9 @@
       });
       if ($('.invalid-feedback:visible').length > 0) {
         isValid = false;
+      }else {
+        // Allow form to submit by returning true
+        return true;
       }
 
       if (!isValid) {

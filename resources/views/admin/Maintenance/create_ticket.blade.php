@@ -7,6 +7,7 @@
    
     <form method="POST" action="{{ url('ticket') }}" class="myForm" novalidate>
         @csrf
+        <input type="hidden" name="send_sms" id="sendSms" value="0">
         <div class="form-group">
             <label class="label">Property Name</label>
             <select name="property_id" id="property_id" class="formcontrol2" placeholder="Select" required readonly>
@@ -59,12 +60,13 @@
         </div>
         @endforeach
         <div class="col-md-4">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;" id="submit">Create {{$routeParts[0]}}</button>
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;">Create {{$routeParts[0]}}</button>
         </div>
 
 
         </form>
 </div>
+@include('admin.CRUD.creditcheck')
 
 <!---- Fetch Units ----->
 <script>

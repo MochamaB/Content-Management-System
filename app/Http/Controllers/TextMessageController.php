@@ -85,6 +85,41 @@ class TextMessageController extends Controller
         //
     }
 
+    public function checkCredits(Request $request)
+    {
+        try {
+            $modelType = $request->input('model_type');
+            $data = $request->all();
+
+            // Get recipients based on model type
+            $recipients = $this->smsService->getRecipients($modelType, $data);
+            $numberOfSms = count($recipients);
+
+            // Check credits
+            $hasCredits = $this->smsService->reserveCredits($numberOfSms);
+
+            if ($hasCredits) {
+                $this->smsService->releaseAllCredits();
+                return response()->json([
+                    'hasCredits' => true,
+                    'message' => 'Credits available'
+                ]);
+            }
+
+            return response()->json([
+                'hasCredits' => false,
+                'message' => 'Insufficient SMS credits available. Would you like to proceed with email notifications only?'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Credit check error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request.'
+            ], 500);
+        }
+    }
+
     public function textInbox()
     {
         $user = Auth::user();

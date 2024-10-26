@@ -92,6 +92,7 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('notification', NotificationController::class);
         Route::resource('email', EmailController::class);
         Route::resource('textmessage', TextMessageController::class);
+        Route::post('textmessage/check-credits', [TextMessageController::class, 'checkCredits']);
         Route::resource('smsCredit', SmsCreditController::class);
         Route::post('/notification/mark-as-read/{id}', function($id) {
             $notification = auth()->user()->notifications()->where('id', $id)->first();
@@ -208,6 +209,8 @@ Route::group(['middleware' => ['auth', 'permission']], function () {
         Route::resource('ticket', TicketController::class, ['except' => 'create']);
         Route::get('ticket/assign/{id}', [TicketController::class, 'assign'])->name('ticket.assign');
         Route::put('update-assign/{id}', [TicketController::class, 'updateassign']);
+        // In routes/web.php
+       
 
         Route::get('work-order/create/{id}', [
             'as' => 'work-order.create',

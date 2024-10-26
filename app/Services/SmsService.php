@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Invoice;
+use App\Models\Lease;
+use App\Models\Property;
 use App\Models\User;
 use App\Models\SmsCredit;
 use App\Notifications\SendTextNotification;
@@ -24,6 +27,55 @@ class SmsService
      * @param User $sender User sending the message
      * @return array
      */
+    public function getRecipients(string $modelType, array $data)
+    {
+        $recipients = collect();
+        $loggedUser = Auth::user();
+
+        switch ($modelType) {
+            case 'ticket':
+                $property = Property::find($data['property_id']);
+                $attachedUsers = $property->users()
+                    ->whereDoesntHave('roles', function ($query) {
+                        $query->where('name', 'tenant');
+                    })
+                    ->distinct()
+                    ->get();
+                $recipients = $attachedUsers->push($loggedUser)->unique('id');
+                break;
+
+            case 'invoice':
+                $invoice = Invoice::find($data['invoice_id']);
+                $tenants = $invoice->lease->tenants;
+                $propertyManagers = $invoice->property->users()
+                    ->whereHas('roles', function ($query) {
+                        $query->where('name', 'property_manager');
+                    })
+                    ->get();
+                $recipients = $tenants->merge($propertyManagers)->push($loggedUser)->unique('id');
+                break;
+
+            case 'lease':
+                $lease = Lease::find($data['lease_id']);
+                $tenants = $lease->tenants;
+                $propertyManagers = $lease->property->users()
+                    ->whereHas('roles', function ($query) {
+                        $query->where('name', 'property_manager');
+                    })
+                    ->get();
+                $recipients = $tenants->merge($propertyManagers)->push($loggedUser)->unique('id');
+                break;
+
+            // Add more cases as needed for different models
+            
+            default:
+                throw new \InvalidArgumentException("Unknown model type: {$modelType}");
+        }
+        $recipients = $this->normalizeRecipients($recipients);
+
+        return $recipients;
+    }
+
     public function sendBulkSms($recipients, string $message, User $sender, string $notificationClass)
     {
         try {
@@ -102,7 +154,7 @@ class SmsService
         ];
     }
 
-    protected function reserveCredits(int $numberOfSms): bool
+    public function reserveCredits(int $numberOfSms): bool
     {
         DB::beginTransaction();
         try {
@@ -228,7 +280,7 @@ class SmsService
      *
      * @return void
      */
-    protected function releaseAllCredits(): void
+    public function releaseAllCredits(): void
     {
         if (!$this->creditEntry || !$this->pendingCredits) return;
 
