@@ -6,6 +6,36 @@
    
     <h4 style="text-transform: capitalize;"><b> Notification Center</b></h4>
     <hr>
+    <!-- Button to open the modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sendTextModal">
+    Test Sending Message Modal
+</button>
+
+<!-- Modal -->
+<form action="{{ url('notification/text/sendText') }}" method="POST" style="display: inline;">
+    @csrf
+    <div class="modal fade" id="sendTextModal" tabindex="-1" role="dialog" aria-labelledby="sendTextModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#ffaf00;">
+                    <h5 class="modal-title" id="sendTextModalLabel" style="color:white;">Send Message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" style="font-size: 40px; color: white;">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Form content goes here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-warning btn-lg text-warning mb-0 me-0" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning btn-lg text-white mb-0 me-0">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
 
     <div class="row">
         <div class="col-md-6">

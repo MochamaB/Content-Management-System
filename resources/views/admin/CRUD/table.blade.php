@@ -22,6 +22,7 @@
             margin-right: 5px;
             /* Adjust spacing as needed */
         }
+
         .fixed-table-toolbar .bulkaction .btn::before {
             content: "Bulk Actions";
             /* Replace with your desired text */
@@ -30,20 +31,48 @@
             margin-right: 5px;
             /* Adjust spacing as needed */
         }
+
+        .modal-body .icon-close {
+            font-size: 88px;
+            /* Increase the size */
+            color: red;
+            /* Change color to red */
+            display: block;
+            /* Display as block for centering */
+            margin: 0 auto;
+            margin-bottom: 20px;
+            /* Center horizontally */
+        }
+
+        /* Center content vertically in the modal body */
+        .modal-body .preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+        .modal-body .message {
+            word-wrap: normal;
+            max-width: 90%;
+            margin: 0 auto;
+            font-size: 15px;
+            white-space: normal;
+        }
     </style>
     <div class="fixed-table-toolbar">
         <div class="columns columns-right btn-group float-right">
             <div class="bulkaction btn-group" style="padding-top: 10px;">
-                <button id="bulk-action-btn" class="btn btn-primary btn-sm dropdown-toggle text-white" 
-                aria-label="Bulk Actions" data-toggle="dropdown" type="button" style="padding:13px 10px;display:none">
-                    
+                <button id="bulk-action-btn" class="btn btn-primary btn-sm dropdown-toggle text-white"
+                    aria-label="Bulk Actions" data-toggle="dropdown" type="button" style="padding:13px 10px;display:none">
+
                     <span class="caret"></span>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item" href="#" id="bulk-edit" data-url="{{ url($controller[0].'/bulkEdit') }}">Edit</a>
-                <a class="dropdown-item" href="#" id="bulk-delete" data-url="{{ url($controller[0].'/bulkDelete') }}">Delete</a>
-                <a class="dropdown-item" href="#" id="other-action">Other</a>
-                
+                    <a class="dropdown-item" href="#" id="bulk-edit" data-url="{{ url($controller[0].'/bulkEdit') }}">Edit</a>
+                    <a class="dropdown-item" href="#" id="bulk-delete" data-url="{{ url($controller[0].'/bulkDelete') }}">Delete</a>
+                    <a class="dropdown-item" href="#" id="other-action">Other</a>
+
                 </div>
             </div>
         </div>
@@ -121,14 +150,18 @@
                         <div class="modal fade" id="deleteConfirmationModal{{$controller[0].$row['id'] }}" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
                                 <div class="modal-content">
-                                    <div class="modal-header" style="background-color:red;">
+                                    <div class="modal-header" style="background-color:red;padding: 15px 46px;">
                                         <h5 class="modal-title" id="deleteConfirmationModalLabel" style="color:white;">Confirm Deletion</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true" style="font-size: 40px; color: white;">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        Are you sure you want to delete this {{$controller[0]}}?
+                                        <div class="preview">
+                                            <i class="icon-close"></i>
+                                            <h3>Are you sure?</h3>
+                                        </div>
+                                        <p class="message">Do you really want to delete this {{ $controller[0] }}? It cant be undone.</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-outline-danger btn-lg text-danger mb-0 me-0" data-dismiss="modal">Cancel</button>

@@ -30,9 +30,15 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'africastalking' => [
-        'username'      => env('AT_USERNAME'),
-        'key'           => env('AT_KEY'),
-        'from'          => env('AT_FROM'),
+        'username' => env('AFRICASTALKING_USERNAME'),
+        'api_key' => env('AFRICASTALKING_API_KEY'),
+        'from' => env('AFRICASTALKING_FROM'),
+        'options' => [
+            'verify' => true,
+            'curl' => [
+                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+            ],
+        ],
     ]
 
 ];

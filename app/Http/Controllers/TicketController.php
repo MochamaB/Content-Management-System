@@ -145,57 +145,7 @@ class TicketController extends Controller
         return View('admin.Maintenance.create_ticket', compact('id', 'property', 'unit', 'model'), $viewData);
     }
     
-    public function checkCredits(Request $request)
-    {
-        try {
-            // Validate request data first
-            $validationRules = Ticket::$validation;
-            $validatedData = $request->validate($validationRules);
 
-            // Get all recipients
-            $property = Property::find($request->property_id);
-            $attachedUsers = $property->users()
-                ->whereDoesntHave('roles', function ($query) {
-                    $query->where('name', 'tenant');
-                })
-                ->distinct()
-                ->get();
-
-            $loggedUser = Auth::user();
-            $allRecipients = $attachedUsers->push($loggedUser)->unique('id');
-            $numberOfSms = count($allRecipients);
-
-            // Check credits using reserveCredits
-            $hasCredits = $this->smsService->reserveCredits($numberOfSms);
-
-            if ($hasCredits) {
-                // If we have credits, create ticket immediately
-                $this->smsService->releaseAllCredits(); // Release the check hold
-
-              //  $this->store($request);
-            //    $ticket = $this->createTicket($request, true); // true means send SMS
-
-                return response()->json([
-                    'hasCredits' => true,
-                 //   'success' => true,
-                 //   'message' => $this->controller['1'] . ' Added Successfully',
-                  //  'redirectUrl' => session()->pull('previousUrl', $this->controller['0'])
-                ]);
-            } else {
-                // If insufficient credits, return response to show modal
-                return response()->json([
-                    'hasCredits' => false,
-                    'message' => 'Insufficient SMS credits available. Would you like to proceed with email notifications only?'
-                ]);
-            }
-        } catch (\Exception $e) {
-            Log::error('Ticket creation error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while processing your request.'
-            ], 500);
-        }
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -207,8 +157,7 @@ class TicketController extends Controller
     {
         $user = Auth::user();
         $sendSms = $request->send_sms;
-        dd($sendSms);
-
+       
         $validationRules = Ticket::$validation;
         $validatedData = $request->validate($validationRules);
         $ticketData = new Ticket;
@@ -230,10 +179,15 @@ class TicketController extends Controller
        
         try {
            // Always send email notification t the person who created the ticket
+           /** @var \App\Models\User $user */
            $user->notify(new TicketNotification($user, $ticketData));
 
-           if ($sendSms) {
-            $user->notify(new TicketTextNotification($user, $ticketData)); //Text
+           if ($sendSms == 1) {
+          //  $user->notify(new TicketTextNotification($user, $ticketData)); //Text
+            // Check if it's a text or email notification based on request
+            $notificationClass = TicketTextNotification::class;
+            $notificationParams = ['user' => $user, 'ticketData' => $ticketData];
+            $result = $this->smsService->sendBulkSms($user,$notificationClass,$notificationParams);
            }
             
         } catch (\Exception $e) {
@@ -246,9 +200,10 @@ class TicketController extends Controller
             try {
                 $user->notify(new TicketAddedNotification($user, $ticketData));
 
-                if ($sendSms) {
-                $user->notify(new TicketTextNotification($user, $ticketData)); //Text
-                }
+            //    if ($sendSms == 1) {
+             //   $user->notify(new TicketTextNotification($user, $ticketData)); //Text
+                
+            //    }
             } catch (\Exception $e) {
                 Log::error('Failed to send ticket notification to user ' . $user->id . ': ' . $e->getMessage());
             }

@@ -237,7 +237,8 @@ class TextMessageController extends Controller
 
         // Check if it's a text or email notification based on request
         $notificationClass = SendTextNotification::class;
-        $result = $this->smsService->sendBulkSms($recipients, $message, $loggedUser,$notificationClass);
+        $notificationParams = ['user' => $loggedUser, 'message' => $message, 'loggedUser' => $loggedUser];
+        $result = $this->smsService->sendBulkSms($recipients,$notificationClass, $notificationParams);
 
         if (!$result['success']) {
             return redirect()->back()->with('statuserror', $result['message']);

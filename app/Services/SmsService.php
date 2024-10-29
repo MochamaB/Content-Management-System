@@ -7,7 +7,6 @@ use App\Models\Lease;
 use App\Models\Property;
 use App\Models\User;
 use App\Models\SmsCredit;
-use App\Notifications\SendTextNotification;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -76,7 +75,7 @@ class SmsService
         return $recipients;
     }
 
-    public function sendBulkSms($recipients, string $message, User $sender, string $notificationClass)
+    public function sendBulkSms($recipients,string $notificationClass, array $notificationParams)
     {
         try {
             $recipients = $this->normalizeRecipients($recipients);
@@ -90,7 +89,7 @@ class SmsService
                 ];
             }
             //2. Send SMS if theres enough credits
-            $results = $this->processBulkSend($recipients, $message, $sender,$notificationClass);
+             $results = $this->processBulkSend($recipients, $notificationClass, $notificationParams);
 
             //3. Finalize the transaction
 
@@ -200,19 +199,45 @@ class SmsService
      * @param User $sender
      * @return array
      */
-    protected function processBulkSend($recipients, string $message, User $sender, string $notificationType): array
+    protected function processBulkSend($recipients, string $notificationClass, array $notificationParams): array
     {
         $successCount = 0;
         $failCount = 0;
         $failedRecipients = [];
+        // Reflection to get constructor parameters
+        $reflector = new \ReflectionClass($notificationClass);
+        $constructorParams = $reflector->getConstructor()->getParameters();
 
         foreach ($recipients as $recipient) {
             try {
                 $user = $recipient instanceof User ? $recipient : User::where('phonenumber', $recipient)->first();
                 if ($user) {
-                    $notification = new $notificationType($user, $message, $sender);
-                    $user->notify($notification);
-                    $successCount++;
+                    // Build a list of constructor arguments dynamically based on parameters' names
+                $args = [];
+                foreach ($constructorParams as $param) {
+                    $paramName = $param->getName();
+                    if (array_key_exists($paramName, $notificationParams)) {
+                        $args[] = $notificationParams[$paramName];
+                    } elseif ($param->isDefaultValueAvailable()) {
+                        $args[] = $param->getDefaultValue();
+                    } else {
+                        throw new \InvalidArgumentException("Missing required parameter: $paramName");
+                        Log::error('Missing required parameter: ' .$paramName);
+                    }
+                }
+
+                // Instantiate the notification with matched arguments
+                $notification = $reflector->newInstanceArgs($args);
+
+                // Wrap notification in a try-catch to handle actual send result
+                    try {
+                        $user->notify($notification); // Send notification
+                        $successCount++; // Only count if no exception is thrown
+                    } catch (\Exception $e) {
+                        Log::error('Failed to send notification for user ' . $user->phonenumber . ': ' . $e->getMessage());
+                        $failCount++;
+                        $failedRecipients[] = $user->phonenumber;
+                    }
                 } else {
                     $failCount++;
                     $failedRecipients[] = $recipient instanceof User ? $recipient->phonenumber : $recipient;
