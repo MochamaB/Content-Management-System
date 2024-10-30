@@ -11,7 +11,8 @@ use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
 
 //class TicketNotification extends Notification implements ShouldQueue
-class TicketTextNotification extends Notification implements ShouldQueue
+class TicketTextNotification extends Notification 
+//implements ShouldQueue
 {
     use Queueable;
     protected $user;

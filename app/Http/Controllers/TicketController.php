@@ -164,7 +164,7 @@ class TicketController extends Controller
         $ticketData->fill($validatedData);
         $ticketData->status = Ticket::STATUS_PENDING;
         $ticketData->user_id = $user->id;
-     //   $ticketData->save();
+        $ticketData->save();
 
 
         ///Create Notification for to the Admins and User/Tenant

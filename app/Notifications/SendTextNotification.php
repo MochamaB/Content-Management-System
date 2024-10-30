@@ -9,8 +9,7 @@ use Illuminate\Notifications\Notification;
 use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
-class SendTextNotification extends Notification 
-//implements ShouldQueue
+class SendTextNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 

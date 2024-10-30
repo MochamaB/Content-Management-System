@@ -8,7 +8,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 //class TicketNotification extends Notification implements ShouldQueue
-class TicketNotification extends Notification implements ShouldQueue
+class TicketNotification extends Notification 
+//implements ShouldQueue
 {
     use Queueable;
     protected $user;
