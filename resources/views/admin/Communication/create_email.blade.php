@@ -67,7 +67,7 @@
                 </div>
         </div>
         <div class="col-md-6" id="submitBtn" style="display:none">
-            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="">Send Text</button>
+            <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="">Send Email</button>
         </div>
 
 
@@ -77,11 +77,6 @@
     $(document).ready(function() {
         $('.js-example-basic-multiple').select2();
     });
-    $('.js-example-basic-multiple').on('select2:opening select2:closing', function( event ) {
-    var $searchfield = $(this).parent().find('.select2-search__field');
-    $searchfield.prop('disabled', true);
-});
-
     $(document).ready(function() {
     // Listen for changes on the #send_to select input
     $('#send_to').on('change', function() {

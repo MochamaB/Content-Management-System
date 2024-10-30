@@ -243,7 +243,7 @@ class SmsService
                     $failedRecipients[] = $recipient instanceof User ? $recipient->phonenumber : $recipient;
                 }
             } catch (Exception $e) {
-                Log::error("SMS Send Error for recipient {$recipient}: " . $e->getMessage());
+                Log::error("SMS Send Error for recipient {$recipient->phonenumber}: " . $e->getMessage());
                 $failCount++;
                 $failedRecipients[] = $recipient instanceof User ? $recipient->phonenumber : $recipient;
             }

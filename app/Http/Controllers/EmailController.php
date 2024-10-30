@@ -157,6 +157,10 @@ class EmailController extends Controller
     
         $subject = $request->input('subject');
         $message = $request->input('message');
+
+         // Initialize counters for success and failure
+        $successCount = 0;
+        $failCount = 0;
     
         // If the user chose "contact", get the selected users
         if ($request->input('send_to') === 'contact') {
@@ -168,7 +172,13 @@ class EmailController extends Controller
                 $user = User::where('email', $email)->first();
     
                 if ($user) {
-                    $user->notify(new SendEmailNotification($user,$subject,$message,$loggedUser));
+                    try {
+                        $user->notify(new SendEmailNotification($user, $subject, $message, $loggedUser));
+                        $successCount++;
+                    } catch (\Exception $e) {
+                        Log::error("Failed to send email to {$email}: " . $e->getMessage());
+                        $failCount++;
+                    }
                 }
             }
         }
@@ -184,13 +194,30 @@ class EmailController extends Controller
     
             // Trigger the notification for each user in the group
             foreach ($usersInGroup as $user) {
-                $user->notify(new SendEmailNotification($user,$subject,$message,$loggedUser));
+                try {
+                    $user->notify(new SendEmailNotification($user, $subject, $message, $loggedUser));
+                    $successCount++;
+                } catch (\Exception $e) {
+                    Log::error("Failed to send email to {$user->email}: " . $e->getMessage());
+                    $failCount++;
+                }
             }
+        }
+            // Build status message based on success and failure counts
+        if ($successCount > 0 && $failCount === 0) {
+            $status = 'status';
+            $statusMessage = 'All emails were sent successfully.';
+        } elseif ($successCount > 0 && $failCount > 0) {
+            $status = 'status';
+            $statusMessage = "{$successCount} emails sent successfully, but {$failCount} failed.";
+        } else {
+            $status = 'statuserror';
+            $statusMessage = 'Failed to send all the emails.';
         }
 
         $redirectUrl = session()->pull('previousUrl', 'email');
 
-        return redirect($redirectUrl)->with('status','Email  Sent Successfully');
+        return redirect($redirectUrl)->with($status,$statusMessage);
     }
 
     /**

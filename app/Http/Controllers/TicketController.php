@@ -164,7 +164,7 @@ class TicketController extends Controller
         $ticketData->fill($validatedData);
         $ticketData->status = Ticket::STATUS_PENDING;
         $ticketData->user_id = $user->id;
-        $ticketData->save();
+     //   $ticketData->save();
 
 
         ///Create Notification for to the Admins and User/Tenant
@@ -176,6 +176,8 @@ class TicketController extends Controller
             })
             ->distinct()
             ->get();
+        $recipients = collect();
+        $recipients = $user;
        
         try {
            // Always send email notification t the person who created the ticket
@@ -186,8 +188,9 @@ class TicketController extends Controller
           //  $user->notify(new TicketTextNotification($user, $ticketData)); //Text
             // Check if it's a text or email notification based on request
             $notificationClass = TicketTextNotification::class;
-            $notificationParams = ['user' => $user, 'ticketData' => $ticketData];
-            $result = $this->smsService->sendBulkSms($user,$notificationClass,$notificationParams);
+            $notificationParams = ['user' => $user, 'ticket' => $ticketData];
+            $result = $this->smsService->sendBulkSms($recipients,$notificationClass,$notificationParams);
+           // dd($result);
            }
             
         } catch (\Exception $e) {
@@ -198,7 +201,7 @@ class TicketController extends Controller
         // Notify each user (staff/admins)
         foreach ($attachedUsers as $user) {
             try {
-                $user->notify(new TicketAddedNotification($user, $ticketData));
+            //    $user->notify(new TicketAddedNotification($user, $ticketData));
 
             //    if ($sendSms == 1) {
              //   $user->notify(new TicketTextNotification($user, $ticketData)); //Text
