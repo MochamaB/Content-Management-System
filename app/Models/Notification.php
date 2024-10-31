@@ -10,7 +10,14 @@ class Notification extends Model
     use HasFactory;
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $fillable = ['type', 'notifiable_type', 'notifiable_id', 'data'];
+    protected $fillable = [
+    'id',
+    'type', 
+    'notifiable_type', 
+    'notifiable_id', 
+    'data',
+    'status'
+    ];
 
     public function notifiable()
     {

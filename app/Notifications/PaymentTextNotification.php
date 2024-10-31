@@ -49,7 +49,7 @@ class PaymentTextNotification extends Notification implements ShouldQueue
         $paymentdate = Carbon::parse($this->payment->created)->format('Y-m-d');
     }
 
-    protected function generateSmsContent()
+    public function generateSmsContent()
     {
         $paymentRef = $this->payment->referenceno;
         $propertyName = $this->payment->property->property_name;

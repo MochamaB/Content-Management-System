@@ -45,7 +45,7 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
         $this->smsContent = $this->generateSmsContent();
     }
 
-    protected function generateSmsContent()
+    public function generateSmsContent()
     {
     $reminder = $this->reminder ? 'Reminder: ' : '';
     $invoiceRef = $this->invoice->referenceno;

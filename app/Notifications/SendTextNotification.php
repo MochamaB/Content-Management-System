@@ -16,6 +16,7 @@ class SendTextNotification extends Notification implements ShouldQueue
     protected $message;
     protected $user;
     protected $loggedUser;
+    protected $smsContent; 
 
     /**
      * Create a new notification instance.
@@ -27,6 +28,14 @@ class SendTextNotification extends Notification implements ShouldQueue
         $this->message = $message;
         $this->user = $user;
         $this->loggedUser = $loggedUser;
+        $this->smsContent = $this->generateSmsContent();
+    }
+
+    public function generateSmsContent()
+    {
+        $message = $this->message;
+        
+        return  "{$message}";
     }
 
     /**
@@ -49,7 +58,7 @@ class SendTextNotification extends Notification implements ShouldQueue
     public function toAfricasTalking($notifiable)
     {
         return (new AfricasTalkingMessage())
-            ->content($this->message);
+        ->content($this->smsContent);
     }
 
     /**
@@ -65,7 +74,7 @@ class SendTextNotification extends Notification implements ShouldQueue
             'user_id' => $this->user->id,
             'to' => $this->user->phonenumber,
             'from' => $from ??'System Generated',
-            'sms_content' => $this->message, // Include the SMS content here
+            'sms_content' => $this->smsContent, // Include the SMS content here
             'channels' => $this->via($notifiable),
         ];
     }

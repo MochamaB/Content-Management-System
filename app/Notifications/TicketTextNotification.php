@@ -37,7 +37,7 @@ class TicketTextNotification extends Notification
        
     }
 
-    protected function generateSmsContent()
+    public function generateSmsContent()
     {
         $ticketRef = $this->ticket->id;
         $propertyName = $this->ticket->property->property_name;

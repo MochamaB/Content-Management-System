@@ -34,7 +34,7 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
         $this->smsContent = $this->generateSmsContent();
     }
 
-    protected function generateSmsContent()
+    public function generateSmsContent()
     {
         $link = url('/dashboard/'); // link
 

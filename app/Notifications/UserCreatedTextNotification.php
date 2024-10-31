@@ -34,7 +34,7 @@ class UserCreatedTextNotification extends Notification
         $this->company = Website::pluck('company_name')->first();
         $this->smsContent = $this->generateSmsContent();
     }
-    protected function generateSmsContent()
+    public function generateSmsContent()
     {
         $link = url('/dashboard/'); // link
         return "Hi {$this->user->firstname} {$this->user->lastname}, Welcome to {$this->user->company} property management system. 
