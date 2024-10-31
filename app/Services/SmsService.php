@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\Lease;
+use App\Models\Notification;
 use App\Models\Property;
 use App\Models\User;
 use App\Models\SmsCredit;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,54 +28,6 @@ class SmsService
      * @param User $sender User sending the message
      * @return array
      */
-    public function getRecipients(string $modelType, array $data)
-    {
-        $recipients = collect();
-        $loggedUser = Auth::user();
-
-        switch ($modelType) {
-            case 'ticket':
-                $property = Property::find($data['property_id']);
-                $attachedUsers = $property->users()
-                    ->whereDoesntHave('roles', function ($query) {
-                        $query->where('name', 'tenant');
-                    })
-                    ->distinct()
-                    ->get();
-                $recipients = $attachedUsers->push($loggedUser)->unique('id');
-                break;
-
-            case 'invoice':
-                $invoice = Invoice::find($data['invoice_id']);
-                $tenants = $invoice->lease->tenants;
-                $propertyManagers = $invoice->property->users()
-                    ->whereHas('roles', function ($query) {
-                        $query->where('name', 'property_manager');
-                    })
-                    ->get();
-                $recipients = $tenants->merge($propertyManagers)->push($loggedUser)->unique('id');
-                break;
-
-            case 'lease':
-                $lease = Lease::find($data['lease_id']);
-                $tenants = $lease->tenants;
-                $propertyManagers = $lease->property->users()
-                    ->whereHas('roles', function ($query) {
-                        $query->where('name', 'property_manager');
-                    })
-                    ->get();
-                $recipients = $tenants->merge($propertyManagers)->push($loggedUser)->unique('id');
-                break;
-
-            // Add more cases as needed for different models
-            
-            default:
-                throw new \InvalidArgumentException("Unknown model type: {$modelType}");
-        }
-        $recipients = $this->normalizeRecipients($recipients);
-
-        return $recipients;
-    }
 
     public function sendBulkSms($recipients,string $notificationClass, array $notificationParams)
     {
@@ -83,6 +37,9 @@ class SmsService
 
             //1. Check credits before processing
             if (!$this->reserveCredits($numberOfSms)) {
+                foreach ($recipients as $recipient) {
+                    $this->logNotification($notificationClass, $notificationParams, 'failed');
+                }
                 return [
                     'success' => false,
                     'message' => 'Insufficient SMS credits. Please top up.'
@@ -204,33 +161,15 @@ class SmsService
         $successCount = 0;
         $failCount = 0;
         $failedRecipients = [];
-        // Reflection to get constructor parameters
-        $reflector = new \ReflectionClass($notificationClass);
-        $constructorParams = $reflector->getConstructor()->getParameters();
-
+        
         foreach ($recipients as $recipient) {
             try {
                 $user = $recipient instanceof User ? $recipient : User::where('phonenumber', $recipient)->first();
                 if ($user) {
-                    // Build a list of constructor arguments dynamically based on parameters' names
-                $args = [];
-                foreach ($constructorParams as $param) {
-                    $paramName = $param->getName();
-                    if (array_key_exists($paramName, $notificationParams)) {
-                        $args[] = $notificationParams[$paramName];
-                    } elseif ($param->isDefaultValueAvailable()) {
-                        $args[] = $param->getDefaultValue();
-                    } else {
-                        throw new \InvalidArgumentException("Missing required parameter: $paramName");
-                        Log::error('Missing required parameter: ' .$paramName);
-                    }
-                }
-
-                // Instantiate the notification with matched arguments
-                $notification = $reflector->newInstanceArgs($args);
-
+                    
                 // Wrap notification in a try-catch to handle actual send result
                     try {
+                        $notification = $this->logNotification($notificationClass, $notificationParams, 'pending');
                         $user->notify($notification); // Send notification
                         $successCount++; // Only count if no exception is thrown
                     } catch (\Exception $e) {
@@ -347,4 +286,58 @@ class SmsService
 
         return collect([$recipients]);
     }
-}
+
+    protected function logNotification($notificationClass, array $notificationParams, $status)
+        {
+             // Reflection to get constructor parameters
+        $reflector = new \ReflectionClass($notificationClass);
+        $constructorParams = $reflector->getConstructor()->getParameters();
+        // Instantiate the notification with required arguments
+        $args = [];
+        foreach ($constructorParams as $param) {
+            $paramName = $param->getName();
+            if (array_key_exists($paramName, $notificationParams)) {
+                $args[] = $notificationParams[$paramName];
+            } elseif ($param->isDefaultValueAvailable()) {
+                $args[] = $param->getDefaultValue();
+            } else {
+                throw new \InvalidArgumentException("Missing required parameter: $paramName");
+                Log::error('Missing required parameter: ' .$paramName);
+            }
+        }
+         // Instantiate the notification with matched arguments
+         $notification = $reflector->newInstanceArgs($args);
+        // Generate SMS content without sending
+         $smsContent = method_exists($notification, 'generateSmsContent') ? $notification->generateSmsContent() : null;
+          // Prepare the data array for JSON encoding
+            $data = [
+                'user_id' => $notificationParams['user']->id ?? null,
+                'to' => $notificationParams['user']->phonenumber ?? $notificationParams['recipient'] ?? null,
+                'from' => 'System Generated',
+                'sms_content' => $notification->generateSmsContent() ?? null, // Generate SMS content if available
+                'status' => $status,
+                'channels' => $notification->via($notificationParams['user'] ?? null), // Get notification channels
+            ];
+             // Convert the data array to JSON
+            $jsonData = json_encode($data);
+        // Save the notification record to the database if pending but return if sent
+        if ($status === 'pending') {
+
+            return $notification;
+
+        } else {
+
+            Notification::create([
+                'id' => Str::uuid(),
+                'type' => $notificationClass,
+                'notifiable_type' => get_class($notificationParams['user'] ?? null),
+                'notifiable_id' => $notificationParams['user']->id ?? null,
+                'data' => $jsonData,
+                'sms_status' => $status,
+                'created_at' => now()
+            ]);
+        }
+
+            
+        }
+    }
