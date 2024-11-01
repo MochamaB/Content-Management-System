@@ -6,8 +6,10 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
+use NotificationChannels\AfricasTalking\Exceptions\CouldNotSendNotification;
 
 class SendTextNotification extends Notification implements ShouldQueue
 {
@@ -17,6 +19,7 @@ class SendTextNotification extends Notification implements ShouldQueue
     protected $user;
     protected $loggedUser;
     protected $smsContent; 
+    public $results;
 
     /**
      * Create a new notification instance.
@@ -29,6 +32,7 @@ class SendTextNotification extends Notification implements ShouldQueue
         $this->user = $user;
         $this->loggedUser = $loggedUser;
         $this->smsContent = $this->generateSmsContent();
+        $this->results = ['success' => false]; // Default to failed
     }
 
     public function generateSmsContent()
@@ -57,8 +61,26 @@ class SendTextNotification extends Notification implements ShouldQueue
      */
     public function toAfricasTalking($notifiable)
     {
-        return (new AfricasTalkingMessage())
-        ->content($this->smsContent);
+        try {
+            $message = new AfricasTalkingMessage();
+            $message->content($this->smsContent);
+            // If no exception occurs, mark as success
+            $this->markAsSuccess();
+            return $message;
+        }catch (\Exception $e) {
+            Log::error("Failed to send SMS: " . $e->getMessage());
+            // Failures will be caught in NotificationFailed
+            throw $e; // Rethrow to trigger NotificationFailed event
+        }
+    }
+    public function markAsSuccess()
+    {
+        $this->results['success'] = true; // Call this when the API response confirms success
+    }
+
+    public function getSendResults()
+    {
+        return $this->results;
     }
 
     /**
@@ -78,4 +100,6 @@ class SendTextNotification extends Notification implements ShouldQueue
             'channels' => $this->via($notifiable),
         ];
     }
+
+    
 }

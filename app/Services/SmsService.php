@@ -50,11 +50,11 @@ class SmsService
 
             //3. Finalize the transaction
 
-            $this->finalizeCreditTransaction($results['success_count'], $results['fail_count']);
+         //   $this->finalizeCreditTransaction($results['success_count'], $results['fail_count']);
 
             return [
                 'success' => true,
-                'message' => "Successfully sent {$results['success_count']} messages. Failed to send {$results['fail_count']} messages.",
+                'message' => "Successfully Queued {$results['success_count']} messages. Failed to Queue {$results['fail_count']} messages.",
                 'failed_recipients' => $results['failed_recipients']
             ];
 
@@ -202,7 +202,7 @@ class SmsService
      * @param int $failCount
      * @return void
      */
-    protected function finalizeCreditTransaction(int $successCount, int $failCount): void
+    public function finalizeCreditTransaction(int $successCount, int $failCount): void
     {
         if (!$this->creditEntry) return;
 

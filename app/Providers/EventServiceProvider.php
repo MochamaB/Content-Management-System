@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Event;
 use App\Events\UserCreate;
 use App\Listeners\AssignUserToUnitListener;
 use App\Listeners\SendWelcomeEmailNotification;
+use App\Listeners\NotificationJobSuccess;
+use App\Listeners\NotificationJobFailure;
+use Illuminate\Notifications\Events\NotificationFailed;
+use Illuminate\Notifications\Events\NotificationSent;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -26,6 +31,12 @@ class EventServiceProvider extends ServiceProvider
             SendWelcomeEmailNotification::class,
         ],AssignUserToUnit::class => [
             AssignUserToUnitListener::class,
+        ],
+        NotificationSent::class => [
+            NotificationJobSuccess::class,
+        ],
+        NotificationFailed::class => [
+            NotificationJobFailure::class,
         ],
         
     ];

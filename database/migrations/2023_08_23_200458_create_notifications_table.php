@@ -19,7 +19,7 @@ class CreateNotificationsTable extends Migration
             $table->morphs('notifiable');
             $table->text('data');
             $table->timestamp('read_at')->nullable();
-            $table->enum('status', ['pending', 'sent', 'failed'])->default('sent')->nullable();
+            $table->enum('status', ['pending', 'sent', 'failed'])->default('pending')->nullable();
             $table->integer('retry_count')->default(0)->nullable();
 
             $table->timestamps();
