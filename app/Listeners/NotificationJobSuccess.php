@@ -40,10 +40,14 @@ class NotificationJobSuccess
 
                 if ($results['success']) {
                     Notification::where('id', $notificationId)->update(['status' => 'sent']);
-                    $this->smsService->finalizeCreditTransaction($results['success_count'], $results['fail_count']);
+                    $this->smsService->finalizeCreditTransaction(1, 0);
                     Log::info("Notification marked as sent", ['id' => $notificationId]);
                 } else {
                     Notification::where('id', $notificationId)->update(['status' => 'failed']);
+                    Log::info("Notification failed to send. Preparing to release credits.", [
+                        'notification_id' => $notificationId,
+                        'results' => $results
+                    ]);
                     $this->smsService->releaseAllCredits();
                     Log::error("Notification failed to send", ['id' => $notificationId]);
                 }

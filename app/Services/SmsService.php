@@ -29,24 +29,25 @@ class SmsService
      * @return array
      */
 
-    public function sendBulkSms($recipients,string $notificationClass, array $notificationParams)
+     
+    public function queueSmsNotification($recipient,string $notificationClass, array $notificationParams)
     {
         try {
-            $recipients = $this->normalizeRecipients($recipients);
-            $numberOfSms = count($recipients);
+         //   $recipients = $this->normalizeRecipients($recipients);
+            $numberOfSms = 1;
 
             //1. Check credits before processing
             if (!$this->reserveCredits($numberOfSms)) {
-                foreach ($recipients as $recipient) {
+               
                     $this->logNotification($notificationClass, $notificationParams, 'failed');
-                }
+                
                 return [
                     'success' => false,
                     'message' => 'Insufficient SMS credits. Please top up.'
                 ];
             }
             //2. Send SMS if theres enough credits
-             $results = $this->processBulkSend($recipients, $notificationClass, $notificationParams);
+             $results = $this->sendText($recipient, $notificationClass, $notificationParams);
 
             //3. Finalize the transaction
 
@@ -78,32 +79,7 @@ class SmsService
 
      protected function determineCreditType(): array
     {
-        $loggedInUser = Auth::user();  // Get the logged-in user
-        $properties = $loggedInUser->properties->pluck('id');
-        // Check if user has specific credits
-        $propertyCredits = SmsCredit::where('credit_type', SmsCredit::TYPE_PROPERTY)
-                           //   ->where('property_id', $properties)
-                               ->exists();
-    
-        if ($propertyCredits) {
-            return [
-                'type' => SmsCredit::TYPE_PROPERTY,
-               'condition' => ['property_id' => $properties->all()]
-            ];
-        }
-
-        // Check if user has specific credits
-        $userCredits = SmsCredit::where('credit_type', SmsCredit::TYPE_USER)
-                               ->where('user_id', auth()->id())
-                               ->exists();
-        
-        if ($userCredits) {
-            return [
-                'type' => SmsCredit::TYPE_USER,
-                'condition' => ['user_id' => auth()->id()]
-            ];
-        }
-
+       
         return [
             'type' => SmsCredit::TYPE_INSTANCE,
             'condition' => []
@@ -156,13 +132,13 @@ class SmsService
      * @param User $sender
      * @return array
      */
-    protected function processBulkSend($recipients, string $notificationClass, array $notificationParams): array
+    protected function sendText($recipient, string $notificationClass, array $notificationParams): array
     {
         $successCount = 0;
         $failCount = 0;
         $failedRecipients = [];
         
-        foreach ($recipients as $recipient) {
+       
             try {
                 $user = $recipient instanceof User ? $recipient : User::where('phonenumber', $recipient)->first();
                 if ($user) {
@@ -186,7 +162,7 @@ class SmsService
                 $failCount++;
                 $failedRecipients[] = $recipient instanceof User ? $recipient->phonenumber : $recipient;
             }
-        }
+        
 
         return [
             'success_count' => $successCount,
@@ -204,16 +180,25 @@ class SmsService
      */
     public function finalizeCreditTransaction(int $successCount, int $failCount): void
     {
-        if (!$this->creditEntry) return;
+        //1. Check credit Type
+        $creditType = $this->determineCreditType();
+          
+        //2. Get credit entry with lock
+        $creditEntry = SmsCredit::where('credit_type', $creditType['type']);
+       
+        foreach ($creditType['condition'] as $key => $value) {
+            $creditEntry->where($key, $value);
+        }
+        
+        $creditEntry = $creditEntry->lockForUpdate()->first();
+        $this->creditEntry = $creditEntry;
+       
+        if (!$this->creditEntry || !$this->pendingCredits) return;
 
         DB::beginTransaction();
         try {
-            $instanceCredits = SmsCredit::where('credit_type', SmsCredit::TYPE_INSTANCE)->first();
-            
+         
             if ($successCount > 0) {
-                // Update instance credits
-                $instanceCredits->blocked_credits -= $successCount;
-                $instanceCredits->used_credits += $successCount;
                 
                 // Update specific credits
                 $this->creditEntry->blocked_credits -= $successCount;
@@ -221,15 +206,11 @@ class SmsService
             }
 
             if ($failCount > 0) {
-                // Return failed credits to available
-                $instanceCredits->blocked_credits -= $failCount;
-                $instanceCredits->available_credits += $failCount;
-                
+               
                 $this->creditEntry->blocked_credits -= $failCount;
                 $this->creditEntry->available_credits += $failCount;
             }
 
-            $instanceCredits->save();
             $this->creditEntry->save();
             
             DB::commit();
@@ -246,20 +227,41 @@ class SmsService
      */
     public function releaseAllCredits(): void
     {
-        if (!$this->creditEntry || !$this->pendingCredits) return;
+        //1. Check credit Type
+        $creditType = $this->determineCreditType();
+          
+        //2. Get credit entry with lock
+        $creditEntry = SmsCredit::where('credit_type', $creditType['type']);
+       
+        foreach ($creditType['condition'] as $key => $value) {
+            $creditEntry->where($key, $value);
+        }
+        $creditEntry = $creditEntry->lockForUpdate()->first();
 
+        $this->creditEntry = $creditEntry;
+        $this->pendingCredits = 1;
+
+        Log::info('Attempting to release all credits.', [
+            'credit_entry_exists' => (bool)$this->creditEntry,
+            'pending_credits' => $this->pendingCredits
+        ]);
+        if (!$this->creditEntry || !$this->pendingCredits) {
+            Log::warning('Attempted to release credits with no pending transaction', [
+                'credit_entry_exists' => (bool)$this->creditEntry,
+                'pending_credits' => $this->pendingCredits,
+                'credits' => $this->creditEntry
+            ]);
+            return;
+        }
+        
         DB::beginTransaction();
         try {
-            $instanceCredits = SmsCredit::where('credit_type', SmsCredit::TYPE_INSTANCE)->first();
             
-            // Return all pending credits to available
-            $instanceCredits->blocked_credits -= $this->pendingCredits;
-            $instanceCredits->available_credits += $this->pendingCredits;
-            $instanceCredits->save();
+             // 3. Update the credit amounts (release the credits)
+             $this->creditEntry->blocked_credits -= $this->pendingCredits;
+             $this->creditEntry->available_credits += $this->pendingCredits;
+             $this->creditEntry->save();
 
-            $this->creditEntry->blocked_credits -= $this->pendingCredits;
-            $this->creditEntry->available_credits += $this->pendingCredits;
-            $this->creditEntry->save();
 
             DB::commit();
         } catch (Exception $e) {

@@ -44,6 +44,7 @@
                       <th>Text Content</th>
                       <th>From</th>
                       <th>Date</th>
+                      <th>Status</th>
                   </tr>
               </thead>
               <tbody>
@@ -52,6 +53,13 @@
                   $user = $notification->notifiable->firstname.' '.$notification->notifiable->lastname;
                   $data = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
                   $backgroundColor = $notification->read_at ? 'white' : '#F4F5F7';
+                  $statusClasses = [
+                        'sent' => 'active',
+                        'pending' => 'warning',
+                        'failed' => 'danger',
+                    ];
+                    $status = $notification->status;
+                    $statusClass = $statusClasses[$status] ?? 'pending';
                   @endphp
                   <tr 
                   style="height:50px; background-color: {{$backgroundColor}}; border-bottom: 1px solid #ccc;" 
@@ -63,6 +71,7 @@
                       <td class="sms-content-column">{{ $notification['sms_content'] ?? 'Content' }}</td>
                       <td>{{ $data['from'] ?? 'Unknown' }}</td>
                       <td class="time">{{\Carbon\Carbon::parse($notification->created_at)->format('d M Y') }}</td>
+                      <td> <span class = "badge badge-{{ $statusClass }}">{{ ucfirst($status) }} </span></td>
                   </tr>
                   @endforeach
 
