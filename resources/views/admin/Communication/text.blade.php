@@ -10,7 +10,7 @@
             $isDisabled = ($routeParts[1] === 'create') ? 'disabled' : '';
             @endphp
             <button class="tablinks @if($loop->first) active @endif" id="v-pills-{{ $loop->iteration }}-tab" data-toggle="pill" href="#v-pills-{{ $loop->iteration }}" role="tab" aria-controls="v-pills-{{ $loop->iteration }}" aria-selected="{{ $loop->first ? 'true' : 'false' }}" >
-                {{ $title }}
+            <i class="{{ $tabIcons[$title] }}"></i>&nbsp; {{ $title }}
             </button>
             @endforeach
         </div>

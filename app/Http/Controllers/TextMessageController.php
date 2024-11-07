@@ -45,14 +45,26 @@ class TextMessageController extends Controller
     public function index()
     {
 
-
+        $user = Auth::user();
         $tabTitles = collect([
-            'Dashboard',
-            'Inbox',
-            'Compose Text',
-            'Top up',
-            'Transactions',
-            'Tarriffs',
+            'Dashboard' => true, // Visible to all users
+            'Inbox' => true,
+            'Compose Text' => $user->can('textmessage.create') || $user->id === 1,
+            'Top up' => $user->can('smscredit.create') || $user->id === 1,
+            'Transactions' => $user->can('smscredit.view') || $user->id === 1,
+            'Tarriffs' => $user->can('smscredit.create') || $user->id === 1,
+        ])->filter(function($value) {
+            return $value === true;
+        })->keys();
+
+        $tabIcons = collect([
+            'Dashboard' => 'icon-chart', 
+            'Inbox' => ' icon-bubble',
+            'Compose Text' => ' icon-note',
+            'Top up' => '',
+            'Transactions' => '',
+            'Tarriffs' => '',
+            
         ]);
 
         $textContent = $this->textInbox();
@@ -81,7 +93,7 @@ class TextMessageController extends Controller
             }
         }
 
-        return View('admin.Communication.text', compact('tabTitles', 'tabContents'));
+        return View('admin.Communication.text', compact('tabTitles', 'tabContents','tabIcons'));
         //
     }
 
@@ -234,8 +246,9 @@ class TextMessageController extends Controller
                 $query->where('name', $group);
             })->visibleToUser()->get();
         }
+      
 
-        // Check if it's a text or email notification based on request
+        // Define and Pass the variables to the service
         $notificationClass = SendTextNotification::class;
         $notificationParams = ['user' => $loggedUser, 'message' => $message, 'loggedUser' => $loggedUser];
         foreach($recipients as $recipient){

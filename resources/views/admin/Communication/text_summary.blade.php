@@ -51,6 +51,7 @@
                   @foreach ($textContent as $notification)
                   @php
                   $user = $notification->notifiable->firstname.' '.$notification->notifiable->lastname;
+                  $phonenumber = $notification->notifiable->phonenumber;
                   $data = is_array($notification->data) ? $notification->data : json_decode($notification->data, true);
                   $backgroundColor = $notification->read_at ? 'white' : '#F4F5F7';
                   $statusClasses = [
@@ -67,7 +68,7 @@
                   data-id="{{ $notification->id }}">
                       <td></td>
                       <td class=""><span class="pb-2" style="font-weight: 600;">{{$user}}</span> </br></br>
-                        {{ $data['to'] ?? 'Unknown' }}</td>
+                        {{ $phonenumber ?? 'Unknown' }}</td>
                       <td class="sms-content-column">{{ $notification['sms_content'] ?? 'Content' }}</td>
                       <td>{{ $data['from'] ?? 'Unknown' }}</td>
                       <td class="time">{{\Carbon\Carbon::parse($notification->created_at)->format('d M Y') }}</td>

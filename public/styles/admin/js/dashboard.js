@@ -552,28 +552,19 @@
       });
       document.getElementById('marketing-overview-legend').innerHTML = marketingOverviewDark.generateLegend();
     }
-    if ($("#doughnutChart").length) {
+    // DOUNUGHT CHART
+    if ($("#doughnutCharts").length) {
       var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
       var doughnutPieData = {
         datasets: [{
           data: [40, 20, 30, 10],
-          backgroundColor: [
-            "#1F3BB3",
-            "#FDD0C7",
-            "#52CDFF",
-            "#81DADA"
-          ],
-          borderColor: [
-            "#1F3BB3",
-            "#FDD0C7",
-            "#52CDFF",
-            "#81DADA"
-          ],
+          backgroundColor: chartData.backgroundColor,
+            borderColor: chartData.borderColor,
         }],
   
         // These labels appear in the legend and in the tooltips when hovering different arcs
         labels: [
-          'Total',
+          'Totototot',
           'Net',
           'Gross',
           'AVG',
@@ -770,6 +761,64 @@
           type: 'bar',
           data: leaveReportDataDark,
           options: leaveReportOptionsDark
+      });
+    }
+
+    if ($("#doughnutChartCrm").length) { 
+      const doughnutChartCrmCanvas = document.getElementById('doughnutChartCrm');
+      new Chart(doughnutChartCrmCanvas, {
+        type: 'doughnut',
+        data: {
+          labels: [
+            'Branch 1  ( 30% )',
+            'Branch 2  ( 40% )',
+            'Branch 3  ( 30% )'
+          ],
+          datasets: [{
+            data: [40, 30, 30],
+            backgroundColor: [
+              "#1F3BB3",
+              "#00CDFF",
+              "#00AAB6"
+            ],
+            borderColor: [
+              "#fff",
+              "#fff",
+              "#fff"
+            ],
+          }],
+        },
+        options: {
+          cutout: 60,
+          animationEasing: "easeOutBounce",
+          animateRotate: true,
+          animateScale: false,
+          responsive: true,
+          maintainAspectRatio: true,
+          showScale: true,
+          plugins: {
+            legend: {
+                display: false,
+            }
+          }
+        },
+        plugins: [{
+          afterDatasetUpdate: function (chart, args, options) {
+              const chartId = chart.canvas.id;
+              var i;
+              const legendId = `${chartId}-legend`;
+              const ul = document.createElement('ul');
+              for(i=0;i<chart.data.datasets[0].data.length; i++) {
+                  ul.innerHTML += `
+                  <li>
+                    <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}"></span>
+                    ${chart.data.labels[i]}
+                  </li>
+                `;
+              }
+              return document.getElementById(legendId).appendChild(ul);
+            }
+        }]
       });
     }
   

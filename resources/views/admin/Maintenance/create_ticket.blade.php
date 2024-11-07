@@ -66,7 +66,6 @@
 
         </form>
 </div>
-@include('admin.CRUD.creditcheck')
 
 <!---- Fetch Units ----->
 <script>

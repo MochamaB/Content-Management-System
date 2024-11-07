@@ -11,8 +11,7 @@ use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
 
 //class TicketNotification extends Notification implements ShouldQueue
-class TicketTextNotification extends Notification 
-//implements ShouldQueue
+class TicketTextNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $user;
@@ -23,6 +22,7 @@ class TicketTextNotification extends Notification
     protected $data;
     protected $ticketno;
     protected $smsContent; // Declare a class property to hold the SMS content
+    public $results;
 
     /**
      * Create a new notification instance.
@@ -34,6 +34,7 @@ class TicketTextNotification extends Notification
         $this->user = $user;
         $this->ticket = $ticket;
         $this->smsContent = $this->generateSmsContent();
+        $this->results = ['success' => false]; // Default to failed
        
     }
 
@@ -67,10 +68,30 @@ class TicketTextNotification extends Notification
      */
     public function toAfricasTalking($notifiable)
     {
+        try {
+            $message = new AfricasTalkingMessage();
+            $message->content($this->smsContent);
+            // If no exception occurs, mark as success
+            $this->markAsSuccess();
+            return $message;
+        }catch (\Exception $e) {
+            Log::error("Failed to send SMS: " . $e->getMessage());
+            // Failures will be caught in NotificationFailed
+            throw $e; // Rethrow to trigger NotificationFailed event
+        }
        
-        return (new AfricasTalkingMessage())
-        ->content($this->smsContent);
     }
+
+    public function markAsSuccess()
+    {
+        $this->results['success'] = true; // Call this when the API response confirms success
+    }
+
+    public function getSendResults()
+    {
+        return $this->results;
+    }
+
 
     /**
      * Get the array representation of the notification.

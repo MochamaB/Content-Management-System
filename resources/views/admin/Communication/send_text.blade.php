@@ -37,8 +37,8 @@
         </div>
         <div class="col-md-10 groups" id = "groups" style="display:none">
             <div class="form-group">
-                <label class="label"> Contact<span class="requiredlabel">*</span></label>
-                <select id="users" class="form-control " placeholder="Select">
+                <label class="label"> Select Group Contacts<span class="requiredlabel">*</span></label>
+                <select id="groups" name = "group" class="form-control " placeholder="Select">
                     <option value="">Select Group</option>
                     @foreach($roles as $item)
                     <option value="{{ $item->name }}">{{ $item->name  }}s</option>

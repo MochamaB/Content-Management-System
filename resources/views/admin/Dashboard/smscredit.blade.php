@@ -83,7 +83,7 @@
             <p class="statistics-title d-flex align-items-bottom">
                 <i class="mdi mdi-numeric" style="color: #1F3BB3; padding-left: 5px;"></i> <!-- Change the color and add padding -->
               
-                <span style="padding-left: 5px;">Total Sent</span>
+                <span style="padding-left: 5px;">Total Message</span>
             </p> <!--Title -->
 
             <h3 class="rate-percentage text-center">
@@ -92,5 +92,47 @@
 
     </div>
 
+</div>
+<!----  Second Level ------>
+<div class="row statistics-details " style="margin: 10px 0px; padding:15px 10px 0px 0px; ">
+<div class="d-flex justify-content-between align-items-start">
+                                  <div>
+                                    <h4 class="card-title card-title-dash">Sales Analytics</h4>
+                                  </div>
+                                  <div>
+                                    <div class="dropdown">
+                                      <button class="btn btn-light dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> This month </button>
+                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                        <h6 class="dropdown-header">Weekly</h6>
+                                        <a class="dropdown-item" href="#">Monthly</a>
+                                        <a class="dropdown-item" href="#">Yearly</a>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                        <div class="chartjs-wrapper mt-4">
+                                  <div class="d-lg-flex justify-content-between">
+                                    <div class="doughnut-wrapper">
+                                      <canvas class="my-auto" id="doughnutCharts" height="210" style="display: block; box-sizing: border-box; height: 210px; width: 210px;" width="210"></canvas>
+                                    </div>
+                                    <div id="doughnut-chart-legend" class="mt-4 text-center"><ul>
+                  <li>
+                    <span style="background-color: #1F3BB3"></span>
+                    Branch 1  ( 30% )
+                  </li>
+                
+                  <li>
+                    <span style="background-color: #00CDFF"></span>
+                    Branch 2  ( 40% )
+                  </li>
+                
+                  <li>
+                    <span style="background-color: #00AAB6"></span>
+                    Branch 3  ( 30% )
+                  </li>
+                </ul></div>
+                                  </div>
+                                </div>
+                
 </div>
 </div>

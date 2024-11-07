@@ -156,8 +156,7 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $sendSms = $request->send_sms;
-       
+      
         $validationRules = Ticket::$validation;
         $validatedData = $request->validate($validationRules);
         $ticketData = new Ticket;
@@ -176,23 +175,21 @@ class TicketController extends Controller
             })
             ->distinct()
             ->get();
-        $recipients = collect();
-        $recipients = $user;
+        $recipients = collect([$user]);
        
         try {
-           // Always send email notification t the person who created the ticket
+           // Always send email notification to the person who created the ticket
            /** @var \App\Models\User $user */
            $user->notify(new TicketNotification($user, $ticketData));
-
-           if ($sendSms == 1) {
+         
           //  $user->notify(new TicketTextNotification($user, $ticketData)); //Text
             // Check if it's a text or email notification based on request
             $notificationClass = TicketTextNotification::class;
             $notificationParams = ['user' => $user, 'ticket' => $ticketData];
-            $result = $this->smsService->sendBulkSms($recipients,$notificationClass,$notificationParams);
-           // dd($result);
-           }
-            
+            foreach($recipients as $recipient){
+                $result = $this->smsService->queueSmsNotification($recipient,$notificationClass, $notificationParams);
+                }
+           
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
             Log::error('Failed to send ticket notification: ' . $e->getMessage());
@@ -201,7 +198,8 @@ class TicketController extends Controller
         // Notify each user (staff/admins)
         foreach ($attachedUsers as $user) {
             try {
-            //    $user->notify(new TicketAddedNotification($user, $ticketData));
+                 // Always send email notification
+                $user->notify(new TicketAddedNotification($user, $ticketData));
 
             //    if ($sendSms == 1) {
              //   $user->notify(new TicketTextNotification($user, $ticketData)); //Text

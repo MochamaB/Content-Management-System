@@ -95,34 +95,42 @@
 </div>
 
 <script>
-function markAsRead(element) {
-    var notificationId = $(element).data('id');
+function markAsRead(element, event) {
+    // Allow the tab to change first
+    event.preventDefault();
+    try {
+        var notificationId = $(element).data('id');
 
-       // Remove active class and reset background color for all list-group-item links
-    $('.list-group-item').each(function() {
-        $(this).removeClass('active');
-        $(this).css('background-color', $(this).data('read') ? 'white' : '#F4F5F7'); // Reset background to the original read/unread state
-    });
+        // Remove active class and reset background color for all list-group-item links
+        $('.list-group-item').each(function() {
+            $(this).removeClass('active');
+            $(this).css('background-color', $(this).data('read') ? 'white' : '#F4F5F7'); // Reset background to the original read/unread state
+        });
+
         // Add active class to the clicked link
         $(element).addClass('active');
         $(element).css('background-color', '#0d6efd');
 
-    $.ajax({
-        url: '/notification/mark-as-read/' + notificationId,
-        type: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'), // Include CSRF token
-        },
-        success: function(response) {
-            if (response.status === 'success' && !$(element).hasClass('active')) {
-                $(element).css('background-color', 'white');
+        $.ajax({
+            url: '/notification/mark-as-read/' + notificationId,
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+            },
+            success: function(response) {
+                if (response.status === 'success' && !$(element).hasClass('active')) {
+                    $(element).css('background-color', 'white');
+                }
+            },
+            error: function(response) {
+                console.error('Error:', response);
             }
-        },
-        error: function(response) {
-            console.error('Error:', response);
-        }
-    });
+        });
+    } catch (error) {
+        console.error("An error occurred in markAsRead:", error);
+    }
 }
+
 $(document).ready(function() {
     // Search input keyup event
     $('#search-input').on('keyup', function() {
