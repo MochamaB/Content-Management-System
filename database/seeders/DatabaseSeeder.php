@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             ReportSeeder::class,
             SettingSeeder::class,
             TransactionTypeSeeder::class,
-            InvoiceTaskSeeder::class,
+            TaskSeeder::class,
             AmenitySeeder::class,
             TaxesSeeder::class,
         ]);

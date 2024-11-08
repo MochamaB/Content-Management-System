@@ -1261,6 +1261,36 @@ class TableViewDataService
         return $tableData;
     }
 
+    public function getJobData($jobData, $extraColumns = false)
+    {
+        $tableData = [
+            'headers' => ['ID', 'QUEUE','ATTEMPTS',' STATUS','CREATED_AT','DETAILS', 'ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($jobData as $item) {
+           
+            //  dd($monitoredTasks);
+            $tableData['rows'][] = [
+                $item['id'],                  // ID
+                $item['queue'],               // QUEUE
+                $item['attempts'],            // ATTEMPTS
+                $item['status'],              // STATUS
+                $item['created_at'],          // CREATED_AT
+                json_encode($item['payload']),
+
+            ];
+        }
+
+        return $tableData;
+         /// TABLE DATA ///////////////////////////
+
+         
+        
+
+        return $tableData;
+    }
+
     /// Delete Method
     public function destroy($model, array $relationships, $modelName)
     {

@@ -54,10 +54,6 @@ class NotificationJobSuccess
                     Log::info("Notification marked as sent", ['id' => $notificationId]);
                 } else {
                     Notification::where('id', $notificationId)->update(['status' => 'failed']);
-                    Log::info("Notification failed to send. Preparing to release credits.", [
-                        'notification_id' => $notificationId,
-                        'results' => $results
-                    ]);
                     $this->smsService->releaseAllCredits();
                     Log::error("Notification failed to send", ['id' => $notificationId]);
                 }

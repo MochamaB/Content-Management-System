@@ -61,9 +61,9 @@ class TextMessageController extends Controller
             'Dashboard' => 'icon-chart', 
             'Inbox' => ' icon-bubble',
             'Compose Text' => ' icon-note',
-            'Top up' => '',
-            'Transactions' => '',
-            'Tarriffs' => '',
+            'Top up' => ' icon-reload',
+            'Transactions' => 'icon-credit-card',
+            'Tarriffs' => 'icon-call-in',
             
         ]);
 

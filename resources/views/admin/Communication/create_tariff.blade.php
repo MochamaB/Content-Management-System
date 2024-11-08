@@ -14,8 +14,10 @@
         <label for="credit_type">Credit Type</label>
             <select name="credit_type" id="credit_type" class="formcontrol2">
                 <option value="">Select Tariff Type</option>
+                <!-- #TODO: Decide if theres another tarriff system
                 <option value="{{ \App\Models\SmsCredit::TYPE_PROPERTY }}">{{ \App\Models\SmsCredit::$statusLabels[\App\Models\SmsCredit::TYPE_PROPERTY] }}</option>
                 <option value="{{ \App\Models\SmsCredit::TYPE_USER }}">{{ \App\Models\SmsCredit::$statusLabels[\App\Models\SmsCredit::TYPE_USER] }}</option>
+                -->
                 <option value="{{ \App\Models\SmsCredit::TYPE_INSTANCE }}">{{ \App\Models\SmsCredit::$statusLabels[\App\Models\SmsCredit::TYPE_INSTANCE] }}</option>
             </select>
         </div>

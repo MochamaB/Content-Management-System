@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id()->index();
             $table->string('name');
             $table->string('command');
+            $table->string('job_class')->nullable();
             $table->string('frequency'); // you can use this to store 'monthlyOn' or 'twiceMonthly'
             $table->string('variable_one')->nullable(); // add this to store the day of the month to run the task
             $table->string('variable_two')->nullable(); // add this to store the second day of the month to run the task for 'twiceMonthly'

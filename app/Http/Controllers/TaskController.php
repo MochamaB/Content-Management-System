@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\DB;
 use App\Services\TableViewDataService;
+use Carbon\Carbon;
 
 class TaskController extends Controller
 {
@@ -164,8 +165,36 @@ class TaskController extends Controller
             '2' => '',
         ]);
 
+        $tabTitles = collect([
+            'Successfull Jobs',
+            'Failed Jobs',
+            'Monitor Task',
+        ]);
+        $sucessfullJobs = $task->jobs()->get()->map(function ($job) {
+            return [
+                'id' => $job->id,
+                'queue' => $job->queue,
+                'attempts' => $job->attempts,
+                'created_at' => Carbon::createFromTimestamp($job->created_at)->format('Y-m-d H:i:s'),
+                'available_at' => Carbon::createFromTimestamp($job->available_at)->format('Y-m-d H:i:s'),
+                'status' => 'pending',
+                'payload' => json_decode($job->payload, true)
+            ];
+        });
+
+        $failedJobs = $task->failedJobs()->get()->map(function ($job) {
+            return [
+                'id' => $job->id,
+                'queue' => $job->queue,
+                'failed_at' => Carbon::parse($job->failed_at)->format('Y-m-d H:i:s'),
+                'exception' => $job->exception,
+                'status' => 'failed',
+                'payload' => json_decode($job->payload, true)
+            ];
+        });
+
         //   $monitoredTasks = $task->monitoredTasks;
-        //   dd($monitoredTasks);
+         // dd($sucessfullJobs);
 
         /// DATA FOR MONITORED TAB
         $taskMonitorData = DB::table('monitored_scheduled_tasks')
@@ -173,19 +202,19 @@ class TaskController extends Controller
             ->get();
         // dd($payments);
         $taskMonitorTableData = $this->getTaskMonitorData($taskMonitorData);
+        $successfullJobData = $this->tableViewDataService->getJobData($sucessfullJobs,false);
 
         //s   dd($taskMonitorTableData);
-
-
-        $tabTitles = collect([
-            'Monitor Task',
-        ]);
 
 
 
         $tabContents = [];
         foreach ($tabTitles as $title) {
-            if ($title === 'Monitor Task') {
+            if ($title === 'Successfull Jobs') {
+                $tabContents[] = View('admin.task.task_monitor', ['data' => $successfullJobData, 'controller' => ['task']])->render();
+            }else if ($title === 'Failed Jobs') {
+                $tabContents[] = View('admin.task.task_monitor', ['data' => $taskMonitorTableData], compact('taskMonitorData'))->render();
+            }else if ($title === 'Monitor Task') {
                 $tabContents[] = View('admin.task.task_monitor', ['data' => $taskMonitorTableData], compact('taskMonitorData'))->render();
             }
         }

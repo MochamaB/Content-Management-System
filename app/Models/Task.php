@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Task extends Model
 {
@@ -12,6 +13,7 @@ class Task extends Model
     protected $fillable = [
         'name',
         'command',
+        'job_class',
         'frequency',
         'variable_one',
         'variable_two',
@@ -22,6 +24,7 @@ class Task extends Model
     public static $fields = [
         'name' => ['label' => 'Task Name', 'inputType' => 'text', 'required' => true, 'readonly' =>''],
         'command' => ['label' => 'Command', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
+        'job_class' => ['label' => 'Job Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'frequency' => ['label' => 'Frequency', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
         'variable_one' => ['label' => 'Day of Month', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
         'variable_two' => ['label' => 'Day of the Month', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
@@ -32,6 +35,7 @@ class Task extends Model
     public static $validation = [
         'name' => 'required',
         'command' => 'required',
+        'job_class' => 'nullable',
         'frequency' => 'required',
         'variable_one' => 'nullable|numeric',
         'variable_two' => 'nullable|numeric',
@@ -65,6 +69,34 @@ class Task extends Model
     public function monitoredTasks()
     {
         return $this->hasMany(MonitoredScheduledTask::class, 'task_id', 'id');
+    }
+    public function getFullJobClassName()
+    {
+        // Append namespace to job class name
+        return "App\\Jobs\\{$this->job_class}";
+    }
+
+    public function jobs()
+    {
+        $fullJobClassName = $this->getFullJobClassName();
+        
+        return DB::table('jobs')
+            ->where(function ($query) use ($fullJobClassName) {
+                $query->whereJsonContains('payload->displayName', $fullJobClassName)
+                    ->orWhereJsonContains('payload->commandName', $fullJobClassName);
+            })
+            ->orderBy('created_at', 'desc');
+    }
+    public function failedJobs()
+    {
+        $fullJobClassName = $this->getFullJobClassName();
+        
+        return DB::table('failed_jobs')
+            ->where(function ($query) use ($fullJobClassName) {
+                $query->whereJsonContains('payload->displayName', $fullJobClassName)
+                    ->orWhereJsonContains('payload->commandName', $fullJobClassName);
+            })
+            ->orderBy('failed_at', 'desc');
     }
 
 
