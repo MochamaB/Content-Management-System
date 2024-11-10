@@ -59,6 +59,12 @@
             font-size: 15px;
             white-space: normal;
         }
+        #filter-button {
+        margin-left: 0px;
+        padding: 8px 12px;
+        border-radius: 0px;
+        border-left: blue solid 10px;
+}
     </style>
     <div class="fixed-table-toolbar">
         <div class="columns columns-right btn-group float-right">
@@ -181,3 +187,26 @@
     </table>
 
 </div>
+<script>
+$(document).ready(function () {
+    // Wait for the bootstrap table to initialize and the toolbar to load
+    setTimeout(function () {
+        // Find the search input within the toolbar
+        var searchInput = $('.fixed-table-toolbar .search input');
+
+        // Only add the Filter button if it doesn't already exist
+        if (searchInput.length && $('#filter-button').length === 0) {
+            // Create the Filter button HTML
+            var filterButton = `
+                <a href="" class="btn btn-warning btn-lg text-white mb-0 me-0" id="filter-button" style="margin-left: 0px;"
+                data-toggle="collapse" data-target="#collapseExampleOne" aria-expanded="false" aria-controls="collapseExampleOne">
+                    <i class="mdi mdi-filter"></i> Filters
+                </a>`;
+
+            // Insert the Filter button after the search input
+            searchInput.after(filterButton);
+        }
+    }, 500); // Adjust timeout if necessary
+});
+
+</script>

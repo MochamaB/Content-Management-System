@@ -17,7 +17,6 @@ use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
 class InvoiceGeneratedTextNotification extends Notification implements ShouldQueue
-//implements ShouldQueue
 {
     use Queueable;
 

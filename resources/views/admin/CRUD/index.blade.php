@@ -22,10 +22,9 @@
         @include('admin.CRUD.cardDashboard')
     @endif
     <div class=" contwrapper">
-        <div class="row">
+        <div class="row collapse collapseExampleOne" id="collapseExampleOne" style="background-color: #eee;padding-top: 25px;border-left:5px solid #1F3BB3;margin-bottom: 20px;">
             @include('layouts.admin.master-filter')
         </div>
-        <hr>
         @if (isset($tabTitles))
         @include('admin.CRUD.tabs_horizontal_show')
         @else

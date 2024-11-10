@@ -36,6 +36,7 @@ use App\Services\FilterService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\URL;
+use Opcodes\LogViewer\Facades\LogViewer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -98,6 +99,21 @@ class AppServiceProvider extends ServiceProvider
       if (Schema::hasTable('website_settings')) {
         // Fetch the website settings once and share with all views
         $websitesettings = Website::first();
+
+        // LOG VIEWER
+        LogViewer::auth(function ($request) {
+            $user = $request->user();
+
+            return $user 
+                && (
+                    $user->id === 1 // Allow if user ID is 1
+                    || (
+                        $user->role // Ensure user has a role relation loaded
+                        && stripos($user->roles->first()->name, 'admin') !== false // Allow if role name is 'admin'
+                    ) 
+                );
+
+        });
       
         /////////// GLOBAL VIEW COMPOSERS
         view()->composer('*', function ($view)  use ($websitesettings) {

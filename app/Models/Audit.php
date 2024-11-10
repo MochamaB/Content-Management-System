@@ -55,4 +55,9 @@ class Audit extends BaseAudit
     {
         return $this->morphTo();
     }
+     // Accessor to safely access `auditable` with null checking
+     public function getAuditableOrNullAttribute()
+     {
+         return $this->auditable ?? null;
+     }
 }

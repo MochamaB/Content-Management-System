@@ -26,6 +26,7 @@ use \Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use App\Services\InvoiceService;
 use Illuminate\Support\Facades\DB;
+use App\Services\SmsService;
 
 class PaymentService
 {
@@ -35,6 +36,7 @@ class PaymentService
     private $updateNextDateAction;
     private $recordTransactionAction;
     private $invoiceService;
+    protected $smsService;
 
 
     public function __construct(
@@ -43,7 +45,8 @@ class PaymentService
         UpdateDueDateAction $updateDueDateAction,
         RecordTransactionAction $recordTransactionAction,
         CalculateTaxAction $calculateTaxAction,
-        InvoiceService $invoiceService
+        InvoiceService $invoiceService,
+        SmsService $smsService
     ) {
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
         $this->updateNextDateAction = $updateNextDateAction;
@@ -51,6 +54,7 @@ class PaymentService
         $this->recordTransactionAction = $recordTransactionAction;
         $this->calculateTaxAction = $calculateTaxAction;
         $this->invoiceService = $invoiceService;
+        $this->smsService = $smsService;
     }
 
     ///////// ALLOCATED PAYMENTS /////////////////////
@@ -207,6 +211,14 @@ class PaymentService
                 $user->notify(new PaymentNotification($payment, $user, $viewContent));
             }
             if ($textNotificationsEnabled !== 'NO') {
+                $recipients = collect([$user]);
+                $notificationClass = PaymentTextNotification::class;
+                $notificationParams = ['payment' => $payment, 'user' => $user];
+        
+                foreach($recipients as $recipient){
+                    $result = $this->smsService->queueSmsNotification($recipient,$notificationClass, $notificationParams);
+                    }
+                
                 $user->notify(new PaymentTextNotification($payment, $user, $viewContent));
             }
         } catch (\Exception $e) {

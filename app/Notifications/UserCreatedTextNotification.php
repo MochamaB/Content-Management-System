@@ -12,8 +12,7 @@ use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
 
-class UserCreatedTextNotification extends Notification 
-//implements ShouldQueue
+class UserCreatedTextNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $user;

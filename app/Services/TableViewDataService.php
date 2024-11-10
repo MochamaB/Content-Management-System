@@ -1121,7 +1121,7 @@ class TableViewDataService
         foreach ($auditData as $item) {
             $model = class_basename($item->auditable_type);
             $event = class_basename($item->auditable_type).' '.$item->event;
-            $auditItem = $item->auditable->getIdentifier();
+            $auditItem = $item->auditableOrNull ? $item->auditableOrNull->getIdentifier() : 'No identifier available';
             $firstname = $item->user->firstname ??'System';
             $lastname = $item->user->lastname ??'Generated';
             $user = $firstname.' '.$lastname; 

@@ -19,7 +19,6 @@ class PaymentTextNotification extends Notification implements ShouldQueue
 {
     use Queueable;
     protected $payment;
-    protected $view;
     protected $user;
     protected $subject;
     protected $heading;
@@ -35,7 +34,7 @@ class PaymentTextNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($payment, $user, $view)
+    public function __construct($payment, $user)
     {
         $this->payment = $payment;
         $this->user = $user;
@@ -43,7 +42,7 @@ class PaymentTextNotification extends Notification implements ShouldQueue
         $this->subject = $this->payment->model->name . ' Receipt' . \Carbon\Carbon::parse($this->payment->created_at)->format('d M Y');
         $this->heading =  'New ' . $this->payment->model->type . ' Payment';
         $this->linkmessage = 'Go To Site';
-        $this->view = $view;
+   
         // Set the model name using class_basename
         $this->model = class_basename($payment); // This will return the model's class name, e.g., "Invoice"
         $this->smsContent = $this->generateSmsContent();

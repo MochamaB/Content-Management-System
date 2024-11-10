@@ -27,6 +27,7 @@ use App\Notifications\UserCreatedTextNotification;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Services\SmsService;
 
 use Illuminate\Support\Facades\Log;
 
@@ -46,6 +47,7 @@ class UserController extends Controller
     private $tableViewDataService;
     protected $filterService;
     private $cardService;
+    protected $smsService;
 
 
     public function __construct(
@@ -53,7 +55,8 @@ class UserController extends Controller
         AttachDetachUserFromUnitAction $attachDetachUserFromUnitAction,
         UploadMediaAction $uploadMediaAction,
         TableViewDataService $tableViewDataService,
-        FilterService $filterService, CardService $cardService
+        FilterService $filterService, CardService $cardService,
+        SmsService $smsService
     ) {
         $this->model = User::class;
         $this->controller = collect([
@@ -67,6 +70,7 @@ class UserController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
         $this->cardService = $cardService;
+        $this->smsService = $smsService;
     }
 
     public function getRoles(){
@@ -298,14 +302,32 @@ class UserController extends Controller
         $request->session()->forget('properties');
 
         //6. SEND NEW USER A WELCOME EMAIL
-        try {
-            $user->notify(new UserCreatedNotification($user)); ///// Send welcome Email
-            $user->notify(new UserCreatedTextNotification($user)); ///// Send welcome Text
-               } catch (\Exception $e) {
-            // Log the error or perform any necessary actions
-                   Log::error('Failed to send payment notification: ' . $e->getMessage());
-               }
-     
+        
+       
+             // Check if 'send_welcome_email' is checked and send email notification
+            if ($request->has('send_welcome_email')) {
+                try {
+                    $user->notify(new UserCreatedNotification($user)); // Send welcome Email
+                } catch (\Exception $e) {
+                    Log::error('Failed to send welcome email: ' . $e->getMessage());
+                }
+            }
+            // Check if 'send_welcome_text' is checked and send text notification
+            if ($request->has('send_welcome_text')) {
+                try {
+                    $recipients = collect([$user]);
+                    $notificationClass = UserCreatedTextNotification::class;
+                    $notificationParams = ['user' => $user];
+            
+                    foreach($recipients as $recipient){
+                        $result = $this->smsService->queueSmsNotification($recipient,$notificationClass, $notificationParams);
+                        }
+                   // $user->notify(new UserCreatedTextNotification($user)); // Send welcome Text
+                } catch (\Exception $e) {
+                    Log::error('Failed to send welcome text message: ' . $e->getMessage());
+                }
+            }
+              
 
 
         return redirect('user')->with('status', 'User Added Successfully');

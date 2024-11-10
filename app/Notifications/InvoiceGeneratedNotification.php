@@ -12,7 +12,6 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 
 class InvoiceGeneratedNotification extends Notification implements ShouldQueue
-//implements ShouldQueue
 {
     use Queueable;
 

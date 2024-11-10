@@ -47,6 +47,7 @@ class NotificationJobSuccess
                 // The notification ID is available in the database notification
                 $notificationId = $event->notification->id;
                 $results = $event->notification->getSendResults();
+                Log::info("Notification send results", ['id' => $notificationId, 'results' => $results]);
 
                 if ($results['success']) {
                     Notification::where('id', $notificationId)->update(['status' => 'sent']);

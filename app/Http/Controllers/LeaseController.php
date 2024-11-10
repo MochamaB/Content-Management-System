@@ -31,6 +31,7 @@ use App\Notifications\LeaseAgreementTextNotification;
 use Illuminate\Support\Facades\Log;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Services\SmsService;
 
 
 class LeaseController extends Controller
@@ -52,6 +53,7 @@ class LeaseController extends Controller
     private $tableViewDataService;
     private $filterService;
     private $cardService;
+    protected $smsService;
 
 
 
@@ -63,7 +65,8 @@ class LeaseController extends Controller
         InvoiceService $invoiceService,
         RecordTransactionAction $recordTransactionAction,
         TableViewDataService $tableViewDataService,
-        FilterService $filterService, CardService $cardService
+        FilterService $filterService, CardService $cardService,
+        SmsService $smsService
     ) {
         $this->model = Lease::class;
 
@@ -81,6 +84,7 @@ class LeaseController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
         $this->cardService = $cardService;
+        $this->smsService = $smsService;
     }
     public function index(Request $request)
     {
@@ -276,7 +280,14 @@ class LeaseController extends Controller
             if ($notificationsEnabled === 'YES') {
                 // Send notifications
             $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
-            $user->notify(new LeaseAgreementTextNotification($user)); ///// Send Lease Agreement
+                $recipients = collect([$user]);
+                $notificationClass = LeaseAgreementTextNotification::class;
+                $notificationParams = ['user' => $user];
+        
+                foreach($recipients as $recipient){
+                    $result = $this->smsService->queueSmsNotification($recipient,$notificationClass, $notificationParams);
+                    }
+         //   $user->notify(new LeaseAgreementTextNotification($user)); ///// Send Lease Agreement
             }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions

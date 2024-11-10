@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
-use App\Services\SmsService; 
+use App\Services\SmsService;
 
 class NotificationJobFailure
 {
@@ -32,8 +32,18 @@ class NotificationJobFailure
      */
     public function handle(NotificationFailed $event)
     {
-        // Check if the job is of type SendTextNotification
-        if ($event->notification instanceof \App\Notifications\SendTextNotification) {
+        // Define an array of notification types that need to be handled
+        $notificationTypes = [
+            \App\Notifications\SendTextNotification::class,
+            \App\Notifications\TicketTextNotification::class, // Add other notification types as needed
+            \App\Notifications\InvoiceGeneratedTextNotification::class,
+            \App\Notifications\LeaseAgreementTextNotification::class,
+            \App\Notifications\PaymentTextNotification::class,
+            \App\Notifications\UserCreatedTextNotification::class,
+        ];
+
+        // Check if the notification is an instance of any specified types
+        if (in_array(get_class($event->notification), $notificationTypes)) {
             try {
                 // The notification ID is available in the database notification
                 $notificationId = $event->notification->id;
@@ -54,6 +64,5 @@ class NotificationJobFailure
                 ]);
             }
         }
-
     }
 }

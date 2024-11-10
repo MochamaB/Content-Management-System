@@ -367,11 +367,11 @@
 #filter {
 
   border-radius: 0px;
-  border-left: blue solid 10px
+ 
 }
 
 .filterbody {
-  border-left: 5px solid #1F3BB3;
+ 
   padding: 15px;
   background-color: #F1F1F1;
 }
@@ -743,14 +743,14 @@ input.form-control.form-control-sm.search-input::placeholder {
 /* Increase width on hover */
 input.form-control.form-control-sm.search-input:hover {
   border: 2px solid #ffaf00;
-  width: 700px;
+  width: 450px;
   /* Set the desired width on hover */
 }
 
 /* Increase width when input is focused */
 input.form-control.form-control-sm.search-input:focus {
   border: 2px solid #0000ff;
-  width: 700px;
+  width: 450px;
   /* Set the desired width on hover */
 }
 
