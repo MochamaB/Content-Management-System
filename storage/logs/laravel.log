@@ -1,3 +1,0 @@
-[2024-11-10 18:08:18] local.INFO: Attempting to release all credits. {"credit_entry_exists":true,"pending_credits":1} 
-[2024-11-10 18:08:18] local.ERROR: Notification failed to send {"id":"6d9fadef-4614-41b4-9567-06e7bdbb888e"} 
-[2024-11-10 18:08:20] local.INFO: Notification marked as sent {"id":"6d9fadef-4614-41b4-9567-06e7bdbb888e"} 
