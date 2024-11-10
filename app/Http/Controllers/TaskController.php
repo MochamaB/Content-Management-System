@@ -177,7 +177,7 @@ class TaskController extends Controller
                 'attempts' => $job->attempts,
                 'created_at' => Carbon::createFromTimestamp($job->created_at)->format('Y-m-d H:i:s'),
                 'available_at' => Carbon::createFromTimestamp($job->available_at)->format('Y-m-d H:i:s'),
-                'status' => 'pending',
+                'status' => 'success',
                 'payload' => json_decode($job->payload, true)
             ];
         });
@@ -203,6 +203,7 @@ class TaskController extends Controller
         // dd($payments);
         $taskMonitorTableData = $this->getTaskMonitorData($taskMonitorData);
         $successfullJobData = $this->tableViewDataService->getJobData($sucessfullJobs,false);
+        $failedJobData = $this->tableViewDataService->getFailedJobData($failedJobs,false);
 
         //s   dd($taskMonitorTableData);
 
@@ -213,7 +214,7 @@ class TaskController extends Controller
             if ($title === 'Successfull Jobs') {
                 $tabContents[] = View('admin.task.task_monitor', ['data' => $successfullJobData, 'controller' => ['task']])->render();
             }else if ($title === 'Failed Jobs') {
-                $tabContents[] = View('admin.task.task_monitor', ['data' => $taskMonitorTableData], compact('taskMonitorData'))->render();
+                $tabContents[] = View('admin.task.task_monitor', ['data' => $failedJobData, 'controller' => ['task']])->render();
             }else if ($title === 'Monitor Task') {
                 $tabContents[] = View('admin.task.task_monitor', ['data' => $taskMonitorTableData], compact('taskMonitorData'))->render();
             }

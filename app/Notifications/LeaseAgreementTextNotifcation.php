@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Website;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
@@ -21,6 +22,7 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
     protected $data;
     protected $company;
     protected $smsContent; // Declare a class property to hold the SMS content
+    public $results;
 
     /**
      * Create a new notification instance.
@@ -32,6 +34,7 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
         $this->user = $user;
         $this->company = Website::pluck('company_name')->first();
         $this->smsContent = $this->generateSmsContent();
+        $this->results = ['success' => false]; // Default to failed
     }
 
     public function generateSmsContent()
@@ -63,9 +66,28 @@ class LeaseAgreementTextNotification extends Notification implements ShouldQueue
      public function toAfricasTalking($notifiable)
      {
         
-         return (new AfricasTalkingMessage())
-                     ->content($this->smsContent);
+        try {
+            $message = new AfricasTalkingMessage();
+            $message->content($this->smsContent);
+            // If no exception occurs, mark as success
+            $this->markAsSuccess();
+            return $message;
+        }catch (\Exception $e) {
+            Log::error("Failed to send SMS: " . $e->getMessage());
+            // Failures will be caught in NotificationFailed
+            throw $e; // Rethrow to trigger NotificationFailed event
+        }
      }
+
+     public function markAsSuccess()
+    {
+        $this->results['success'] = true; // Call this when the API response confirms success
+    }
+
+    public function getSendResults()
+    {
+        return $this->results;
+    }
 
     /**
      * Get the array representation of the notification.

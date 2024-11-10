@@ -1264,11 +1264,15 @@ class TableViewDataService
     public function getJobData($jobData, $extraColumns = false)
     {
         $tableData = [
-            'headers' => ['ID', 'QUEUE','ATTEMPTS',' STATUS','CREATED_AT','DETAILS', 'ACTIONS'],
+            'headers' => ['ID', 'QUEUE','ATTEMPTS',' STATUS','CREATED_AT','DETAILS'],
             'rows' => [],
         ];
 
         foreach ($jobData as $item) {
+            // Ensure payload is a JSON string before decoding
+            $payload = is_string($item['payload']) ? json_decode($item['payload'], true) : $item['payload'];
+            $displayName = $payload['displayName'] ?? 'N/A';
+            $maxTries = $payload['maxTries'] ?? 'N/A';
            
             //  dd($monitoredTasks);
             $tableData['rows'][] = [
@@ -1277,7 +1281,43 @@ class TableViewDataService
                 $item['attempts'],            // ATTEMPTS
                 $item['status'],              // STATUS
                 $item['created_at'],          // CREATED_AT
-                json_encode($item['payload']),
+                "Job: $displayName, Max Tries: $maxTries", // DETAILS
+
+            ];
+        }
+
+        return $tableData;
+         /// TABLE DATA ///////////////////////////
+
+         
+        
+
+        return $tableData;
+    }
+    public function getFailedJobData($failedjobData, $extraColumns = false)
+    {
+        $tableData = [
+            'headers' => ['ID', 'QUEUE','ATTEMPTS',' STATUS','CREATED_AT','DETAILS'],
+            'rows' => [],
+        ];
+
+        foreach ($failedjobData as $item) {
+            $payload = json_decode($item['payload'], true);
+            $displayName = $payload['displayName'] ?? 'N/A';
+            $maxTries = $payload['maxTries'] ?? 'N/A';
+            $exceptionLines = explode("\n", $item->exception);
+
+            // Get the first two lines and join them with a space or newline as needed
+            $exceptionMessage = implode("\n", array_slice($exceptionLines, 0, 2));
+
+           
+            //  dd($monitoredTasks);
+            $tableData['rows'][] = [
+                $item['id'],                  // ID
+                $item['queue'],               // QUEUE
+                $item['failed_at'],            // ATTEMPTS
+                "Job: $displayName, Max Tries: $maxTries",
+                'error' => $exceptionMessage,
 
             ];
         }

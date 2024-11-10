@@ -12,6 +12,7 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use App\Services\TableViewDataService;
 use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
@@ -22,10 +23,10 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
 
     protected $invoice;
     protected $user;
-    protected $view;
     protected $model;
     protected $reminder;
     protected $smsContent; // Declare a class property to hold the SMS content
+    public $results;
 
 
     /**
@@ -33,16 +34,16 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
      *
      * @return void
      */
-    public function __construct($invoice, $user, $view, $reminder = null)
+    public function __construct($invoice, $user, $reminder = null)
     {
 
         $this->invoice = $invoice;
         $this->user = $user;
-        $this->view = $view; 
         $this->reminder = $reminder;
         // Set the model name using class_basename
         $this->model = class_basename($invoice); // This will return the model's class name, e.g., "Invoice"
         $this->smsContent = $this->generateSmsContent();
+        $this->results = ['success' => false]; // Default to failed
     }
 
     public function generateSmsContent()
@@ -79,10 +80,28 @@ class InvoiceGeneratedTextNotification extends Notification implements ShouldQue
     // send SMS ///
     public function toAfricasTalking($notifiable)
     {
-        // Assuming $this->invoice contains the invoice details
-   
-    return (new AfricasTalkingMessage())
-            ->content($this->smsContent);
+        try {
+            $message = new AfricasTalkingMessage();
+            $message->content($this->smsContent);
+            // If no exception occurs, mark as success
+            $this->markAsSuccess();
+            return $message;
+        }catch (\Exception $e) {
+            Log::error("Failed to send SMS: " . $e->getMessage());
+            // Failures will be caught in NotificationFailed
+            throw $e; // Rethrow to trigger NotificationFailed event
+        }
+
+    }
+
+    public function markAsSuccess()
+    {
+        $this->results['success'] = true; // Call this when the API response confirms success
+    }
+
+    public function getSendResults()
+    {
+        return $this->results;
     }
 
     /**

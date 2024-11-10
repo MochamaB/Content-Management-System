@@ -11,6 +11,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
 use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
@@ -27,6 +28,7 @@ class PaymentTextNotification extends Notification implements ShouldQueue
     protected $company;
     protected $model;
     protected $smsContent; // Declare a class property to hold the SMS content
+    public $results;
 
     /**
      * Create a new notification instance.
@@ -45,6 +47,7 @@ class PaymentTextNotification extends Notification implements ShouldQueue
         // Set the model name using class_basename
         $this->model = class_basename($payment); // This will return the model's class name, e.g., "Invoice"
         $this->smsContent = $this->generateSmsContent();
+        $this->results = ['success' => false]; // Default to failed
 
         $paymentdate = Carbon::parse($this->payment->created)->format('Y-m-d');
     }
@@ -80,9 +83,27 @@ class PaymentTextNotification extends Notification implements ShouldQueue
      */
     public function toAfricasTalking($notifiable)
     {
-        
-        return (new AfricasTalkingMessage())
-        ->content($this->smsContent);
+        try {
+            $message = new AfricasTalkingMessage();
+            $message->content($this->smsContent);
+            // If no exception occurs, mark as success
+            $this->markAsSuccess();
+            return $message;
+        }catch (\Exception $e) {
+            Log::error("Failed to send SMS: " . $e->getMessage());
+            // Failures will be caught in NotificationFailed
+            throw $e; // Rethrow to trigger NotificationFailed event
+        }
+    }
+
+    public function markAsSuccess()
+    {
+        $this->results['success'] = true; // Call this when the API response confirms success
+    }
+
+    public function getSendResults()
+    {
+        return $this->results;
     }
 
     /**

@@ -25,6 +25,7 @@ use App\Notifications\InvoiceGeneratedNotification;
 use App\Notifications\InvoiceGeneratedTextNotification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
+use App\Services\SmsService;
 
 class InvoiceService
 {
@@ -32,18 +33,21 @@ class InvoiceService
     private $updateDueDateAction;
     private $updateNextDateAction;
     private $recordTransactionAction;
+    protected $smsService;
 
 
     public function __construct(
         CalculateInvoiceTotalAmountAction $calculateTotalAmountAction,
         UpdateNextDateAction $updateNextDateAction,
         UpdateDueDateAction $updateDueDateAction,
-        RecordTransactionAction $recordTransactionAction
+        RecordTransactionAction $recordTransactionAction,
+        SmsService $smsService
     ) {
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
         $this->updateNextDateAction = $updateNextDateAction;
         $this->updateDueDateAction = $updateDueDateAction;
         $this->recordTransactionAction = $recordTransactionAction;
+        $this->smsService = $smsService;
     }
     public function getUnitCharges()
     {
@@ -317,8 +321,19 @@ class InvoiceService
             if ($emailNotificationsEnabled !== 'NO') {
             $user->notify(new InvoiceGeneratedNotification($invoice, $user, $viewContent, $reminder));
             }
+
             if ($textNotificationsEnabled !== 'NO') {
-                $user->notify(new InvoiceGeneratedTextNotification($invoice, $user, $viewContent, $reminder));
+
+                $recipients = collect([$user]);
+                $notificationClass = InvoiceGeneratedTextNotification::class;
+                $notificationParams = ['invoice' => $invoice, 'user' => $user];
+        
+                foreach($recipients as $recipient){
+                    $result = $this->smsService->queueSmsNotification($recipient,$notificationClass, $notificationParams);
+                    }
+                
+        
+             //   $user->notify(new InvoiceGeneratedTextNotification($invoice, $user, $viewContent, $reminder));
                 }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
