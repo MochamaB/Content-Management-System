@@ -12,9 +12,17 @@ class UpdateNextDateAction
 {
     use AsAction;
 
-    public function handle(string $chargeCycle, string $startDate): Carbon
+    public function handle(string $chargeCycle, string $startDate, string $chargeType): Carbon
     {
         $startDate = Carbon::parse($startDate);
+        // Logic for charge_type
+    if ($chargeType === 'fixed') {
+        // Check if the day is not the 1st of the month
+        if ($startDate->day !== 1) {
+            // Set startDate to the 1st of the next month
+            $startDate->addMonthNoOverflow()->startOfMonth();
+        }
+    }
         $monthsToAdd = match ($chargeCycle) {
             'Monthly' => 1,
             'Twomonths' => 2,

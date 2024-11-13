@@ -5,6 +5,7 @@
             var query = this.value;
             // Clear existing unit options before appending new ones
             $('#unit_id').empty();
+            $('#unit_id').empty().removeClass('is-invalid'); // Clear options and remove any existing 'is-invalid' class
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -20,17 +21,28 @@
                 },
                 dataType: 'json',
                 success: function(data) {
+                     // Add an initial message option
+                    
 
+                     // Check if data is empty
+                     if ($.isEmptyObject(data)) {
+                        // Add "No records" option if no data is returned
+                        $('#unit_id').append(new Option('No matching records found', ''));
+                         // Add 'is-invalid' class
+                         $('#unit_id').addClass('is-invalid');
+                    } else {
+                        $('#unit_id').append(new Option('Select Value Below', ''));
                     // Loop through the properties of the data object
-                    for (var unitId in data) {
-                        if (data.hasOwnProperty(unitId)) {
-                            // Access each unit ID and unit number
-                            var unitNumber = data[unitId];
-                            console.log('Unit ID: ' + unitId + ', Unit Number: ' + unitNumber);
+                        for (var unitId in data) {
+                            if (data.hasOwnProperty(unitId)) {
+                                // Access each unit ID and unit number
+                                var unitNumber = data[unitId];
+                                console.log('Unit ID: ' + unitId + ', Unit Number: ' + unitNumber);
 
-                            // You can use these values as needed, for example, to populate a select element
-                            // Here's an example of adding options to a select element with the id "unit_id"
-                            $('#unit_id').append(new Option(unitNumber, unitId));
+                                // You can use these values as needed, for example, to populate a select element
+                                // Here's an example of adding options to a select element with the id "unit_id"
+                                $('#unit_id').append(new Option(unitNumber, unitId));
+                            }
                         }
                     }
 

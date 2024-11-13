@@ -1,5 +1,5 @@
 @if(($routeParts[1] === 'create'))
-<h4><b> New {{ $routeParts[0] }}</b></h4>
+<h4><b> Enter {{ $routeParts[0] }} Details</b></h4>
 <hr>
 
 <form method="POST" action="{{ url('leasedetails') }}" class="myForm" enctype="multipart/form-data" novalidate>
@@ -22,7 +22,7 @@
             <label class="label"> Select Unit<span class="requiredlabel">*</span></label>
             <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required>
               
-                <option value="{{$lease->unit_id ?? ''}}">{{$lease->unit->unit_number ?? 'Select Unit'}}</option>
+                <option value="{{$lease->unit_id ?? ''}}">{{$lease->unit->unit_number ?? 'Select Property First'}}</option>
              
             </select>
         </div>

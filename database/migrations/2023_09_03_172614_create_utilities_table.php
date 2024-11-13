@@ -19,12 +19,17 @@ class CreateUtilitiesTable extends Migration
             $table->unsignedBigInteger('chartofaccounts_id')->index();
             $table->string('utility_name');
             $table->string('utility_type');
-            $table->decimal('rate');
+            $table->decimal('default_rate');
+            $table->string('default_charge_cycle');
+            $table->string('default_charge_type');
+            $table->boolean('is_recurring_by_default')->default(true);
 
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('chartofaccounts_id')->references('id')->on('chartofaccounts')->onDelete('cascade');
+            // Ensure unique utility names per property
+            $table->unique(['property_id', 'utility_name']);
         });
     }
     

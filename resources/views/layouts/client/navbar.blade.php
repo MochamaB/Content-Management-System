@@ -45,9 +45,9 @@
                 </button>
                 <a class="navbar-brand" href="{{ url('/') }}">
                     @if (isset($sitesettings) && method_exists($sitesettings, 'getFirstMediaUrl'))
-                    <img src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'noimage.jpg' }}" alt="Logo" style="height: 70px; width: 150px;">
+                    <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
                     @else
-                    <img src="noimage.jpg" alt="No Image">
+                    <img src="{{ url('uploads/images/default_logo.png') }}" alt="No Image" style="height: 70px; width: 150px;">
                     @endif
                 </a>
             </div>

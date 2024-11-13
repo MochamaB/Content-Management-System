@@ -19,6 +19,7 @@ class CreateUnitchargesTable extends Migration
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->index();
             $table->unsignedBigInteger('chartofaccounts_id')->index();
+            $table->unsignedBigInteger('utility_id')->index();
             $table->string('charge_name');
             $table->string('charge_cycle');
             $table->string('charge_type');
@@ -26,6 +27,9 @@ class CreateUnitchargesTable extends Migration
             $table->string('recurring_charge');
             $table->timestamp("startdate")->nullable();
             $table->timestamp("nextdate")->nullable();
+            $table->boolean('override_defaults')->default(false);
+            // Optional: Add columns to track which fields are overridden
+            $table->json('overridden_fields')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
@@ -33,6 +37,7 @@ class CreateUnitchargesTable extends Migration
             $table->foreign('property_id')->references('id')->on('properties')->onDelete('cascade');
             $table->foreign('unit_id')->references('id')->on('units')->onDelete('cascade');
             $table->foreign('chartofaccounts_id')->references('id')->on('chartofaccounts')->onDelete('cascade');
+            $table->foreign('utility_id')->references('id')->on('utilities')->onDelete('cascade');
         });
     }
 

@@ -188,8 +188,13 @@
 
 </div>
 <script>
+    // Define route part outside of $(document).ready
+    var currentRoutePart = "{{ $routeParts[1] ?? '' }}";
+</script>
+<script>
 $(document).ready(function () {
     // Wait for the bootstrap table to initialize and the toolbar to load
+    if (currentRoutePart === 'index') {
     setTimeout(function () {
         // Find the search input within the toolbar
         var searchInput = $('.fixed-table-toolbar .search input');
@@ -207,6 +212,8 @@ $(document).ready(function () {
             searchInput.after(filterButton);
         }
     }, 500); // Adjust timeout if necessary
+}
+
 });
 
 </script>

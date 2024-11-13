@@ -161,14 +161,14 @@ class PropertyController extends Controller
         $tabTitles = collect([
             'Summary',
             'Units',
-            'Users',
-            'Events',
             'Utilities',
+            'Users',
             'Pay Methods',
-            'Meter Readings',
-            'Tickets',
-            'Deposits',
             'Expenses',
+            'Deposits',
+            'Events Audit',
+            'Tickets',
+            'Meter Readings',
             'Settings'
             //    'Maintenance',
             //    'Financials',
@@ -250,7 +250,7 @@ class PropertyController extends Controller
             } elseif ($title === 'Units') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();
-            }elseif ($title === 'Events') {
+            }elseif ($title === 'Events Audit') {
                 $tabContents[] = View('admin.CRUD.table', ['data' => $eventTableData,'controller' => ['audit']], 
                 compact('amenities', 'allamenities'))->render();
             } elseif ($title === 'Users') {

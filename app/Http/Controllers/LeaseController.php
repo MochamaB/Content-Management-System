@@ -570,11 +570,12 @@ class LeaseController extends Controller
         ];
         $request->validate($rules);
 
-        ///2. GET VALUE OF NEXT DATE ON THE CHARGE/////////
+        ///2. GET VALUE OF START DATE NEXT DATE ON THE CHARGE/////////
         $chargeCycle = $request->input('charge_cycle');
         $startDate = Carbon::parse($request->input('startdate'));
+        $chargeType = $request->input('charge_type');
         /// 2.1. Use the action to update the next date
-        $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
+        $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate,$chargeType );
 
 
         if (empty($request->session()->get('wizard_rentcharge'))) {

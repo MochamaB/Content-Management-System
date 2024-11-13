@@ -1,7 +1,6 @@
 @if(($routeParts[1] === 'create'))
 <h5><b> Add Rent Details</b></h5>
 <hr>
-<br />
 <div class="col-md-8">
     <div class="form-group" id="rentselect">
         <label class="">
@@ -24,14 +23,17 @@
 </div>
 
 <div class="" id="rentinfo" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <i class="mdi mdi-information text-muted me-1"></i>
-            <h6><a href="{{ url('skiprent') }}" class="nextBtn" id="nextBtn">Click Here</a> if there is no Rent Charge</a></h6>
+    <div class="alert alert-danger alert-dismissible fade show">
+    <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+            <p><a href="{{ url('skiprent') }}" class=" btn btn-outline-danger text-danger mb-0 nextBtn" id="nextBtn">
+            <i class="mdi mdi mdi-arrow-right-bold-circle me-1"></i>    
+            <b>Skip To Next</b></a> if there is no Rent Charge</p>
+            
 
-        </div>
-    </div><br />
-
+       
+    </div>
     <form method="POST" action="{{ url('rent') }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
         <div class="col-md-6">
@@ -39,11 +41,10 @@
             <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
             <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
             <div class="form-group">
-                <h5>Rent <span class="text-muted">(optional)</span></h5>
                 <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="Rent" readonly>
             </div>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-8">
             <div class="form-group">
                 <label class="label">Rent Cycle<span class="requiredlabel">*</span></label>
                 <select name="charge_cycle" id="charge_cycle" class="formcontrol2" placeholder="Select" required>
@@ -58,8 +59,8 @@
             </div>
         </div>
         <!---------   ---->
-        <div class="row">
-            <div class="col-md-6">
+        
+            <div class="col-md-8">
                 <div class="form-group">
                     <label class="label">Account<span class="requiredlabel">*</span></label>
                     <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
@@ -75,13 +76,9 @@
                 </div>
             </div>
 
-
-            <div class="col-md-6">
-                <div class="form-group">
                     <input type="hidden" class="form-control" name="charge_type" value="fixed" required readonly>
-                </div>
-            </div>
-            <div class="col-md-6">
+              
+            <div class="col-md-8">
                 <div class="form-group">
                     <label class="label">Amount<span class="requiredlabel">*</span></label>
                     <div class="input-group">
@@ -91,7 +88,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="form-group">
                     <label class="label">Start Date<span class="requiredlabel">*</span></label>
                     <input type="date" class="form-control" id="startdate" name="startdate" value="{{$rentcharge->startdate ?? $lease->startdate ?? ''}}" required >
@@ -101,7 +98,7 @@
 
 
 
-        </div><br />
+        <br />
         <!--------- ----------- -->
         <div class="addfields" style="margin-bottom:30px">
             @if(!empty($splitRentcharges))

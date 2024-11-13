@@ -15,9 +15,8 @@ class WebsiteController extends Controller
     public function index()
     {
         $tabTitles = collect([
-            'Overview',
+            'General',
             'Branding',
-            'Logos',
         ]);
 
         $tabContents = [];
@@ -25,17 +24,14 @@ class WebsiteController extends Controller
         $sitesettings = Website::first();
         $tabContents = [];
         foreach ($tabTitles as $title) {
-            if ($title === 'Overview') {
-                $tabContents[] = View('admin.Setting.overview', compact('sitesettings'))->render();
+            if ($title === 'General') {
+                $tabContents[] = View('admin.Setting.general', compact('sitesettings'))->render();
             } elseif ($title === 'Branding') {
                 $tabContents[] = View('admin.Setting.branding', compact('sitesettings'))->render();
-            }elseif ($title === 'Logos') {
-                $tabContents[] = View('admin.Setting.logo', compact('sitesettings'))->render();
-            }
         }
+    }
 
-
-        return View('admin.CRUD.show', compact('tabTitles', 'tabContents'));
+        return View('admin.Setting.website_index', compact('tabTitles', 'tabContents'));
     }
 
 
@@ -109,6 +105,10 @@ class WebsiteController extends Controller
     public function update(Request $request, $id)
     {
         $settingSite = Website::find($id);
+         // If record doesn't exist, create a new instance
+        if (!$settingSite) {
+            $settingSite = new Website();
+        }
         $settingSite->fill($request->all());
 
         if ($request->file('company_logo')) {
@@ -121,7 +121,7 @@ class WebsiteController extends Controller
             $settingSite->addMedia($request->file('company_flavicon'))->toMediaCollection('flavicon');
         }
 
-        $settingSite->update();
+        $settingSite->save();
         return redirect('Website')->with('status', 'Site Settings Updated Successfully');
     }
 

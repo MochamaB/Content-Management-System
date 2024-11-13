@@ -135,6 +135,7 @@ class AppServiceProvider extends ServiceProvider
                'sitesettings' => $websitesettings ? $websitesettings : (object)[
                     'site_currency' => 'KSH', // Set default values
                     'company_name' => 'Default Company',
+                    'company_aboutus' => 'About Us',
                     'initials' => 'BP',
                      'logo' => 'noimage.jpg',
                 ],
