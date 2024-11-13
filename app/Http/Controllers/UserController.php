@@ -101,7 +101,9 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-       
+         // Clear previousUrl if navigating to a new  method
+         session()->forget('previousUrl');
+
         $baseQuery = User::with('units','roles')->visibleToUser();
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
@@ -154,6 +156,10 @@ class UserController extends Controller
      */
     public function create(Request $request)
     {
+         //// Sets the session previous url to return to where create was initiated from
+         if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
         $userRole = $request->session()->get('userRole');
         $user = $request->session()->get('user');
         $savedRole = Role::where('id', $userRole)->first();
@@ -274,6 +280,8 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+       
+     
 
         // 1. GET USER INFO FROM WIZARD SESSION 
         $newuser = $request->session()->get('user')->toArray();
@@ -328,9 +336,10 @@ class UserController extends Controller
                 }
             }
               
+        $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
 
+        return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Added Successfully');
 
-        return redirect('user')->with('status', 'User Added Successfully');
     }
 
     /**

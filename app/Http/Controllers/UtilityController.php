@@ -36,7 +36,7 @@ class UtilityController extends Controller
         /// TABLE DATA ///////////////////////////
         $sitesettings = Website::first();
         $tableData = [
-            'headers' => ['UTILITY', 'PROPERTY', 'TYPE', 'RATE', 'ACTIONS'],
+            'headers' => ['UTILITY', 'PROPERTY', 'TYPE','CYCLE', 'RATE', ''],
             'rows' => [],
         ];
 
@@ -47,7 +47,8 @@ class UtilityController extends Controller
                 $item->utility_name,
                 $item->property->property_name,
                 $item->utility_type,
-                $sitesettings->site_currency.' '.number_format($item->rate, 0, '.', ','),
+                $item->default_charge_cycle,
+                $sitesettings->site_currency.' '.number_format($item->default_rate, 0, '.', ','),
                 'isDeleted' => $isDeleted,
 
 
@@ -101,13 +102,9 @@ class UtilityController extends Controller
             return redirect()->back()->withInput()->with('statuserror', 'The Utility is already attached to the property');
         }
 
-        $validatedData = $request->validate([
-            'property_id' => 'required',
-            'chartofaccounts_id' => 'required|numeric',
-            'utility_name' => 'required',
-            'utility_type' => 'required',
-            'rate' => 'required|numeric',
-        ]);
+        $validationRules = Utility::$validation;
+        $validatedData = $request->validate($validationRules);
+        
         $utility = new Utility();
         $utility->fill($validatedData);
         $utility->save();

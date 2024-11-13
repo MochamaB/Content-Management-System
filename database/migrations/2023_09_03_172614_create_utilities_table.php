@@ -21,7 +21,6 @@ class CreateUtilitiesTable extends Migration
             $table->string('utility_type');
             $table->decimal('default_rate');
             $table->string('default_charge_cycle');
-            $table->string('default_charge_type');
             $table->boolean('is_recurring_by_default')->default(true);
 
             $table->timestamps();

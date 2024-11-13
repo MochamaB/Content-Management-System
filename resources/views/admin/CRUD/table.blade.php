@@ -52,6 +52,7 @@
             flex-direction: column;
             text-align: center;
         }
+
         .modal-body .message {
             word-wrap: normal;
             max-width: 90%;
@@ -59,12 +60,13 @@
             font-size: 15px;
             white-space: normal;
         }
+
         #filter-button {
-        margin-left: 0px;
-        padding: 8px 12px;
-        border-radius: 0px;
-        border-left: blue solid 10px;
-}
+            margin-left: 0px;
+            padding: 8px 12px;
+            border-radius: 0px;
+            border-left: blue solid 10px;
+        }
     </style>
     <div class="fixed-table-toolbar">
         <div class="columns columns-right btn-group float-right">
@@ -120,8 +122,8 @@
         <thead>
             <tr>
                 <th data-checkbox="true"></th>
-                @foreach($data['headers'] as $header)
-                <th data-sortable="true">{{ $header }}</th>
+                @foreach($data['headers'] as $index => $header)
+                <th @if($index < count($data['headers']) - 1) data-sortable="true" @endif>{{ $header }}</th>
                 @endforeach
             </tr>
         </thead>
@@ -192,28 +194,27 @@
     var currentRoutePart = "{{ $routeParts[1] ?? '' }}";
 </script>
 <script>
-$(document).ready(function () {
-    // Wait for the bootstrap table to initialize and the toolbar to load
-    if (currentRoutePart === 'index') {
-    setTimeout(function () {
-        // Find the search input within the toolbar
-        var searchInput = $('.fixed-table-toolbar .search input');
+    $(document).ready(function() {
+        // Wait for the bootstrap table to initialize and the toolbar to load
+        if (currentRoutePart === 'index') {
+            setTimeout(function() {
+                // Find the search input within the toolbar
+                var searchInput = $('.fixed-table-toolbar .search input');
 
-        // Only add the Filter button if it doesn't already exist
-        if (searchInput.length && $('#filter-button').length === 0) {
-            // Create the Filter button HTML
-            var filterButton = `
+                // Only add the Filter button if it doesn't already exist
+                if (searchInput.length && $('#filter-button').length === 0) {
+                    // Create the Filter button HTML
+                    var filterButton = `
                 <a href="" class="btn btn-warning btn-lg text-white mb-0 me-0" id="filter-button" style="margin-left: 0px;"
                 data-toggle="collapse" data-target="#collapseExampleOne" aria-expanded="false" aria-controls="collapseExampleOne">
                     <i class="mdi mdi-filter"></i> Filters
                 </a>`;
 
-            // Insert the Filter button after the search input
-            searchInput.after(filterButton);
+                    // Insert the Filter button after the search input
+                    searchInput.after(filterButton);
+                }
+            }, 500); // Adjust timeout if necessary
         }
-    }, 500); // Adjust timeout if necessary
-}
 
-});
-
+    });
 </script>

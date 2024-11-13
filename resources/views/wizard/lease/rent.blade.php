@@ -24,15 +24,12 @@
 
 <div class="" id="rentinfo" style="display: none;">
     <div class="alert alert-danger alert-dismissible fade show">
-    <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-            <p><a href="{{ url('skiprent') }}" class=" btn btn-outline-danger text-danger mb-0 nextBtn" id="nextBtn">
-            <i class="mdi mdi mdi-arrow-right-bold-circle me-1"></i>    
-            <b>Skip To Next</b></a> if there is no Rent Charge</p>
-            
-
-       
+        <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p><a href="{{ url('skiprent') }}" class=" btn btn-outline-danger text-danger mb-0 nextBtn" id="nextBtn">
+                <i class="mdi mdi mdi-arrow-right-bold-circle me-1"></i>
+                <b>Skip To Next</b></a> if there is no Rent Charge</p>
     </div>
     <form method="POST" action="{{ url('rent') }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
@@ -59,42 +56,42 @@
             </div>
         </div>
         <!---------   ---->
-        
-            <div class="col-md-8">
-                <div class="form-group">
-                    <label class="label">Account<span class="requiredlabel">*</span></label>
-                    <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
-                        <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account/Rent Income Account'}}</option>
-                        @foreach($accounts as $accounttype => $account)
-                        <optgroup label="{{ $accounttype }}">
-                            @foreach($account as $item)
-                            <option value="{{ $item->id }}">{{ $item->account_name  }}</option>
-                            @endforeach
-                        </optgroup>
+
+        <div class="col-md-8">
+            <div class="form-group">
+                <label class="label">Account<span class="requiredlabel">*</span></label>
+                <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
+                    <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account/Rent Income Account'}}</option>
+                    @foreach($accounts as $accounttype => $account)
+                    <optgroup label="{{ $accounttype }}">
+                        @foreach($account as $item)
+                        <option value="{{ $item->id }}">{{ $item->account_name  }}</option>
                         @endforeach
-                    </select>
-                </div>
+                    </optgroup>
+                    @endforeach
+                </select>
             </div>
+        </div>
 
-                    <input type="hidden" class="form-control" name="charge_type" value="fixed" required readonly>
-              
-            <div class="col-md-8">
-                <div class="form-group">
-                    <label class="label">Amount<span class="requiredlabel">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text spanmoney">{{$sitesettings->site_currency}}</span>
-                        <input type="number" class="form-control money" name="rate" value="{{$lease->unit->rent ?? ''}}" required>
-                    </div>
-                </div>
-            </div>
+        <input type="hidden" class="form-control" name="charge_type" value="fixed" required readonly>
 
-            <div class="col-md-8">
-                <div class="form-group">
-                    <label class="label">Start Date<span class="requiredlabel">*</span></label>
-                    <input type="date" class="form-control" id="startdate" name="startdate" value="{{$rentcharge->startdate ?? $lease->startdate ?? ''}}" required >
-                    <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="yes">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label class="label">Amount<span class="requiredlabel">*</span></label>
+                <div class="input-group">
+                    <span class="input-group-text spanmoney">{{$sitesettings->site_currency}}</span>
+                    <input type="number" class="form-control money" name="rate" value="{{$lease->unit->rent ?? ''}}" required>
                 </div>
             </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="form-group">
+                <label class="label">Start Date<span class="requiredlabel">*</span></label>
+                <input type="date" class="form-control" id="startdate" name="startdate" value="{{$rentcharge->startdate ?? $lease->startdate ?? ''}}" required>
+                <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="yes">
+            </div>
+        </div>
 
 
 

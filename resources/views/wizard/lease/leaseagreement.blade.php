@@ -9,6 +9,21 @@
             <img id="fileImage" src="{{ url('uploads/nofile.png') }}" style="height: 200px; width: 200px;">
         </div>
     </div>
+    <div class="form-group">
+    <div class="form-check">
+      <label class="form-check-label">
+        <input type="checkbox" class="form-check-input" name="send_welcome_email" id="send_welcome_email" value="1" checked="">
+        Send new Lease Agreement email to new tenant
+        <i class="input-helper"></i></label>
+    </div>
+    <div class="form-check">
+      <label class="form-check-label">
+        <input type="checkbox" class="form-check-input" name="send_welcome_text" id="send_welcome_text" value="1"  checked="">
+        Send new Lease Agreement text message to new tenant
+        <i class="input-helper"></i></label>
+    </div>
+
+  </div>
 
     @include('admin.CRUD.wizardbuttons')
 </form>

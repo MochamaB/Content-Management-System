@@ -19,7 +19,7 @@ class CreateUnitchargesTable extends Migration
             $table->unsignedBigInteger('property_id')->index();
             $table->unsignedBigInteger('unit_id')->index();
             $table->unsignedBigInteger('chartofaccounts_id')->index();
-            $table->unsignedBigInteger('utility_id')->index();
+            $table->unsignedBigInteger('utility_id')->nullable()->index();
             $table->string('charge_name');
             $table->string('charge_cycle');
             $table->string('charge_type');

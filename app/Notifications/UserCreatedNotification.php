@@ -6,8 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use NotificationChannels\AfricasTalking\AfricasTalkingChannel;
-use NotificationChannels\AfricasTalking\AfricasTalkingMessage;
 
 
 class UserCreatedNotification extends Notification implements ShouldQueue
@@ -47,7 +45,7 @@ class UserCreatedNotification extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail', 'database', AfricasTalkingChannel::class];
+        return ['mail', 'database'];
     }
 
     /**

@@ -273,13 +273,17 @@ class LeaseController extends Controller
         $unit->users()->attach($user, ['property_id' => $propertyId]);
 
         //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
-        $notificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'leasenotifications');
+     //   $notificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'leasenotifications');
         $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
         try {
-            if ($notificationsEnabled === 'YES') {
+            if ($request->has('send_welcome_email')) {
                 // Send notifications
             $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
+            }
+
+            if ($request->has('send_welcome_text')) {
+
                 $recipients = collect([$user]);
                 $notificationClass = LeaseAgreementTextNotification::class;
                 $notificationParams = ['user' => $user];
@@ -703,13 +707,15 @@ class LeaseController extends Controller
 
                 $chargeCycle = $request->input("charge_cycle.{$index}");
                 $startDate = Carbon::parse($request->input("startdate.{$index}"));
+                $chargeType = $request->input("charge_type.{$index}");
                 /// 2.1. Use the action to update the next date
-                $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate);
+                $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate, $chargeType);
 
                 $utilitycharge = [
                     'property_id' => $request->input('property_id'),
                     'unit_id' => $request->input('unit_id'),
                     'chartofaccounts_id' => $request->input("chartofaccounts_id.{$index}"),
+                    'utility_id' => $request->input("utility_id.{$index}"),
                     'charge_name' => $chargeName,
                     'charge_cycle' => $request->input("charge_cycle.{$index}"),
                     'charge_type' => $request->input("charge_type.{$index}"),

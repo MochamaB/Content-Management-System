@@ -15,7 +15,7 @@
     </div>
     <div class="form-check">
       <label class="form-check-label">
-        <input type="checkbox" class="form-check-input" checked="" name="send_welcome_text" id="send_welcome_text" value="1">
+        <input type="checkbox" class="form-check-input" name="send_welcome_text" id="send_welcome_text" value="1"  checked="">
         Send welcome text message to user
         <i class="input-helper"></i></label>
     </div>

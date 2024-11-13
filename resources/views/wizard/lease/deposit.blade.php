@@ -2,7 +2,7 @@
 <h5><b> Add Security Deposit Details</b></h5>
 <hr>
 
-<br />
+
 <div class="col-md-8">
     <div class="form-group" id="depositselect">
         <label class="">
@@ -25,13 +25,15 @@
 </div>
 
 <div class="" id="depositinfo" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center">
-        <div class="d-flex align-items-center">
-            <i class="mdi mdi-information text-muted me-1"></i>
-            <h6><a href="{{ url('skipdeposit') }}" class="" id="">Click Here</a> if there is No Security Deposit</a></h6>
+<div class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p><a href="{{ url('skipdeposit') }}" class=" btn btn-outline-danger text-danger mb-0 nextBtn" id="nextBtn">
+                <i class="mdi mdi mdi-arrow-right-bold-circle me-1"></i>
+                <b>Skip To Next</b></a> if there is No Security Deposit</p>
+    </div>
 
-        </div>
-    </div><br />
     <form method="POST" action="{{ url('securitydeposit') }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
         <div class="col-md-6">
@@ -39,7 +41,6 @@
             <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
             <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
             <div class="form-group">
-                <h5>Security Deposit <span class="text-muted">(optional)</span></h5>
                 <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="security deposit" readonly>
             </div>
         </div>

@@ -4,7 +4,7 @@
     @csrf
     <h5>Select Role</h5>
     <hr>
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="form-group">
             <label class="label">Role Name<span class="requiredlabel">*</span></label>
             <select name="role" id="role" class="formcontrol2" required>
@@ -12,7 +12,7 @@
                 @foreach($roles as $item)
                 <option value="{{$item->id}}">{{$item->name}}</option>
                 @endforeach
-                <select>
+            </select>
         </div>
         <br />
 

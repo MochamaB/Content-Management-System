@@ -17,10 +17,13 @@ class SmsCreditSeeder extends Seeder
     {
        
         SmsCredit::create([
-            'credit_type' => 'John doe',
-            'property_id' => 'john@gmail.com',
-            'mobile' => '911234567891',
-           
+            'credit_type' => '3',
+            'property_id'  => NULL,
+            'user_id'  => NULL,
+            'tariff'  => 2,
+            'available_credits'  => 10,
+            'blocked_credits'  => 0,
+            'used_credits'  => 0,
         ]);
     }
 }

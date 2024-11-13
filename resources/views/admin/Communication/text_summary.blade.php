@@ -45,9 +45,9 @@
                 <th data-checkbox="true"></th>
                 <th>To</th>
                 <th>Text Content</th>
-                <th>From</th>
                 <th>Date</th>
                 <th>Status</th>
+                <th>From</th>
             </tr>
         </thead>
         <tbody>
@@ -75,9 +75,9 @@
                     {{ $phonenumber ?? 'Unknown' }}
                 </td>
                 <td class="sms-content-column">{{ $notification['sms_content'] ?? 'Content' }}</td>
-                <td>{{ $data['from'] ?? 'Unknown' }}</td>
                 <td class="time">{{\Carbon\Carbon::parse($notification->created_at)->format('d M Y') }}</td>
                 <td> <span class="badge badge-{{ $statusClass }}">{{ ucfirst($status) }} </span></td>
+                <td>{{ $data['from'] ?? 'Unknown' }}</td>
             </tr>
             @endforeach
 

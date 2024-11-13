@@ -95,6 +95,7 @@
 </div>
 
 <script>
+    /*
 function markAsRead(element, event) {
     // Allow the tab to change first
     event.preventDefault();
@@ -130,7 +131,7 @@ function markAsRead(element, event) {
         console.error("An error occurred in markAsRead:", error);
     }
 }
-
+    */
 $(document).ready(function() {
     // Search input keyup event
     $('#search-input').on('keyup', function() {

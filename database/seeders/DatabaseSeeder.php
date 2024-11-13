@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             TaskSeeder::class,
             AmenitySeeder::class,
             TaxesSeeder::class,
+            SmsCreditSeeder::class,
         ]);
     }
 }
