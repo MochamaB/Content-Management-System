@@ -579,19 +579,23 @@ class LeaseController extends Controller
         $startDate = Carbon::parse($request->input('startdate'));
         $chargeType = $request->input('charge_type');
         /// 2.1. Use the action to update the next date
-        $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate,$chargeType );
+        $result = $this->updateNextDateAction->handle($chargeCycle, $startDate,$chargeType );
+        $updatedAt = $result['updatedAt'];
+        $nextDate = $result['nextDate'];
 
 
         if (empty($request->session()->get('wizard_rentcharge'))) {
             $rentcharge = new Unitcharge();
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
+            $rentcharge->updated_at = $updatedAt;
             $request->session()->put('wizard_rentcharge', $rentcharge);
             //     $rentcharge->save();
         } else {
             $rentcharge = $request->session()->get('wizard_rentcharge');
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
+            $rentcharge->updated_at = $updatedAt;
             $request->session()->put('wizard_rentcharge', $rentcharge);
             //      $rentcharge->update();
         }
@@ -645,7 +649,7 @@ class LeaseController extends Controller
                     'startdate' => $rentcharge->startdate,
                     'nextdate' => $rentcharge->nextdate,
                     'created_at' => now(),
-                    'updated_at' => now(),
+                    'updated_at' => $rentcharge->updated_at,
                     // ... Other fields ...
                 ];
                 $splitRentCharges[] = $splitRentCharge;
@@ -709,7 +713,9 @@ class LeaseController extends Controller
                 $startDate = Carbon::parse($request->input("startdate.{$index}"));
                 $chargeType = $request->input("charge_type.{$index}");
                 /// 2.1. Use the action to update the next date
-                $nextDate = $this->updateNextDateAction->handle($chargeCycle, $startDate, $chargeType);
+                $result = $this->updateNextDateAction->handle($chargeCycle, $startDate,$chargeType );
+                    $updatedAt = $result['updatedAt'];
+                    $nextDate = $result['nextDate'];
 
                 $utilitycharge = [
                     'property_id' => $request->input('property_id'),
@@ -725,7 +731,7 @@ class LeaseController extends Controller
                     'startdate' => $startDate,
                     'nextdate' => $nextDate,
                     'created_at' => now(),
-                    'updated_at' => now(),
+                    'updated_at' => $updatedAt,
                     // ... Other fields ...
                 ];
 

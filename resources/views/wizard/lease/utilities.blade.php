@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-between align-items-center">
     <div class="d-flex align-items-center">
         <i class="mdi mdi-information text-muted me-1"></i>
-        <h5> Utilities are billed together with rent in this property.</a></h5>
+        <h5> Utilities are billed separately with rent in this property.</a></h5>
        
     </div>
 </div><br />

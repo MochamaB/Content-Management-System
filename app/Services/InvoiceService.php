@@ -262,8 +262,8 @@ class InvoiceService
                     $amount = 0.00;
                     $meterReadings = MeterReading::where('unit_id', $childcharge->unit_id)
                         ->where('unitcharge_id', $childcharge->id)
-                        ->where('startdate', '>=', $updatedFormatted) // Check readings after updated_at
-                        ->where('startdate', '<=', $nextdateFormatted) // Check readings before or equal to nextdate
+                        ->where('startdate', '<=', $nextdateFormatted)
+                        ->where('enddate', '>=', $updatedFormatted)
                         ->get();
 
                     foreach ($meterReadings as $reading) {

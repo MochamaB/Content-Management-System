@@ -47,7 +47,7 @@
                 <th>Text Content</th>
                 <th>Date</th>
                 <th>Status</th>
-                <th>From</th>
+                <th>ACTION</th>
             </tr>
         </thead>
         <tbody>
@@ -76,8 +76,20 @@
                 </td>
                 <td class="sms-content-column">{{ $notification['sms_content'] ?? 'Content' }}</td>
                 <td class="time">{{\Carbon\Carbon::parse($notification->created_at)->format('d M Y') }}</td>
-                <td> <span class="badge badge-{{ $statusClass }}">{{ ucfirst($status) }} </span></td>
-                <td>{{ $data['from'] ?? 'Unknown' }}</td>
+                <td> <span class="badge badge-{{ $statusClass }} mb-2">{{ ucfirst($status) }} </span>
+                
+                </td>
+                <td> 
+                    @if($status === 'failed' || $status === 'pending')
+                    <span style="color:blue">
+                    <a class="table retry-button mt-2" data-id="{{ $notification->id }}" style="color:blue">
+                    <i class="mdi mdi-autorenew mr-1" style="vertical-align: middle;font-size:1.4rem;"></i>
+                        Retry
+                    </a>
+                    </span>
+                    @endif
+                    
+                </td>
             </tr>
             @endforeach
 
@@ -118,6 +130,27 @@
         });
     });
 </script>
+<script>
+    $(document).on('click', '.retry-button', function () {
+        let notificationId = $(this).data('id');
+
+        $.ajax({
+            url: '/notifications/retry/' + notificationId,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}' // Laravel CSRF protection
+            },
+            success: function (response) {
+                alert(response.message);
+                // Optionally, reload the page or update the UI dynamically here
+            },
+            error: function (error) {
+                alert('Failed to retry notification. Please try again later.');
+            }
+        });
+    });
+</script>
+
 
 
 

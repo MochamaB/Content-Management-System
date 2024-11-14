@@ -12,7 +12,7 @@ class UpdateNextDateAction
 {
     use AsAction;
 
-    public function handle(string $chargeCycle, string $startDate, string $chargeType): Carbon
+    public function handle(string $chargeCycle, string $startDate, string $chargeType): array
     {
         $startDate = Carbon::parse($startDate);
         // Logic for charge_type
@@ -35,7 +35,10 @@ class UpdateNextDateAction
 
         $nextDate = $startDate->copy()->addMonths($monthsToAdd)->startOfMonth();
         
-        return $nextDate;
+        return [
+            'updatedAt' => $startDate,
+            'nextDate' => $nextDate
+        ];
     }
 
     public function invoicenextdate(Unitcharge $unitcharge)

@@ -58,15 +58,35 @@ class UnitChargeController extends Controller
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
-        $unitChargeData = $this->model::with('property', 'unit')->whereNull('parent_id')->showSoftDeleted()->applyFilters($filters)->get();
+        $baseQuery = $this->model::with('property', 'unit')->whereNull('parent_id')->showSoftDeleted()->applyFilters($filters);
         $filterdata = $this->filterService->getUnitChargeFilters($request);
-        $cardData = $this->cardService->unitchargeCard($unitChargeData);
-      //  $mainfilter =  $this->model::pluck('charge_type')->toArray();
-        $viewData = $this->formData($this->model);
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getUnitChargeData($unitChargeData, true);
-
-        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller','cardData'));
+        $cardData = $this->cardService->unitchargeCard($baseQuery->get());
+        $tabTitles = ['All', 'Recurring', 'Charged Once'];
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'Recurring':
+                    $query->where('recurring_charge', 'yes');
+                    break;
+                case 'Charged Once':
+                    $query->where('recurring_charge', 'no');
+                    break;
+                    // 'All' doesn't need any additional filters
+            }
+            $unitCharges = $query->get();
+            $count = $unitCharges->count();
+            $tableData = $this->tableViewDataService->getUnitChargeData($unitCharges, true);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
+    
+        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','cardData','tabCounts'));
     }
 
     /**
