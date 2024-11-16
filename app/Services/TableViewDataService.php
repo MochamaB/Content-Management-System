@@ -343,7 +343,7 @@ class TableViewDataService
     public function getUnitChargeData($unitchargedata, $extraColumns = false)
     {
 
-        $headers = ['CHARGE', 'CYCLE', 'TYPE', 'RATE', 'RECURRING', 'LAST BILLED', 'NEXT BILL DATE', 'ACTIONS'];
+        $headers = ['CHARGE', 'TYPE', 'BILLING CYCLE', 'ACTIONS',''];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -366,7 +366,9 @@ class TableViewDataService
                     ->where('enddate', '>=', $updatedFormatted)
                     ->exists();
                 if (!$checkMeterReadings) {
-                    $MeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $item->unit_id, 'model' => 'units']) . '" class="badge badge-warning mt-2">Add Reading</a>';
+                    $MeterReadingLink = '<a style="vertical-align: top;" href="' . route('meter-reading.create', ['id' => $item->unit_id, 'model' => 'units']) . '" class="table">
+                    <i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>
+                    Add Reading</a>';
                 } else {
                     $MeterReadingLink = '<a href="" class="badge badge-information mt-2">Reading Added</a>';
                 }
@@ -374,18 +376,27 @@ class TableViewDataService
 
             $nextDateFormatted = empty($item->nextdate) ? 'Charged Once' : Carbon::parse($item->nextdate)->format('Y-m-d');
             $charge_name = $item->charge_name;
-            $charge_cycle = $item->charge_cycle;
+            $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',');
             $charge_type = $item->charge_type;
             if ($charge_type === 'fixed') {
-                $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',');
+                $charge_type = $item->charge_type.' Amount:'.$rate;
             } else {
-                $rate = $this->sitesettings->site_currency . ' ' . number_format($item->rate, 0, '.', ',') . ' <i>Per Unit</i>';
+                 $charge_type = 'Per Unit: '.$rate;
+            }
+            if ($item->charge_cycle === 'once') {
+                $chargeCycle = $item->charge_cycle;
+            } else {
+                $chargeCycle = $item->charge_cycle .
+                '<span style="padding-bottom: 5px; display: inline-block;">: Last - Next Billing</span><br>' .
+                '<span class="text-muted" style="font-weight: 500; font-style: italic; margin-top: 5px; display: inline-block;">' .
+                \Carbon\Carbon::parse($item->updated_at)->format('Y M') . ' - ' . \Carbon\Carbon::parse($item->nextdate)->format('Y M') .
+                '</span>';
             }
             $recurring_charge = $item->recurring_charge . '<br/>' . $MeterReadingLink;
             // If the current charge has child charges, add them to the charge name
             if ($item->childrencharge->isNotEmpty()) {
                 foreach ($item->childrencharge as $child) {
-
+                    $childrate = $this->sitesettings->site_currency . ' ' . number_format($child->rate, 0, '.', ',');
                     if ($child->charge_type == 'units') {
                         $childCheckMeterReadings = $child->meterReading()
                             ->where('startdate', '<=', $nextdateFormatted)
@@ -396,28 +407,20 @@ class TableViewDataService
                         } else {
                             $childMeterReadingLink = '<a href="" class="badge badge-information mt-2">Reading Added</a>';
                         }
+                        $child->charge_type = 'Per Unit: '.$childrate;
+                       
                     } else {
                         // Handle cases where $child->charge_type is not 'units'
                         $childMeterReadingLink = ''; // or any other appropriate handling
+                        $child->charge_type = $child->charge_type.' Amount:'.$childrate;
                     }
-                    $charge_name .= ' <div>
-                                        <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
-                                        <span class="text-muted me-3">' . $child->charge_name . '</span>
+                    $charge_name .= ' <div style="margin-top: 10px;">
+                                        <span class="text-muted me-3 mt-2">' . $child->charge_name . '</span>
                                     </div>';
-                    $charge_cycle .= ' <div>
-                                            <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
-                                            <span class="text-muted me-3">' . $child->charge_cycle . '</span>
-                                        </div>';
-                    $charge_type .= ' <div>
-                                        <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
+                    $charge_type .= ' <div style="margin-top: 10px;">
                                         <span class="text-muted me-3">' . $child->charge_type . '</span>
                                     </div>';
-                    $rate .= ' <div>
-                                    <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>
-                                    <span class="text-muted me-3">' . $this->sitesettings->site_currency . ' ' . number_format($child->rate, 0, '.', ',') . '</span>
-                                </div>';
-                    $recurring_charge .= ' <div>
-                                <i class="mdi mdi-menu-right mdi-24px text-muted" style="vertical-align: middle;"></i>'
+                    $MeterReadingLink .= '<div style="margin-top: 10px;">'
                         . $childMeterReadingLink . '
                             </div>';
                 }
@@ -426,12 +429,9 @@ class TableViewDataService
             $row = [
                 'id' => $item->id,
                 $charge_name,
-                $charge_cycle,
                 $charge_type,
-                $rate,
-                $recurring_charge,
-                \Carbon\Carbon::parse($item->updated_at)->format('Y-m-d'),
-                $nextDateFormatted,
+                $chargeCycle ,
+                $MeterReadingLink,
                 'isDeleted' => $isDeleted,
 
             ];
