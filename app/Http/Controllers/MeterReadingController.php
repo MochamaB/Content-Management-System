@@ -92,12 +92,17 @@ class MeterReadingController extends Controller
         } elseif ($model === 'units') {
             $unit = Unit::find($id);
             $property = Property::where('id', $unit->property->id)->first();
-            $charges = '';
-            $unitcharge = Unitcharge::where('unit_id', $unit->id)
+            $charges = Unitcharge::where('unit_id', $unit->id)
                 ->where('charge_type', 'units')
                 ->get();
-            $meterReading = MeterReading::where('unit_id', $unit->id)->latest()->first();
+            $unitcharge = Unitcharge::where('unit_id', $unit->id)
+                ->where('charge_type', 'units')
+                ->get()
+                ->groupBy('charge_name');
+            $meterReading = MeterReading::where('property_id', $property->id)->get();
         }
+
+     
 
         if ($unitcharge->isEmpty()) {
             return redirect()->back()->with('statuserror', ' Cannot Add Meter reading. No Charge of type units is not attached to this unit.');
@@ -120,14 +125,7 @@ class MeterReadingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        if ($request->model === 'properties') {
-            return $this->storeProperty($request);
-        } elseif ($request->model === 'units') {
-            return $this->storeUnit($request);
-        }
-    }
+ 
 
     /**
      * Display the specified resource.
@@ -135,7 +133,7 @@ class MeterReadingController extends Controller
      * @param  \App\Models\MeterReading  $meterReading
      * @return \Illuminate\Http\Response
      */
-    protected function storeProperty(Request $request)
+    protected function store(Request $request)
     {
         $currentreadings = $request->input('currentreading', []);
         $lastreading = $request->input('lastreading', []);

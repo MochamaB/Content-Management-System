@@ -60,4 +60,35 @@ class UpdateNextDateAction
         $unitcharge->update(['nextdate' => $nextDate]);
         return $nextDate;
     }
+
+    public function newChargeNextdate(Unitcharge $unitcharge)
+    {
+        $chargeCycle = $unitcharge->charge_cycle;
+        $chargeType = $unitcharge->charge_type;
+        $startDate = Carbon::parse($unitcharge->startdate);
+       
+        // Logic for charge_type
+        if ($chargeType === 'fixed') {
+            // Check if the day is not the 1st of the month
+            if ($startDate->day !== 1) {
+                // Set startDate to the 1st of the next month
+                $startDate->addMonthNoOverflow()->startOfMonth();
+            }
+        }
+      
+        $monthsToAdd = match ($chargeCycle) {
+            'Monthly' => 1,
+            'Twomonths' => 2,
+            'Quarterly' => 3,
+            'Halfyear' => 6,
+            'Year' => 12,
+            'once'=>0,
+            default => throw new \InvalidArgumentException("Invalid charge cycle: $chargeCycle"),
+        };
+        $nextDate = $startDate->copy()->addMonths($monthsToAdd)->startOfMonth();
+        // Update the nextdate attribute in the Unitcharge model
+        $unitcharge->update(['nextdate' => $nextDate,
+                            'updated_at' => $startDate]);
+        return $nextDate;
+    }
 }

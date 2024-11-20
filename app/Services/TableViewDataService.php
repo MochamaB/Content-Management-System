@@ -451,7 +451,7 @@ class TableViewDataService
     public function getMeterReadingsData($meterReadings, $extraColumns = false)
     {
 
-        $headers = ['UNIT', 'CHARGE', 'PREVIOUS READING', 'CURRENT', 'USAGE', 'RATE', 'AMOUNT', 'ACTIONS'];
+        $headers = ['UNIT', 'CHARGE', ' PREVIOUS - CURRENT READING ', 'USAGE', 'RATE', 'AMOUNT', 'ACTIONS'];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -473,10 +473,9 @@ class TableViewDataService
                 'id' => $item->id,
                 $item->unit->unit_number,
                 $item->unitcharge->charge_name,
-                $item->lastreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
-                    $startFormatted . '</span>',
-                $item->currentreading . '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
-                    $enddateFormatted . '</span>',
+                $item->lastreading . '&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;' . $item->currentreading.
+                '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
+                    $startFormatted .' - '. $enddateFormatted. '</span>',
                 $usage . ' units ',
                 $item->rate_at_reading,
                 $this->sitesettings->site_currency . '. ' . number_format($amount, 0, '.', ','),

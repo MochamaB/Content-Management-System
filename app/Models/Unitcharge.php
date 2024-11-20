@@ -26,6 +26,7 @@ class Unitcharge extends Model
         'recurring_charge',
         'startdate',
         'nextdate',
+        'updated_at',
 
     ];
     public static $fields = [

@@ -105,6 +105,7 @@ class UnitChargeController extends Controller
         }
         $account = Chartofaccount::whereIn('account_type', ['Income', 'Liability'])->get();
         $accounts = $account->groupBy('account_type');
+        $utilities = Utility:: where('property_id',$property->id)->get();
 
 
          ///SESSION /////
@@ -112,7 +113,7 @@ class UnitChargeController extends Controller
             session()->put('previousUrl', url()->previous());
         }
 
-        return View('admin.Lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts','model'));
+        return View('admin.Lease.create_unitcharge', compact('id', 'property', 'unit', 'accounts','model','utilities'));
     }
 
     /**
@@ -152,7 +153,7 @@ class UnitChargeController extends Controller
             $this->DepositService->generateDeposit($unitcharge);
         }else{
             //Update Next nad Updated Date in the Unitcharge
-            $this->updateNextDateAction->invoicenextdate($unitcharge);
+            $this->updateNextDateAction->newChargeNextdate($unitcharge);
         }
 
         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
@@ -257,6 +258,17 @@ class UnitChargeController extends Controller
 
         $previousUrl = Session::get('previousUrl');
         return redirect($previousUrl)->with('status', 'Charge Edited Successfully');
+    }
+
+    public function fetchCharge(Request $request)
+    {
+
+        $data = Utility::where('utility_name', $request->charge_name)
+        ->where('property_id', $request->property_id)
+            ->first();
+
+
+        return response()->json($data);
     }
 
     /**
