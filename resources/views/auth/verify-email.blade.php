@@ -3,48 +3,36 @@
 @section('content')
 <div class="register-area" style="background-color: rgb(249, 249, 249);">
     <div class="container">
-
-        <div class="col-md-6">
-
-        </div>
+        <div class="col-md-6"></div>
         <div class="col-md-6">
             <div class="box-for overflow">
-                <div class="col-md-12 col-xs-12 login-blocks">
-                    <p class="text-sm text-gray-600">
-                    <h2>Reset Password : </h2> <br />
-                    'Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.
-                    </p>
-                </div><br/><br/><br/><br/><br/><br/>
-                @if (session('status') == 'verification-link-sent')
-                <div class="mb-4 font-medium text-sm text-green-600">
-                    {{ __('A new verification link has been sent to the email address you provided during registration.') }}
-                </div>
-                @endif
-                <form method="POST" action="{{ route('verification.send') }}">
-                        @csrf
-
-                        <div class="" style="padding: 30px;">
-                            <button type="submit" class="btn btn-primary">
-                                {{ __('Resend Verification Email') }}
-                            </button>
-                        
-                    </form>
-
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-
-                        <button type="submit" class="btn btn-link text-center">
-                            {{ __('Log Out') }}
-                        </button>
-                    </form>
+                <div class="col-md-12 col-xs-12 login-blocks" style="padding:25px">
+                    <h2>Verify your email</h2>
+                     <!-- Session Status -->
+                     @if (session('status'))
+                    <div class="alert alert-success text-center">
+                        {{ session('status') }}
                     </div>
+                    @endif
+                    <p class="text-sm text-gray-600">
+                        Account activation link has been sent to your email address
+                        Please follow the link inside to continue. If you cant find the link then click resend below
+                    </p>
+                
+
+                <!-- Resend Verification Email Form -->
+                <form method="POST" action="{{ route('verification.send') }}">
+                    @csrf
+                    <div style="padding: 30px; display: flex; justify-content: center;">
+                        <button type="submit" class="btn btn-primary">
+                            Resend Verification Email
+                        </button>
+                    </div>
+                </form>
+                </div>
             </div>
-
-
         </div>
-
-
     </div>
-
 </div>
+
 @endsection

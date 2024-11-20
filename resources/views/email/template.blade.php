@@ -131,7 +131,7 @@
                                                     @foreach ($data as $line => $content)
                                                         @if (!empty($content))
                                                         @if ($line === 'action')
-                                                        <div class="text-center">
+                                                        <div style="padding: 30px; display: flex; justify-content: center;">
 
                                                             <a href="{{url($content) }}" class="btn-primary" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; color: #FFF; text-decoration: none; line-height: 2em; font-weight: bold; text-align: center; cursor: pointer; display: inline-block; border-radius: 0px; text-transform: capitalize; background-color: #1F3BB3; margin: 0; border-color: #1F3BB3; border-style: solid; border-width: 8px 16px;">
                                                                 {{ $linkmessage ?? 'GO TO SITE'}}

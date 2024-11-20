@@ -6,35 +6,33 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Auth\Notifications\VerifyEmail as BaseVerifyEmail;
+use Illuminate\Support\Facades\Lang;
 
-
-class UserCreatedNotification extends Notification implements ShouldQueue
+class VerifyEmailNotification extends BaseVerifyEmail
 {
     use Queueable;
-    protected $user;
     protected $subject;
     protected $heading;
     protected $linkmessage;
     protected $data;
+   
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct()
     {
-        $this->user = $user;
-        $this->subject = 'New User Added';
-        $this->heading = 'Welcome! Your Account is ready';
-        $this->linkmessage = 'Go To Site';
-        $this->data = ([
-            "line 1" => "Welcome to the property management system.You have been added by your property owner.",
-            "line 2" => "Now you can manage and view all property data from the comfort of your computer",
-            "line 3" => "The Default password is property123",
-            "line 4" => "To view and manage your units, you can login to our client area here:",
-            "action" => "/dashboard",
-        ]);
+        $this->subject = 'Verify Your Email Address';
+        $this->heading = 'Verify Email';
+        $this->linkmessage = 'Verify Email Address';
+        $this->data = [
+            'line1' => 'Please click the button below to verify your email address.',
+            'line2' => 'If you did not create an account, no further action is required.',
+        ];
+        
     }
 
     /**
@@ -56,17 +54,19 @@ class UserCreatedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)->view(
-            'email.template',
-            ['user' => $this->user,
-            'data'=> $this->data,
+        // Generate the verification URL using parent's method
+        $verificationUrl = $this->verificationUrl($notifiable);
+
+        // Return the custom template
+        return (new MailMessage)
+        ->view('email.template', [
+            'user' => $notifiable,
+            'heading' => $this->heading,
+            'data' => array_merge($this->data, ['action' => $verificationUrl]),
             'linkmessage' => $this->linkmessage,
-            'heading' =>$this->heading]
-        )
+        ])
         ->subject($this->subject);
     }
-
-    
 
     /**
      * Get the array representation of the notification.
@@ -77,9 +77,9 @@ class UserCreatedNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'user_id' => $this->user->id,
-            'phonenumber' => $this->user->phonenumber,
-            'user_email' => $this->user->email,
+            'user_id' => $notifiable->id,
+            'phonenumber' => $notifiable->phonenumber,
+            'user_email' =>  $notifiable->email,
             'subject' => $this->subject ?? null,
             'heading' => $this->heading ?? null,
             'linkmessage' => $this->linkmessage ?? null,

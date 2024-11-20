@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotification;
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,6 +30,7 @@ use OwenIt\Auditing\Auditable as AuditableTrait;
  * @method filterUsers()
  */
 class User extends Authenticatable implements HasMedia, Auditable
+, MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
 
@@ -466,5 +469,15 @@ class User extends Authenticatable implements HasMedia, Auditable
             ->whereHas('units', function ($query) use ($user) {
                 $query->whereIn('unit_id', $user->units->pluck('id')->toArray());
             });
+    }
+
+    ///// CUSTOM EMAILS FOR LARAVEL BREEZE
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new VerifyEmailNotification);
+    }
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

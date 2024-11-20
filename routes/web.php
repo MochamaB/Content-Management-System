@@ -72,7 +72,7 @@ use App\Notifications\PaymentNotification;
 Route::get('/', [App\Http\Controllers\client\HomeController::class, 'index']);
 
 
-Route::group(['middleware' => ['auth', 'permission']], function () {
+Route::group(['middleware' => ['auth', 'permission','verified']], function () {
     
     Route::resource('dashboard', DashboardController::class);
 
