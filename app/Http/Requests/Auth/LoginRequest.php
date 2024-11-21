@@ -2,15 +2,20 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
 {
+
+    protected $shouldResetPassword = false;
+    protected $resetToken = null;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -45,6 +50,15 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // First, check if the user exists and needs to set their password
+        $user = User::where('email', $this->email)->first();
+        // If user exists check password set status
+        if ($user && !$user->password_set) {
+            $this->shouldResetPassword = true;
+            $this->resetToken = Password::createToken($user);
+            return;
+        }
+
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
@@ -55,7 +69,18 @@ class LoginRequest extends FormRequest
 
         RateLimiter::clear($this->throttleKey());
     }
+    public function shouldResetPassword()
+    {
+        return $this->shouldResetPassword;
+    }
 
+    public function getResetData()
+    {
+        return [
+            'token' => $this->resetToken,
+            'email' => $this->email,
+        ];
+    }
     /**
      * Ensure the login request is not rate limited.
      *

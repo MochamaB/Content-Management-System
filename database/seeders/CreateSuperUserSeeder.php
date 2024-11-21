@@ -22,10 +22,10 @@ class CreateSuperUserSeeder extends Seeder
             'email' => 'propertysuperadmin@gmail.com',
             'email_verified_at'=> '2023-03-12 15:36:35',
             'password' => env('SUPERADMIN_PASSWORD'),
+            'password_set' => true,
             'phonenumber' => '0786250600',
             'idnumber' => '0123456789',
             'status' => 'Active',
-            'profilepicture' => 'avatar.png',
         ]);
 
          // Assign SuperAdmin role to the user

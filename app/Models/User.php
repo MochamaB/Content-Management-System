@@ -47,8 +47,13 @@ class User extends Authenticatable implements HasMedia, Auditable
         'phonenumber',
         'idnumber',
         'password',
+        'password_set',
         'status',
-        'profilepicture'
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'two_factor_confirmed_at',
+        'provider',
+        'provider_id'
     ];
 
     public static $fields = [
@@ -60,7 +65,6 @@ class User extends Authenticatable implements HasMedia, Auditable
         'password' => ['label' => 'Password', 'inputType' => 'password', 'required' => true, 'readonly' => ''],
         'confirm_password' => ['label' => 'Confirm Password', 'inputType' => 'password', 'required' => true, 'readonly' => ''],
         'status' => ['label' => 'Status', 'inputType' => 'select', 'required' => true, 'readonly' => ''],
-        'profilepicture' => ['label' => 'Profile Picture', 'inputType' => 'picture', 'required' => false, 'readonly' => ''],
 
 
         // Add more fields as needed
@@ -177,9 +181,11 @@ class User extends Authenticatable implements HasMedia, Auditable
      * @param $value
      * @return string
      */
+  
     public function setPasswordAttribute($value)
     {
-        $this->attributes['password'] = bcrypt($value);
+        // Only hash the password if it's not already hashed
+        $this->attributes['password'] = password_get_info($value)['algo'] ? $value : bcrypt($value);
     }
 
     public function registerMediaConversions(Media $media = null): void

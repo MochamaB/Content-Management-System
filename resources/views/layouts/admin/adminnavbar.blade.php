@@ -38,16 +38,17 @@
       @endphp
       <li class="nav-item dropdown  user-dropdown d-none d-lg-block">
         <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-
-          <img class="img-xs rounded-circle" src="{{  url($avatarUrl) }}" alt="Profile image"> </a>
+          <img class="img-xs rounded-circle" src="{{  url($avatarUrl) }}" alt="Profile image"> 
+          <i class="icon-arrow-down ms-1" style="font-size:15px;font-weight:600"></i>
+        </a>
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
           <div class="dropdown-header text-center">
             <img class="img-thumbnail rounded-circle" src="{{  url($avatarUrl) }}" alt="Profile image">
             <p class="mb-1 mt-3 font-weight-semibold">{{ Auth::user()->firstname ?? '' }} {{ Auth::user()->lastname ?? '' }}</p>
             <p class="fw-light text-muted mb-0">{{ Auth::user()->email ?? '' }}</p>
           </div>
-          <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
-          <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
+          <a class="dropdown-item" href="{{ url('/user/'.Auth::user()->id) }}"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile </a>
+          <a class="dropdown-item" href="{{ url('notification') }}"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages <span class="badge badge-pill badge-danger">1</span></a>
           <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
           <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
           <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

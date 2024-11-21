@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Auth\Notifications\ResetPassword as BaseResetPassword;
 
 
 class UserCreatedNotification extends Notification implements ShouldQueue
@@ -16,24 +17,27 @@ class UserCreatedNotification extends Notification implements ShouldQueue
     protected $heading;
     protected $linkmessage;
     protected $data;
+    protected $token;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct($user,string $token)
     {
+        // Call the parent constructor
+
         $this->user = $user;
+        $this->token = $token; // Assign the token
         $this->subject = 'New User Added';
         $this->heading = 'Welcome! Your Account is ready';
         $this->linkmessage = 'Go To Site';
         $this->data = ([
             "line 1" => "Welcome to the property management system.You have been added by your property owner.",
             "line 2" => "Now you can manage and view all property data from the comfort of your computer",
-            "line 3" => "The Default password is property123",
-            "line 4" => "To view and manage your units, you can login to our client area here:",
-            "action" => "/dashboard",
+            "line 3" => "Access your portal with your email and create a password here:",
+          
         ]);
     }
 
@@ -56,15 +60,24 @@ class UserCreatedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+        $resetUrl = $this->resetUrl($notifiable);
         return (new MailMessage)->view(
             'email.template',
             ['user' => $this->user,
-            'data'=> $this->data,
+            'data' => array_merge($this->data, ['action' => $resetUrl]),
             'linkmessage' => $this->linkmessage,
             'heading' =>$this->heading]
         )
         ->subject($this->subject);
     }
+
+    protected function resetUrl($notifiable)
+{
+    return url(route('password.reset', [
+        'token' => $this->token,
+        'email' => $this->user->email,
+    ], false));
+}
 
     
 

@@ -30,6 +30,7 @@ use App\Services\CardService;
 use App\Services\SmsService;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
 
 class UserController extends Controller
 {
@@ -290,8 +291,8 @@ class UserController extends Controller
         $user = new User();
         $user->fill($newuser);
         $user->password = 'property123';
+        $user->password_set = false; // Password not set
         $user->save();
-        $this->uploadMediaAction->handle($user, 'profilepicture', 'avatar', $request);
 
         // 3. GET USER ROLE FROM SESSION AND ASSIGN NEW USER////
         $role = $request->session()->get('userRole');
@@ -315,7 +316,9 @@ class UserController extends Controller
              // Check if 'send_welcome_email' is checked and send email notification
             if ($request->has('send_welcome_email')) {
                 try {
-                    $user->notify(new UserCreatedNotification($user)); // Send welcome Email
+                    // Generate a password reset token for the user
+                    $token = Password::createToken($user);
+                    $user->notify(new UserCreatedNotification($user,$token)); // Send welcome Email
                 } catch (\Exception $e) {
                     Log::error('Failed to send welcome email: ' . $e->getMessage());
                 }

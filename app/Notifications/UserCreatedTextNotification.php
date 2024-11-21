@@ -40,7 +40,7 @@ class UserCreatedTextNotification extends Notification implements ShouldQueue
     {
         $link = url('/dashboard/'); // link
         return "Hi {$this->user->firstname} {$this->user->lastname}, Welcome to {$this->user->company} property management system. 
-                    Access your portal with your email and default password 'property123'.Click here: {$link}";
+                    Access your portal with your email and create a password'.Click here: {$link}";
     }
 
     /**

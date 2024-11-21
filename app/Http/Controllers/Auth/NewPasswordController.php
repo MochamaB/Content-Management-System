@@ -48,6 +48,7 @@ class NewPasswordController extends Controller
                 $user->forceFill([
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
+                    'password_set' => 1,
                 ])->save();
 
                 event(new PasswordReset($user));
@@ -58,7 +59,7 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
+                    ? redirect()->route('login')->with('status', __($status), 'email', $request->email)
                     : back()->withInput($request->only('email'))
                             ->withErrors(['email' => __($status)]);
     }

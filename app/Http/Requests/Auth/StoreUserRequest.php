@@ -31,7 +31,6 @@ class StoreUserRequest extends FormRequest
             'idnumber' => 'numeric',
           //  'password' => 'required|min:6', // Minimum length of 6 characters
             'status' => 'required',
-            'profilepicture' => 'required',
             
 
         ];

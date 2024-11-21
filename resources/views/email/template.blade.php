@@ -108,7 +108,7 @@
                                         @else
                                         <img src="url('resources/uploads/images/noimage.jpg')" alt="No Image">
                                         @endif<br>
-                                       
+
                                         <hr>
                                     </td>
                                 </tr>
@@ -122,13 +122,13 @@
                                                         <strong style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                                             <h2> {{$heading ?? 'Heading'}} </h2>
                                                         </strong>
-                                                       
+
                                                     </td>
                                                 </tr>
                                                 <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                                     <td class="content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;" valign="top">
-                                                    Dear {{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'Lastname'}}    
-                                                    @foreach ($data as $line => $content)
+                                                        Dear {{$user->firstname ?? 'Firstname'}} {{$user->lastname ?? 'Lastname'}}
+                                                        @foreach ($data as $line => $content)
                                                         @if (!empty($content))
                                                         @if ($line === 'action')
                                                         <div style="padding: 30px; display: flex; justify-content: center;">
@@ -162,10 +162,10 @@
                         <div class="footer" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; width: 100%; clear: both; color: #999; margin: 0; padding: 20px;">
                             <table width="100%" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                 <tbody>
-                                 
+
                                     <tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; margin: 0;">
                                         <td class="aligncenter content-block" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 12px; vertical-align: top; color: #999; text-align: center; margin: 0; padding: 0 0 20px;" align="center" valign="top">
-                                        <i style="color:#1F3BB3">Powered By<a href="http://www.bridgetech.co.ke" target="_blank"> <b>Bridgtech Properties</b></a> Admin.<i>
+                                            <i style="color:#1F3BB3">Powered By<a href="http://www.bridgetech.co.ke" target="_blank"> <b>Bridgtech Properties</b></a> Admin.<i>
                                         </td>
                                     </tr>
                                 </tbody>

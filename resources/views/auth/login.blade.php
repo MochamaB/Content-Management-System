@@ -38,7 +38,7 @@
         <div class="col-md-6">
             <div class="box-for overflow">
                 <div class="col-md-12 col-xs-12 login-blocks" style="padding:25px">
-                    <h2>Login :</h2>
+                   
 
                     <!-- Session Status -->
                     @if (session('status'))
@@ -58,17 +58,17 @@
                         </ul>
                     </div>
                     @endif
-
+                    <h2>Login </h2>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus>
+                            <input id="email" class="form-control" type="email" name="email" value="{{ old('email', session('email')) }}" required>
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+                                <input type="password" class="form-control" id="password" name="password" required>
                                 <div class="input-group-append">
                                     <span class="input-group-text" id="togglePassword" style="cursor: pointer;">
                                         <i class="fa fa-eye-slash" id="eyeIcon" style="font-weight: 700;"></i>

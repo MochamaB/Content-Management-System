@@ -120,4 +120,9 @@ class Utility extends Model implements Auditable
     {
         return $this->belongsTo(Chartofaccount::class, 'chartofaccounts_id');
     }
+    public function getIdentifier()
+    {
+        return $this->utility_name;
+    }
+
 }
