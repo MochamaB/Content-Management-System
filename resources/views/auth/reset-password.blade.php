@@ -42,24 +42,9 @@
         <div class="col-md-6">
             <div class="box-for overflow">
                 <div class="col-md-12 col-xs-12 login-blocks" style="padding:25px">
-                    <!-- Session Status -->
-                    @if (session('status'))
-                    <div class="alert alert-success text-center">
-                        {{ session('status') }}
-                    </div>
-                    @endif
-
-                    <!-- Validation Errors -->
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <strong>Password reset failed. Check errors below</strong>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
+                   
+                  <!-- Validation Messages -->
+                  @include('auth.authmessages')
                     <h2>Reset Password : </h2>
 
                     <form method="POST" action="{{ route('password.update') }}">

@@ -146,22 +146,35 @@ class LeaseController extends Controller
     public function create(Request $request)
     {
 
-
+        //1. Lease Details ///
         $properties = Property::pluck('property_name', 'id')->toArray();
-        $role = 'tenant'; // Replace with the desired role
+        $role = 'Tenant'; // Replace with the desired role
         if (!Role::where('name', $role)->exists()) {
             return back()->with('statuserror', 'There no tenant Role in system. Create Role and Tenants First');
         }
         $tenants = User::withoutActiveLease($role)->get(); ///tenantdetailsview
         $lease = $request->session()->get('wizard_lease');
+
+        //2. Tenant Details/Cosigners
         $tenantdetails = $request->session()->get('wizard_tenantdetails');
+
+        //3. Rent Charge
         $rentcharge = $request->session()->get('wizard_rentcharge');
+        $existingRentCharge =null;
+        if (!empty($lease)) {
+        $existingRentCharge = Unitcharge::where('unit_id', $lease->unit_id)
+            ->where('charge_name', 'Rent')
+            ->first();
+        }
         $splitRentcharges = $request->session()->get('wizard_splitRentcharges');
+
+        //4. Deposit Charge /////
         $depositcharge = $request->session()->get('wizard_depositcharge');
         $account = Chartofaccount::whereIn('account_type', ['Income'])->get();
         $accounts = $account->groupBy('account_type');
         $depositaccount = Chartofaccount::whereIn('account_type',['Liability'])->get();
         $depositaccounts = $depositaccount->groupBy('account_type');
+        ///5. Utilities ////
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
         $sessioncharges = $request->session()->get('wizard_utilityCharges');
 
@@ -185,7 +198,7 @@ class LeaseController extends Controller
             } elseif ($title === 'Tenant Cosigners') {
                 $stepContents[] = View('wizard.lease.tenantdetails', compact('lease', 'tenantdetails'))->render();
             } elseif ($title === 'Rent') {
-                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges'))->render();
+                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges','existingRentCharge'))->render();
             } elseif ($title === 'Security Deposit') {
                 $stepContents[] = View('wizard.lease.deposit', compact('depositaccounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Utilities') {
@@ -230,23 +243,64 @@ class LeaseController extends Controller
         //3. SAVE RENT CHARGE
         $rentcharge = $request->session()->get('wizard_rentcharge');
         if (!empty($rentcharge)) {
+            // 2. Check if a rent charge already exists for this unit and property
+            $existingCharge = Unitcharge::where('unit_id', $rentcharge->unit_id)
+                ->where('charge_name', $rentcharge->charge_name)
+                ->first();
+    
+            if ($existingCharge) {
+                // Update the existing charge
+                $existingCharge->fill($rentcharge->toArray());
+                $existingCharge->updated_at = now();
+                $existingCharge->save();
+    
+                // Log or return feedback for an updated charge
+                $statusMessage = 'Existing Rent Charge Updated Successfully.';
+            } else {
+                // Create a new rent charge
+                $rentchargeModel = new Unitcharge();
+                $rentchargeModel->fill($rentcharge->toArray());
+                $rentchargeModel->save();
+    
+                // Log or return feedback for a new charge
+                $statusMessage = 'New Rent Charge Created Successfully.';
+            }
+        }
+        /*
+        if (!empty($rentcharge)) {
             $rentchargeModel = new Unitcharge();
             $rentchargeModel->fill($rentcharge->toArray());
             $rentchargeModel->save();
 
             // Get the ID of the newly created rent charge
             $newRentChargeId = $rentchargeModel->id;
-        }
+        } */
 
         ///4. SAVE SPLITRENTCHARGE
         $splitRentCharges = $request->session()->get('wizard_splitRentcharges');
+        if (!empty($splitRentCharges)) {
+            foreach ($splitRentCharges as $splitRentCharge) {
+                // Dynamically add the parent_id to each split rent charge
+                $splitRentCharge['parent_id'] = $rentchargeModel->id;
+        
+                // Use updateOrCreate to update existing charges or create new ones
+                Unitcharge::updateOrCreate(
+                    [
+                        'unit_id' => $splitRentCharge['unit_id'],
+                        'charge_name' => $splitRentCharge['charge_name'], // Uniqueness based on unit and charge name
+                    ],
+                    $splitRentCharge // Fillable data for update or creation
+                );
+            }
+        }
+        /*
         if (!empty($splitRentCharges)) {
             foreach ($splitRentCharges as &$splitRentCharge) {
                 $splitRentCharge['parent_id'] = $newRentChargeId;
             }
             // Save the updated split rent charges
             Unitcharge::insert($splitRentCharges);
-        }
+        } */
 
         //5. SAVE SECURITY DEPOSIT AND GENERATE PAYMENT VOUCHER AND TRANSACTIONS
         $depositcharge = $request->session()->get('wizard_depositcharge');

@@ -8,8 +8,8 @@
         </label>
         <select name="" id="rentstatus" class="formcontrol2" placeholder="Select" required>
             <option value="">Select Answer</option>
-            <option value="Yes">Yes</option>
-            <option value="No"> No</option>
+            <option value="Yes" {{ !empty($existingRentCharge) ? 'selected' : '' }}>Yes</option>
+            <option value="No" {{ empty($existingRentCharge) ? 'selected' : '' }}>No</option>
         </select>
     </div>
 </div>
@@ -22,7 +22,7 @@
     </div>
 </div>
 
-<div class="" id="rentinfo" style="display: none;">
+<div class="" id="rentinfo" style="{{ empty($existingRentCharge) ? 'display: none;' : '' }}">
     <div class="alert alert-danger alert-dismissible fade show">
         <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -35,8 +35,8 @@
         @csrf
         <div class="col-md-6">
 
-            <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$lease->property_id ?? ''}}">
-            <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$lease->unit_id ?? ''}}">
+            <input type="hidden" class="form-control" id="property_id" name="property_id" value="{{$existingRentCharge->property_id ?? $lease->property_id ?? ''}}">
+            <input type="hidden" class="form-control" id="unit_id" name="unit_id" value="{{$existingRentCharge->unit_id ?? $lease->unit_id ?? ''}}">
             <div class="form-group">
                 <input type="hidden" class="form-control" id="charge_name" name="charge_name" value="Rent" readonly>
             </div>
@@ -45,12 +45,16 @@
             <div class="form-group">
                 <label class="label">Rent Cycle<span class="requiredlabel">*</span></label>
                 <select name="charge_cycle" id="charge_cycle" class="formcontrol2" placeholder="Select" required>
-                    <option value="{{$rentcharge->charge_cycle ?? ''}}">{{$rentcharge->charge_cycle ?? 'Select Rent Cycle'}}</option>
-                    <option value="Monthly"> Monthly</option>
-                    <option value="Twomonths">Two Months</option>
-                    <option value="Quaterly">Quaterly</option>
-                    <option value="Halfyear">6 Months</option>
-                    <option value="Year">1 Year</option>
+                    <option value="">Select Rent Cycle</option>
+                    @if (!empty($existingRentCharge->charge_cycle))
+                    <option value="{{ $existingRentCharge->charge_cycle }}" selected>{{ $existingRentCharge->charge_cycle }}</option>
+                    @endif
+                    <!-- Add the predefined rent cycle options -->
+                    <option value="Monthly" {{ (isset($rentcharge->charge_cycle) && $rentcharge->charge_cycle === 'Monthly') ? 'selected' : '' }}>Monthly</option>
+                    <option value="Twomonths" {{ (isset($rentcharge->charge_cycle) && $rentcharge->charge_cycle === 'Twomonths') ? 'selected' : '' }}>Two Months</option>
+                    <option value="Quaterly" {{ (isset($rentcharge->charge_cycle) && $rentcharge->charge_cycle === 'Quaterly') ? 'selected' : '' }}>Quarterly</option>
+                    <option value="Halfyear" {{ (isset($rentcharge->charge_cycle) && $rentcharge->charge_cycle === 'Halfyear') ? 'selected' : '' }}>6 Months</option>
+                    <option value="Year" {{ (isset($rentcharge->charge_cycle) && $rentcharge->charge_cycle === 'Year') ? 'selected' : '' }}>1 Year</option>
 
                 </select>
             </div>
@@ -61,7 +65,20 @@
             <div class="form-group">
                 <label class="label">Account<span class="requiredlabel">*</span></label>
                 <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
-                    <option value="{{$rentcharge->chartofaccounts_id ?? ''}}">{{$rentcharge->chartofaccounts->account_name ?? 'Select Account/Rent Income Account'}}</option>
+                    <!-- Default Select Option -->
+                    <option value="">Select Account/Rent Income Account</option>
+                    <!-- Dynamically add the existing rent charge account -->
+                    @if (!empty($existingRentCharge->chartofaccounts_id))
+                    <option value="{{ $existingRentCharge->chartofaccounts_id }}" selected>
+                        {{ $existingRentCharge->chartofaccounts->account_name ?? 'Unknown Account' }}
+                    </option>
+                    @endif
+                    <!-- Preselect based on $rentcharge -->
+                    @if (!empty($rentcharge->chartofaccounts_id) && empty($existingRentCharge))
+                    <option value="{{ $rentcharge->chartofaccounts_id }}" selected>
+                        {{ $rentcharge->chartofaccounts->account_name ?? 'Unknown Account' }}
+                    </option>
+                    @endif
                     @foreach($accounts as $accounttype => $account)
                     <optgroup label="{{ $accounttype }}">
                         @foreach($account as $item)

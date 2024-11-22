@@ -7,11 +7,10 @@
         <div class="col-md-6">
             <div class="box-for overflow">
                 <div class="col-md-12 col-xs-12 login-blocks" style="padding:25px">
-                @if (session('status'))
-                    <div class="alert alert-success text-center">
-                        {{ session('status') }}
-                    </div>
-                    @endif
+
+                    <!-- Validation Messages -->
+                    @include('auth.authmessages')
+
                     <h2>Verify your email</h2>
                      <!-- Session Status -->
                    

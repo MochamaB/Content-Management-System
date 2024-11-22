@@ -58,7 +58,7 @@ class LoginRequest extends FormRequest
             $this->resetToken = Password::createToken($user);
             return;
         }
-
+        // Attemp to login
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 

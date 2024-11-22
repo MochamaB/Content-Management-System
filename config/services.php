@@ -36,6 +36,8 @@ return [
         'options' => [
             'verify' => true,
             'curl' => [
+                CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
             ],
         ],

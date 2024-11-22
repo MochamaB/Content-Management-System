@@ -2,30 +2,32 @@
 
 @section('content')
 <style>
+    .input-group {
+        display: flex;
+        align-items: stretch;
+    }
 
-.input-group {
-    display: flex;
-    align-items: stretch;
-}
+    .input-group .form-control {
+        flex-grow: 1;
+    }
 
-.input-group .form-control {
-    flex-grow: 1;
-}
+    .input-group-append .input-group-text {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0px 10px;
+        border: 1px solid #DADADA;
+        border-left: none;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
 
-.input-group-append .input-group-text {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding: 0px 10px;
-    border: 1px solid #DADADA;
-    border-left: none;
-    transition: background-color 0.2s, border-color 0.2s;
-}
-/* When the input is focused */
-.input-group:focus-within .input-group-append .input-group-text {
-    border-color: #777; /* Match the focus color of the input */
-    background-color: #e9ecef; /* Optional: slightly change background on focus */
-}
+    /* When the input is focused */
+    .input-group:focus-within .input-group-append .input-group-text {
+        border-color: #777;
+        /* Match the focus color of the input */
+        background-color: #e9ecef;
+        /* Optional: slightly change background on focus */
+    }
 </style>
 <!-- register-area -->
 <div class="register-area" style="background-color: rgb(249, 249, 249);">
@@ -38,32 +40,17 @@
         <div class="col-md-6">
             <div class="box-for overflow">
                 <div class="col-md-12 col-xs-12 login-blocks" style="padding:25px">
-                   
 
-                    <!-- Session Status -->
-                    @if (session('status'))
-                    <div class="alert alert-success text-center">
-                        {{ session('status') }}
-                    </div>
-                    @endif
 
-                    <!-- Validation Errors -->
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <strong>Login failed. Check errors below</strong>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-                    <h2>Login </h2>
+                     <!-- Validation Messages -->
+                     @include('auth.authmessages')
+
+         <h2>Login </h2>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
                         <div class="form-group">
                             <label for="email">Email</label>
-                            <input id="email" class="form-control" type="email" name="email" value="{{ old('email', session('email')) }}" required>
+                            <input id="email" class="form-control" type="email" name="email" value="{{ $email ?? '' }}" required>
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
@@ -98,7 +85,7 @@
                     </form>
                     <br>
 
-                    <h2>Social login :</h2>
+                    <h2>Social login </h2>
                     <p>
                         <a class="login-social" href="#"><i class="fa fa-facebook"></i>&nbsp;Facebook</a>
                         <a class="login-social" href="#"><i class="fa fa-google-plus"></i>&nbsp;Gmail</a>

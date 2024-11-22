@@ -22,6 +22,7 @@
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/normalize.css') }}">
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/font-awesome.min.css') }}">
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/fontello.css') }}">
+        <link rel="stylesheet" href="{{ asset('styles/admin/vendors/mdi/css/materialdesignicons.min.css') }}">
         <link href="{{ asset('styles/client/assets/fonts/icon-7-stroke/css/pe-icon-7-stroke.css') }}" rel="stylesheet">
         <link href="{{ asset('styles/client/assets/fonts/icon-7-stroke/css/helper.css')}}" rel="stylesheet">
         <link href="{{ asset('styles/client/assets/css/animate.css') }}" rel="stylesheet" media="screen">

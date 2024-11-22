@@ -19,7 +19,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function create()
     {
-        return view('auth.login');
+        $email = session('reset_email') ? session('reset_email') : old('email');
+        return view('auth.login', ['email' => $email]);
     }
 
     /**
@@ -39,7 +40,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->authenticate();
-        
+
         if ($request->shouldResetPassword()) {
             return redirect()->route('password.reset', $request->getResetData());
         }

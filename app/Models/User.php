@@ -286,7 +286,9 @@ class User extends Authenticatable implements HasMedia, Auditable
     {
         return $users->flatMap(function ($user) {
             return $user->roles;
-        })->unique('id')->values();
+        })->unique('id')
+          ->sortByDesc('id')
+          ->values();
     }
 
     public function getRoles(): Collection
