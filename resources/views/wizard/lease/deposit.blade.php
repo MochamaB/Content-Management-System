@@ -3,28 +3,8 @@
 <hr>
 
 
-<div class="col-md-8">
-    <div class="form-group" id="depositselect">
-        <label class="">
-            <h6>Does this unit have Security Deposit charge?<span class="requiredlabel">*</span></h6>
-        </label>
-        <select name="" id="depositstatus" class="formcontrol2" placeholder="Select" required>
-            <option value="">Select Answer</option>
-            <option value="Yes">Yes</option>
-            <option value="No"> No</option>
-        </select>
-    </div>
-</div>
-<div class="row" id="skipdeposit" style="display: none;">
-    <div class="col-md-3 previousBtn">
-        <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 wizardpreviousBtn">Previous Step</button>
-    </div>
-    <div class="col-md-3">
-        <a href="{{ url('skipdeposit') }}" class="btn btn-primary btn-lg text-white mb-0 me-0" id="">Next Step</a>
-    </div>
-</div>
 
-<div class="" id="depositinfo" style="display: none;">
+<div class="" id="depositinfo">
 <div class="alert alert-danger alert-dismissible fade show">
         <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>

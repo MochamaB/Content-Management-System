@@ -1,28 +1,9 @@
 @if(($routeParts[1] === 'create'))
 <h5><b> Add Rent Details</b></h5>
 <hr>
-<div class="col-md-8">
-    <div class="form-group" id="rentselect">
-        <label class="">
-            <h6>Does this unit have Rent charge?<span class="requiredlabel">*</span></h6>
-        </label>
-        <select name="" id="rentstatus" class="formcontrol2" placeholder="Select" required>
-            <option value="">Select Answer</option>
-            <option value="Yes" {{ !empty($existingRentCharge) ? 'selected' : '' }}>Yes</option>
-            <option value="No" {{ empty($existingRentCharge) ? 'selected' : '' }}>No</option>
-        </select>
-    </div>
-</div>
-<div class="row" id="skiprent" style="display: none;">
-    <div class="col-md-3 previousBtn">
-        <button type="button" class="btn btn-warning btn-lg text-white mb-0 me-0 wizardpreviousBtn">Previous Step</button>
-    </div>
-    <div class="col-md-3">
-        <a href="{{ url('skiprent') }}" class="btn btn-primary btn-lg text-white mb-0 me-0" id="">Next Step</a>
-    </div>
-</div>
 
-<div class="" id="rentinfo" style="{{ empty($existingRentCharge) ? 'display: none;' : '' }}">
+<div class="" id="rentinfo">
+    @if(empty($existingRentCharge))
     <div class="alert alert-danger alert-dismissible fade show">
         <button type="button" class="btn-danger float-end" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -31,6 +12,7 @@
                 <i class="mdi mdi mdi-arrow-right-bold-circle me-1"></i>
                 <b>Skip To Next</b></a> if there is no Rent Charge</p>
     </div>
+    @endif
     <form method="POST" action="{{ url('rent') }}" class="myForm" enctype="multipart/form-data" novalidate>
         @csrf
         <div class="col-md-6">
@@ -113,8 +95,13 @@
 
 
         <br />
-        <!--------- ----------- -->
+        <!--------- SPLIT RENT CHARGE ----------- -->
         <div class="addfields" style="margin-bottom:30px">
+            @php
+            $splitRentcharges = isset($existingSplitRentCharge) && !$existingSplitRentCharge->isEmpty()
+            ? $existingSplitRentCharge
+            : $sessioncharges;
+            @endphp
             @if(!empty($splitRentcharges))
             @foreach ($splitRentcharges as $splitCharge)
             <div class="row dynamicadd">
@@ -135,7 +122,8 @@
                     <div class="form-group">
                         <label class="label">Account<span class="requiredlabel">*</span></label>
                         <select name="splitchartofaccounts_id[]" id="splitchartofaccounts_id" class="formcontrol2 dynamic-field" placeholder="Select" required>
-                            <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">{{$splitCharge['chartofaccounts_id'] ?? 'Select Account'}}</option>
+                            <option value="{{$splitCharge['chartofaccounts_id'] ?? ''}}">
+                            {{ $splitCharge['chartofaccounts']['account_name'] ?? 'Select Account' }}</option>
                             @foreach($accounts as $accounttype => $account)
                             <optgroup label="{{ $accounttype }}">
                                 @foreach($account as $item)
@@ -171,9 +159,9 @@
 
 
         <div class="col-md-12" style="margin-bottom:30px">
-            <h5><a class=" split_rent"><i class="menu-icon mdi mdi-plus-circle"></i> Split the Rent Charge </a>
+            <h6 class=" split_rent"><i class="menu-icon mdi mdi-plus-circle me-1"></i> Split the Rent Charge
                 <span class="text-muted">(Will be included in Rent Invoices & Payments)</span>
-            </h5>
+            </h6>
         </div>
 
         @include('admin.CRUD.wizardbuttons')
@@ -321,9 +309,9 @@
         @endif
     </div>
     <div class="col-md-12" style="margin-bottom:30px">
-        <h5><a class=" split_rent"><i class="menu-icon mdi mdi-plus-circle"></i> Add to the Rent Charge </a>
+        <h6 class=" split_rent"><i class="menu-icon mdi mdi-plus-circle me-1"></i> Add to the Rent Charge
             <span class="text-muted">(Will be included in Rent Invoices & Payments)</span>
-        </h5>
+        </h6>
     </div>
     <hr>
     <div class="col-md-6">
@@ -335,33 +323,7 @@
 </form>
 
 @endif
-<script>
-    $(document).ready(function() {
-        // Check if $rentcharge is not null
-        // Check the initial value of $rentcharge
-        let rentcharge = '{{ $rentcharge ?? 0 }}';
 
-        //    alert(rentcharge);
-
-        if (rentcharge != 0) {
-            $('#rentinfo').show();
-            $('#skiprent').hide();
-            $('#rentselect').hide();
-        }
-        $('#rentstatus').change(function() {
-            var selectedValue = $(this).val();
-
-            if (selectedValue === 'Yes') {
-                $('#rentinfo').show();
-                $('#rentselect').hide();
-                $('#skiprent').hide();
-            } else {
-                $('#rentinfo').hide();
-                $('#skiprent').show();
-            }
-        });
-    });
-</script>
 
 <script>
     $(document).ready(function() {

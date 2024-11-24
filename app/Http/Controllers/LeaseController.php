@@ -109,13 +109,12 @@ class LeaseController extends Controller
             $daysLeft = ($item->enddate) ? Carbon::parse($item->enddate)->diffInDays(Carbon::now()) : null;
             $statusClasses = [
                 'Active' => 'badge-active',
-                'Draft' => 'badge-warning',
-                'Expired' => 'badge-danger',
-                'Terminated' => 'badge-secondary',
-                'Suspended' => 'badge-danger',
+                'Expired' => 'badge-warning',
+                'Terminated' => 'badge-error',
+                'Suspended' => 'badge-dark',
             ];
             // Get the CSS class for the current status, default to 'badge-secondary' if not found
-            $statusClass = $statusClasses[$item->status] ?? 'badge-secondary';
+            $statusClass = $statusClasses[$item->status] ?? 'badge-information';
             // Generate the status badge
             $statusBadge = '<span class="badge ' . $statusClass . '">' . $item->status . '</span>';
             $isDeleted = $item->deleted_at !== null;
@@ -161,10 +160,15 @@ class LeaseController extends Controller
         //3. Rent Charge
         $rentcharge = $request->session()->get('wizard_rentcharge');
         $existingRentCharge =null;
+        $existingSplitRentCharge =null;
         if (!empty($lease)) {
         $existingRentCharge = Unitcharge::where('unit_id', $lease->unit_id)
             ->where('charge_name', 'Rent')
             ->first();
+
+        $existingSplitRentCharge = Unitcharge::where('unit_id', $lease->unit_id)
+        ->where('parent_id', $existingRentCharge->id)
+        ->get();
         }
         $splitRentcharges = $request->session()->get('wizard_splitRentcharges');
 
@@ -174,8 +178,16 @@ class LeaseController extends Controller
         $accounts = $account->groupBy('account_type');
         $depositaccount = Chartofaccount::whereIn('account_type',['Liability'])->get();
         $depositaccounts = $depositaccount->groupBy('account_type');
+
         ///5. Utilities ////
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
+        $existingUtilityCharge =null;
+        if (!empty($lease)) {
+        $existingUtilityCharge = Unitcharge::where('unit_id', $lease->unit_id)
+            ->whereNull('parent_id')
+            ->whereNotIn('charge_name', ['Rent', 'security deposit'])
+            ->get();
+        }
         $sessioncharges = $request->session()->get('wizard_utilityCharges');
 
         //  dd($utilityCharges);
@@ -198,11 +210,11 @@ class LeaseController extends Controller
             } elseif ($title === 'Tenant Cosigners') {
                 $stepContents[] = View('wizard.lease.tenantdetails', compact('lease', 'tenantdetails'))->render();
             } elseif ($title === 'Rent') {
-                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges','existingRentCharge'))->render();
+                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges','existingRentCharge','existingSplitRentCharge','sessioncharges'))->render();
             } elseif ($title === 'Security Deposit') {
                 $stepContents[] = View('wizard.lease.deposit', compact('depositaccounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Utilities') {
-                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges'))->render();
+                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges','existingUtilityCharge'))->render();
             } elseif ($title === 'Lease Agreement') {
                 $stepContents[] = View('wizard.lease.leaseagreement')->render();
             }
@@ -317,8 +329,20 @@ class LeaseController extends Controller
         //6. SAVE UTILITY CHARGES
         $utilitycharges = $request->session()->get('wizard_utilityCharges');
         if (!empty($utilitycharges)) {
-            Unitcharge::insert($utilitycharges);
+            foreach ($utilitycharges as $charge) {
+
+                unset($charge['id']); // if id exists in the array
+
+                Unitcharge::updateOrCreate(
+                    [
+                        // Unique identifying fields
+                        'unit_id' => $charge['unit_id'],
+                        'charge_name' => $charge['charge_name']
+                    ],
+                    $charge
+                );
         }
+    }
 
         //7. ATTACH TENANT USER TO UNIT
         $user = User::find($leasedetails->user_id);
@@ -541,8 +565,14 @@ class LeaseController extends Controller
     {
 
         $data = Unit::where('property_id', $request->property_id)
-            ->doesntHave('lease')
-            ->pluck('unit_number', 'id')->toArray();
+        ->where(function ($query) {
+            $query->doesntHave('lease')
+                ->orWhereHas('lease', function ($subQuery) {
+                    $subQuery->where('status', '<>', 'active');
+                });
+        })
+        ->pluck('unit_number', 'id')
+        ->toArray();
 
 
         return response()->json($data);

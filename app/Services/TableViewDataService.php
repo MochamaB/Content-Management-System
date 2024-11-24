@@ -403,7 +403,9 @@ class TableViewDataService
                             ->where('enddate', '>=', $updatedFormatted)
                             ->exists();
                         if (!$childCheckMeterReadings) {
-                            $childMeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $child->unit_id, 'model' => 'units']) . '" class="badge badge-warning mt-2">Add Reading</a>';
+                            $childMeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $child->unit_id, 'model' => 'units']) . '" class="table">
+                            <i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>
+                            Add Reading</a>';
                         } else {
                             $childMeterReadingLink = '<a href="" class="badge badge-information mt-2">Reading Added</a>';
                         }

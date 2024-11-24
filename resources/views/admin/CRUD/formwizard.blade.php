@@ -40,7 +40,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-danger btn-lg text-danger mb-0 me-2" data-dismiss="modal">Cancel</button>
                 <!----- Goes to Close wizard method in settingsController ------>
-                <form action="{{ url('closewizard/'.$routeParts[0] )}}" method="POST">
+                <form id="closeWizardForm" action="" method="POST">
                     @csrf <!-- CSRF token for Laravel -->
                     <button type="submit" class="btn btn-danger btn-lg text-white mb-0 me-0">Close Wizard</button>
                 </form>
@@ -49,8 +49,6 @@
     </div>
 </div>
 
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
 <script>
@@ -65,13 +63,14 @@
             $tabs.removeClass("active").eq(tabIndex).addClass("active");
             $tabContents.removeClass("show active").eq(tabIndex).addClass("show active");
             // Toggle visibility of previous button based on currentTab value
-            $(".previousBtn").toggle(tabIndex > 0);
+            $(".wizardpreviousBtn").toggle(tabIndex > 0);
             // Change next button text to "Complete" when it's the last tab
+            const $nextButton = $(".nextbutton");
             if (tabIndex >= $tabs.length - 1) {
                 //   alert($tabs.length);
-                $(".nextbutton").text("Complete & Save");
+                $nextButton.html('Complete & Save');
             } else {
-                $(".nextbutton").text("Next Step");
+                $nextButton.html('Next Step <i class="mdi mdi-arrow-right-bold-circle ms-1"></i> ');
             }
         };
 
@@ -79,7 +78,8 @@
         // Show the first tab on page load
         showTab(currentTab);
 
-        $(".previousBtn").on("click", function() {
+        $(".wizardpreviousBtn").on("click", function() {
+
             currentTab--;
             if (currentTab < 0) {
                 currentTab = 0;
@@ -108,6 +108,55 @@
             // Find and set the state of body checkboxes within the same collapsible
             collapsible.find('.body-checkbox').prop('checked', isChecked);
         });
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Store the original link URL when triggering the modal
+        let targetUrl = null;
+
+        // Add event listener for all links
+        document.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", function(e) {
+                // Check if the current URL is `/lease/create`
+                if (window.location.pathname === "/lease/create") {
+                    // Prevent navigation
+                    e.preventDefault();
+
+                    // Check if it's not the close modal button itself
+                    if (!link.hasAttribute("data-target")) {
+                        // Set the target URL to navigate after confirmation
+                        targetUrl = link.href;
+                        // Update the form action dynamically
+                        // Extract the last part of the URL
+                        const parts = targetUrl.split("/").filter(Boolean);
+                        const lastPart = parts.length > 0 ? parts[parts.length - 1] : "lease";
+                        const form = document.querySelector("#closeWizardForm");
+                        form.action = `/closewizard/${encodeURIComponent(lastPart)}`;
+                       
+
+                        // Show the modal
+                        $('#closeWizardModal').modal('show');
+                    }
+                }
+            });
+        });
+
+        // Add event listener for the close wizard button
+        const closeWizardButton = document.querySelector(".closebtn");
+        closeWizardButton.addEventListener("click", function() {
+            const form = document.querySelector("#closeWizardForm");
+
+            // If no targetUrl, set the action to default route '/lease'
+            if (!targetUrl) {
+                form.action = `/closewizard/lease`;
+            }
+
+            // Show the modal
+            $('#closeWizardModal').modal('show');
+        });
+
+
     });
 </script>
 
