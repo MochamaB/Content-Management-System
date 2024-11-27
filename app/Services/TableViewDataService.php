@@ -758,7 +758,7 @@ class TableViewDataService
             $status = $item->getStatusLabel();
             $statusClass = $statusClasses[$status] ?? 'Reported';
             $priority = $item->priority;
-            $priorityClass = $this->getBadgeClass($priority);
+            $priorityClass = $this->getStatusClass($priority);
 
             $priorityStatus = '<span class="badge badge-' . $priorityClass . '">' . $priority . '</span>';
             $requestStatus = '<span class="statusdot statusdot-' . $statusClass . '"></span>';

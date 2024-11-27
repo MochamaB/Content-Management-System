@@ -83,6 +83,10 @@ class Expense extends Model implements HasMedia, Auditable
         return $data;
     }
 
+    public function getStatusLabel()
+    {
+    return self::$statusLabels[$this->status] ?? 'Unknown Status';
+    }
 
     public function model()
     {

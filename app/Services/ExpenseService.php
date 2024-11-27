@@ -88,7 +88,7 @@ class ExpenseService
                 'model_id' => $validatedData['model_id'],
                 'name' => $validatedData['name'], ///Generated from securityexpense
                 'totalamount' => null,
-                'status' => 'unpaid',
+             //   'status' => 'unpaid',
                 'duedate' => $validatedData['duedate'] ?? null,
             ];
         } else {
@@ -107,7 +107,7 @@ class ExpenseService
                 'model_id' => $model->id,
                 'name' => $model->charge_name ?? $model->category, ///Generated from securityexpense
                 'totalamount' => null,
-                'status' => 'unpaid',
+            //    'status' => 'unpaid',
                 'duedate' => null,
             ];
         }

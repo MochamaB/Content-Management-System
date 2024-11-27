@@ -1,4 +1,6 @@
-
+@php
+$status = $invoice->getStatusLabel();
+@endphp
 <div class="row">
     <div class="col-md-9">
         @include('admin.Lease.invoice_contents')
@@ -10,7 +12,7 @@
             </div>
             <div class="card-body">
                 @if( Auth::user()->can('payment.create') || Auth::user()->id === 1)
-                @if( $invoice->status == 'unpaid' || $invoice->status == 'partially_paid')
+                @if( $status == 'Unpaid' || $status == 'Partially Paid')
                 <a href="{{route('payment.create', ['id' => $invoice->id])}}" class="btn btn-success text-white"><i class="ti-money"></i>Record Payment</a>
                 <a href="{{ url('invoice/'.$invoice->id.'/sendmail') }}" class="btn btn-primary text-white "><i class="ti-email"></i>Send Reminder</a>
                 @endif

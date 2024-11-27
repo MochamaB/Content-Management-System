@@ -176,7 +176,7 @@ class DepositController extends Controller
         $pageheadings = collect([
             '0' => $deposit->name,
             '1' => $deposit->referenceno,
-            '2' => $deposit->status,
+            '2' => $deposit->getStatusLabel(),
         ]);
         $instance = $deposit;
 

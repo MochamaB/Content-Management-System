@@ -47,13 +47,15 @@ class CalculateInvoiceTotalAmountAction
             ////Update Status /////
         if ($totalAmountPaid < $refmodel->totalamount) {
             // Partially paid
-            $refmodel->update(['status' => 'partially_paid']);
+            $refmodel->update(['status' =>  $refmodel::STATUS_PARTIALLY_PAID]);
+
         } elseif ($totalAmountPaid > $refmodel->totalamount) {
             // Overpaid
-            $refmodel->update(['status' => 'over_paid']);
+            $refmodel->update(['status' =>  $refmodel::STATUS_OVER_PAID]);
+            
         } elseif ($totalAmountPaid == $refmodel->totalamount) {
             // Fully paid
-            $refmodel->update(['status' => 'paid']);
+            $refmodel->update(['status' => $refmodel::STATUS_PAID]);
         }
     }
 

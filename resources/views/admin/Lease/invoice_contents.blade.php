@@ -1,3 +1,14 @@
+@php
+$status = $invoice->getStatusLabel();
+$statusClasses = [
+    'Paid' => 'active',
+    'Unpaid' => 'warning',
+    'Over Due' => 'danger',
+    'Partially Paid' => 'dark',
+    'Over Paid' => 'light',
+];
+$statusClass = $statusClasses[$status] ?? 'warning'; // Default to 'warning' if status is not found
+@endphp
 <div class=" contwrapper table-responsive table-responsive-sm" id="printMe">
     <!-- FIRST LEVEL -------->
     <div class="row">
@@ -45,15 +56,8 @@
                 <li><b>INVOICE DATE:</b> {{\Carbon\Carbon::parse($invoice->created_at)->format('d M Y')}}</li>
                 <li><b>DUE DATE:</b> {{\Carbon\Carbon::parse($invoice->duedate)->format('d M Y')}}</li>
                 <li></br></li>
-                @if( $invoice->status == 'paid' )
-                <div class="badge badge-active"> PAID</div> <!------Status -->
-                @elseif( $invoice->status == 'overpaid' )
-                <div class="badge badge-information"> OVER PAID</div>
-                @elseif ( $invoice->status == 'partially_paid' )
-                <div class="badge badge-warning"> PARTIALLY PAID</div>
-                @elseif ( $invoice->status == 'unpaid' )
-                <div class="badge badge-error">UNPAID </div>
-                @endif
+                <!-- Render the badge -->
+                <div class="badge badge-{{ $statusClass }}">{{ $status }}</div>
             </ul>
         </div>
 

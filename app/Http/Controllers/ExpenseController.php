@@ -136,7 +136,7 @@ class ExpenseController extends Controller
         $pageheadings = collect([
             '0' => $expense->name,
             '1' => $expense->referenceno,
-            '2' => $expense->status,
+            '2' => $expense->getStatusLabel(),
         ]);
         $instance = $expense;
 
@@ -160,7 +160,7 @@ class ExpenseController extends Controller
         $pageheadings = collect([
             '0' => $expense->name,
             '1' => $expense->referenceno,
-            '2' => $expense->status,
+            '2' => $expense->getStatusLabel(),
         ]);
         $instance = $expense;
 

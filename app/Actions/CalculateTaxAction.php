@@ -57,7 +57,7 @@ class CalculateTaxAction
                 'model_type' => get_class($tax),
                 'model_id' => $tax->id,
                 'name' => $tax->name.' - '.$property->property_name.' - '. $currentMonth->format('F Y'),
-                'status' => 'pending',
+                'status' => Expense::STATUS_UNPAID,
                 'duedate' => $currentMonth->endOfMonth(),
             ]
         );
