@@ -19,7 +19,7 @@ class CreateLeasesTable extends Migration
             $table->unsignedBigInteger('unit_id')->index();
             $table->unsignedBigInteger('user_id')->index();
             $table->string('lease_period');
-            $table->string('status');
+            $table->unsignedTinyInteger('status')->default(1);
             $table->timestamp("startdate");
             $table->timestamp("enddate")->nullable();
    

@@ -93,47 +93,58 @@ class LeaseController extends Controller
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getLeaseFilters($request);
-        $tablevalues = lease::with('property', 'unit', 'user')->showSoftDeleted()->ApplyFilters($filters)->get();
-        $cardData = $this->cardService->leaseCard($tablevalues);
-        $viewData = $this->formData($this->model);
-        $controller = $this->controller;
+        $baseQuery = lease::with('property', 'unit', 'user')->showSoftDeleted()->ApplyFilters($filters);
+        $cardData = $this->cardService->leaseCard($baseQuery->get());
+
+        $tabTitles = ['All'] + Lease::$statusLabels;
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'All':
+                    // No additional filtering for 'All'
+                    break;
+                case 'Active':
+                    $query->where('status', Lease::STATUS_ACTIVE);
+                    break;
+                case 'Terminated':
+                    $query->where('status', Lease::STATUS_TERMINATED);
+                    break;
+                case 'Expired':
+                    $query->where('status', Lease::STATUS_EXPIRED);
+                    break;
+                case 'Pending':
+                    $query->where('status', Lease::STATUS_PENDING);
+                    break;
+                case 'Notice Given':
+                    $query->where('status', Lease::STATUS_NOTICE);
+                    break;
+                default:
+                    // Optional: handle any unexpected titles
+                    continue;
+            }
+            $lease = $query->get();
+            $count = $lease->count();
+            $tableData = $this->tableViewDataService->getLeaseData($lease, false);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
+       
         /// TABLE DATA ///////////////////////////
         $tableData = [
             'headers' => ['LEASE', 'TYPE', 'STATUS', 'ACTIONS'],
             'rows' => [],
         ];
 
-        foreach ($tablevalues as  $item) {
-            $endDateFormatted = empty($item->enddate) ? 'Not set' : Carbon::parse($item->enddate)->format('Y-m-d');
-            // Calculate the number of days left on the lease (if end date is available)
-            $daysLeft = ($item->enddate) ? Carbon::parse($item->enddate)->diffInDays(Carbon::now()) : null;
-            $statusClasses = [
-                'Active' => 'badge-active',
-                'Expired' => 'badge-warning',
-                'Terminated' => 'badge-error',
-                'Suspended' => 'badge-dark',
-            ];
-            // Get the CSS class for the current status, default to 'badge-secondary' if not found
-            $statusClass = $statusClasses[$item->status] ?? 'badge-information';
-            // Generate the status badge
-            $statusBadge = '<span class="badge ' . $statusClass . '">' . $item->status . '</span>';
-            $isDeleted = $item->deleted_at !== null;
-
-            $tableData['rows'][] = [
-                'id' => $item->id,
-                //  $item,
-                $item->property->property_name . ' - ' . $item->unit->unit_number . ' . ' . $item->user->firstname . ' ' . $item->user->lastname,
-                $item->lease_period . '     ' .  ($daysLeft !== null ? '<span class="badge badge-information" style="margin-left:20px">' . $daysLeft . ' days left</span>' : '') .
-                    '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
-                    Carbon::parse($item->startdate)->format('Y-m-d') . ' - ' . $endDateFormatted . '</span>',
-                $statusBadge,
-                'isDeleted' => $isDeleted,
-
-            ];
-        }
+      
 
         return View(
-            'admin.CRUD.form',compact('tableData', 'controller','filterdata','cardData')
+            'admin.CRUD.form',compact('tabTitles', 'tabContents','controller','filterdata','filters','cardData','tabCounts')
         );
     }
 
@@ -265,6 +276,9 @@ class LeaseController extends Controller
                 $existingCharge->fill($rentcharge->toArray());
                 $existingCharge->updated_at = now();
                 $existingCharge->save();
+                 // Use the existing charge's ID as the parent_id
+                $parentChargeId = $existingCharge->id;
+
     
                 // Log or return feedback for an updated charge
                 $statusMessage = 'Existing Rent Charge Updated Successfully.';
@@ -273,6 +287,8 @@ class LeaseController extends Controller
                 $rentchargeModel = new Unitcharge();
                 $rentchargeModel->fill($rentcharge->toArray());
                 $rentchargeModel->save();
+                // Use the newly created charge's ID as the parent_id
+                $parentChargeId = $rentchargeModel->id;
     
                 // Log or return feedback for a new charge
                 $statusMessage = 'New Rent Charge Created Successfully.';
@@ -293,7 +309,7 @@ class LeaseController extends Controller
         if (!empty($splitRentCharges)) {
             foreach ($splitRentCharges as $splitRentCharge) {
                 // Dynamically add the parent_id to each split rent charge
-                $splitRentCharge['parent_id'] = $rentchargeModel->id;
+                $splitRentCharge['parent_id'] = $parentChargeId;
         
                 // Use updateOrCreate to update existing charges or create new ones
                 Unitcharge::updateOrCreate(
@@ -568,7 +584,7 @@ class LeaseController extends Controller
         ->where(function ($query) {
             $query->doesntHave('lease')
                 ->orWhereHas('lease', function ($subQuery) {
-                    $subQuery->where('status', '<>', 'active');
+                    $subQuery->where('status', '<>', Lease::STATUS_ACTIVE);
                 });
         })
         ->pluck('unit_number', 'id')
@@ -587,6 +603,7 @@ class LeaseController extends Controller
                 ->exists();
             $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
                 ->where('charge_name', $splitchargeNames)
+                ->whereNull('parent_id')
                 ->exists();
 
             if ($utilityNameExists || $chargeNameExists) {
@@ -692,6 +709,7 @@ class LeaseController extends Controller
                     ->exists();
                 $chargeNameExists = Unitcharge::where('unit_id', $request->unit_id)
                     ->where('charge_name', $chargeName)
+                    ->whereNull('parent_id')
                     ->exists();
 
                 if ($utilityNameExists || $chargeNameExists) {

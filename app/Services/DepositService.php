@@ -72,7 +72,7 @@ class DepositService
                 'model_id' => $validatedData['model_id'],
                 'name' => $validatedData['name'], ///Generated from securitydeposit
                 'totalamount' => null,
-                'status' => 'unpaid',
+                'status' => Deposit::STATUS_UNPAID,
                 'duedate' => $validatedData['duedate'] ?? null,
             ];
         } else {
@@ -91,7 +91,7 @@ class DepositService
                 'model_id' => $user->id,
                 'name' => $model->charge_name, ///Generated from securitydeposit
                 'totalamount' => null,
-                'status' => 'unpaid',
+                'status' => Deposit::STATUS_UNPAID,
                 'duedate' => null,
             ];
         }

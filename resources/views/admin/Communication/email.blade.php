@@ -95,43 +95,81 @@
 </div>
 
 <script>
-    /*
-function markAsRead(element, event) {
-    // Allow the tab to change first
-    event.preventDefault();
-    try {
-        var notificationId = $(element).data('id');
+ function markAsRead(element, event) {
+    // Get the target tab pane ID
+    var targetTabId = $(element).attr('href');
+    var notificationId = $(element).data('id');
+    
+    // Remove active class and reset background color for all list-group-item links
+    $('.list-group-item').each(function() {
+        $(this).removeClass('active');
+        $(this).css('background-color', $(this).data('read') === 'true' ? 'white' : '#F4F5F7');
+    });
 
-        // Remove active class and reset background color for all list-group-item links
-        $('.list-group-item').each(function() {
-            $(this).removeClass('active');
-            $(this).css('background-color', $(this).data('read') ? 'white' : '#F4F5F7'); // Reset background to the original read/unread state
-        });
+    // Add active class to the clicked link
+    $(element).addClass('active');
+    $(element).css('background-color', '#0d6efd');
 
-        // Add active class to the clicked link
-        $(element).addClass('active');
-        $(element).css('background-color', '#0d6efd');
+    // Manually switch tabs
+    $('.tab-pane').removeClass('show active');
+    $(targetTabId).addClass('show active');
 
-        $.ajax({
-            url: '/notification/mark-as-read/' + notificationId,
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-            },
-            success: function(response) {
-                if (response.status === 'success' && !$(element).hasClass('active')) {
+    // Update URL with the current tab's ID
+    history.pushState(
+        { tabId: notificationId }, 
+        '', 
+        window.location.pathname + '?tab=' + notificationId
+    );
+
+    // Mark as read via AJAX
+    $.ajax({
+        url: '/notification/mark-as-read/' + notificationId,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            if (response.status === 'success') {
+                // Update the data-read attribute
+                $(element).attr('data-read', 'true');
+                
+                // If not the active tab, change background to white
+                if (!$(element).hasClass('active')) {
                     $(element).css('background-color', 'white');
                 }
-            },
-            error: function(response) {
-                console.error('Error:', response);
             }
-        });
-    } catch (error) {
-        console.error("An error occurred in markAsRead:", error);
-    }
+        },
+        error: function(response) {
+            console.error('Error:', response);
+        }
+    });
 }
-    */
+
+// Add this to handle browser back/forward navigation
+$(document).ready(function() {
+    // Check if there's a tab parameter in the URL on page load
+    var urlParams = new URLSearchParams(window.location.search);
+    var tabId = urlParams.get('tab');
+
+    if (tabId) {
+        // Find the corresponding tab link and trigger click
+        var tabLink = $(`[data-id="${tabId}"]`);
+        if (tabLink.length) {
+            tabLink.click();
+        }
+    }
+
+    // Handle browser history navigation
+    window.addEventListener('popstate', function(event) {
+        if (event.state && event.state.tabId) {
+            var tabLink = $(`[data-id="${event.state.tabId}"]`);
+            if (tabLink.length) {
+                tabLink.click();
+            }
+        }
+    });
+});
+    
 $(document).ready(function() {
     // Search input keyup event
     $('#search-input').on('keyup', function() {

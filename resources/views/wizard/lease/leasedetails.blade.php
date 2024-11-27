@@ -49,12 +49,7 @@
             </select>
         </div>
     </div>
-    <div class="col-md-8">
-        <div class="form-group">
 
-            <input type="hidden" class="form-control" id="status" name="status" value="Active" readonly>
-        </div>
-    </div>
     <div class=row>
         <div class="col-md-8">
             <div class="form-group">

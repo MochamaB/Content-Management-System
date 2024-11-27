@@ -54,31 +54,43 @@ class InvoiceController extends Controller
 
     public function index(Request $request)
     {
+        // Clear previousUrl if navigating to a new create method
+        session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getInvoiceFilters();
         $baseQuery = Invoice::with('unit', 'property', 'payments')->ApplyCurrentMonthFilters($filters);
         $cardData = $this->cardService->invoiceCard($baseQuery->get());
-        $tabTitles = ['All', 'Paid', 'Unpaid', 'Overdue','Partially Paid','Over Paid'];
+        $tabTitles = ['All'] + Invoice::$statusLabels;
+        // Convert the associative array to an indexed array to manipulate the order
+        $tabTitles = array_merge(['All'], Invoice::$statusLabels);
+        // Insert "Overdue" at the third position (index 2)
+        array_splice($tabTitles, 3, 0, 'Over Due');
         $tabContents = [];
         $tabCounts = [];
         foreach ($tabTitles as $title) {
             $query = clone $baseQuery;
             switch ($title) {
                 case 'Paid':
-                    $query->where('status', 'paid');
+                    $query->where('status', Invoice::STATUS_PAID);
                     break;
                 case 'Unpaid':
-                    $query->where('status', 'unpaid');
+                    $query->where('status', Invoice::STATUS_UNPAID);
                     break;
-                case 'Overdue':
-                    $query->where('status', 'unpaid')
-                        ->where('duedate', '<', now());
+                case 'Over Due':
+                    $query->where('status', Invoice::STATUS_UNPAID)
+                        ->where('duedate', '<', Carbon::today());
                     break;
                 case 'Partially Paid':
-                    $query->where('status', 'partially_paid');
+                    $query->where('status', Invoice::STATUS_PARTIALLY_PAID);
                     break;
                 case 'Over Paid':
-                    $query->where('status', 'over_paid');
+                    $query->where('status', Invoice::STATUS_OVER_PAID);
+                    break;
+                case 'Void':
+                        $query->where('status', Invoice::STATUS_VOID);
+                    break;
+                case 'Archived':
+                        $query->where('status', Invoice::STATUS_ARCHIVED);
                     break;
                     // 'All' doesn't need any additional filters
             }
@@ -129,7 +141,10 @@ class InvoiceController extends Controller
         }
 
         $tableData = $this->tableViewDataService->getUnitChargeData($unitchargedata, true);
-        Session::flash('previousUrl', request()->server('HTTP_REFERER'));
+        ///SESSION /////
+        if (!session()->has('previousUrl')) {
+            session()->put('previousUrl', url()->previous());
+        }
         
         return View('admin.Lease.invoice', ['tableData' => $tableData,'info' => $info, 'controller' => ['unitcharge']]);
     }

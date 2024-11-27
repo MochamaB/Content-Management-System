@@ -75,7 +75,7 @@ class UnitChargeController extends Controller
                     break;
                     // 'All' doesn't need any additional filters
             }
-            $unitCharges = $query->get();
+            $unitCharges = $query->orderBy('unit_id')->get();
             $count = $unitCharges->count();
             $tableData = $this->tableViewDataService->getUnitChargeData($unitCharges, true);
             $controller = $this->controller;

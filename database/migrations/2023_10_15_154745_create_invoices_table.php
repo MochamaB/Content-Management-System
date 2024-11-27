@@ -23,7 +23,7 @@ class CreateInvoicesTable extends Migration
             $table->string('referenceno')->nullable();
             $table->string('name');
             $table->decimal('totalamount')->nullable();
-            $table->string('status');
+            $table->unsignedTinyInteger('status')->default(2);
             $table->timestamp("duedate")->nullable();
 
             $table->timestamps();

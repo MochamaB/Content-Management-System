@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('referenceno');
             $table->string('name'); //Name of the charge E.g Deposit,Utility,Maintenance
             $table->decimal('totalamount')->nullable();
-            $table->string('status');
+            $table->unsignedTinyInteger('status')->default(2);
             $table->timestamp("duedate")->nullable();
 
             $table->timestamps();

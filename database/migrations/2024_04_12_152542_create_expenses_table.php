@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('model_id'); // ID of the specific model instance
             $table->string('referenceno');
             $table->decimal('totalamount')->nullable();
-            $table->string('status');
+            $table->unsignedTinyInteger('status')->default(2);
             $table->timestamp("duedate")->nullable();
 
             $table->timestamps();

@@ -57,7 +57,7 @@ class InvoiceService
         return Unitcharge::where('recurring_charge', 'Yes')
             ->where('parent_id', null)
             ->whereHas('unit.lease', function ($query) {
-                $query->where('status', 'Active');
+                $query->where('status', Lease::STATUS_ACTIVE);
             })
             ->where(function ($query) use ($startOfMonth, $endOfMonth) {
                 $query->whereMonth('nextdate', now()->month)
@@ -173,11 +173,7 @@ class InvoiceService
         //$today = Carbon::now();
         $userId = Lease::where('unit_id', $unitcharge->unit_id)->first();
         $user = User::class;
-        $doc = 'INV-';
-        $propertynumber = 'P' . str_pad($unitcharge->property_id, 2, '0', STR_PAD_LEFT);
-        $unitnumber = $unitcharge->unit->unit_number ?? 'N';
-        $date = Carbon::parse($unitcharge->nextdate)->format('ymd');
-        //  $referenceno = $doc . $propertynumber . $unitnumber . '-' . $date;
+       
 
         return [
             'property_id' => $unitcharge->property_id,
@@ -187,7 +183,7 @@ class InvoiceService
             'model_id' => $userId->user_id,
             'name' => $unitcharge->charge_name,
             'totalamount' => null,
-            'status' => 'unpaid',
+           //TEST:Invoice generation without 'status' => 'unpaid',
             'duedate' => null,
         ];
     }

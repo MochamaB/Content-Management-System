@@ -12,6 +12,22 @@ class Invoice extends Model
 {
     use HasFactory, FilterableScope;
     protected $table = 'invoices';
+
+    const STATUS_PAID = 1;
+    const STATUS_UNPAID = 2;
+    const STATUS_PARTIALLY_PAID= 3;
+    const STATUS_OVER_PAID = 4;
+    const STATUS_VOID = 5;
+    const STATUS_ARCHIVED = 6;
+
+    public static $statusLabels = [
+        self::STATUS_PAID => 'Paid',
+        self::STATUS_UNPAID => 'Unpaid',
+        self::STATUS_PARTIALLY_PAID => 'Partially Paid',
+        self::STATUS_OVER_PAID => 'Over Paid',
+        self::STATUS_VOID => 'Void',
+        self::STATUS_ARCHIVED => 'Archived',
+    ];
     protected $fillable = [
         'property_id',
         'unit_id',
@@ -75,6 +91,11 @@ class Invoice extends Model
             default:
                 return [];
         }
+    }
+    /// GET THE STATUS OF THE INVOICE
+    public function getStatusLabel()
+    {
+    return self::$statusLabels[$this->status] ?? 'Unknown Status';
     }
 
     ////// PoLymorphism relationship (Can be Either User, Vendor or Supplier)

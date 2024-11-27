@@ -22,6 +22,19 @@ class Lease extends Model implements HasMedia, Auditable
 {
     use HasFactory, Notifiable, InteractsWithMedia, MediaUpload, FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
     protected $table = 'leases';
+    const STATUS_ACTIVE = 1;
+    const STATUS_TERMINATED = 2;
+    const STATUS_EXPIRED = 3;
+    const STATUS_PENDING = 4;
+    const STATUS_NOTICE = 5;
+
+    public static $statusLabels = [
+        self::STATUS_ACTIVE => 'Active',
+        self::STATUS_TERMINATED => 'Terminated',
+        self::STATUS_EXPIRED => 'Expired',
+        self::STATUS_PENDING => 'Pending',
+        self::STATUS_NOTICE => 'Notice Given',
+    ];
     protected $fillable = [
         'property_id',
         'unit_id',
@@ -51,7 +64,7 @@ class Lease extends Model implements HasMedia, Auditable
         'unit_id' => 'required|numeric',
         'user_id' => 'required',
         'lease_period' => 'required',
-        'status' => 'required',
+        'status' => 'nullable',
         'startdate' => 'required|date',
         'enddate' => 'nullable|date',
     ];
@@ -74,6 +87,11 @@ class Lease extends Model implements HasMedia, Auditable
         $data['unit_id'] = $this->unit_id;
 
         return $data;
+    }
+
+    public function getStatusLabel()
+    {
+    return self::$statusLabels[$this->status] ?? 'Unknown Status';
     }
 
     public static function getFieldData($field)

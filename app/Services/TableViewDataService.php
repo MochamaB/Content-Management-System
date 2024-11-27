@@ -28,23 +28,33 @@ class TableViewDataService
 
     public $sitesettings;
     public $user;
-    protected $badgeClasses = [
+    protected $statusClasses = [
+
+        //Lease Status
+        'Active' => 'active',
+        'Expired' => 'warning',
+        'Terminated' => 'error',
+        'Suspended' => 'dark',
+
+        // Task statuses
         'Completed' => 'active',
         'New' => 'warning',
         'OverDue' => 'error',
         'In Progress' => 'information',
         'Assigned' => 'dark',
-
+    
+        // Priority levels
         'critical' => 'error',
         'high' => 'warning',
         'normal' => 'active',
         'low' => 'dark',
-
-        'paid' => 'active',
-        'unpaid' => 'warning',
+    
+        // Payment statuses
+        'Paid' => 'active',
+        'Unpaid' => 'warning',
         'Over Due' => 'danger',
-        'partially_paid' => 'dark',
-        'over_paid' => 'light',
+        'Partially Paid' => 'dark',
+        'Over Paid' => 'light',
     ];
 
     public function __construct()
@@ -54,9 +64,9 @@ class TableViewDataService
     }
 
 
-    public function getBadgeClass($status)
+    public function getStatusClass($status)
     {
-        return $this->badgeClasses[$status] ?? 'active';
+        return $this->statusClasses[$status] ?? 'active';
     }
 
 
@@ -82,6 +92,47 @@ class TableViewDataService
                 'isDeleted' => $isDeleted,
             ];
         }
+
+        return $tableData;
+    }
+
+    public function getLeaseData($leaseData)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['LEASE', 'TYPE', 'STATUS', 'ACTIONS'],
+            'rows' => [],
+        ];
+        foreach ($leaseData as  $item) {
+            $endDateFormatted = empty($item->enddate) ? 'Not set' : Carbon::parse($item->enddate)->format('Y-m-d');
+            // Calculate the number of days left on the lease (if end date is available)
+            $daysLeft = ($item->enddate) ? Carbon::parse($item->enddate)->diffInDays(Carbon::now()) : null;
+            $statusClasses = [
+                'Active' => 'badge-active',
+                'Expired' => 'badge-warning',
+                'Terminated' => 'badge-error',
+                'Suspended' => 'badge-dark',
+            ];
+            // Get the CSS class for the current status, default to 'badge-secondary' if not found
+            $status = $item->getStatusLabel();
+            $statusClass =$this->getStatusClass($status) ?? 'active';
+            // Generate the status badge
+            $statusBadge = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
+            $isDeleted = $item->deleted_at !== null;
+
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                //  $item,
+                $item->property->property_name . ' - ' . $item->unit->unit_number . ' . ' . $item->user->firstname . ' ' . $item->user->lastname,
+                $item->lease_period . '     ' .  ($daysLeft !== null ? '<span class="badge badge-information" style="margin-left:20px">' . $daysLeft . ' days left</span>' : '') .
+                    '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
+                    Carbon::parse($item->startdate)->format('Y-m-d') . ' - ' . $endDateFormatted . '</span>',
+                $statusBadge,
+                'isDeleted' => $isDeleted,
+
+            ];
+        }
+
 
         return $tableData;
     }
@@ -117,35 +168,27 @@ class TableViewDataService
                 'over_paid' => 'light',
             ];
             //// GET INVOICE STATUS. IF STATUS UNPAID AND DUEDATE
+            $status = $item->getStatusLabel();
+            
             $today = Carbon::now();
             $totalPaid = $item->payments->sum('totalamount');
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
             $mediaURL = $item->model->getFirstMediaUrl('avatar');
-            if ($mediaURL) {
-                $profpic = url($item->getFirstMediaUrl('avatar'));
-            } else {
-                $profpic = url('uploads/images/avatar.png');
-            }
+            $profpic = $mediaURL ? url($mediaURL) : url('uploads/images/avatar.png');
             //   $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
 
-            if ($item->payments->isEmpty()) {
-                $status = 'unpaid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information mt-2">Record Payment</a>';
-            } elseif ($totalPaid < $item->totalamount) {
-                $status = 'partially_paid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . '" class="badge badge-information mt-2">Record Payment</a>';
-            } elseif ($totalPaid > $item->totalamount) {
-                $status = 'over_paid';
-            } elseif ($totalPaid == $item->totalamount) {
-                $status = 'paid';
+            if ($item->status !== Invoice::STATUS_PAID || $item->status !== Invoice::STATUS_OVER_PAID ) {
+                // Generate the payment link only if the status is not 'Paid'
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . 
+                    '" class="badge badge-information mt-2">Record Payment</a>';
             }
-
-            if ($item->duedate < $today && $status == 'unpaid') {
+            
+            if ($item->duedate < Carbon::now() && $item->status === Invoice::STATUS_UNPAID) {
                 $status = 'Over Due';
             }
 
-            $statusClass = $statusClasses[$status] ?? 'secondary';
+            $statusClass =$this->getStatusClass($status) ?? 'warning';
             $invoiceStatus = '  <span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '  <span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
             if (!empty($item->payments)) {

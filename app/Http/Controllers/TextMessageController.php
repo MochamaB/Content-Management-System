@@ -46,13 +46,15 @@ class TextMessageController extends Controller
     {
 
         $user = Auth::user();
+        // Check if the user is an admin
+
         $tabTitles = collect([
             'Dashboard' => true, // Visible to all users
             'Inbox' => true,
             'Compose Text' => $user->can('textmessage.create') || $user->id === 1,
-            'Top up' => $user->can('smscredit.create') || $user->id === 1,
-            'Transactions' => $user->can('smscredit.view') || $user->id === 1,
-            'Tarriffs' => $user->can('smscredit.create') || $user->id === 1,
+            'Top up' => $user->can('smsCredit.create') || $user->id === 1,
+            'Transactions' => $user->can('smsCredit.index') || $user->id === 1,
+            'Tarriffs' => $user->can('smsCredit.create') || $user->id === 1,
         ])->filter(function($value) {
             return $value === true;
         })->keys();

@@ -19,6 +19,22 @@ class Expense extends Model implements HasMedia, Auditable
 {
     use HasFactory,InteractsWithMedia, MediaUpload,FilterableScope, SoftDeleteScope, SoftDeletes, AuditableTrait;
     protected $table = 'expenses';
+
+    const STATUS_PAID = 1;
+    const STATUS_UNPAID = 2;
+    const STATUS_PARTIALLY_PAID= 3;
+    const STATUS_OVER_PAID = 4;
+    const STATUS_VOID = 5;
+    const STATUS_ARCHIVED = 6;
+
+    public static $statusLabels = [
+        self::STATUS_PAID => 'Paid',
+        self::STATUS_UNPAID => 'Unpaid',
+        self::STATUS_PARTIALLY_PAID => 'Partially Paid',
+        self::STATUS_OVER_PAID => 'Over Paid',
+        self::STATUS_VOID => 'Void',
+        self::STATUS_VOID => 'Archived',
+    ];
     protected $fillable = [
         'property_id',
         'unit_id',
