@@ -112,6 +112,100 @@
                 font-size: 17px;
             }
         }
+
+                @media screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header-table,
+            .info-table {
+                width: 100%;
+            }
+
+            .header-table td,
+            .info-table td {
+                display: block;
+                width: 100%;
+                text-align: left;
+            }
+
+            .header-table img {
+                display: block;
+                margin: 0 auto 10px auto;
+            }
+
+            .header-table ul,
+            .info-table ul {
+                padding: 0;
+                margin: 10px 0;
+            }
+
+            .header-table ul li,
+            .info-table ul li {
+                margin-bottom: 5px;
+            }
+
+            a.table:link {
+                color: #1F3BB3;
+                font-size: 15px;
+                font-weight: 600;
+                text-decoration: none;
+                text-transform: capitalize;
+            }
+
+            a.table:visited {
+                color: #0000ff;
+            }
+
+            a.table:hover {
+                color: #ffaf00;
+                font-size: 17px;
+            }
+        }
+        @media screen and (max-width: 481px) {
+    .container {
+        padding: 5px; /* Reduce padding for a tighter fit */
+    }
+
+    table.items-table {
+        font-size: 12px; /* Reduce the font size for the table content */
+    }
+
+    table.items-table th,
+    table.items-table td {
+        padding: 6px; /* Decrease padding for cells */
+    }
+
+    table.items-table {
+        display: block; /* Enable block layout for better stacking */
+        overflow-x: auto; /* Allow horizontal scroll only when needed */
+    }
+
+    .header-table td,
+    .info-table td {
+        font-size: 13px; /* Adjust the font size of info/header tables */
+    }
+
+    /* Reduce logo size for smaller screens */
+    .logo {
+        max-width: 150px;
+        height: auto;
+    }
+}
+
+        .mpesaButton {
+            background: #6AAE2D;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 0px;
+            font-size: 15px;
+            font-family: "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif;
+            text-decoration: none;
+
+        }
     </style>
 </head>
 
@@ -230,21 +324,23 @@
                 </tr>
             </tfoot>
         </table>
-@if(isset($PaymentMethod))
+        @if(isset($PaymentMethod))
         <h4><b>PAYMENT OPTIONS AVAILABLE </b></h4>
         @foreach($PaymentMethod as $key=> $item)
         <ul style="list-style-type: none; padding: 0; text-align: left;">
             @if (stripos($item->name, 'M') !== false && stripos($item->name, 'PESA') !== false)
-            <li style="font-size:14px;font-weight:400">{{$key+1}}. {{$item->name}} -
-                <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="table">
-                    <i class="ti-money"></i>Click to Pay Now</a>
+            <li style="font-size:14px;font-weight:400">{{$key+1}}. {{$item->name}} &nbsp;
+                <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="btn btn-warning mpesaButton text-white mb-0">
+                    <img src="{{ url('uploads/mpesa.png') }}" alt="Mpesa Logo" class="me-2" style="width: 20px; height: 20px;">
+                    Pay with Mpesa
+                </a>
             </li>
             @else
             <li style="font-size:14px;font-weight:400">{{$key+1}}. {{$item->name}} </li>
             @endif
         </ul>
         @endforeach
-@endif
+        @endif
     </div>
     <div class="footer">
         <i style="color:#1F3BB3">Powered By<a href="http://www.bridgetech.co.ke" target="_blank"> <b>Bridgtech Properties</b></a> Admin.</i>

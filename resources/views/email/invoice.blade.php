@@ -155,10 +155,22 @@
             border: 2px solid #6a008a !important;
             margin-top: 5px;
         }
+        
     </style>
 </head>
 
 <body>
+@php
+$status = $invoice->getStatusLabel();
+$statusClasses = [
+'Paid' => 'active',
+'Unpaid' => 'warning',
+'Over Due' => 'danger',
+'Partially Paid' => 'dark',
+'Over Paid' => 'light',
+];
+$statusClass = $statusClasses[$status] ?? 'warning'; // Default to 'warning' if status is not found
+@endphp
     <div class="container">
         <!-- Header -->
         <table style="border-collapse: collapse;">
@@ -204,15 +216,8 @@
                             <li><b>INVOICE DATE:</b> {{\Carbon\Carbon::parse($invoice->created_at)->format('d M Y')}}</li>
                             <li><b>DUE DATE:</b> {{\Carbon\Carbon::parse($invoice->duedate)->format('d M Y')}}</li>
                             <li></br></li>
-                            @if( $invoice->status == 'paid' )
-                            <div class="badge badge-active" style="display: inline-block;"> PAID</div> <!------Status -->
-                            @elseif( $invoice->status == 'overpaid' )
-                            <div class="badge badge-information" style="display: inline-block;"> OVER PAID</div>
-                            @elseif ( $invoice->status == 'partially_paid' )
-                            <div class="badge badge-warning" style="display: inline-block;"> PARTIALLY PAID</div>
-                            @elseif ( $invoice->status == 'unpaid' )
-                            <div class="badge badge-error" style="display: inline-block;">UNPAID </div>
-                            @endif
+                            <!-- Render the badge -->
+                <span class="badge badge-{{ $statusClass }}">{{ $status }}</span>
                         </ul>
                     </td>
                 </tr>
@@ -242,12 +247,24 @@
                         ->whereDate('created_at', '>=', $invoice->created_at)
                         ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
                             ->first();
+                            // Default values in case meterReadings is not present
+                            $currentReading = $meterReadings->currentreading ?? 0;
+                            $lastReading = $meterReadings->lastreading ?? 0;
+                            $rateAtReading = $meterReadings->rate_at_reading ?? 0;
+                            $used = $currentReading - $lastReading;
                             @endphp
+                            @if($meterReadings)
+                            <ul class="list-unstyled text-left mt-1">
+                                <li><i>Current Reading: {{ $currentReading }} Units</i> </li>
+                                <li><i>Last Reading: {{ $lastReading }} Units</i> </li>
+                                <li><i>Used: {{ $used }} Units * Rate: {{ $rateAtReading }}</i> </li>
+                            </ul>
+                            @else
                             <ul class="list-unstyled text-left">
-                                <li><i>Current Reading: {{$meterReadings->currentreading ?? ' 0'}} Units</i> </li>
-                                <li><i>Last Reading: {{$meterReadings->lastreading ?? ' 0'}} Units</i> </li>
-                                <ul>
-                                    @endif
+                                <li><i>No meter reading available for this period.</i></li>
+                            </ul>
+                            @endif
+                            @endif
                     </td>
                     <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
                     <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>

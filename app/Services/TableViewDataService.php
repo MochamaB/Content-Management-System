@@ -4,6 +4,7 @@
 
 namespace App\Services;
 
+use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Unitcharge;
 use App\Models\Unit;
@@ -272,27 +273,27 @@ class TableViewDataService
                 'partially_paid' => 'dark',
                 'over_paid' => 'light',
             ];
+
+            $status = $item->getStatusLabel();
+            
             $today = Carbon::now();
             $totalPaid = $item->payments->sum('totalamount');
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
-            if ($item->payments->isEmpty()) {
-                $status = 'unpaid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
-            } elseif ($totalPaid < $item->totalamount) {
-                $status = 'partially_paid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
-            } elseif ($totalPaid > $item->totalamount) {
-                $status = 'over_paid';
-            } elseif ($totalPaid == $item->totalamount) {
-                $status = 'paid';
-            }
+           
+            //   $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
 
-            if ($item->duedate !== null && $item->duedate < $today && $status == 'unpaid') {
+            if ($item->status !== Expense::STATUS_PAID || $item->status !== Expense::STATUS_OVER_PAID ) {
+                // Generate the payment link only if the status is not 'Paid'
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . 
+                    '" class="badge badge-information mt-2">Record Payment</a>';
+            }
+            
+            if ($item->duedate < Carbon::now() && $item->status === Expense::STATUS_UNPAID) {
                 $status = 'Over Due';
             }
-            //        $status = $item->status;
-            $statusClass = $statusClasses[$status] ?? 'unpaid';
+
+            $statusClass =$this->getStatusClass($status) ?? 'warning';
             $voucherStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
             if ($item->duedate !== null) {
@@ -1015,36 +1016,28 @@ class TableViewDataService
         ];
 
         foreach ($expensedata as $item) {
-            $statusClasses = [
-                'paid' => 'active',
-                'unpaid' => 'warning',
-                'Over Due' => 'danger',
-                'partially_paid' => 'dark',
-                'over_paid' => 'light',
-            ];
-
+         
+           
+            $status = $item->getStatusLabel();
+            
             $today = Carbon::now();
             $totalPaid = $item->payments->sum('totalamount');
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
+           
+            //   $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
 
-            if ($item->payments->isEmpty()) {
-                $status = 'unpaid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information"  style="float: right; margin-right:10px">Add Payment</a>';
-            } elseif ($totalPaid < $item->totalamount) {
-                $status = 'partially_paid';
-                $payLink = '<a href="' . route('payment.create', ['id' => $item->id, 'model' => class_basename($item)]) . '" class="badge badge-information" style="float: right; margin-right:10px">Add Payment</a>';
-            } elseif ($totalPaid > $item->totalamount) {
-                $status = 'over_paid';
-            } elseif ($totalPaid == $item->totalamount) {
-                $status = 'paid';
+            if ($item->status !== Expense::STATUS_PAID || $item->status !== Expense::STATUS_OVER_PAID ) {
+                // Generate the payment link only if the status is not 'Paid'
+                $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . 
+                    '" class="badge badge-information mt-2">Record Payment</a>';
             }
-
-            if ($item->duedate < $today && $status == 'unpaid') {
+            
+            if ($item->duedate < Carbon::now() && $item->status === Expense::STATUS_UNPAID) {
                 $status = 'Over Due';
             }
-            //        $status = $item->status;
-            $statusClass = $statusClasses[$status] ?? 'unpaid';
+
+            $statusClass =$this->getStatusClass($status) ?? 'warning';
             $expenseStatus = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '<span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
             $isDeleted = $item->deleted_at !== null;

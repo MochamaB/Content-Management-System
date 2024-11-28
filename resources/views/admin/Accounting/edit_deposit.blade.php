@@ -4,7 +4,7 @@
 
 <div class=" contwrapper">
 
-    @if( $routeParts[1] === 'edit' && $instance->status !=='paid' && Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
+    @if( $routeParts[1] === 'edit' && $instance->getStatusLabel() !=='Paid' && Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
     <h5>Edit Deposit
         <a href="" class="editLink"> &nbsp;&nbsp;<i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a>
     </h5>

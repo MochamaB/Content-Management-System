@@ -21,9 +21,9 @@
         <div class="form-group">
             <label class="label"> Select Unit<span class="requiredlabel">*</span></label>
             <select name="unit_id" id="unit_id" class="formcontrol2" placeholder="Select" required>
-              
+
                 <option value="{{$lease->unit_id ?? ''}}">{{$lease->unit->unit_number ?? 'Select Property First'}}</option>
-             
+
             </select>
         </div>
     </div>
@@ -98,18 +98,24 @@
             <label class="label">Lease Status<span class="requiredlabel">*</span></label>
             <h5>
                 <small class="text-muted">
-                    {{ $lease->status}}
+                    {{ $lease->getStatusLabel()}}
                 </small>
             </h5>
             <select name="status" id="status" class="formcontrol2" placeholder="Select" required>
-                <option value="{{$lease->status?? ''}}">{{$lease->status ?? 'Select Status'}}</option>
-                <option value="Active"> Active</option>
-                <option value="Suspended">Suspended</option>
-                <option value="Expired">Expired</option>
-                <option value="Terminated"> Terminated</option>
-                <option value="Draft">Draft</option>
+                <!-- Show current status if it exists -->
+                <option value="{{ $lease->status ?? '' }}">
+                    {{ $lease->status ? \App\Models\Lease::$statusLabels[$lease->status] : 'Select Status' }}
+                </option>
 
+                <!-- Loop through status labels -->
+                @foreach(\App\Models\Lease::$statusLabels as $statusValue => $statusLabel)
+                <option value="{{ $statusValue }}"
+                    {{ (isset($lease) && $lease->status == $statusValue) ? 'selected' : '' }}>
+                    {{ $statusLabel }}
+                </option>
+                @endforeach
             </select>
+
         </div>
     </div>
     <div class=row>
@@ -155,7 +161,7 @@
     $(document).ready(function() {
         const $enddate = $("#enddate");
         const endDateValue = $enddate.val();
-           //   alert(endDateValue);
+        //   alert(endDateValue);
         if (endDateValue === '') {
             $enddate.hide();
         }

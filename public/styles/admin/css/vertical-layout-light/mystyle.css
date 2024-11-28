@@ -1240,6 +1240,7 @@ a .badge:hover {
       margin-left: 0px;
       /* Adjust to match the width of the sidebar */
       transition: padding-left 0.25s ease-out;
+      width: calc(100% - 0px);
     }
 
     .navbar .navbar-brand-wrapper {
@@ -1280,6 +1281,12 @@ a .badge:hover {
 
 
   }
+
+     /* Screen size under 576(phone) */
+     @media (max-width: 991px) {
+
+
+     }
    /* Screen size under 576(phone) */
    @media (max-width: 576px) {
     .sidebar {

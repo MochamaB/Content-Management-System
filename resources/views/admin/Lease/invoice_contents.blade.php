@@ -1,11 +1,23 @@
+<style>
+    .mpesaButton {
+  background: #6AAE2D;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 20px;
+  font-family: "Lato", "Helvetica Neue", Arial, Helvetica, sans-serif
+}
+</style>
 @php
 $status = $invoice->getStatusLabel();
 $statusClasses = [
-    'Paid' => 'active',
-    'Unpaid' => 'warning',
-    'Over Due' => 'danger',
-    'Partially Paid' => 'dark',
-    'Over Paid' => 'light',
+'Paid' => 'active',
+'Unpaid' => 'warning',
+'Over Due' => 'danger',
+'Partially Paid' => 'dark',
+'Over Paid' => 'light',
 ];
 $statusClass = $statusClasses[$status] ?? 'warning'; // Default to 'warning' if status is not found
 @endphp
@@ -81,28 +93,28 @@ $statusClass = $statusClasses[$status] ?? 'warning'; // Default to 'warning' if 
                         <!--- METER READINGS -->
                         @if($item->unitcharge->charge_type == 'units')
                         @php
-                            $meterReadings = $item->meterReadings()
-                                ->whereDate('created_at', '>=', $invoice->created_at)
-                                ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
-                                ->first();
-                                // Default values in case meterReadings is not present
-                                $currentReading = $meterReadings->currentreading ?? 0;
-                                $lastReading = $meterReadings->lastreading ?? 0;
-                                $rateAtReading = $meterReadings->rate_at_reading ?? 0;
-                                $used = $currentReading - $lastReading;
+                        $meterReadings = $item->meterReadings()
+                        ->whereDate('created_at', '>=', $invoice->created_at)
+                        ->whereDate('created_at', '<=', $item->unitcharge->nextdate)
+                            ->first();
+                            // Default values in case meterReadings is not present
+                            $currentReading = $meterReadings->currentreading ?? 0;
+                            $lastReading = $meterReadings->lastreading ?? 0;
+                            $rateAtReading = $meterReadings->rate_at_reading ?? 0;
+                            $used = $currentReading - $lastReading;
                             @endphp
                             @if($meterReadings)
-                                <ul class="list-unstyled text-left">
-                                    <li><i>Current Reading: {{ $currentReading }} Units</i> </li>
-                                    <li><i>Last Reading: {{ $lastReading }} Units</i> </li>
-                                    <li><i>Used: {{ $used }} Units * Rate: {{ $rateAtReading }}</i> </li>
-                                </ul>
+                            <ul class="list-unstyled text-left mt-1">
+                                <li><i>Current Reading: {{ $currentReading }} Units</i> </li>
+                                <li><i>Last Reading: {{ $lastReading }} Units</i> </li>
+                                <li><i>Used: {{ $used }} Units * Rate: {{ $rateAtReading }}</i> </li>
+                            </ul>
                             @else
-                                <ul class="list-unstyled text-left">
-                                    <li><i>No meter reading available for this period.</i></li>
-                                </ul>
+                            <ul class="list-unstyled text-left">
+                                <li><i>No meter reading available for this period.</i></li>
+                            </ul>
                             @endif
-                                    @endif
+                            @endif
                     </td>
                     <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
                     <td class="text-center">{{ $sitesettings->site_currency }} @currency($item->amount) </td>
@@ -119,9 +131,11 @@ $statusClass = $statusClasses[$status] ?? 'warning'; // Default to 'warning' if 
             <div class="d-flex justify-content-start" style="text-transform: capitalize;">
                 <p class="text-muted me-3" style="font-size:14px;font-weight:600"> </p>
                 @if($item->name == 'm-pesa')
-                <span class="defaulttext">{{$key+1}}. {{$item->name}} -
-                    <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="btn btn-warning text-white mb-0 me-0">
-                        <i class="ti-money"></i>Click to Pay Now</a>
+                <span class="defaulttext">{{$key+1}}. {{$item->name}} &nbsp;
+                    <a href="{{route('mpesa.view', ['id' => $invoice->id])}}" class="btn btn-warning mpesaButton text-white mb-0 me-0">
+                        <img src="{{ url('uploads/mpesa.png') }}" alt="Mpesa Logo" class="me-2" style="width: 20px; height: 20px;">
+                        Pay with Mpesa
+                    </a>
                 </span>
                 @else
                 <span class="defaulttext">{{$key+1}}. {{$item->name}} </span>

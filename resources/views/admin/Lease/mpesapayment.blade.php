@@ -33,25 +33,7 @@
 
 <div class="container">
 
-    <div class="row d-none d-lg-block">
-        <div class="col-md-4">
-            <img class="" style="height: 140px; width: 180px;" src="{{ $sitesettings->getFirstMediaUrl('logo') ?: 'resources/uploads/images/noimage.jpg' }}" alt="Logo">
-
-        </div>
-        <div class="col-md-4">
-
-            <ul style="list-style-type: none; display: table; margin: 0 auto; text-align: left;">
-                <li><b>COMPANY:</b> {{$sitesettings->company_name }}</li>
-                <li><b>LOCATION:</b> {{ $sitesettings->company_location}}</li>
-                <li><b>EMAIL:</b> {{ $sitesettings->company_email }}</li>
-                <li><b>TEL:</b> {{ $sitesettings->company_telephone }}</li>
-            </ul>
-        </div>
-        <div class="col-md-4">
-            <img class="logo" src="{{ asset('uploads/M-PESA.png') }}" style="height:100px;width:220px; margin-bottom:0px;">
-
-        </div>
-    </div>
+ 
     <hr><br />
    
     <div class="row">
@@ -92,7 +74,7 @@
             <form method="POST" id="initiatepaymentForm" action="{{ route('mpesa.initiate') }}" class="myForm" novalidate>
                 @csrf
                 <ul class="ml-2 px-3 list-unstyled">
-                    <li>1. Confirm or <a href="" style="font-size: 15px; font-weight:600" class="editLink"> Edit</a> the phone number and the amount that you are paying.
+                    <li>1. Confirm or <a href="" style="font-size: 15px; font-weight:600" class="editLink"> Edit <i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a> your phonenumber and amount being payed.
                     </li>
                     <div class="form-group">
                         <label class="label"> Phone Number<span class="requiredlabel">*</span></label>

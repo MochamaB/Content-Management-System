@@ -50,7 +50,11 @@ use App\Http\Controllers\WorkOrderController;
 use App\Models\MeterReading;
 use App\Models\User;
 use App\Models\Invoice;
+use App\Models\Lease;
 use App\Models\Payment;
+use App\Models\PaymentMethod;
+use App\Models\Transaction;
+use App\Models\Unitcharge;
 use App\Models\VendorCategory;
 use App\Notifications\LeaseAgreementNotification;
 use App\Notifications\UserCreatedNotification;
@@ -336,11 +340,41 @@ Route::get('/invoiceview', function () {
     $user = User::find(1);
    $tenant = User::find(1);
    $payment = Payment::find(2);
+   $invoice = Invoice::find(4);
+
+
+
+   return View('email.invoice',compact('invoice'));
+});
+
+Route::get('/statementview', function () {
+    $user = User::find(1);
+   $tenant = User::find(1);
+   $payment = Payment::find(2);
    $invoice = Invoice::find(1);
+    $lease = Lease::find(1);
+    $unitcharge =Unitcharge::find(1);
+    $sixMonths = now()->subMonths(6);
+    $transactions = Transaction::where('created_at', '>=', $sixMonths)
+            ->where('unit_id', $invoice->unit_id)
+            ->where('unitcharge_id', $unitcharge->id)
+            ->get();
+        $groupedInvoiceItems = $transactions->groupBy('unitcharge_id');
+        $openingBalance = 0;
+          //// Data for the Payment Methods
+        $PaymentMethod = PaymentMethod::all();
+        $viewContent = view('email.statement', [
+            'user' => $user,
+            'invoice' => $invoice,
+            'transactions' => $transactions,
+            'groupedInvoiceItems' => $groupedInvoiceItems,
+            'openingBalance' => $openingBalance,
+            'PaymentMethod' => $PaymentMethod,
+        ])->render();
 
 
 
-   return View('email.payment',compact('payment'));
+        return $viewContent;
 });
 Route::get('/testview', function () {
 

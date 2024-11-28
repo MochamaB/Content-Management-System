@@ -54,9 +54,9 @@
                                 <li><b>PAYMENT DATE:</b> {{\Carbon\Carbon::parse($deposit->created_at)->format('d M Y')}}</li>
                                 <li><b>PAID DATE:</b> {{\Carbon\Carbon::parse($deposit->duedate)->format('d M Y')}}</li>
                                 <li></br></li>
-                                @if( $deposit->status == 'paid' )
+                                @if( $deposit->getStatusLabel() === 'Paid' )
                                 <div style="background-color:green;font-size:17px" class="badge badge-opacity-warning"> PAID</div> <!------Status -->
-                                @elseif( $deposit->status == 'unpaid' )
+                                @elseif( $deposit->getStatusLabel() === 'Unpaid' )
                                 <div class="badge badge-error">UNPAID</div>
                                 @endif
 
