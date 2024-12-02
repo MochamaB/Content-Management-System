@@ -91,6 +91,7 @@
         $sellingprice.hide();
         $('#unit_type').on('change', function() {
             var query = this.value;
+            $(".money").val('');
 
             if (query === "sale") {
                 $rent.hide();

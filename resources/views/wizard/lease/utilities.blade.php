@@ -5,9 +5,9 @@
     <div class="d-flex align-items-center">
         <i class="mdi mdi-information text-muted me-1"></i>
         @if(empty($utilities))
-        <h6> Utilities will be billed separately with rent.</h6>
-        @else
         <h6> Utilities will be billed together with rent.</h6>
+        @else
+        <h6> Each Utility will be have separate invoice.</h6>
         @endif
        
     </div>

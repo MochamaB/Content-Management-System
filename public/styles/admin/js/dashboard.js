@@ -764,38 +764,41 @@
       });
     }
 
-    if ($("#doughnutChartCrm").length) { 
-      const doughnutChartCrmCanvas = document.getElementById('doughnutChartCrm');
-      new Chart(doughnutChartCrmCanvas, {
+    if ($("#doughnutChart").length) { 
+      const chartData = window.doughnutChartData;
+      const doughnutChartCanvas = document.getElementById('doughnutChart');
+      new Chart(doughnutChartCanvas, {
         type: 'doughnut',
         data: {
-          labels: [
-            'Branch 1  ( 30% )',
-            'Branch 2  ( 40% )',
-            'Branch 3  ( 30% )'
-          ],
+          labels: doughnutChartData.labels,
           datasets: [{
-            data: [40, 30, 30],
-            backgroundColor: [
-              "#1F3BB3",
-              "#00CDFF",
-              "#00AAB6"
+            data: doughnutChartData.data,
+            backgroundColor: doughnutChartData.colors || [
+              "#0000ff  ",
+              "#ffaf00",
+              "#1E283D",
+              "#10a939",
+              "#6a008a"
             ],
-            borderColor: [
-              "#fff",
-              "#fff",
-              "#fff"
+            borderColor: doughnutChartData.colors || [
+              "#0000ff  ",
+              "#ffaf00",
+              "#1E283D",
+              "#10a939",
+              "#6a008a"
+              
             ],
-          }],
+          }]
         },
         options: {
-          cutout: 60,
+          cutout: 90,
           animationEasing: "easeOutBounce",
           animateRotate: true,
           animateScale: false,
           responsive: true,
           maintainAspectRatio: true,
           showScale: true,
+          legend: false,
           plugins: {
             legend: {
                 display: false,
@@ -810,7 +813,7 @@
               const ul = document.createElement('ul');
               for(i=0;i<chart.data.datasets[0].data.length; i++) {
                   ul.innerHTML += `
-                  <li>
+                  <li style="text-transform:capitalize">
                     <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}"></span>
                     ${chart.data.labels[i]}
                   </li>

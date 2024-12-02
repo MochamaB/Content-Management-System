@@ -76,12 +76,15 @@ class TextMessageController extends Controller
         $tableData = $this->tableViewDataService->getTransactionData($transactions, false);
         $tariffs = $this->textTariff();
         $tariffData = $this->tableViewDataService->getTariffData($tariffs, false);
+
+        ///1.2 CHART DATA
+        $textChartData = $this->getTextStatusChartData($textContent);
       //  dd($textContent->count());
        
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Dashboard') {
-                $tabContents[] = View('admin.Dashboard.smscredit', compact('textContent','tariffs'))->render();
+                $tabContents[] = View('admin.Dashboard.smscredit', compact('textContent','tariffs','textChartData'))->render();
             }elseif ($title === 'Inbox') {
                 $tabContents[] = View('admin.Communication.text_summary',compact('textContent'))->render();
             }elseif ($title === 'Compose Text') {
@@ -309,5 +312,26 @@ class TextMessageController extends Controller
         //
     }
 
-    
+    private function getTextStatusChartData($textContent)
+    {
+        // Extract notifications from textContent
+   // $notifications = $textContent['mailNotifications'];
+
+    // Use collection methods to calculate counts
+    $statuses = ['sent', 'failed', 'pending'];
+    $statusCounts = [];
+
+    foreach ($statuses as $status) {
+        $statusCounts[] = $textContent->filter(function ($notification) use ($status) {
+            return $notification->status === $status;
+        })->count();
+    }
+       
+        return [
+            'title' => 'Delivery by Status',
+            'labels' => $statuses,
+            'data' =>  $statusCounts,
+            'colors' => ['#0000ff', '#f83d3dc4', '#fdac25'],
+        ];
+    }
 }

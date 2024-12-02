@@ -271,7 +271,7 @@ class User extends Authenticatable implements HasMedia, Auditable
     }
 
     ////scopes////
-    protected $allowedStatuses = ['active', 'draft', 'suspended'];
+    protected $allowedStatuses = [Lease::STATUS_ACTIVE, Lease::STATUS_NOTICE, Lease::STATUS_EXPIRED];
     public function scopeWithoutActiveLease($query, $role)
     {
         return $query->role($role)
