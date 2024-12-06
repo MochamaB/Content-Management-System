@@ -101,7 +101,7 @@ class TableViewDataService
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['LEASE', 'TYPE', 'STATUS', 'ACTIONS'],
+            'headers' => ['LEASE', 'TYPE', 'STATUS', 'ACTIONS',''],
             'rows' => [],
         ];
         foreach ($leaseData as  $item) {
@@ -120,6 +120,10 @@ class TableViewDataService
             // Generate the status badge
             $statusBadge = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $isDeleted = $item->deleted_at !== null;
+            $url = url('lease/moveout/' . $item->id);
+            if (Auth::user()->can('lease.edit') || Auth::user()->id === 1) {
+                $moveOutLink = '<a href="' .  $url . '" class="table"><i class="mdi mdi-exit-to-app mr-1" style="vertical-align: middle;font-size:1.4rem"></i> Move Out  </a>';
+            } 
 
             $tableData['rows'][] = [
                 'id' => $item->id,
@@ -129,6 +133,7 @@ class TableViewDataService
                     '</br></br><span class="text-muted" style="font-weight:500;font-style: italic">' .
                     Carbon::parse($item->startdate)->format('Y-m-d') . ' - ' . $endDateFormatted . '</span>',
                 $statusBadge,
+                $moveOutLink,
                 'isDeleted' => $isDeleted,
 
             ];
@@ -147,10 +152,10 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFNO','AMOUNT','STATUS', ' DATE', 'TYPE', 'PAID', 'BALANCE', 'ACTIONS'];
+        $headers = ['REFNO','STATUS','TYPE', 'DUE', 'PAID', 'BALANCE',' DATE', 'ACTIONS',''];
         // If $Extra columns is true, insert 'Unit Details' at position 5
         if ($extraColumns) {
-            array_splice($headers, 4, 0, ['BILLING DETAILS']);
+            array_splice($headers, 2, 0, ['BILLING DETAILS']);
         }
 
         $tableData = [
@@ -175,14 +180,17 @@ class TableViewDataService
             $totalPaid = $item->payments->sum('totalamount');
             $balance = $item->totalamount - $totalPaid;
             $payLink = ''; // Initialize $payLink
+            $receipttext = '';
+            $paymentLinks = '';
+            $paymentCounter = 1;
             $mediaURL = $item->model->getFirstMediaUrl('avatar');
             $profpic = $mediaURL ? url($mediaURL) : url('uploads/images/avatar.png');
             //   $profpic = url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
 
-            if ($item->status !== Invoice::STATUS_PAID || $item->status !== Invoice::STATUS_OVER_PAID ) {
+            if ($item->status !== Invoice::STATUS_PAID && $item->status !== Invoice::STATUS_OVER_PAID ) {
                 // Generate the payment link only if the status is not 'Paid'
                 $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . 
-                    '" class="badge badge-information mt-2">Record Payment</a>';
+                    '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>Record Payment</a><br/>';
             }
             
             if ($item->duedate < Carbon::now() && $item->status === Invoice::STATUS_UNPAID) {
@@ -192,31 +200,30 @@ class TableViewDataService
             $statusClass =$this->getStatusClass($status) ?? 'warning';
             $invoiceStatus = '  <span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $balanceStatus = '  <span style ="font-weight:700" class="text-' . $statusClass . '">' . $this->sitesettings->site_currency . '. ' . number_format($balance, 0, '.', ',') . '</span>';
-            if (!empty($item->payments)) {
-                $receipttext = '</br><span class="text-muted" style="margin-top:5px;font-weight:500;"> Receipts</span>';
-            } else {
-                $receipttext = '';
-            }
-            $paymentLinks = '';
-            $paymentCounter = 1;
+            // Process payments if they exist
+            if (!empty($item->payments) && count($item->payments) > 0) {
+                $receipttext = '<span class="text-muted" style="display:inline-block; margin-bottom:5px;font-weight:500;">
+                <i class="mdi mdi-cash mr-1" style="vertical-align: middle;font-size:1.4rem"></i>View Payments</span></br>';
 
-            foreach ($item->payments as $payment) {
-                $id = $payment->id;
-                $refn = $payment->referenceno;
-                $paymentLinks .= '<br> <a href="' . url('payment/' . $id) . '" class="badge badge-light">' . $id . ' ' . $refn . '</a>';
-                $paymentCounter++;
+                foreach ($item->payments as $payment) {
+                    $id = $payment->id;
+                    $refn = $payment->referenceno;
+                    $paymentLinks .= '<a href="' . url('payment/' . $id) . '" class="table" style="display:inline-block;padding: 0px 0px 5px 15px;">' . $id . ' ' . $refn . '</a><br/>';
+                    $paymentCounter++;
+                }
             }
             $isDeleted = $item->deleted_at !== null;
 
             $row = [
                 'id' => $item->id,
                 $item->referenceno,
-                $this->sitesettings->site_currency . '. ' . number_format($item->totalamount, 0, '.', ','),
                 $invoiceStatus,
-                Carbon::parse($item->created_at)->format('F Y'),
                 $item->name,
-                $this->sitesettings->site_currency . '. ' . number_format($totalPaid, 0, '.', ',') . $receipttext . '' . $paymentLinks,
-                $balanceStatus . ' </br>' . $payLink,
+                $this->sitesettings->site_currency . '. ' . number_format($item->totalamount, 0, '.', ','),
+                $this->sitesettings->site_currency . '. ' . number_format($totalPaid, 0, '.', ',') ,
+                $balanceStatus,
+                Carbon::parse($item->created_at)->format('F Y'),
+                $payLink. $receipttext . '' . $paymentLinks,
                 'isDeleted' => $isDeleted,
 
 
@@ -227,7 +234,7 @@ class TableViewDataService
             if ($extraColumns) {
                 array_splice(
                     $row,
-                    5,
+                    3,
                     0,
                     '<div class="d-flex "> <img src="' . $profpic . '" alt="">
                 <div>

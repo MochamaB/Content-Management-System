@@ -32,6 +32,8 @@ use Illuminate\Support\Facades\Log;
 use App\Services\FilterService;
 use App\Services\CardService;
 use App\Services\SmsService;
+use App\Services\LeaseMoveOutService;
+
 
 
 class LeaseController extends Controller
@@ -54,6 +56,7 @@ class LeaseController extends Controller
     private $filterService;
     private $cardService;
     protected $smsService;
+    protected $leaseMoveOutService;
 
 
 
@@ -65,8 +68,10 @@ class LeaseController extends Controller
         InvoiceService $invoiceService,
         RecordTransactionAction $recordTransactionAction,
         TableViewDataService $tableViewDataService,
-        FilterService $filterService, CardService $cardService,
-        SmsService $smsService
+        FilterService $filterService,
+        CardService $cardService,
+        SmsService $smsService,
+        LeaseMoveOutService $leaseMoveOutService
     ) {
         $this->model = Lease::class;
 
@@ -85,13 +90,14 @@ class LeaseController extends Controller
         $this->filterService = $filterService;
         $this->cardService = $cardService;
         $this->smsService = $smsService;
+        $this->leaseMoveOutService = $leaseMoveOutService;
     }
     public function index(Request $request)
     {
         //  $user = Auth::user();
-         // Clear previousUrl if navigating to a new  method
+        // Clear previousUrl if navigating to a new  method
         session()->forget('previousUrl');
-        $filters = $request->except(['tab','_token','_method']);
+        $filters = $request->except(['tab', '_token', '_method']);
         $filterdata = $this->filterService->getLeaseFilters($request);
         $baseQuery = lease::with('property', 'unit', 'user')->showSoftDeleted()->ApplyFilters($filters);
         $cardData = $this->cardService->leaseCard($baseQuery->get());
@@ -134,17 +140,18 @@ class LeaseController extends Controller
             ])->render();
             $tabCounts[$title] = $count;
         }
-       
+
         /// TABLE DATA ///////////////////////////
         $tableData = [
             'headers' => ['LEASE', 'TYPE', 'STATUS', 'ACTIONS'],
             'rows' => [],
         ];
 
-      
+
 
         return View(
-            'admin.CRUD.form',compact('tabTitles', 'tabContents','controller','filterdata','filters','cardData','tabCounts')
+            'admin.CRUD.form',
+            compact('tabTitles', 'tabContents', 'controller', 'filterdata', 'filters', 'cardData', 'tabCounts')
         );
     }
 
@@ -170,16 +177,17 @@ class LeaseController extends Controller
 
         //3. Rent Charge
         $rentcharge = $request->session()->get('wizard_rentcharge');
-        $existingRentCharge =null;
-        $existingSplitRentCharge =null;
+        $existingRentCharge = null;
+        $existingSplitRentCharge = null;
         if (!empty($lease)) {
-        $existingRentCharge = Unitcharge::where('unit_id', $lease->unit_id)
-            ->where('charge_name', 'Rent')
-            ->first();
-
-        $existingSplitRentCharge = Unitcharge::where('unit_id', $lease->unit_id)
-        ->where('parent_id', $existingRentCharge->id)
-        ->get();
+            $existingRentCharge = Unitcharge::where('unit_id', $lease->unit_id)
+                ->where('charge_name', 'Rent')
+                ->first();
+            if (!empty($existingSplitRentChargease)) {
+                $existingSplitRentCharge = Unitcharge::where('unit_id', $lease->unit_id)
+                    ->where('parent_id', $existingRentCharge->id)
+                    ->get();
+            }
         }
         $splitRentcharges = $request->session()->get('wizard_splitRentcharges');
 
@@ -187,17 +195,17 @@ class LeaseController extends Controller
         $depositcharge = $request->session()->get('wizard_depositcharge');
         $account = Chartofaccount::whereIn('account_type', ['Income'])->get();
         $accounts = $account->groupBy('account_type');
-        $depositaccount = Chartofaccount::whereIn('account_type',['Liability'])->get();
+        $depositaccount = Chartofaccount::whereIn('account_type', ['Liability'])->get();
         $depositaccounts = $depositaccount->groupBy('account_type');
 
         ///5. Utilities ////
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
-        $existingUtilityCharge =null;
+        $existingUtilityCharge = null;
         if (!empty($lease)) {
-        $existingUtilityCharge = Unitcharge::where('unit_id', $lease->unit_id)
-            ->whereNull('parent_id')
-            ->whereNotIn('charge_name', ['Rent', 'security deposit'])
-            ->get();
+            $existingUtilityCharge = Unitcharge::where('unit_id', $lease->unit_id)
+                ->whereNull('parent_id')
+                ->whereNotIn('charge_name', ['Rent', 'security deposit'])
+                ->get();
         }
         $sessioncharges = $request->session()->get('wizard_utilityCharges');
 
@@ -221,11 +229,11 @@ class LeaseController extends Controller
             } elseif ($title === 'Tenant Cosigners') {
                 $stepContents[] = View('wizard.lease.tenantdetails', compact('lease', 'tenantdetails'))->render();
             } elseif ($title === 'Rent') {
-                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges','existingRentCharge','existingSplitRentCharge','sessioncharges'))->render();
+                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges', 'existingRentCharge', 'existingSplitRentCharge', 'sessioncharges'))->render();
             } elseif ($title === 'Security Deposit') {
                 $stepContents[] = View('wizard.lease.deposit', compact('depositaccounts', 'lease', 'depositcharge'))->render();
             } elseif ($title === 'Utilities') {
-                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges','existingUtilityCharge'))->render();
+                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges', 'existingUtilityCharge'))->render();
             } elseif ($title === 'Lease Agreement') {
                 $stepContents[] = View('wizard.lease.leaseagreement')->render();
             }
@@ -270,16 +278,16 @@ class LeaseController extends Controller
             $existingCharge = Unitcharge::where('unit_id', $rentcharge->unit_id)
                 ->where('charge_name', $rentcharge->charge_name)
                 ->first();
-    
+
             if ($existingCharge) {
                 // Update the existing charge
                 $existingCharge->fill($rentcharge->toArray());
                 $existingCharge->updated_at = now();
                 $existingCharge->save();
-                 // Use the existing charge's ID as the parent_id
+                // Use the existing charge's ID as the parent_id
                 $parentChargeId = $existingCharge->id;
 
-    
+
                 // Log or return feedback for an updated charge
                 $statusMessage = 'Existing Rent Charge Updated Successfully.';
             } else {
@@ -289,7 +297,7 @@ class LeaseController extends Controller
                 $rentchargeModel->save();
                 // Use the newly created charge's ID as the parent_id
                 $parentChargeId = $rentchargeModel->id;
-    
+
                 // Log or return feedback for a new charge
                 $statusMessage = 'New Rent Charge Created Successfully.';
             }
@@ -310,7 +318,7 @@ class LeaseController extends Controller
             foreach ($splitRentCharges as $splitRentCharge) {
                 // Dynamically add the parent_id to each split rent charge
                 $splitRentCharge['parent_id'] = $parentChargeId;
-        
+
                 // Use updateOrCreate to update existing charges or create new ones
                 Unitcharge::updateOrCreate(
                     [
@@ -357,8 +365,8 @@ class LeaseController extends Controller
                     ],
                     $charge
                 );
+            }
         }
-    }
 
         //7. ATTACH TENANT USER TO UNIT
         $user = User::find($leasedetails->user_id);
@@ -367,13 +375,13 @@ class LeaseController extends Controller
         $unit->users()->attach($user, ['property_id' => $propertyId]);
 
         //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
-     //   $notificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'leasenotifications');
+        //   $notificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'leasenotifications');
         $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
         try {
             if ($request->has('send_welcome_email')) {
                 // Send notifications
-            $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
+                $user->notify(new LeaseAgreementNotification($user)); ///// Send Lease Agreement
             }
 
             if ($request->has('send_welcome_text')) {
@@ -381,11 +389,11 @@ class LeaseController extends Controller
                 $recipients = collect([$user]);
                 $notificationClass = LeaseAgreementTextNotification::class;
                 $notificationParams = ['user' => $user];
-        
-                foreach($recipients as $recipient){
-                    $result = $this->smsService->queueSmsNotification($recipient,$notificationClass, $notificationParams);
-                    }
-         //   $user->notify(new LeaseAgreementTextNotification($user)); ///// Send Lease Agreement
+
+                foreach ($recipients as $recipient) {
+                    $result = $this->smsService->queueSmsNotification($recipient, $notificationClass, $notificationParams);
+                }
+                //   $user->notify(new LeaseAgreementTextNotification($user)); ///// Send Lease Agreement
             }
         } catch (\Exception $e) {
             // Log the error or perform any necessary actions
@@ -451,6 +459,9 @@ class LeaseController extends Controller
         $charges = $unit->unitcharges()->whereNull('parent_id')->get();  ///data for utilities page
         $unitChargeTableData = $this->tableViewDataService->getUnitChargeData($charges);
 
+        $leaseData = $this->cardService->LeaseSummary($lease);
+
+
         /// DATA FOR INVOICES TAB
         $invoices = $unit->invoices;
         //  dd($unit->invoices);
@@ -475,15 +486,15 @@ class LeaseController extends Controller
         $id = $unit;
         $model = 'units';
 
-         //5. SETTINGS
-         $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure
-         // Combine the namespace with the class name
-         $modelType = $namespace . 'Lease';
-         $individualsetting = $lease->settings;
-         $setting = Setting::where('model_type', $modelType)->first();
-        
-         $settingTableData = $this->tableViewDataService->generateSettingTabContents($modelType, $setting, $individualsetting);
-       
+        //5. SETTINGS
+        $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure
+        // Combine the namespace with the class name
+        $modelType = $namespace . 'Lease';
+        $individualsetting = $lease->settings;
+        $setting = Setting::where('model_type', $modelType)->first();
+
+        $settingTableData = $this->tableViewDataService->generateSettingTabContents($modelType, $setting, $individualsetting);
+
 
 
         $tabTitles = collect([
@@ -499,7 +510,7 @@ class LeaseController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.CRUD.summary', compact('properties', 'lease'))->render();
+                $tabContents[] = View('admin.Lease.summary_lease', compact('properties', 'lease', 'leaseData'))->render();
             } elseif ($title === 'Charges and Utilities') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']], compact('id', 'model'))->render();
             } elseif ($title === 'Invoices') {
@@ -512,12 +523,16 @@ class LeaseController extends Controller
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $ticketTableData, 'controller' => ['ticket']], compact('id', 'model'))->render();
             } elseif ($title === 'Files') {
                 $tabContents[] =  View('admin.CRUD.index_show', ['tableData' => $mediaTableData, 'controller' => ['']], compact('id'))->render();
-            }elseif ($title === 'Settings') {
-                $tabContents[] = View('admin.CRUD.tabs_horizontal_show', 
-                ['tabTitles' => $settingTableData['tabTitles'], 
-                'tabContents' => $settingTableData['tabContents'],
-                'controller' => ['setting']], 
-                compact('model','id'))->render();
+            } elseif ($title === 'Settings') {
+                $tabContents[] = View(
+                    'admin.CRUD.tabs_horizontal_show',
+                    [
+                        'tabTitles' => $settingTableData['tabTitles'],
+                        'tabContents' => $settingTableData['tabContents'],
+                        'controller' => ['setting']
+                    ],
+                    compact('model', 'id')
+                )->render();
             }
         }
 
@@ -581,14 +596,14 @@ class LeaseController extends Controller
     {
 
         $data = Unit::where('property_id', $request->property_id)
-        ->where(function ($query) {
-            $query->doesntHave('lease')
-                ->orWhereHas('lease', function ($subQuery) {
-                    $subQuery->where('status', '<>', Lease::STATUS_ACTIVE);
-                });
-        })
-        ->pluck('unit_number', 'id')
-        ->toArray();
+            ->where(function ($query) {
+                $query->doesntHave('lease')
+                    ->orWhereHas('lease', function ($subQuery) {
+                        $subQuery->where('status', '<>', Lease::STATUS_ACTIVE);
+                    });
+            })
+            ->pluck('unit_number', 'id')
+            ->toArray();
 
 
         return response()->json($data);
@@ -680,7 +695,7 @@ class LeaseController extends Controller
         $startDate = Carbon::parse($request->input('startdate'));
         $chargeType = $request->input('charge_type');
         /// 2.1. Use the action to update the next date
-        $result = $this->updateNextDateAction->handle($chargeCycle, $startDate,$chargeType );
+        $result = $this->updateNextDateAction->handle($chargeCycle, $startDate, $chargeType);
         $updatedAt = $result['updatedAt'];
         $nextDate = $result['nextDate'];
 
@@ -815,9 +830,9 @@ class LeaseController extends Controller
                 $startDate = Carbon::parse($request->input("startdate.{$index}"));
                 $chargeType = $request->input("charge_type.{$index}");
                 /// 2.1. Use the action to update the next date
-                $result = $this->updateNextDateAction->handle($chargeCycle, $startDate,$chargeType );
-                    $updatedAt = $result['updatedAt'];
-                    $nextDate = $result['nextDate'];
+                $result = $this->updateNextDateAction->handle($chargeCycle, $startDate, $chargeType);
+                $updatedAt = $result['updatedAt'];
+                $nextDate = $result['nextDate'];
 
                 $utilitycharge = [
                     'property_id' => $request->input('property_id'),
@@ -845,5 +860,45 @@ class LeaseController extends Controller
 
         return redirect()->route('lease.create', ['active_tab' => '5'])
             ->with('status', 'Utilities Assigned Successfully. Accept Terms and Conditions');
+    }
+
+    public function moveOut($id)
+    {
+
+        $lease = Lease::findorFail($id);
+        // Get the financial check data
+        $financialCheck = $this->leaseMoveOutService->checkOutstandingBalances($lease);
+        $invoiceTableData = $this->tableViewDataService->getInvoiceData($financialCheck['outstandingInvoices']);
+        //  dd($invoiceTableData);
+
+        $steps = collect([
+            'Financial Check',
+            'Property Condition',
+            'Keys Access Codes',
+            'Security Deposit',
+            'Complete',
+        ]);
+        $activetab = 0;
+        $stepContents = [];
+        foreach ($steps as $title) {
+            if ($title === 'Financial Check') {
+                $stepContents[] = View('wizard.moveout.finance', compact('lease', 'financialCheck', 'invoiceTableData'))->render();
+            } elseif ($title === 'Property Condition') {
+                $stepContents[] = View('wizard.moveout.property', compact('lease'))->render();
+            } elseif ($title === 'Keys Access Codes') {
+                $stepContents[] = View('wizard.moveout.accesscards', compact('lease'))->render();
+            } elseif ($title === 'Security Deposit') {
+                $stepContents[] = View('wizard.moveout.deposit', compact('lease'))->render();
+            } elseif ($title === 'Complete') {
+                $stepContents[] = View('wizard.moveout.complete', compact('lease'))->render();
+            }
+        }
+
+        return View('wizard.moveout.moveout', compact('steps', 'stepContents', 'activetab'));
+    }
+    public function financeCheck(Request $request, Lease $lease)
+    {
+        // Delegate logic to the service
+        return $this->leaseMoveOutService->financeCheck($request, $lease);
     }
 }

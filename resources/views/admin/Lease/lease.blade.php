@@ -12,6 +12,7 @@
         @csrf
         @include('wizard.lease.leasedetails')
     </form>
+    
 @endif
 
 @endsection

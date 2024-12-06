@@ -25,6 +25,35 @@ class CardService
     private $paymentRepository;
     private $unitRepository;
 
+    protected $statusClasses = [
+
+        //Lease Status
+        'Active' => 'active',
+        'Expired' => 'warning',
+        'Terminated' => 'error',
+        'Suspended' => 'dark',
+
+        // Task statuses
+        'Completed' => 'active',
+        'New' => 'warning',
+        'OverDue' => 'error',
+        'In Progress' => 'information',
+        'Assigned' => 'dark',
+    
+        // Priority levels
+        'critical' => 'error',
+        'high' => 'warning',
+        'normal' => 'active',
+        'low' => 'dark',
+    
+        // Payment statuses
+        'Paid' => 'active',
+        'Unpaid' => 'warning',
+        'Over Due' => 'danger',
+        'Partially Paid' => 'dark',
+        'Over Paid' => 'light',
+    ];
+
     public function __construct(
         InvoiceRepository $invoiceRepository,
         PaymentRepository $paymentRepository,
@@ -34,6 +63,13 @@ class CardService
         $this->paymentRepository = $paymentRepository;
         $this->unitRepository = $unitRepository;
     }
+
+    public function getStatusClass($status)
+    {
+        return $this->statusClasses[$status] ?? 'active';
+    }
+
+
     /////// DASHBOARD CARDS
     public function topCard($properties, $units, $filters)
     {
@@ -203,6 +239,65 @@ class CardService
             'inactive Units' => ['title' => 'Inactive / Suspended', 'icon' => '', 'value' => $inactive, 'amount' => '', 'percentage' => '', 'links' => ''],
         ];
         return $cards;
+    }
+    public function LeaseSummary($lease)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => [' PROPERTY', 'TENANT', 'PERIOD', 'STATUS','START DATE'],
+            'rows' => [],
+        ];
+        
+          //  dd($leaseData);
+            $startDateFormatted = empty($lease->created_at) ? 'Not set' : Carbon::parse($lease->created_at)->format('Y-m-d');
+            $endDateFormatted = empty($lease->enddate) ? 'Not set' : Carbon::parse($lease->enddate)->format('Y-m-d');
+            // Calculate the number of days left on the lease (if end date is available)
+            $daysLeft = ($lease && $lease->enddate) ? Carbon::parse($lease->enddate)->diffInDays(Carbon::now()) : null;
+           
+            // Get the CSS class for the current status, default to 'badge-secondary' if not found
+            $status = $lease->getStatusLabel();
+            $statusClass =$this->getStatusClass($status) ?? 'active';
+            // Generate the status badge
+            $statusBadge = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
+            $isDeleted = $lease->deleted_at !== null;
+        
+            
+
+            $tableData['rows'][] = [
+                $lease->property->property_name,
+                $lease->user->firstname.' '.$lease->user->lastname,
+                $lease->lease_period,
+                $statusBadge,
+                $startDateFormatted
+
+            ];
+        
+
+
+        return $tableData;
+    }
+
+    public function RentHistory($lease)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => [' RENT DATE', 'AMOUNT', 'STATUS'],
+            'rows' => [],
+        ];
+        
+          //  dd($leaseData);
+           
+        
+            
+
+            $tableData['rows'][] = [
+                
+
+            ];
+        
+
+
+        return $tableData;
     }
 
 

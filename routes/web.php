@@ -147,6 +147,10 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
         Route::post('savelease', [LeaseController::class, 'saveLease']);
         Route::get('skiprent', [LeaseController::class, 'skiprent']);
         Route::get('skipdeposit', [LeaseController::class, 'skipdeposit']);
+       
+        Route::get('lease/moveout/{id}', [LeaseController::class, 'moveOut'])->name('lease.moveout');
+        Route::post('lease/{lease}/financecheck', [LeaseController::class, 'financeCheck']);
+
 
         ///////////////
         Route::get('unitcharge/create/{id?}/{model?}', [

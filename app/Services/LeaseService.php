@@ -16,6 +16,8 @@ use App\Models\ExpenseItems;
 use App\Models\Property;
 use App\Models\User;
 use App\Actions\UploadMediaAction;
+use App\Models\Invoice;
+use App\Models\Lease;
 
 class LeaseService
 {
@@ -33,4 +35,5 @@ class LeaseService
         $this->calculateTotalAmountAction = $calculateTotalAmountAction;
         $this->uploadMediaAction = $uploadMediaAction;
     }
+    
 }

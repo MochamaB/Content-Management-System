@@ -42,17 +42,18 @@
                 <select name="payment_method_id" id="payment_method_id" class="formcontrol2" placeholder="Select" required>
                     <option value="">Select Payment Method</option>
                     @foreach($PaymentMethod as $item)
-                    <option value="{{$item->id}}">{{ucwords($item->name)}}</option>
+                    <option value="{{ $item->id }}" data-name="{{ strtolower($item->name) }}">{{ ucwords($item->name) }}</option>
                     @endforeach
                 </select>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" id="payment-ref-group">
             <div class="form-group">
                 <label class="label">Payment Ref Number</label>
                 <input type="text" class="form-control" name="payment_code" id="payment_code" value="">
             </div>
         </div>
+
 
 
         <!------- THIRD LEVEL INVOICE ITEMS -->
@@ -87,7 +88,7 @@
                         <td class="text-center" style="padding:0px">
                             <div style="position: relative;">
                                 @php
-                                $amountPaid =$instance->payments->sum('amount');
+                                $amountPaid =$instance->payments->sum('totalamount');
                                 $amountdue = $instance->totalamount - $amountPaid;
 
                                 @endphp
@@ -112,5 +113,30 @@
     </form>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paymentMethodSelect = document.getElementById('payment_method_id');
+        const paymentRefGroup = document.getElementById('payment-ref-group');
+
+        // Function to toggle the visibility of the Payment Ref Number field
+        function togglePaymentRef() {
+            const selectedOption = paymentMethodSelect.options[paymentMethodSelect.selectedIndex];
+            const methodName = selectedOption.getAttribute('data-name'); // Get the data-name attribute
+
+            if (methodName === 'cash') {
+                paymentRefGroup.style.display = 'none'; // Hide the field
+            } else {
+                paymentRefGroup.style.display = 'block'; // Show the field
+            }
+        }
+
+        // Attach event listener to the select field
+        paymentMethodSelect.addEventListener('change', togglePaymentRef);
+
+        // Initial call to set visibility on page load
+        togglePaymentRef();
+    });
+</script>
+
 
 @endsection

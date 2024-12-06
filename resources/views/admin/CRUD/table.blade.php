@@ -123,7 +123,7 @@
             <tr>
                 <th data-checkbox="true"></th>
                 @foreach($data['headers'] as $index => $header)
-                <th @if($index < count($data['headers']) - 1) data-sortable="true" @endif>{{ $header }}</th>
+                <th @if($index < count($data['headers']) - 2) data-sortable="true" @endif>{{ $header }}</th>
                 @endforeach
             </tr>
         </thead>
