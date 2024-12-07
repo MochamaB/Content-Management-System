@@ -26,6 +26,8 @@ use App\Services\DepositService;
 use App\Services\InvoiceService;
 use App\Services\TableViewDataService;
 use App\Actions\UploadMediaAction;
+use App\Models\DefaultLeaseItem;
+use App\Models\LeaseItem;
 use App\Models\Setting;
 use App\Notifications\LeaseAgreementTextNotification;
 use Illuminate\Support\Facades\Log;
@@ -411,9 +413,21 @@ class LeaseController extends Controller
 
 
 
-        //10. CREATE SETTING FOR THE DUEDATE
-        //pass the lease instance to the action
-        // $this->updateDueDateAction->duedate($lease);
+        //10. CREATE LEASE ITEM SETTINGS
+         // Step 2: Fetch all default items and prefill the lease_items table
+        $defaultItems = DefaultLeaseItem::all();
+        $leaseItems = $defaultItems->map(function ($item) use ($lease) {
+            return [
+                'lease_id' => $lease->id,
+                'default_item_id' => $item->id,
+                'condition' => 'Good', // Default condition
+                'cost' => 0,             // Default cost
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        });
+
+        LeaseItem::insert($leaseItems->toArray());
 
         //11. FORGET SESSION DATA
         $request->session()->forget('wizard_lease');
@@ -862,10 +876,16 @@ class LeaseController extends Controller
             ->with('status', 'Utilities Assigned Successfully. Accept Terms and Conditions');
     }
 
-    public function moveOut($id)
+    public function moveOut($id, Request $request)
     {
-
+        
         $lease = Lease::findorFail($id);
+        $pageheadings = collect([
+            '0' => $lease->property->property_name,
+            '1' => $lease->unit->unit_number,
+            '2' => $lease->user->firstname . ' ' . $lease->user->lastname,
+        ]);
+        
         // Get the financial check data
         $financialCheck = $this->leaseMoveOutService->checkOutstandingBalances($lease);
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($financialCheck['outstandingInvoices']);
@@ -874,22 +894,16 @@ class LeaseController extends Controller
         $steps = collect([
             'Financial Check',
             'Property Condition',
-            'Keys Access Codes',
-            'Security Deposit',
             'Complete',
         ]);
-        $activetab = 0;
+        $activetab = $request->query('active_tab', '0');
         $stepContents = [];
         foreach ($steps as $title) {
             if ($title === 'Financial Check') {
                 $stepContents[] = View('wizard.moveout.finance', compact('lease', 'financialCheck', 'invoiceTableData'))->render();
             } elseif ($title === 'Property Condition') {
                 $stepContents[] = View('wizard.moveout.property', compact('lease'))->render();
-            } elseif ($title === 'Keys Access Codes') {
-                $stepContents[] = View('wizard.moveout.accesscards', compact('lease'))->render();
-            } elseif ($title === 'Security Deposit') {
-                $stepContents[] = View('wizard.moveout.deposit', compact('lease'))->render();
-            } elseif ($title === 'Complete') {
+            }  elseif ($title === 'Complete') {
                 $stepContents[] = View('wizard.moveout.complete', compact('lease'))->render();
             }
         }
@@ -900,5 +914,10 @@ class LeaseController extends Controller
     {
         // Delegate logic to the service
         return $this->leaseMoveOutService->financeCheck($request, $lease);
+    }
+    public function propertyCondition(Request $request, Lease $lease)
+    {
+        // Delegate logic to the service
+        return $this->leaseMoveOutService->propertyCondition($request, $lease);
     }
 }

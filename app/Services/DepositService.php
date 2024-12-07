@@ -170,7 +170,7 @@ class DepositService
             $this->recordTransactionAction->updateTransaction($deposit);
 
         // Update associated ledger entries
-            $this->recordTransactionAction->updateLedgerEntries($deposit);
+         //   $this->recordTransactionAction->updateLedgerEntries($deposit);
 
             DB::commit();
             return $deposit;

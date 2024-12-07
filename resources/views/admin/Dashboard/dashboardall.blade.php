@@ -22,6 +22,6 @@
         @include('admin.Dashboard.totaltax')
     </div>
     <div class="col-lg-8 d-flex flex-column">
-        @include('admin.Dashboard.ticketcard', ['data' => $chartData])
+       
     </div>
 </div>

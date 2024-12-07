@@ -174,6 +174,10 @@ class Lease extends Model implements HasMedia, Auditable
     {
         return $this->id;
     }
+    public function leaseItems()
+    {
+        return $this->hasMany(LeaseItem::class, 'lease_id');
+    }
 
     public function scopeUserUnits($query)
     {

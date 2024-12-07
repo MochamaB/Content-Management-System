@@ -6,13 +6,12 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\Lease;
+use App\Models\LeaseItem;
 use Illuminate\Http\Request;
 
 class LeaseMoveOutService
 {
-    public function __construct(){
-
-    }
+    public function __construct() {}
     public function terminateLease() {}
 
     public function checkOutstandingBalances(Lease $lease)
@@ -43,8 +42,39 @@ class LeaseMoveOutService
 
         // If no issues, proceed to the next tab
         return redirect()->route('lease.moveout', ['id' => $lease->id, 'active_tab' => 1])
-        ->with('status', 'Finance check complete.');
+            ->with('status', 'Finance check complete.');
     }
-            
+    public function propertyCondition(Request $request, Lease $lease)
+    {
+        // Validate the incoming request
+        $validatedData = $request->validate([
+            'item' => 'required|array',
+            'item.*' => 'required|string|max:255',
+            'condition' => 'required|array',
+            'condition.*' => 'required|in:Good,Needs Repair,Damaged,Needs Replacement',
+            'cost' => 'required|array',
+            'cost.*' => 'required|numeric|min:0',
+        ]);
 
+        // Save each item to the database
+        $totalCost = 0;
+        foreach ($validatedData['item'] as $index => $itemDescription) {
+            $condition = $validatedData['condition'][$index];
+            $cost = $validatedData['cost'][$index];
+            $totalCost += $cost;
+
+            LeaseItem::create([
+                'lease_id' => $lease->id,
+                'item_description' => $itemDescription,
+                'condition' => $condition,
+                'cost' => $cost,
+            ]);
+        }
+
+
+
+        // Redirect to the next step
+        return redirect()->route('lease.moveout', ['id' => $lease->id, 'active_tab' => 2])
+            ->with('status', 'Property condition recorded successfully.');
+    }
 }
