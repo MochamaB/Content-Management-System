@@ -15,7 +15,6 @@ class LeaseItem extends Model
         'condition',
         'cost',
         
-
     ];
    
     public function lease()
@@ -23,9 +22,9 @@ class LeaseItem extends Model
         return $this->belongsTo(Lease::class);
     }
 
-    public function defaultItem()
+    public function defaultLeaseItem()
     {
-        return $this->belongsTo(DefaultLeaseItem::class, 'default_item_id');
+        return $this->belongsTo(DefaultLeaseItem::class, 'default_item_id', 'id');
     }
    
 }

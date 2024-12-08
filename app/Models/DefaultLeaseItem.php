@@ -13,6 +13,6 @@ class DefaultLeaseItem extends Model
 
     public function leaseItems()
     {
-        return $this->hasMany(LeaseItem::class, 'default_item_id');
+        return $this->hasMany(LeaseItem::class, 'default_item_id', 'id');
     }
 }

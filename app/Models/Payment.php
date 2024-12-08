@@ -106,7 +106,11 @@ class Payment extends Model implements HasMedia, Auditable
     /////Polymorphic Relationship (Payment can belong to an Invoice or Voucher or Charge)
     public function model()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withDefault(function ($model) {
+            // Create a default deleted model instance
+            $model->name = 'Deleted ' . class_basename($this->model_type);
+            $model->is_deleted = true;
+        });
     }
 
     public function property()

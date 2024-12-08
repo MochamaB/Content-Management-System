@@ -31,11 +31,11 @@
                <div class="col-md-6">
                     <h4="text-muted"><b>STATEMENT TO</b></h4>
                          <ul class="ml-2 px-3 list-unstyled">
-                              <li><b>PROPERTY:</b> {{$invoice->property->property_name}}</li>
-                              <li><b>UNIT NUMBER:</b> {{$invoice->unit->unit_number}}</li>
-                              <li><b>NAME:</b> {{$invoice->model->firstname}} {{$invoice->model->lastname}}</li>
-                              <li><b>EMAIL:</b> {{$invoice->model->email}}</li>
-                              <li><b>PHONE NO:</b> {{$invoice->model->phonenumber}}</li>
+                              <li><b>PROPERTY:</b> {{$invoice->property->property_name ?? 'DELETED'}}</li>
+                              <li><b>UNIT NUMBER:</b> {{$invoice->unit->unit_number ?? ''}}</li>
+                              <li><b>NAME:</b> {{$invoice->model->firstname ?? ''}} {{$invoice->model->lastname ?? ''}}</li>
+                              <li><b>EMAIL:</b> {{$invoice->model->email ?? ''}}</li>
+                              <li><b>PHONE NO:</b> {{$invoice->model->phonenumber ?? ''}}</li>
                          </ul>
                </div>
                <div class="col-md-6">

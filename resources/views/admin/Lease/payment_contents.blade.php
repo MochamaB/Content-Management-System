@@ -30,13 +30,13 @@
         <div class="col-md-6">
         <h4="text-muted"><b>PAYMENT TO / FROM</b></h4>
                         <ul class="ml-2 px-3 list-unstyled">
-                            <li><b>PROPERTY:</b> {{$payment->property->property_name}}</li>
-                            <li><b>UNIT NUMBER:</b> {{$payment->unit->unit_number ?? 'NONE'}}</li>
-                            <li><b>NAME:</b> {{$payment->model->model->name}}
-                                {{$payment->model->model->firstname}} {{$payment->model->model->lastname}}
+                            <li><b>PROPERTY:</b> {{$payment->property->property_name ?? 'DELETED'}}</li>
+                            <li><b>UNIT NUMBER:</b> {{$payment->unit->unit_number ?? 'DELETED'}}</li>
+                            <li><b>NAME:</b> {{$payment->model->model->name ?? 'DELETED'}}
+                                {{$payment->model->model->firstname ?? 'DELETED'}} {{$payment->model->model->lastname ?? 'DELETED'}}
                             </li>
-                            <li><b>EMAIL:</b> {{$payment->model->model->email}}</li>
-                            <li><b>PHONE NO:</b> {{$payment->model->model->phonenumber}}</li>
+                            <li><b>EMAIL:</b> {{$payment->model->model->email ?? ''}}</li>
+                            <li><b>PHONE NO:</b> {{$payment->model->model->phonenumber ?? ''}}</li>
                         </ul>
         </div>
         <div class="col-md-6">

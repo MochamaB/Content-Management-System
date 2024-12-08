@@ -500,6 +500,13 @@ class LeaseController extends Controller
         $id = $unit;
         $model = 'units';
 
+          /// DATA FOR LEASE ITEMS TAB
+          $leaseItems = LeaseItem::with('defaultLeaseItem')
+          ->where('lease_id', $lease->id)
+          ->get();
+          $leaseItemTableData = $this->tableViewDataService->getLeaseItemsData($leaseItems);
+   
+
         //5. SETTINGS
         $namespace = 'App\\Models\\'; // Adjust the namespace according to your application structure
         // Combine the namespace with the class name
@@ -513,11 +520,12 @@ class LeaseController extends Controller
 
         $tabTitles = collect([
             'Summary',
-            'Charges and Utilities',
+            'Utility Charges',
             'Invoices',
             'Payments',
             'Meter Readings',
             'Tickets',
+            'Lease Items',
             'Files',
             'Settings'
         ]);
@@ -525,7 +533,7 @@ class LeaseController extends Controller
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.Lease.summary_lease', compact('properties', 'lease', 'leaseData'))->render();
-            } elseif ($title === 'Charges and Utilities') {
+            } elseif ($title === 'Utility Charges') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitChargeTableData, 'controller' => ['unitcharge']], compact('id', 'model'))->render();
             } elseif ($title === 'Invoices') {
                 $tabContents[] = View('admin.CRUD.table', ['data' => $invoiceTableData, 'controller' => ['invoice']])->render();
@@ -535,7 +543,9 @@ class LeaseController extends Controller
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $MeterReadingsTableData, 'controller' => ['meter-reading']], compact('id', 'model'))->render();
             } elseif ($title === 'Tickets') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $ticketTableData, 'controller' => ['ticket']], compact('id', 'model'))->render();
-            } elseif ($title === 'Files') {
+            } elseif ($title === 'Lease Items') {
+                $tabContents[] =  View('admin.CRUD.index_show', ['tableData' => $leaseItemTableData, 'controller' => ['']], compact('id'))->render();
+            }elseif ($title === 'Files') {
                 $tabContents[] =  View('admin.CRUD.index_show', ['tableData' => $mediaTableData, 'controller' => ['']], compact('id'))->render();
             } elseif ($title === 'Settings') {
                 $tabContents[] = View(
@@ -889,7 +899,17 @@ class LeaseController extends Controller
         // Get the financial check data
         $financialCheck = $this->leaseMoveOutService->checkOutstandingBalances($lease);
         $invoiceTableData = $this->tableViewDataService->getInvoiceData($financialCheck['outstandingInvoices']);
-        //  dd($invoiceTableData);
+
+         // Get the property condition check data
+         $leaseItems = LeaseItem::with('defaultLeaseItem')
+            ->where('lease_id', $lease->id)
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->defaultLeaseItem->Category ?? 'Uncategorized';
+         });
+         $totalRepairCosts = LeaseItem::where('lease_id', $lease->id)->sum('cost');
+       //  dd($totalRepairCosts);
+     
 
         $steps = collect([
             'Financial Check',
@@ -902,13 +922,13 @@ class LeaseController extends Controller
             if ($title === 'Financial Check') {
                 $stepContents[] = View('wizard.moveout.finance', compact('lease', 'financialCheck', 'invoiceTableData'))->render();
             } elseif ($title === 'Property Condition') {
-                $stepContents[] = View('wizard.moveout.property', compact('lease'))->render();
+                $stepContents[] = View('wizard.moveout.property', compact('lease','leaseItems'))->render();
             }  elseif ($title === 'Complete') {
                 $stepContents[] = View('wizard.moveout.complete', compact('lease'))->render();
             }
         }
 
-        return View('wizard.moveout.moveout', compact('steps', 'stepContents', 'activetab'));
+        return View('wizard.moveout.moveout', compact('pageheadings','steps', 'stepContents', 'activetab'));
     }
     public function financeCheck(Request $request, Lease $lease)
     {
@@ -917,7 +937,13 @@ class LeaseController extends Controller
     }
     public function propertyCondition(Request $request, Lease $lease)
     {
+        
         // Delegate logic to the service
         return $this->leaseMoveOutService->propertyCondition($request, $lease);
+    }
+    public function completeMoveOut(Request $request, Lease $lease)
+    {
+        // Delegate logic to the service
+        return $this->leaseMoveOutService->completeMoveOut($request, $lease);
     }
 }

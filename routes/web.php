@@ -150,6 +150,8 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
        
         Route::get('lease/moveout/{id}', [LeaseController::class, 'moveOut'])->name('lease.moveout');
         Route::post('lease/{lease}/financecheck', [LeaseController::class, 'financeCheck']);
+        Route::post('lease/{lease}/propertyCondition', [LeaseController::class, 'propertyCondition']);
+        Route::post('lease/{lease}/completeMoveOut', [LeaseController::class, 'completeMoveOut']);
 
 
         ///////////////

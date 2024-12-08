@@ -120,8 +120,9 @@ class TableViewDataService
             // Generate the status badge
             $statusBadge = '<span class="badge badge-' . $statusClass . '">' . $status . '</span>';
             $isDeleted = $item->deleted_at !== null;
+            $moveOutLink ='';
             $url = url('lease/moveout/' . $item->id);
-            if (Auth::user()->can('lease.edit') || Auth::user()->id === 1) {
+            if ((Auth::user()->can('lease.edit') || Auth::user()->id === 1) && $item->status === Lease::STATUS_ACTIVE) {
                 $moveOutLink = '<a href="' .  $url . '" class="table"><i class="mdi mdi-exit-to-app mr-1" style="vertical-align: middle;font-size:1.4rem"></i> Move Out  </a>';
             } 
 
@@ -143,7 +144,31 @@ class TableViewDataService
         return $tableData;
     }
 
-    /////METHOD TO POPULATE INVOICE TABLE
+    public function getLeaseItemsData($leaseItemData)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['ITEM DESCRIPTION','CATEGORY', 'CONDITION', 'COST', 'ACTIONS',''],
+            'rows' => [],
+        ];
+        foreach ($leaseItemData as  $item) {
+            
+            $isDeleted = $item->deleted_at !== null;
+           
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $item->defaultLeaseItem->item_description,
+                $item->defaultLeaseItem->Category,
+                $item->condition,
+                $item->cost,
+                'isDeleted' => $isDeleted,
+
+            ];
+        }
+
+
+        return $tableData;
+    }
 
     public function getInvoiceData($invoicedata, $extraColumns = false)
     {

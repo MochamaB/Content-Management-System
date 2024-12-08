@@ -52,7 +52,7 @@
         <div class="col-md-6">
             <div class="form-group">
                 <label class="label">Start Date<span class="requiredlabel">*</span></label>
-                <input type="date" class="form-control" id="startdate" name="startdate[]" value="{{$utility->updated_at->format('Y-m-d') ?? $lease->startdate->format('Y-m-d')}}" required>
+                <input type="date" class="form-control" id="startdate" name="startdate[]" value="{{$lease->startdate ?? $utility->updated_at->format('Y-m-d') ?? '' }}" required>
                 <input type="hidden" class="form-control" id="recurring_charge" name="recurring_charge" value="yes">
             </div>
         </div>
