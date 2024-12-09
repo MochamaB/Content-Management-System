@@ -10,6 +10,7 @@ use App\Models\Lease;
 use App\Models\LeaseItem;
 use Illuminate\Http\Request;
 use App\Actions\CalculateInvoiceTotalAmountAction;
+use Carbon\Carbon;
 
 class LeaseMoveOutService
 {
@@ -81,7 +82,7 @@ class LeaseMoveOutService
     public function completeMoveOut(Request $request, Lease $lease)
     {
         // 1. Terminate the lease
-        $lease->update(['status' => Lease::STATUS_TERMINATED]);
+        $lease->update(['status' => Lease::STATUS_TERMINATED,'enddate' => Carbon::now()]);
 
         // 2. Calculate the total repair costs
         $totalRepairCosts = LeaseItem::where('lease_id', $lease->id)->sum('cost');

@@ -43,12 +43,7 @@ class Invoice extends Model
     ];
 
      // Define default values for when the invoice is deleted or not found
-     protected $attributes = [
-        'name' => 'Deleted Invoice',
-        'status' => Invoice::STATUS_VOID,
-        'totalamount' => 0,
-        // Add other default values as needed
-    ];
+
 
     ////////// FIELDS FOR CREATE AND EDIT METHOD
     public static $fields = [

@@ -304,15 +304,7 @@ class LeaseController extends Controller
                 $statusMessage = 'New Rent Charge Created Successfully.';
             }
         }
-        /*
-        if (!empty($rentcharge)) {
-            $rentchargeModel = new Unitcharge();
-            $rentchargeModel->fill($rentcharge->toArray());
-            $rentchargeModel->save();
-
-            // Get the ID of the newly created rent charge
-            $newRentChargeId = $rentchargeModel->id;
-        } */
+       
 
         ///4. SAVE SPLITRENTCHARGE
         $splitRentCharges = $request->session()->get('wizard_splitRentcharges');
@@ -331,26 +323,36 @@ class LeaseController extends Controller
                 );
             }
         }
-        /*
-        if (!empty($splitRentCharges)) {
-            foreach ($splitRentCharges as &$splitRentCharge) {
-                $splitRentCharge['parent_id'] = $newRentChargeId;
-            }
-            // Save the updated split rent charges
-            Unitcharge::insert($splitRentCharges);
-        } */
+      
 
         //5. SAVE SECURITY DEPOSIT AND GENERATE PAYMENT VOUCHER AND TRANSACTIONS
         $depositcharge = $request->session()->get('wizard_depositcharge');
         if (!empty($depositcharge)) {
             $user = User::find($leasedetails->user_id);
-            $depositchargeModel = new Unitcharge();
-            $depositchargeModel->fill($depositcharge->toArray());
-            $depositchargeModel->save();
+            $existingDepositCharge = Unitcharge::where('unit_id', $depositcharge->unit_id)
+                ->where('charge_name', $depositcharge->charge_name)
+                ->first();
+
+            if ($existingDepositCharge) {
+                // Update the existing charge
+                $existingDepositCharge->fill($depositcharge->toArray());
+                $existingDepositCharge->updated_at = now();
+                $existingDepositCharge->save();
+
+                // Assign to a variable to be passed
+                $chargeModel = $existingDepositCharge;
+            } else {
+                $depositchargeModel = new Unitcharge();
+                $depositchargeModel->fill($depositcharge->toArray());
+                $depositchargeModel->save();
+                // Assign to the same variable
+                $chargeModel = $depositchargeModel;
+            }
 
             //  Generate Payment Voucher and Transactions
-            $this->DepositService->generateDeposit($depositchargeModel, $user);
-        }
+            $this->DepositService->generateDeposit($chargeModel, $user);
+       
+    }
 
         //6. SAVE UTILITY CHARGES
         $utilitycharges = $request->session()->get('wizard_utilityCharges');

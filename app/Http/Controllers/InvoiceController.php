@@ -59,7 +59,8 @@ class InvoiceController extends Controller
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getInvoiceFilters();
         $baseQuery = Invoice::with('unit', 'property', 'payments')->ApplyCurrentMonthFilters($filters);
-        $cardData = $this->cardService->invoiceCard($baseQuery->get());
+        $cardDashboad = $this->cardService->invoiceCard($baseQuery->get());
+        $chartData = $this->getInvoiceStatusChartData($baseQuery->get());
         $tabTitles = ['All'] + Invoice::$statusLabels;
         // Convert the associative array to an indexed array to manipulate the order
         $tabTitles = array_merge(['All'], Invoice::$statusLabels);
@@ -104,6 +105,7 @@ class InvoiceController extends Controller
             ])->render();
             $tabCounts[$title] = $count;
         }
+        
        
       //  dd($filterData);
      //   return view('admin.CRUD.form', array_merge(
@@ -111,7 +113,7 @@ class InvoiceController extends Controller
           //  ,['cardData' => $cardData]
       //  ));
 
-        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','cardData','tabCounts'));
+        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','cardDashboad','tabCounts','chartData'));
     }
 
 
@@ -338,4 +340,37 @@ class InvoiceController extends Controller
     // Return the notification view
   //  return (new InvoiceGeneratedNotification($invoice, $user, $viewContent))->toMail($user);
     }
+    private function getInvoiceStatusChartData($invoiceData)
+{
+    // Retrieve all status labels from Invoice::$statusLabels
+    $statuses = Invoice::$statusLabels;
+
+    // Initialize an empty array to store counts
+    $statusCounts = [];
+    $filteredStatuses = [];
+
+    // Filter and count only statuses that exist in the queried data
+    foreach ($statuses as $statusKey => $statusLabel) {
+        // Count invoices matching the current status key
+        $count = $invoiceData->filter(function ($invoice) use ($statusKey) {
+            return $invoice->status === $statusKey;
+        })->count();
+
+        // Only include the status if the count > 0
+        if ($count > 0) {
+            $statusCounts[] = $count;
+            $filteredStatuses[] = $statusLabel; // Add the label for display
+        }
+    }
+
+    // Prepare chart data
+    return [
+        'title' => 'Invoices by Status',
+        'labels' => $filteredStatuses, // Only statuses with counts
+        'data' => $statusCounts,       // Counts for those statuses
+        'colors' => ['#0000ff', '#f83d3dc4', '#fdac25', '#00a65a', '#f39c12', '#7e57c2'], // Custom colors
+    ];
+}
+
+  
 }

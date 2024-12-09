@@ -4,9 +4,9 @@
         display: flex;
         flex-wrap: wrap;
         /* Allows wrapping for responsiveness */
-        justify-content: center;
+        justify-content: end;
         align-items: center;
-        gap: 20px;
+        gap: 0px;
         /* Adds spacing between chart and legend */
     }
 
@@ -69,7 +69,7 @@
     <div class="chart-container">
         <canvas class="my-auto" id="doughnutChart"></canvas>
     </div>
-    <div id="doughnutChart-legend" class="mt-5 text-center"></div>
+    <div id="doughnutChart-legend" class="mt-2 text-center"></div>
 </div>
 <script>
     const doughnutChartData = @json($chartData); // Pass chartData dynamically from PHP

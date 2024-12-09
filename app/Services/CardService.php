@@ -219,7 +219,7 @@ class CardService
         $leaseCount = $lease->count();
         // Get the count of units that are for sale
         $activeleases = $lease->filter(function ($lease) {
-            return $lease->status === 'Active';
+            return $lease->status === Lease::STATUS_ACTIVE;
         })->count();
         // Get the count of units that are for sale
         $open = $lease->filter(function ($lease) {
@@ -311,6 +311,7 @@ class CardService
         $invoicepaid = $this->invoiceRepository->getInvoicepaidAmount($invoices);
         $paymentCount =  $this->invoiceRepository->getInvoicePaymentCount($invoices);
         $balance = $amountinvoiced - $invoicepaid;
+        $balanceCount = $invoiceCount - $paymentCount;
         $paymentRate = $invoiceCount > 0 ? ($paymentCount / $invoiceCount) * 100 : 0;
         $payRate = number_format($paymentRate, 1);
         //   $invoicepaid =  $invoices->filter(function ($invoice) {
@@ -320,12 +321,9 @@ class CardService
         //  $paymentCount = $invoicePayments->sum('payments_count');
         // Define the columns for the unit report
         $cards =  [
-            'invoicecount' => ['title' => 'Total Invoices', 'value' => $invoiceCount, 'amount' => '', 'percentage' => '', 'links' => ''],
-            'paymentCount' => ['title' => 'Total Payments', 'value' => $paymentCount, 'amount' => '', 'percentage' => '', 'links' => ''],
-            'amountinvoiced' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'percentage' => '', 'links' => ''],
-            'invoicepaid' => ['title' => 'Amount Paid', 'value' => '', 'amount' => $invoicepaid, 'percentage' => '', 'links' => ''],
-            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'links' => ''],
-            'payRate' => ['title' => 'Payment Percentage', 'value' => '', 'amount' => '', 'percentage' => $payRate, 'links' => ''],
+            'total' => ['title' => 'Total Invoices', 'value' => '', 'amount' => $amountinvoiced, 'percentage' => '', 'count' => $invoiceCount. ' invoices'],
+            'invoicepaid' => ['title' => 'Paid', 'value' => '', 'amount' => $invoicepaid, 'percentage' => '', 'count' => $paymentCount. ' invoices'],
+            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'count' => $balanceCount. ' invoices'],
         ];
         return $cards;
     }
