@@ -55,13 +55,57 @@ class DepositController extends Controller
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
-        $depositdata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
-        $cardData = $this->cardService->depositCard($depositdata);
+        $baseQuery = $this->model::with('property','unit')->ApplyDateFilters($filters);
+        $cardData = $this->cardService->depositCard($baseQuery->get());
         $filterScope = '6_months'; // Default scope
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getDepositData($depositdata,true);
+    
+        $tabTitles = ['All'] + Deposit::$statusLabels;
+        // Convert the associative array to an indexed array to manipulate the order
+        $tabTitles = array_merge(['All'], Deposit::$statusLabels);
+        // Insert "Overdue" at the third position (index 2)
+        array_splice($tabTitles, 3, 0, 'Over Due');
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'Paid':
+                    $query->where('status', Deposit::STATUS_PAID);
+                    break;
+                case 'Unpaid':
+                    $query->where('status', Deposit::STATUS_UNPAID);
+                    break;
+                case 'Over Due':
+                    $query->where('status', Deposit::STATUS_UNPAID)
+                        ->where('duedate', '<', Carbon::today());
+                    break;
+                case 'Partially Paid':
+                    $query->where('status', Deposit::STATUS_PARTIALLY_PAID);
+                    break;
+                case 'Over Paid':
+                    $query->where('status', Deposit::STATUS_OVER_PAID);
+                    break;
+                case 'Void':
+                        $query->where('status', Deposit::STATUS_VOID);
+                    break;
+                case 'Archived':
+                        $query->where('status', Deposit::STATUS_ARCHIVED);
+                    break;
+                    // 'All' doesn't need any additional filters
+            }
+            $deposit = $query->get();
+            $count = $deposit->count();
+            $tableData = $this->tableViewDataService->getDepositData($deposit, true);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
         
-        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller','cardData','filters','filterScope'),
+        
+        return View('admin.CRUD.form', compact('tabTitles', 'tabContents','tabCounts','filterdata', 'tableData', 'controller','cardData','filters','filterScope'),
       //  $viewData,
         [
          //   'cardData' => $cardData,

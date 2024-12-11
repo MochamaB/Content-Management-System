@@ -765,65 +765,70 @@
     }
 
     if ($("#doughnutChart").length) { 
-      const chartData = window.doughnutChartData;
+      const chartData = window.doughnutChartData; // Chart data from PHP
       const doughnutChartCanvas = document.getElementById('doughnutChart');
       new Chart(doughnutChartCanvas, {
-        type: 'doughnut',
-        data: {
-          labels: doughnutChartData.labels,
-          datasets: [{
-            data: doughnutChartData.data,
-            backgroundColor: doughnutChartData.colors || [
-              "#0000ff  ",
-              "#ffaf00",
-              "#1E283D",
-              "#10a939",
-              "#6a008a"
-            ],
-            borderColor: doughnutChartData.colors || [
-              "#0000ff  ",
-              "#ffaf00",
-              "#1E283D",
-              "#10a939",
-              "#6a008a"
-              
-            ],
-          }]
-        },
-        options: {
-          cutout: 90,
-          animationEasing: "easeOutBounce",
-          animateRotate: true,
-          animateScale: false,
-          responsive: true,
-          maintainAspectRatio: true,
-          showScale: true,
-          legend: false,
-          plugins: {
-            legend: {
-                display: false,
-            }
-          }
-        },
-        plugins: [{
-          afterDatasetUpdate: function (chart, args, options) {
-              const chartId = chart.canvas.id;
-              var i;
-              const legendId = `${chartId}-legend`;
-              const ul = document.createElement('ul');
-              for(i=0;i<chart.data.datasets[0].data.length; i++) {
-                  ul.innerHTML += `
-                  <li style="text-transform:capitalize">
-                    <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}"></span>
-                    ${chart.data.labels[i]}
-                  </li>
-                `;
+          type: 'doughnut',
+          data: {
+              labels: doughnutChartData.labels,
+              datasets: [{
+                  data: doughnutChartData.data,
+                  backgroundColor: doughnutChartData.colors || [
+                      "#0000ff", "#ffaf00", "#1E283D", "#10a939", "#6a008a"
+                  ],
+                  borderColor: doughnutChartData.colors || [
+                      "#0000ff", "#ffaf00", "#1E283D", "#10a939", "#6a008a"
+                  ],
+              }]
+          },
+          options: {
+              cutout: 90,
+              animationEasing: "easeOutBounce",
+              animateRotate: true,
+              animateScale: false,
+              responsive: true,
+              maintainAspectRatio: true,
+              showScale: true,
+              legend: false,
+              padding: 0,
+              plugins: {
+                  legend: {
+                      display: false,
+                  }
               }
-              return document.getElementById(legendId).appendChild(ul);
-            }
-        }]
+          },
+          plugins: [{
+              afterDatasetUpdate: function (chart) {
+                  const chartId = chart.canvas.id;
+                  const legendId = `${chartId}-legend`;
+                  const ul = document.createElement('ul');
+                //  ul.style.listStyle = 'none'; // Optional: Remove bullet points
+                  
+                  // Total sum of the dataset
+                  const total = chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
+  
+                  for (let i = 0; i < chart.data.datasets[0].data.length; i++) {
+                      const value = chart.data.datasets[0].data[i];
+                      const percentage = ((value / total) * 100).toFixed(2); // Calculate percentage
+  
+                      // Add legend item with percentage
+                      ul.innerHTML += `
+                          <li style="display: flex; align-items: center; text-transform: capitalize; margin-bottom: 5px;">
+                              <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px;"></span>
+                              ${chart.data.labels[i]} - ${percentage}%
+                          </li>
+                      `;
+                  }
+  
+                  // Clear previous legend and append the new one
+                  const legendContainer = document.getElementById(legendId);
+                  legendContainer.innerHTML = ''; // Clear old content
+                  legendContainer.appendChild(ul);
+              }
+          }]
       });
-    }
+  }
+  
   
   });
 })(jQuery);

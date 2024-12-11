@@ -1,29 +1,16 @@
 <style>
-    /* General Flexbox Container */
-    .chart-legend-container {
-        display: flex;
-        flex-wrap: wrap;
-        /* Allows wrapping for responsiveness */
-        justify-content: end;
-        align-items: center;
-        gap: 0px;
-        /* Adds spacing between chart and legend */
-    }
-
     /* Chart Container Styling */
     .chart-container {
-        max-width: 300px;
-        /* Adjust as needed */
-        max-height: 300px;
-        flex: 1;
-        /* Allows flexibility in size */
+        width: 200px;
     }
 
     /* Legend Container */
     #doughnutChart-legend {
         flex: 1;
-        /* Legend takes equal space as the chart */
         min-width: 150px;
+        margin: 0;
+        padding: 0;
+        text-align: left;
         /* Prevents it from becoming too narrow */
     }
 
@@ -64,12 +51,19 @@
         }
     }
 </style>
-
-<div class="chart-legend-container">
-    <div class="chart-container">
-        <canvas class="my-auto" id="doughnutChart"></canvas>
+<div class="d-flex justify-content-between align-items-start">
+    <div>
+    <h5 class="card-title card-title-dash pt-1"><b>{{$title ?? ''}}</b></h5>
     </div>
-    <div id="doughnutChart-legend" class="mt-2 text-center"></div>
+    <div>
+
+    </div>
+</div>
+<div class="d-lg-flex justify-content-between">
+    <div class="chart-container mt-3">
+        <canvas class="my-auto" id="doughnutChart" style="display: block; box-sizing: border-box; height: 210px; width: 210px;" width="210"></canvas>
+    </div>
+    <div id="doughnutChart-legend" class="mt-3 text-center"></div>
 </div>
 <script>
     const doughnutChartData = @json($chartData); // Pass chartData dynamically from PHP

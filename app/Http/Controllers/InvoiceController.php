@@ -346,8 +346,17 @@ class InvoiceController extends Controller
     $statuses = Invoice::$statusLabels;
 
     // Initialize an empty array to store counts
+    $statusColors = [
+        'Paid' => '#038d21 ',
+        'Unpaid' => '#ffaf00',
+        'Partially Paid' => '#1E283D',
+        'Over Paid' => '#6a008a',
+        'Void' => '#f39c12',
+        'Archived' => '#7e57c2',
+    ];
     $statusCounts = [];
     $filteredStatuses = [];
+    $filteredColors = [];
 
     // Filter and count only statuses that exist in the queried data
     foreach ($statuses as $statusKey => $statusLabel) {
@@ -360,6 +369,7 @@ class InvoiceController extends Controller
         if ($count > 0) {
             $statusCounts[] = $count;
             $filteredStatuses[] = $statusLabel; // Add the label for display
+            $filteredColors[] = $statusColors[$statusLabel];
         }
     }
 
@@ -368,7 +378,7 @@ class InvoiceController extends Controller
         'title' => 'Invoices by Status',
         'labels' => $filteredStatuses, // Only statuses with counts
         'data' => $statusCounts,       // Counts for those statuses
-        'colors' => ['#0000ff', '#f83d3dc4', '#fdac25', '#00a65a', '#f39c12', '#7e57c2'], // Custom colors
+        'colors' => $filteredColors, // Custom colors
     ];
 }
 

@@ -132,7 +132,7 @@ class LeaseController extends Controller
                     // Optional: handle any unexpected titles
                     continue;
             }
-            $lease = $query->get();
+            $lease = $query->orderBy('status', 'asc')->get();
             $count = $lease->count();
             $tableData = $this->tableViewDataService->getLeaseData($lease, false);
             $controller = $this->controller;

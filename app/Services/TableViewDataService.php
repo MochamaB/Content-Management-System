@@ -285,7 +285,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFERENCE NO', 'STATUS | DUEDATE', 'NAME', 'AMOUNT RECEIVED', 'PAID', 'BALANCE', 'ACTIONS'];
+        $headers = ['REFERENCE NO', 'STATUS | DUEDATE', 'NAME', 'AMOUNT RECEIVED', 'PAID', 'BALANCE', 'ACTIONS',''];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -318,7 +318,7 @@ class TableViewDataService
             if ($item->status !== Expense::STATUS_PAID || $item->status !== Expense::STATUS_OVER_PAID ) {
                 // Generate the payment link only if the status is not 'Paid'
                 $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . 
-                    '" class="badge badge-information mt-2">Record Payment</a>';
+                    '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>Record Payment</a><br/>';
             }
             
             if ($item->duedate < Carbon::now() && $item->status === Expense::STATUS_UNPAID) {
@@ -343,7 +343,8 @@ class TableViewDataService
                 $item->name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 0, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
-                $balanceStatus . ' </br></br> ' . $payLink,
+                $balanceStatus,
+                $payLink,
                 'isDeleted' => $isDeleted,
             ];
             // If $Extra Columns is true, insert unit details at position 3
@@ -1035,7 +1036,7 @@ class TableViewDataService
 
         /// TABLE DATA ///////////////////////////
 
-        $headers = ['REFNO', 'STATUS | DUEDATE', 'NAME', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS'];
+        $headers = ['REFNO', 'STATUS | DUEDATE', 'NAME', 'AMOUNT DUE', 'PAID', 'BALANCE', 'ACTIONS',''];
 
         // If $Extra columns is true, insert 'Unit Details' at position 3
         if ($extraColumns) {
@@ -1062,7 +1063,7 @@ class TableViewDataService
             if ($item->status !== Expense::STATUS_PAID || $item->status !== Expense::STATUS_OVER_PAID ) {
                 // Generate the payment link only if the status is not 'Paid'
                 $payLink = '<a href="' . route('payment.create', ['id' => $item->id]) . 
-                    '" class="badge badge-information mt-2">Record Payment</a>';
+                   '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>Record Payment</a><br/>';
             }
             
             if ($item->duedate < Carbon::now() && $item->status === Expense::STATUS_UNPAID) {
@@ -1082,7 +1083,8 @@ class TableViewDataService
                 $item->name,
                 $this->sitesettings->site_currency . ' ' . number_format($item->totalamount, 2, '.', ','),
                 $this->sitesettings->site_currency . ' ' . number_format($totalPaid, 0, '.', ','),
-                $balanceStatus . ' </br></br> ' . $payLink,
+                $balanceStatus,
+                $payLink,
                 'isDeleted' => $isDeleted,
 
             ];

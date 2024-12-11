@@ -61,14 +61,59 @@ class ExpenseController extends Controller
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getExpenseFilters($request);
-        $expensedata = $this->model::with('property','unit')->ApplyDateFilters($filters)->get();
+        $baseQuery = $this->model::with('property','unit')->ApplyDateFilters($filters);
+        $cardData = $this->cardService->expenseCard($baseQuery->get());
         // Variable to track the applied scope
         $filterScope = '6_months'; // Default scope
-        $cardData = $this->cardService->expenseCard($expensedata);
-        $controller = $this->controller;
-        $tableData = $this->tableViewDataService->getExpenseData($expensedata,true);
+        $tabTitles = ['All'] + Expense::$statusLabels;
+        // Convert the associative array to an indexed array to manipulate the order
+        $tabTitles = array_merge(['All'], Expense::$statusLabels);
+        // Insert "Overdue" at the third position (index 2)
+        array_splice($tabTitles, 3, 0, 'Over Due');
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'Paid':
+                    $query->where('status', Expense::STATUS_PAID);
+                    break;
+                case 'Unpaid':
+                    $query->where('status', Expense::STATUS_UNPAID);
+                    break;
+                case 'Over Due':
+                    $query->where('status', Expense::STATUS_UNPAID)
+                        ->where('duedate', '<', Carbon::today());
+                    break;
+                case 'Partially Paid':
+                    $query->where('status', Expense::STATUS_PARTIALLY_PAID);
+                    break;
+                case 'Over Paid':
+                    $query->where('status', Expense::STATUS_OVER_PAID);
+                    break;
+                case 'Void':
+                        $query->where('status', Expense::STATUS_VOID);
+                    break;
+                case 'Archived':
+                        $query->where('status', Expense::STATUS_ARCHIVED);
+                    break;
+                    // 'All' doesn't need any additional filters
+            }
+            $expenses = $query->get();
+            $count = $expenses->count();
+            $tableData = $this->tableViewDataService->getExpenseData($expenses, true);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
+        
+       
+      
            
-           return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller','cardData','filters','filterScope'));
+           return View('admin.CRUD.form', compact('tabTitles', 'tabContents','tabCounts','filterdata', 'controller','cardData','filters','filterScope'));
         //
     }
 

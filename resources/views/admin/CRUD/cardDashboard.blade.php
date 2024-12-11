@@ -28,7 +28,7 @@
             @include('admin.CRUD.cardProgress',['cardData' => $cardDashboad])
         @elseif($controller[0] === 'invoice')
            
-        @include('admin.Dashboard.charts.doughnutChart', ['chartData' => $chartData])
+        @include('admin.Dashboard.charts.doughnutChart', ['chartData' => $chartData,'title'=>'Invoice Status'])
         @endif
           
         </div>
