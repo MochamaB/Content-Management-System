@@ -12,9 +12,13 @@ class UnitDetail extends Model
     protected $table = 'unit_details';
     protected $fillable = [
             'unit_id',
-            'unit_property',
+            'user_id',
+            'title',
+            'description',
+            'size',
             'slug',
-            'desc',
+            'amenities',
+            'additional_features',
             
     ];
 

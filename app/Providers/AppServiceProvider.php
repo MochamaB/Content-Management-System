@@ -252,6 +252,7 @@ class AppServiceProvider extends ServiceProvider
                 'Website' => ['icon' => 'web', 'submodules' => [
                     'Website' => ['display' => 'Site Information'],
                     'slider' => ['display' => 'Picture Sliders'],
+                    'listing' => ['display' => 'Listings'],
                     'testimonial' => ['display' => 'Client Testimonials'],
                     'amenity' => ['display' => 'Property Amenities'],
                     'propertytype' => ['display' => 'Property Categories']

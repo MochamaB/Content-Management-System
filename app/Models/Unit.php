@@ -29,15 +29,11 @@ class Unit extends Model implements HasMedia, Auditable
         'unit_type',
         'rent',
         'security_deposit',
-        'size',
         'bathrooms',
         'bedrooms',
-        'description',
         'selling_price',
     ];
-    protected $attributes = [
-        'description' => 'Spacious Unit Available', // Replace 'default_description_value'
-    ];
+  
 
 
 
@@ -49,8 +45,6 @@ class Unit extends Model implements HasMedia, Auditable
         'security_deposit' => ['label' => 'Security Deposit', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
         'bathrooms' => ['label' => 'No of Bathrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
         'bedrooms' => ['label' => 'No of Bedrooms', 'inputType' => 'number', 'required' => true, 'readonly' => ''],
-        'size' => ['label' => 'Size (Sqm)', 'inputType' => 'number', 'required' => false, 'readonly' => ''],
-        'description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' => false, 'readonly' => ''],
         'selling_price' => ['label' => 'Selling Price', 'inputType' => 'money', 'required' => false, 'readonly' => ''],
 
         // Add more fields as needed
@@ -61,10 +55,8 @@ class Unit extends Model implements HasMedia, Auditable
         'unit_number' => 'required',
         'rent' => 'nullable|numeric',
         'security_deposit' => 'nullable|numeric',
-        'size' => 'nullable|numeric',
         'bathrooms' => 'required|numeric',
         'bedrooms' => 'required|numeric',
-        'description' => 'nullable',
         'selling_price' => 'nullable|numeric',
 
 
@@ -76,10 +68,8 @@ class Unit extends Model implements HasMedia, Auditable
         'unit_type',
         'rent',
         'security_deposit',
-        'size',
         'bathrooms',
         'bedrooms',
-        'description',
         'selling_price',
         // Add other attributes you want to audit here.
     ];

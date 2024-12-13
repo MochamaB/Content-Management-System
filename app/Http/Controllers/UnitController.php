@@ -75,12 +75,36 @@ class UnitController extends Controller
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getUnitFilters();
-        $unitdata = $this->model::with('property','lease')->showSoftDeleted()->ApplyFilters($filters)->get();
-        $cardData = $this->cardService->unitCard($unitdata);
-        $controller = $this->controller;
-        $tableData = $this->getUnitData($unitdata);
+        $baseQuery = $this->model::with('property','lease')->showSoftDeleted()->ApplyFilters($filters);
+        $cardData = $this->cardService->unitCard($baseQuery->get());
+      //  $controller = $this->controller;
+      //  $tableData = $this->getUnitData($unitdata);
+        $tabTitles = ['All','For Rent','For Sale'];
+        $tabContents = [];
+        $tabCounts = [];
+        foreach ($tabTitles as $title) {
+            $query = clone $baseQuery;
+            switch ($title) {
+                case 'For Rent':
+                    $query->where('unit_type', 'rent');
+                    break;
+                case 'For Sale':
+                    $query->where('unit_type', 'sale');
+                    break;
+                    // 'All' doesn't need any additional filters
+            }
+            $units = $query->get();
+            $count = $units->count();
+            $tableData = $this->tableViewDataService->getUnitData($units);
+            $controller = $this->controller;
+            $tabContents[] = view('admin.CRUD.table', [
+                'data' => $tableData,
+                'controller' => $controller,
+            ])->render();
+            $tabCounts[$title] = $count;
+        }
         
-        return View('admin.CRUD.form', compact('filterdata', 'tableData', 'controller'),
+        return View('admin.CRUD.form', compact('tabTitles', 'tabContents','tabCounts','filterdata', 'tableData', 'controller'),
         [
             'cardData' => $cardData,
         ]);
@@ -157,6 +181,7 @@ class UnitController extends Controller
       
         $tabTitles = collect([
             'Summary',
+            'Listing',
             'Users',
             'Charges',
             'Invoices',
@@ -236,12 +261,29 @@ class UnitController extends Controller
         $id = $unit;
         $model = 'units';
 
+         $listing = $unit->unitdetails;
+         $listingTableData = $this->tableViewDataService->generateListingTabContents($listing);
+         
+
         
         // Render the Blade views for each tab content
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
                 $tabContents[] = View('admin.Property.unit_summary', $unitEditData, compact('unit', 'unitdetails'))->render();
+            }elseif ($title === 'Listing') {
+                if ($listing->isNotEmpty()) {
+                $tabContents[] = View('admin.CRUD.tabs_vertical', 
+                ['tabTitles' => $listingTableData['tabTitles'], 
+                'tabContents' => $listingTableData['tabContents'],
+                'controller' => ['unit']], 
+                compact('listing'))->render();
+                }else{
+                    $tabContents[] = View('admin.CRUD.no_data_image', [
+                        'message' => 'No listing data available.',
+                        'imagePath' => asset('uploads/vectors/unit.png')
+                    ])->render();
+                }
             }elseif ($title === 'Users') {
                 $tabContents[] = View('admin.Property.unit_users', ['data' => $tableData], compact('unit'))->render();
             }elseif ($title === 'Charges') {

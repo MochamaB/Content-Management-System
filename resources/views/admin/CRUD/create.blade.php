@@ -15,7 +15,7 @@
             <!---- NORMAL SELECT ------------->
             @if($attributes['inputType'] === 'select')
             <select class="formcontrol2 @error($field) is-invalid @enderror" id="{{ $field }}" name="{{ $field }}">
-                <option value=""> Select Value'
+                <option value=""> Select Value
 
 
                 </option>
@@ -72,7 +72,10 @@
     </div>
     @endforeach
     <div class="col-md-4">
-        <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;" id="submit">Create {{$routeParts[0]}}</button>
+        <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;" id="submit">
+        <i class="mdi mdi-content-save ms-1"></i>
+            Create {{$routeParts[0]}}
+        </button>
     </div>
 </form>
 

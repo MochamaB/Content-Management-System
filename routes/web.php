@@ -30,6 +30,7 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\EmailController;
+use App\Http\Controllers\ListingController;
 use App\Http\Controllers\MpesaSTKPUSHController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PaymentMethodController;
@@ -87,6 +88,7 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
         Route::resource('Website', WebsiteController::class);
         Route::resource('slider', SliderController::class);
         Route::resource('testimonial', TestimonialController::class);
+        Route::resource('listing', ListingController::class);
     });
 
 //<!-------------------------------- Communication Module ---------------------------------------------->////

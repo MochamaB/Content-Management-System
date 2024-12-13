@@ -20,10 +20,8 @@ class CreateUnitsTable extends Migration
             $table->string('unit_type');
             $table->string('rent')->nullable();
             $table->string('security_deposit')->nullable();
-            $table->string('size')->nullable();;
             $table->string('bathrooms');
             $table->string('bedrooms');
-            $table->string('description')->nullable();;
             $table->string('selling_price')->nullable();
             $table->timestamps();
             $table->softDeletes();

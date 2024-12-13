@@ -76,20 +76,60 @@ class TableViewDataService
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['UNIT', 'TYPE', 'BEDS', 'BATHS', 'LEASE', 'ACTIONS'],
+            'headers' => ['UNIT', 'TYPE', 'BEDS', 'BATHS', 'LEASE', 'ACTIONS',''],
             'rows' => [],
         ];
 
         foreach ($unitdata as $item) {
-            $leaseStatus = $item->lease ? '<span class="badge badge-active">Active</span>' : '<span class="badge badge-danger">No Lease</span>';
+            $unitType = $item->unit_type;
+            $leaseStatus = '';
+            $addLease ='';
+            $url = url('lease/create/');
+            $mediaURL = $item->getFirstMediaUrl('coverimage');
+            if ($mediaURL) {
+                $coverimage = url($item->getFirstMediaUrl('coverimage'));
+            } else {
+                $coverimage = url('uploads/vectors/house.png');
+            }
+            //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $unit =     '<div class="d-flex "> <img src="' . $coverimage . '" alt="">
+            <div>
+             <h6 style ="padding:0.1rem 0.1rem">' .  $item->unit_number . ' - ' . $item->property->property_name .'</h6>
+                <p class="text-muted" style ="padding:0.1rem 0.1rem"> <i class="mdi mdi-map-marker mr-1" style="vertical-align: middle;font-size:1.4rem"></i>'. $item->property->property_location .
+                '</p>
+            </div>
+          </div>';
+            if ($unitType === 'rent') {
+                // Check for lease status
+                if ($item->lease) {
+                    if ($item->lease->status === Lease::STATUS_ACTIVE) {
+                        $leaseStatus = '<span class="badge badge-active">Active</span>';
+                    } elseif ($item->lease->status === Lease::STATUS_TERMINATED) {
+                        $leaseStatus = '<span class="badge badge-danger">Terminated</span>';
+                        // Add button to create a new lease
+                        $addLease = '<a href="' . url('lease/create/') . '" class="table">
+                        <i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i> Add Lease</a>';
+                    }
+                } else {
+                    // No lease exists
+                    $leaseStatus = '<span class="badge badge-danger">No Lease</span>';
+                    // Add button to create a new lease
+                    $addLease = '<a href="' . url('lease/create/') . '" class="table">
+                    <i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i> Add Lease</a>';
+                }
+            }else{
+                $leaseStatus = '<span class="badge badge-danger">No Lease</span>';
+            }
+           
             $isDeleted = $item->deleted_at !== null;
             $tableData['rows'][] = [
                 'id' => $item->id,
-                $item->unit_number . ' - ' . $item->property->property_name . '(' . $item->property->property_location . ')',
+                $unit,
                 $item->unit_type,
                 $item->bedrooms,
                 $item->bathrooms,
                 $leaseStatus,
+                $addLease,
                 'isDeleted' => $isDeleted,
             ];
         }
@@ -1402,6 +1442,71 @@ class TableViewDataService
         return $tableData;
     }
 
+    public function getUnitListingData($unitdata)
+    {
+        /// TABLE DATA ///////////////////////////
+        $tableData = [
+            'headers' => ['UNIT', 'TYPE', 'BEDS', 'BATHS', 'ACTIONS'],
+            'rows' => [],
+        ];
+
+        foreach ($unitdata as $item) {
+            $unitType = $item->unit_type;
+            $mediaURL = $item->getFirstMediaUrl('coverimage');
+            if ($mediaURL) {
+                $coverimage = url($item->getFirstMediaUrl('coverimage'));
+            } else {
+                $coverimage = url('uploads/vectors/house.png');
+            }
+            //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $unit =     '<div class="d-flex "> <img src="' . $coverimage . '" alt="">
+            <div>
+             <h6 style ="padding:0.1rem 0.1rem">' .  $item->unit_number . ' - ' . $item->property->property_name .'</h6>
+                <p class="text-muted" style ="padding:0.1rem 0.1rem"> <i class="mdi mdi-map-marker mr-1" style="vertical-align: middle;font-size:1.4rem"></i>'. $item->property->property_location .
+                '</p>
+            </div>
+          </div>';
+       
+            $isDeleted = $item->deleted_at !== null;
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $unit,
+                $item->unit_type,
+                $item->bedrooms,
+                $item->bathrooms,
+                'isDeleted' => $isDeleted,
+            ];
+        }
+
+        return $tableData;
+    }
+
+    public function generateListingTabContents($listing)
+    {
+
+        $tabTitles = collect([
+            'Unit Details',
+            'Amenities',
+        ]);
+      
+
+        $tabContents = [];
+
+        foreach ($tabTitles as $title) {
+            if ($title === 'Unit Details') {
+                $tabContents[] = View('admin.Website.listing_details', compact('listing',))->render();
+            } elseif ($title === 'Amenities') {
+                $tabContents[] = View('admin.Website.listing_details', compact('listing'))->render();
+            }
+        }
+
+        return [
+            'tabTitles' => $tabTitles,
+            'tabContents' => $tabContents,
+        ];
+    }
+
+    
     /// Delete Method
     public function destroy($model, array $relationships, $modelName)
     {
