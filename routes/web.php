@@ -88,7 +88,14 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
         Route::resource('Website', WebsiteController::class);
         Route::resource('slider', SliderController::class);
         Route::resource('testimonial', TestimonialController::class);
+        Route::get('listing/create/{id?}', [
+            'as' => 'listing.create',
+            'uses' => 'App\Http\Controllers\ListingController@create'
+        ]);
         Route::resource('listing', ListingController::class);
+        Route::post('unitdetails', [ListingController::class, 'unitdetails']);
+        Route::post('unitamenities', [ListingController::class, 'unitamenities']);
+        Route::post('unitListingInfo', [ListingController::class, 'unitListingInfo']);
     });
 
 //<!-------------------------------- Communication Module ---------------------------------------------->////
@@ -312,6 +319,7 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
 
 Route::post('api/fetch-leaserent', [LeaseController::class, 'fetchleaserent']);
 Route::post('api/fetch-units', [LeaseController::class, 'fetchunits']);
+Route::post('api/fetch-Listingunits', [ListingController::class, 'fetchListingUnits']);
 
 Route::post('api/check-chargename', [LeaseController::class, 'checkchargename']);
 Route::post('api/fetch-meterReading', [MeterReadingController::class, 'fetchmeterReading']);

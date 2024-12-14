@@ -1446,7 +1446,7 @@ class TableViewDataService
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['UNIT', 'TYPE', 'BEDS', 'BATHS', 'ACTIONS'],
+            'headers' => ['UNIT', 'TYPE', 'BEDS', 'BATHS', 'ACTIONS',''],
             'rows' => [],
         ];
 
@@ -1457,6 +1457,12 @@ class TableViewDataService
                 $coverimage = url($item->getFirstMediaUrl('coverimage'));
             } else {
                 $coverimage = url('uploads/vectors/house.png');
+            }
+            $addListingLink ='';
+            $url = url('listing/create/' . $item->id);
+            if (isset($item->unitdetails)){
+                $addListingLink = '<a href="' .  $url . 
+                    '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>Add Listing</a><br/>';
             }
             //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $unit =     '<div class="d-flex "> <img src="' . $coverimage . '" alt="">
@@ -1474,6 +1480,7 @@ class TableViewDataService
                 $item->unit_type,
                 $item->bedrooms,
                 $item->bathrooms,
+                $addListingLink,
                 'isDeleted' => $isDeleted,
             ];
         }
