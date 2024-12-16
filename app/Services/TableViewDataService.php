@@ -4,6 +4,7 @@
 
 namespace App\Services;
 
+use App\Models\Amenity;
 use App\Models\Expense;
 use App\Models\Invoice;
 use App\Models\Unitcharge;
@@ -15,6 +16,7 @@ use App\Models\InvoiceItems;
 use App\Models\Property;
 use App\Models\Setting;
 use App\Models\SmsCredit;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -1460,7 +1462,7 @@ class TableViewDataService
             }
             $addListingLink ='';
             $url = url('listing/create/' . $item->id);
-            if (isset($item->unitdetails)){
+            if (!$item->unitdetails()->exists()) {
                 $addListingLink = '<a href="' .  $url . 
                     '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>Add Listing</a><br/>';
             }
@@ -1490,20 +1492,48 @@ class TableViewDataService
 
     public function generateListingTabContents($listing)
     {
-
+        $listing = $listing->first();
+        $unit = Unit::findOrFail($listing->unit_id);
+        $selectedProperty = Property::findOrFail($unit->property_id);
+        $allAmenities = Amenity::whereHas('properties', function ($query) use ($selectedProperty) {
+            $query->where('property_id', $selectedProperty->id);
+        })->get(['id', 'amenity_name']);
+       
+        // Get the unit details and decode the selected amenities
+        $unitDetail = $unit->unitdetails->first(); // Assuming one unitdetail per unit
+        $currentAmenities = $listing && $listing->amenities 
+        ? (is_string($listing->amenities) 
+            ? json_decode($listing->amenities, true) 
+            : $listing->amenities) 
+        : [];
+    
+    // Ensure $currentAmenities is always an array
+    $currentAmenities = is_array($currentAmenities) ? $currentAmenities : [];
+       // dd($currentAmenities);
+      
+       $users = User::with('units', 'roles')->visibleToUser()->excludeTenants()->get();
+       $photos = $unit->getMedia('unit-photo');
+      // dd($photos);
+       
         $tabTitles = collect([
-            'Unit Details',
+            'Preview',
             'Amenities',
+            'Listing Info',
+            'Photos'
         ]);
       
 
         $tabContents = [];
 
         foreach ($tabTitles as $title) {
-            if ($title === 'Unit Details') {
+            if ($title === 'Preview') {
                 $tabContents[] = View('admin.Website.listing_details', compact('listing',))->render();
             } elseif ($title === 'Amenities') {
-                $tabContents[] = View('admin.Website.listing_details', compact('listing'))->render();
+                $tabContents[] = View('wizard.listing.unit_amenities', compact('listing','allAmenities','currentAmenities'))->render();
+            }elseif ($title === 'Listing Info') {
+                $tabContents[] = View('wizard.listing.unit_listinginfo', compact('listing','users'))->render();
+            }elseif ($title === 'Photos') {
+                $tabContents[] = View('wizard.listing.unit_photos', compact('listing','unit','photos'))->render();
             }
         }
 

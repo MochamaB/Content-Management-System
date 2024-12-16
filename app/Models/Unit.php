@@ -235,17 +235,22 @@ class Unit extends Model implements HasMedia, Auditable
     {
         return $this->unit_number;
     }
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('unit_photos')
-             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif']);
-    }
+
 
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
             ->width(150)
             ->height(150)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->performOnCollections('unit-photo');
+    }
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('unit-photo')
+        ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif']);
+        //add options
+    
+        
     }
 }

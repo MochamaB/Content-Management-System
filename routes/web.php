@@ -96,6 +96,7 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
         Route::post('unitdetails', [ListingController::class, 'unitdetails']);
         Route::post('unitamenities', [ListingController::class, 'unitamenities']);
         Route::post('unitListingInfo', [ListingController::class, 'unitListingInfo']);
+        
     });
 
 //<!-------------------------------- Communication Module ---------------------------------------------->////

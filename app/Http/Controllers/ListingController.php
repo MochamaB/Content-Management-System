@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Actions\UploadMediaAction;
 
 
 class ListingController extends Controller
@@ -20,11 +21,13 @@ class ListingController extends Controller
     private $cardService;
     private $tableViewDataService;
     private $filterService;
+    protected $uploadMediaAction;
 
     public function __construct(
         CardService $cardService,
         TableViewDataService $tableViewDataService,
-        FilterService $filterService
+        FilterService $filterService,
+        UploadMediaAction $uploadMediaAction,
     ) {
         $this->model = UnitDetail::class;
         $this->controller = collect([
@@ -34,6 +37,7 @@ class ListingController extends Controller
         $this->cardService = $cardService;
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
+        $this->uploadMediaAction = $uploadMediaAction;
     }
 
     /**
@@ -76,7 +80,7 @@ class ListingController extends Controller
             $tabCounts[$title] = $count;
         }
 
-
+        
 
 
         return View('admin.CRUD.form', compact('tabTitles', 'tabContents', 'tabCounts', 'filterdata', 'controller', 'cardData', 'filters',));
@@ -180,8 +184,9 @@ class ListingController extends Controller
          }
          // Step 4: Upload and attach photos to the Unit model
         if ($request->hasFile('photos')) {
-            foreach ($request->file('photos') as $photo) {
-                $unit->addMedia($photo)->toMediaCollection('unit_photos'); // Save to 'unit-photos'
+            $photos = $request->file('photos',[]);
+            foreach ($photos as $photo) {
+                $unit->addMedia($photo)->toMediaCollection('unit-photo'); // Save to 'unit-photos'
             }
         }
          // Step 6: Clear session wizard data
@@ -222,8 +227,40 @@ class ListingController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $unitDetail = UnitDetail::findOrFail($id);
+         // Check if 'amenities' are in the request and update
+    if ($request->has('amenities')) {
+         // Save the amenities as JSON
+        $unitDetail->amenities = json_encode($request->amenities);
     }
+    if ($request->has('user_id')) {
+        $unitDetail->user_id = $request->user_id;
+    }
+    if ($request->has('title')) {
+        $unitDetail->title = $request->title;
+    }
+    if ($request->has('description')) {
+        $unitDetail->description = $request->description;
+    } if ($request->has('size')) {
+        $unitDetail->size = $request->size;
+    }
+  //  dd($request->file('photos',[]));
+     // Ensure multiple file upload works
+     if ($request->hasFile('photos')) {
+       
+        $unit = Unit::findOrFail($unitDetail->unit_id);
+        $photos = $request->file('photos',[]);
+        foreach ($photos as $photo) {
+            $unit->addMedia($photo)->toMediaCollection('unit-photo'); // Save to 'unit-photos'
+        }
+
+     }
+        $unitDetail->save();
+
+    return redirect()->back()->with('status', 'Amenities updated successfully.');
+
+    }
+    
 
     /**
      * Remove the specified resource from storage.

@@ -107,6 +107,7 @@
     const $Display = $(".text-muted");
     const $nextBtn = $("#nextBtn");
     const $submitBtn = $(".submitBtn");
+    const $inputGroups = $(".input-group");
 
     // Hide edit fields and "Make Changes" button on page load
     $editFields.hide();
@@ -114,6 +115,7 @@
     $edittextarea.hide();
     $nextBtn.hide();
     $submitBtn.hide();
+    $inputGroups.hide(); // Hide input groups
 
     // "Edit" link click event
     // "Edit" link click event
@@ -126,6 +128,7 @@
       $Display.toggle();
       $nextBtn.toggle();
       $submitBtn.toggle();
+      $inputGroups.toggle();
 
       // Toggle "Edit" link text between "Edit" and "Cancel"
       $editLink.html(function(index, html) {

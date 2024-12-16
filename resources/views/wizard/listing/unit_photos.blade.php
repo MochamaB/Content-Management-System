@@ -1,27 +1,28 @@
 <style>
     #drop-area {
-  width: 400px;
-  height: 200px;
-  margin: 20px auto;
-  text-align: center;
-  line-height: 200px;
-  border: 2px dashed #ccc;
-  cursor: pointer;
-}
+        width: 400px;
+        height: 250px;
+        margin: 20px auto;
+        text-align: center;
+        border: 2px dashed #ccc;
+        cursor: pointer;
+    }
 
-#preview-container {
-  text-align: center;
-}
-#drop-area.drag-over {
-  background-color: #eee;
-}
-.preview-image {
-  object-fit: cover;
-  width: 100px;
-  height: 100px;
-  margin: 10px;
-  border: 1px solid #ddd;
-}
+    #preview-container {
+        text-align: center;
+    }
+
+    #drop-area.drag-over {
+        background-color: #eee;
+    }
+
+    .preview-image {
+        object-fit: cover;
+        width: 200px;
+        height: 120px;
+        margin: 10px;
+        border: 1px solid #ddd;
+    }
 </style>
 @if(($routeParts[1] === 'create'))
 <h5><b>Add Unit Photos</b></h5>
@@ -37,78 +38,136 @@
     @include('admin.CRUD.wizardbuttons')
 </form>
 
-@elseif(($routeParts[1] === 'edit'))
+@else
+<h5 style="text-transform: capitalize;">Unit Photos &nbsp;
+    @if( Auth::user()->can($routeParts[0].'.edit') || Auth::user()->id === 1)
+    <a href="" class="editLink"> &nbsp;&nbsp;<i class="mdi mdi-lead-pencil text-primary" style="font-size:16px"></i></a>
+    @endif
+</h5>
+<hr>
+<form method="POST" action="{{ route('listing.update', $listing->id) }}" class="myForm" enctype="multipart/form-data" novalidate>
+    @csrf
+    @method('PUT')
+    <div id="drop-area">
+        <div class="text-center mt-1 mb-2">
+            <img src="{{ url('uploads/upload.png') }}" alt="" class="img-fluid" style="max-width: 150px;">
+            <h6 style="color:blue"> Drag and drop files or browse to Upload </h6>
+        </div>
+
+        <button type="button" id="browse-btn" class="btn btn-primary btn-lg text-white mb-0 me-0"> Browse Files</button>
+    </div>
+    <input type="file" id="file-input" name="photos[]" multiple hidden>
+    <div id="preview-container">
+        @foreach($photos as $photo)
+        <img src="{{ $photo->getUrl() }}" alt="Image" class="preview-image">
+        @endforeach
+    </div>
+
+    <hr>
+    <div class="col-md-6">
+        <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="">Edit Unit Photos</button>
+    </div>
+</form>
+
 @endif
 <script>
+
     const dropArea = document.getElementById('drop-area');
-const fileInput = document.getElementById('file-input');
+    const fileInput = document.getElementById('file-input');
+    const browseButton = document.getElementById('browse-btn');
+    const previewContainer = document.getElementById('preview-container');
 
-// Utility function to prevent default browser behavior
-function preventDefaults(e) {
-  e.preventDefault();
-  e.stopPropagation();
-}
+    const processedFiles = new Set(); // Set to track already processed file names
 
-// Preventing default browser behavior when dragging a file over the container
-dropArea.addEventListener('dragover', preventDefaults);
-dropArea.addEventListener('dragenter', preventDefaults);
-dropArea.addEventListener('dragleave', preventDefaults);
+    // Browse button click triggers the hidden file input
+    browseButton.addEventListener('click', function() {
+        fileInput.click();
+    });
 
-// Handling dropping files into the area
-dropArea.addEventListener('drop', handleDrop);
+    // Handle file selection from the browse input
+    fileInput.addEventListener('change', function() {
+        handleFiles(fileInput.files);
+    });
 
-// We’ll discuss `handleDrop` function down the road
-function handleDrop(e) {
-  e.preventDefault();
+    // Handle drag & drop logic
+    dropArea.addEventListener('dragover', preventDefaults);
+    dropArea.addEventListener('dragenter', preventDefaults);
+    dropArea.addEventListener('dragleave', preventDefaults);
+    dropArea.addEventListener('drop', handleDrop);
 
-  // Getting the list of dragged files
-  const files = e.dataTransfer.files;
+    // Prevent default browser behavior for drag events
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
 
-  // Checking if there are any files
-  if (files.length) {
-    // Assigning the files to the hidden input from the first step
-    fileInput.files = files;
+    // Handle dropping files into the drop area
+    function handleDrop(e) {
+        e.preventDefault();
 
-    // Processing the files for previews (next step)
-    handleFiles(files);
-  }
-}
+        const files = e.dataTransfer.files; // Files from drag-and-drop
+        const dataTransfer = new DataTransfer();
 
-// We’ll discuss `handleFiles` function down the road
-function handleFiles(files) {
-  for (const file of files) {
-    // Initializing the FileReader API and reading the file
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
+        // Add existing files already in the input
+        if (fileInput.files.length > 0) {
+            for (const existingFile of fileInput.files) {
+                dataTransfer.items.add(existingFile);
+            }
+        }
 
-    // Once the file has been loaded, fire the processing
-    reader.onloadend = function (e) {
-      const preview = document.createElement('img');
+        // Add new files from drag and drop
+        for (const file of files) {
+            dataTransfer.items.add(file);
+        }
 
-      if (isValidFileType(file)) {
-        preview.src = e.target.result;
-      }
+        // Update the input's files and process them
+        fileInput.files = dataTransfer.files;
+        handleFiles(fileInput.files);
+    }
 
-      // Apply styling
-      preview.classList.add('preview-image');
-      const previewContainer = document.getElementById('preview-container');
-      previewContainer.appendChild(preview);
-    };
-  }
-}
+    // Process and preview files
+    function handleFiles(files) {
+        for (const file of files) {
+            // Skip duplicate files
+            if (processedFiles.has(file.name)) {
+                continue;
+            }
 
-// We’ll discuss `isValidFileType` function down the road
-function isValidFileType(file) {
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-  return allowedTypes.includes(file.type);
-}
+            // Validate file type
+            if (!isValidFileType(file)) {
+                alert(`Invalid file type: ${file.name}`);
+                continue;
+            }
 
+            // Add the file to the Set to prevent duplicates
+            processedFiles.add(file.name);
 
-dropArea.addEventListener('dragover', () => {
-  dropArea.classList.add('drag-over');
-});
+            // Use FileReader to generate preview
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
 
-dropArea.addEventListener('dragleave', () => {
-  dropArea.classList.remove('drag-over');
-});
+            reader.onloadend = function(e) {
+                const preview = document.createElement('img');
+                preview.src = e.target.result;
+                preview.classList.add('preview-image');
+                previewContainer.appendChild(preview);
+            };
+        }
+    }
+
+    // File type validation function
+    function isValidFileType(file) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        return allowedTypes.includes(file.type);
+    }
+
+    // Drag styling (optional: highlight the drop area on dragover)
+    dropArea.addEventListener('dragover', () => {
+        dropArea.classList.add('drag-over');
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+        dropArea.classList.remove('drag-over');
+    });
 </script>
+
