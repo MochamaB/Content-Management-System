@@ -147,10 +147,10 @@ class AppServiceProvider extends ServiceProvider
        
     }
 
-        view()->composer('client.slider', function ($view) {
-            $slider = Slider::all();
-            $view->with(['slider' => $slider]);
-        });
+    //    view()->composer('client.slider', function ($view) {
+     //       $slider = Slider::all();
+     //       $view->with(['slider' => $slider]);
+    //    });
 
 
         view()->composer('client.testimonial', function ($view) {

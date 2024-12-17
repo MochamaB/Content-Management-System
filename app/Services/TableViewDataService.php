@@ -1465,6 +1465,8 @@ class TableViewDataService
             if (!$item->unitdetails()->exists()) {
                 $addListingLink = '<a href="' .  $url . 
                     '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>Add Listing</a><br/>';
+            } else{
+                $addListingLink = '<span class="badge badge-information"> Listed </span>';
             }
             //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
             $unit =     '<div class="d-flex "> <img src="' . $coverimage . '" alt="">

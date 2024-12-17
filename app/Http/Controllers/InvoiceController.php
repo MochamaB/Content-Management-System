@@ -376,8 +376,8 @@ class InvoiceController extends Controller
     // Prepare chart data
     return [
         'title' => 'Invoices by Status',
-        'labels' => $filteredStatuses, // Only statuses with counts
-        'data' => $statusCounts,       // Counts for those statuses
+        'labels' => $filteredStatuses ?? 'No Data', // Only statuses with counts
+        'data' => $statusCounts ?? '1',       // Counts for those statuses
         'colors' => $filteredColors, // Custom colors
     ];
 }

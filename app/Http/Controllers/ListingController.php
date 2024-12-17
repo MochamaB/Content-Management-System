@@ -228,6 +228,7 @@ class ListingController extends Controller
     public function update(Request $request, $id)
     {
         $unitDetail = UnitDetail::findOrFail($id);
+        $unit = Unit::findOrFail($unitDetail->unit_id);
          // Check if 'amenities' are in the request and update
     if ($request->has('amenities')) {
          // Save the amenities as JSON
@@ -244,20 +245,32 @@ class ListingController extends Controller
     } if ($request->has('size')) {
         $unitDetail->size = $request->size;
     }
-  //  dd($request->file('photos',[]));
+   
+     // Check and handle removed photos
+     if ($request->filled('removed_photos')) {
+        $removedPhotoIds = explode(',', $request->input('removed_photos'));
+
+        // Debugging: Ensure IDs are correctly parsed
+        // dd($removedPhotoIds);
+
+        foreach ($removedPhotoIds as $photoId) {
+            $unit->deleteMedia($photoId); // Delete media by ID
+        }
+    }
      // Ensure multiple file upload works
      if ($request->hasFile('photos')) {
        
-        $unit = Unit::findOrFail($unitDetail->unit_id);
+        
         $photos = $request->file('photos',[]);
         foreach ($photos as $photo) {
+          //  $this->uploadMediaAction->editMediaUpload($unit, 'photos', 'unit-photo', $request);
             $unit->addMedia($photo)->toMediaCollection('unit-photo'); // Save to 'unit-photos'
         }
 
      }
         $unitDetail->save();
 
-    return redirect()->back()->with('status', 'Amenities updated successfully.');
+    return redirect()->back()->with('status', 'Listing updated successfully.');
 
     }
     

@@ -66,6 +66,6 @@
     <div id="doughnutChart-legend" class="mt-3 text-center"></div>
 </div>
 <script>
-    const doughnutChartData = @json($chartData); // Pass chartData dynamically from PHP
-    console.log(chartData);
+     window.doughnutChartData = @json($chartData);
+     console.log(window.doughnutChartData); 
 </script>

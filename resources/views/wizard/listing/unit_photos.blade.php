@@ -59,9 +59,19 @@
     <input type="file" id="file-input" name="photos[]" multiple hidden>
     <div id="preview-container">
         @foreach($photos as $photo)
-        <img src="{{ $photo->getUrl() }}" alt="Image" class="preview-image">
+        <div class="image-wrapper" style="position: relative; display: inline-block; margin: 0px;" data-id="{{ $photo->id }}">
+            <img src="{{ $photo->getUrl() }}" alt="Image" class="preview-image" style="max-width: 150px; max-height: 150px;">
+            <!-- Remove button -->
+            <button type="button" class="remove-btn" style="
+                position: absolute; top: 0; left: 0; background: red; color: white;
+                border: none; cursor: pointer; border-radius: 50%; width: 25px; height: 25px;
+            ">✕</button>
+        </div>
         @endforeach
     </div>
+
+    <!-- Hidden input field to store IDs of removed photos -->
+    <input type="hidden" id="removed-photos" name="removed_photos" value="">
 
     <hr>
     <div class="col-md-6">
@@ -71,7 +81,6 @@
 
 @endif
 <script>
-
     const dropArea = document.getElementById('drop-area');
     const fileInput = document.getElementById('file-input');
     const browseButton = document.getElementById('browse-btn');
@@ -127,6 +136,8 @@
 
     // Process and preview files
     function handleFiles(files) {
+        const dataTransfer = new DataTransfer();
+
         for (const file of files) {
             // Skip duplicate files
             if (processedFiles.has(file.name)) {
@@ -142,17 +153,68 @@
             // Add the file to the Set to prevent duplicates
             processedFiles.add(file.name);
 
+            // Add to new DataTransfer object to manage the input file list
+            dataTransfer.items.add(file);
+
             // Use FileReader to generate preview
             const reader = new FileReader();
             reader.readAsDataURL(file);
 
             reader.onloadend = function(e) {
+                // Create a container for image and remove button
+                const imageWrapper = document.createElement('div');
+                imageWrapper.classList.add('image-wrapper');
+                imageWrapper.style.position = 'relative';
+                imageWrapper.style.display = 'inline-block';
+                imageWrapper.style.margin = '10px';
+
                 const preview = document.createElement('img');
                 preview.src = e.target.result;
                 preview.classList.add('preview-image');
-                previewContainer.appendChild(preview);
+                preview.style.maxWidth = '150px';
+                preview.style.maxHeight = '150px';
+
+                // Create the remove button
+                const removeButton = document.createElement('button');
+                removeButton.textContent = '✕';
+                removeButton.classList.add('remove-btn');
+                removeButton.style.position = 'absolute';
+                removeButton.style.top = '0';
+                removeButton.style.left = '0';
+                removeButton.style.background = 'red';
+                removeButton.style.color = 'white';
+                removeButton.style.border = 'none';
+                removeButton.style.cursor = 'pointer';
+                removeButton.style.borderRadius = '50%';
+                removeButton.style.width = '25px';
+                removeButton.style.height = '25px';
+
+                // Add remove functionality
+                removeButton.addEventListener('click', function() {
+                    imageWrapper.remove(); // Remove the image container
+                    processedFiles.delete(file.name); // Remove the file name from the Set
+
+                    // Update the input file list
+                    const newDataTransfer = new DataTransfer();
+                    for (let i = 0; i < fileInput.files.length; i++) {
+                        if (fileInput.files[i].name !== file.name) {
+                            newDataTransfer.items.add(fileInput.files[i]);
+                        }
+                    }
+                    fileInput.files = newDataTransfer.files;
+                });
+
+                // Append the remove button and preview image to the wrapper
+                imageWrapper.appendChild(preview);
+                imageWrapper.appendChild(removeButton);
+
+                // Add the wrapper to the preview container
+                previewContainer.appendChild(imageWrapper);
             };
         }
+
+        // Update the file input with the latest files
+        fileInput.files = dataTransfer.files;
     }
 
     // File type validation function
@@ -170,4 +232,34 @@
         dropArea.classList.remove('drag-over');
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const previewContainer = document.getElementById('preview-container');
+    const removedPhotosInput = document.getElementById('removed-photos');
 
+    // Array to store IDs of removed photos
+    let removedPhotoIds = [];
+
+    // Attach event listener to the preview container
+    previewContainer.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-btn')) {
+            const imageWrapper = e.target.closest('.image-wrapper');
+            if (imageWrapper) {
+                const photoId = imageWrapper.getAttribute('data-id');
+
+                // Add the ID to the removedPhotoIds array
+                if (photoId) {
+                    removedPhotoIds.push(photoId);
+                }
+
+                // Update the hidden input field
+                removedPhotosInput.value = removedPhotoIds.join(',');
+
+                // Remove the image wrapper from the DOM
+                imageWrapper.remove();
+            }
+        }
+    });
+});
+
+</script>

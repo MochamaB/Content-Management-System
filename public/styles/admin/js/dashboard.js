@@ -765,8 +765,13 @@
     }
 
     if ($("#doughnutChart").length) { 
-      const chartData = window.doughnutChartData; // Chart data from PHP
+      const doughnutChartData = window.doughnutChartData || {
+        labels: ['No Data'],
+        data: [1],
+        colors: ['#E0E0E0']
+    }; // Chart data from PHP
       const doughnutChartCanvas = document.getElementById('doughnutChart');
+      
       new Chart(doughnutChartCanvas, {
           type: 'doughnut',
           data: {
