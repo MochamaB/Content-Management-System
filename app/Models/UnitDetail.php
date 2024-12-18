@@ -17,9 +17,13 @@ class UnitDetail extends Model
             'description',
             'size',
             'slug',
+            'feautured',
             'amenities',
             'additional_features',
             
+    ];
+    protected $casts = [
+        'featured' => 'boolean',
     ];
 
     public static $fields = [

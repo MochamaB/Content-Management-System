@@ -185,6 +185,10 @@ class Property extends Model implements HasMedia, Auditable
     {
         return $this->morphMany(Audit::class, 'auditable');
     }
+    public function sliders()
+    {
+        return $this->hasMany(Slider::class, 'property_id');
+    }
 
     public function getIdentifier()
     {

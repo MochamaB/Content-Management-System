@@ -78,7 +78,7 @@ class TableViewDataService
     {
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['UNIT', 'TYPE', 'BEDS', 'BATHS', 'LEASE', 'ACTIONS',''],
+            'headers' => ['UNIT', 'TYPE', 'BEDS', 'BATHS', 'LEASE','LISTING', 'ACTIONS',''],
             'rows' => [],
         ];
 
@@ -105,7 +105,7 @@ class TableViewDataService
                 // Check for lease status
                 if ($item->lease) {
                     if ($item->lease->status === Lease::STATUS_ACTIVE) {
-                        $leaseStatus = '<span class="badge badge-active">Active</span>';
+                        $leaseStatus = '<span class="badge badge-active"> Occupied </span>';
                     } elseif ($item->lease->status === Lease::STATUS_TERMINATED) {
                         $leaseStatus = '<span class="badge badge-danger">Terminated</span>';
                         // Add button to create a new lease
@@ -114,13 +114,22 @@ class TableViewDataService
                     }
                 } else {
                     // No lease exists
-                    $leaseStatus = '<span class="badge badge-danger">No Lease</span>';
+                    $leaseStatus = '<span class="badge badge-danger">Vacant</span>';
                     // Add button to create a new lease
                     $addLease = '<a href="' . url('lease/create/') . '" class="table">
                     <i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i> Add Lease</a>';
                 }
             }else{
-                $leaseStatus = '<span class="badge badge-danger">No Lease</span>';
+                $leaseStatus = '<span class="badge badge-danger">Vacant</span>';
+            }
+            // LISTING DATA
+            $addListingLink ='';
+            $listingUrl = url('listing/create/' . $item->id);
+            if (!$item->unitdetails()->exists()) {
+                $addListingLink = '<a href="' .  $listingUrl . 
+                    '" class="table"><i class="mdi mdi-plus-circle-outline mr-1" style="vertical-align: middle;font-size:1.4rem"></i>Add Listing</a><br/>';
+            } else{
+                $addListingLink = '<span class="badge badge-information"> Listed </span>';
             }
            
             $isDeleted = $item->deleted_at !== null;
@@ -131,6 +140,7 @@ class TableViewDataService
                 $item->bedrooms,
                 $item->bathrooms,
                 $leaseStatus,
+                $addListingLink,
                 $addLease,
                 'isDeleted' => $isDeleted,
             ];
@@ -1494,7 +1504,15 @@ class TableViewDataService
 
     public function generateListingTabContents($listing)
     {
+         // Check if listing is empty
+    if ($listing->isEmpty()) {
+        return [
+            'tabTitles' => [],
+            'tabContents' => []
+        ];
+    }
         $listing = $listing->first();
+        
         $unit = Unit::findOrFail($listing->unit_id);
         $selectedProperty = Property::findOrFail($unit->property_id);
         $allAmenities = Amenity::whereHas('properties', function ($query) use ($selectedProperty) {

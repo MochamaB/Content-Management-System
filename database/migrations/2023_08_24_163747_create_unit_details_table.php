@@ -21,6 +21,7 @@ class CreateUnitDetailsTable extends Migration
             $table->text('description')->nullable();
             $table->integer('size')->nullable();
             $table->string('slug')->nullable();
+            $table->boolean('featured')->default(0);
             $table->json('amenities')->nullable();
             $table->json('additional_features')->nullable();
             $table->timestamps();

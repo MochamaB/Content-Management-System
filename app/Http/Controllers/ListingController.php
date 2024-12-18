@@ -164,6 +164,7 @@ class ListingController extends Controller
         if (!$wizardData) {
             return redirect()->back()->with('error', 'No wizard data found in session.');
         }
+      //  dd($request->file('photos',[]));
 
         // Step 3: Create a new UnitDetails record
         $unitDetails = new UnitDetail();
@@ -182,6 +183,7 @@ class ListingController extends Controller
          if (!$unit) {
              return redirect()->back()->with('error', 'Unit not found.');
          }
+        
          // Step 4: Upload and attach photos to the Unit model
         if ($request->hasFile('photos')) {
             $photos = $request->file('photos',[]);

@@ -1,9 +1,3 @@
-<body>
-
-    <div id="preloader">
-        <div id="status">&nbsp;</div>
-    </div>
-    <!-- Body content -->
 
     <div class="header-connect">
         <div class="container">
@@ -43,7 +37,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a class="navbar-brand" href="{{ url('/') }}" style="padding: 0px;">
                     @if (isset($sitesettings) && method_exists($sitesettings, 'getFirstMediaUrl'))
                     <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
                     @else

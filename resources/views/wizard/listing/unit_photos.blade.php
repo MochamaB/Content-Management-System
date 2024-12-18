@@ -30,7 +30,11 @@
 <form method="POST" action="{{ url('listing') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
     <div id="drop-area">
-        Drag here to preview
+        <div class="text-center mt-1 mb-2">
+            <img src="{{ url('uploads/upload.png') }}" alt="" class="img-fluid" style="max-width: 150px;">
+            <h6 style="color:blue"> Drag and drop files or browse to Upload </h6>
+        </div>
+        <button type="button" id="browse-btn" class="btn btn-primary btn-lg text-white mb-0 me-0"> Browse Files</button>
     </div>
     <input type="file" id="file-input" name="photos[]" multiple hidden>
     <div id="preview-container"></div>
@@ -137,6 +141,11 @@
     // Process and preview files
     function handleFiles(files) {
         const dataTransfer = new DataTransfer();
+        // Re-add existing files to preserve them
+        for (let i = 0; i < fileInput.files.length; i++) {
+            dataTransfer.items.add(fileInput.files[i]);
+        }
+
 
         for (const file of files) {
             // Skip duplicate files
@@ -160,7 +169,7 @@
             const reader = new FileReader();
             reader.readAsDataURL(file);
 
-            reader.onloadend = function(e) {
+            reader.onload = function (e) {
                 // Create a container for image and remove button
                 const imageWrapper = document.createElement('div');
                 imageWrapper.classList.add('image-wrapper');
@@ -211,6 +220,7 @@
                 // Add the wrapper to the preview container
                 previewContainer.appendChild(imageWrapper);
             };
+            reader.readAsDataURL(file);
         }
 
         // Update the file input with the latest files
@@ -233,33 +243,32 @@
     });
 </script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const previewContainer = document.getElementById('preview-container');
-    const removedPhotosInput = document.getElementById('removed-photos');
+    document.addEventListener('DOMContentLoaded', function() {
+        const previewContainer = document.getElementById('preview-container');
+        const removedPhotosInput = document.getElementById('removed-photos');
 
-    // Array to store IDs of removed photos
-    let removedPhotoIds = [];
+        // Array to store IDs of removed photos
+        let removedPhotoIds = [];
 
-    // Attach event listener to the preview container
-    previewContainer.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-btn')) {
-            const imageWrapper = e.target.closest('.image-wrapper');
-            if (imageWrapper) {
-                const photoId = imageWrapper.getAttribute('data-id');
+        // Attach event listener to the preview container
+        previewContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-btn')) {
+                const imageWrapper = e.target.closest('.image-wrapper');
+                if (imageWrapper) {
+                    const photoId = imageWrapper.getAttribute('data-id');
 
-                // Add the ID to the removedPhotoIds array
-                if (photoId) {
-                    removedPhotoIds.push(photoId);
+                    // Add the ID to the removedPhotoIds array
+                    if (photoId) {
+                        removedPhotoIds.push(photoId);
+                    }
+
+                    // Update the hidden input field
+                    removedPhotosInput.value = removedPhotoIds.join(',');
+
+                    // Remove the image wrapper from the DOM
+                    imageWrapper.remove();
                 }
-
-                // Update the hidden input field
-                removedPhotosInput.value = removedPhotoIds.join(',');
-
-                // Remove the image wrapper from the DOM
-                imageWrapper.remove();
             }
-        }
+        });
     });
-});
-
 </script>

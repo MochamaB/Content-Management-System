@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Property;
 use Illuminate\Http\Request;
 use App\Models\Slider;
 use App\Traits\FormDataTrait;
@@ -84,9 +85,10 @@ class SliderController extends Controller
      */
     public function create()
     {
-        $viewData = $this->sliderData();
+        $properties = Property::all();
+      //  $viewData = $this->sliderData();
 
-        return View('admin.CRUD.form',$viewData);
+        return View('admin.Website.create_slider',compact('properties'));
     }
 
     /**
@@ -97,25 +99,25 @@ class SliderController extends Controller
      */
     public function store(Request $request)
     {
+       
+        
         $validatedData = $request->validate([
+            'property_id' => 'required',
             'slider_title' => 'required',
-            'slider_picture' => 'required|image|mimes:jpg,png,jpeg,gif,svg,jfif|dimensions:min_width=1500,min_height=700,max:2048',
+            'slider_picture' => 'required|image|mimetypes:image/jpeg,image/png,image/gif,image/svg,image/jfif|max:2048',
             'slider_desc' => 'nullable',
             'slider_info' => 'nullable',
         ], [
             'slider_picture.required' => 'Please upload an image.',
             'slider_picture.image' => 'Invalid image format. Only JPG, PNG, JPEG, GIF, or SVG allowed.',
-            'slider_picture.dimensions' => 'Slider Image dimensions should be at least 3500x2500 pixels.',
             'slider_picture.max' => 'Image size should not exceed 2MB.',
         ]);
-
         $slider = new Slider();
         $slider->fill($validatedData);
 
-        if ($request->file('slider_picture')) {
-            $fieldName = 'slider_picture';
-            $mediaCollection = 'slider';
-            $slider->UploadNewImage($slider, $fieldName, $mediaCollection, $request);
+        if ($request->hasFile('slider_picture')) {
+            $slider->addMediaFromRequest('slider_picture')
+                ->toMediaCollection('slider');
         }
         
         $slider->save();

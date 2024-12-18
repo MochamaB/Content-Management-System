@@ -1,6 +1,9 @@
-@include('layouts.client.header')
-@include('layouts.client.navbar')
+@extends('layouts.client.client')
+
+@section('content')
+
 @include('client.slider')
 @include('client.testimonial')
 
-@include('layouts.client.footer')
+
+@endsection

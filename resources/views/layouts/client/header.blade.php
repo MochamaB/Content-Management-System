@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> 
-<html class="no-js"> <!--<![endif]-->
+
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>BRIDGETECH PROPERTIES | Home page</title>
+        <title>{{$sitesettings->site_name ?? 'SITE NAME'}}</title>
         <meta name="description" content="bridgetech Site">
         <meta name="author" content="Brian">
         <meta name="keyword" content="html5, css, bootstrap, property, real-estate theme , bootstrap template">
