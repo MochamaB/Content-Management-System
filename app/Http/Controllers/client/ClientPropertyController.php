@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Property;
 use Illuminate\Http\Request;
 
 class ClientPropertyController extends Controller
@@ -14,7 +15,8 @@ class ClientPropertyController extends Controller
      */
     public function index()
     {
-        return view('client.Property.property_index', );
+        $properties = Property::with('sliders','propertyType')->get();
+        return view('client.Property.property_index', compact('properties'));
     }
 
     /**
