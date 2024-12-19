@@ -229,6 +229,7 @@ class ListingController extends Controller
      */
     public function update(Request $request, $id)
     {
+      //  dd($request->file('photos',[]));
         $unitDetail = UnitDetail::findOrFail($id);
         $unit = Unit::findOrFail($unitDetail->unit_id);
          // Check if 'amenities' are in the request and update

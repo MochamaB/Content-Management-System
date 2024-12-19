@@ -7,7 +7,7 @@
     </div>
     <div>
       <a class="navbar-brand brand-logo" href="">
-        <img src="{{url('uploads/images/Bridgetechlogo2.png')}}" alt="No Image" style="height: 90%; width: 100%;">
+        <img src="{{url('uploads/realsyslogosmall.png')}}" alt="No Image" style="height: 90%; width: 100%;">
       </a>
       <a class="navbar-brand brand-logo-mini" href="">
       <img src="{{url('uploads/images/Bridgetechlogo2.png')}}" alt="No Image" style="height: 90%; width: 70%;">

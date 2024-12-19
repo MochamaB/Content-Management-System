@@ -8,6 +8,7 @@ use App\Http\Controllers\SliderController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\AmenityController;
 use App\Http\Controllers\ChartOfAccountController;
+use App\Http\Controllers\Client\ClientPropertyController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UnitDetailsController;
@@ -75,6 +76,7 @@ use App\Notifications\PaymentNotification;
 
 
 Route::get('/', [App\Http\Controllers\client\HomeController::class, 'index']);
+Route::resource('properties', ClientPropertyController::class);
 
 
 Route::group(['middleware' => ['auth', 'permission','verified']], function () {

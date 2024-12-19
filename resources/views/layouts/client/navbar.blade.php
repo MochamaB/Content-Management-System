@@ -41,7 +41,7 @@
                     @if (isset($sitesettings) && method_exists($sitesettings, 'getFirstMediaUrl'))
                     <img src="{{ $sitesettings->getFirstMediaUrl('logo')}}" alt="Logo" style="height: 70px; width: 150px;">
                     @else
-                    <img src="{{ url('uploads/images/default_logo.png') }}" alt="No Image" style="height: 70px; width: 150px;">
+                    <img src="{{ url('uploads/realsyslogosmall.png') }}" alt="No Image" style="height: 70px; width: 150px;">
                     @endif
                 </a>
             </div>
@@ -54,7 +54,7 @@
                 </div>
                 <ul class="main-nav nav navbar-nav navbar-right">
                     <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="{{ url('/')}}">Home</a></li>
-
+                    <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="{{ url('/properties')}}">Properties</a></li>
                     <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="">For Rent</a></li>
                     <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="">For Sale</a></li>
 
