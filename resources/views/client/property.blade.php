@@ -29,11 +29,11 @@
                             <div class="box-two proerty-item">
                                 <div class="item-thumb">
                                     @if($property->sliders->isNotEmpty())
-                                    <a href="{{ route('property.show', $property->id) }}">
+                                    <a href="{{ url('/properties/'.$property->id)}}">
                                         <img src="{{ $property->sliders->first()->getFirstMediaUrl('slider', 'thumb') }}" alt="Property Image">
                                     </a>
                                     @else
-                                    <a href="{{ route('property.show', $property->id) }}">
+                                    <a href="{{ url('/properties/'.$property->id)}}">
                                         <img src="{{ url('uploads/default/defaultproperty2.jpg') }}" alt="Default Property Image">
                                     </a>
                                     @endif
@@ -50,15 +50,8 @@
                                 </div>
                             </div>
                         </div>
-                        @empty
-                        <!-- Show message when no properties are available -->
-                        <div class="col-12 text-center">
-                            <h4>No properties available at the moment.</h4>
-                        </div>
-                        @endforelse
-
-                        <!-- "Show All Properties" box -->
-                        <div class="col-sm-12 col-md-3 p0">
+                         <!-- "Show All Properties" box -->
+                         <div class="col-sm-12 col-md-3 p0">
                             <div class="box-tree more-proerty text-center">
                                 <div class="item-tree-icon">
                                     <i class="fa fa-th"></i>
@@ -66,10 +59,18 @@
                                 <div class="more-entry overflow">
                                     <h5><a href="">CAN'T DECIDE?</a></h5>
                                     <h5 class="tree-sub-ttl">Show all properties</h5>
-                                    <a href="" class="btn border-btn more-black">All properties</a>
+                                    <a href="{{ url('/properties')}}" class="btn border-btn more-black">All properties</a>
                                 </div>
                             </div>
                         </div>
+                        @empty
+                        <!-- Show message when no properties are available -->
+                        <div class="col-12 text-center">
+                            <h4>No properties available at the moment.</h4>
+                        </div>
+                        @endforelse
+
+                       
 
                     </div> <!-- /.proerty-th -->
                 </div> <!-- /.row -->

@@ -20,7 +20,6 @@ class Slider extends Model implements HasMedia
         'slider_title',
         'slider_picture',
         'slider_desc',
-        'slider_info',
       
             
     ];

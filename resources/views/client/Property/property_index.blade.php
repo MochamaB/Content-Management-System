@@ -75,7 +75,12 @@
                         <h3 class="panel-title">Property Details</h3>
                     </div>
                     <div class="panel-body text-widget">
-                        <p>Improved own provided blessing may peculiar domestic. Sight house has sex never. No visited raising gravity outward subject my cottage mr be. Hold do at tore in park feet near my case.
+                    <p><span class="pull-left"><b>Property Type :</b> {{ $property->propertyType->property_category }}</span></p>
+                    <p><span class="pull-left"><b>Location :</b> {{ $property->property_location }} {{ $property->property_streetname }}</span></p>
+                    <p><span class="pull-left"><b>Amount of Units :</b> {{ $property->units->count() }} </span></p>
+                        <p>
+                        <span class="pull-left"><b>Description :</b>
+                            Improved own provided blessing may peculiar domestic. Sight house has sex never. No visited raising gravity outward subject my cottage mr be. Hold do at tore in park feet near my case.
                         </p>
 
                     </div>

@@ -17,19 +17,19 @@
             <div class="form-group">
                 <label class="label">Company Logos</label>
                 <input type="file" name="company_logo" value="{{ $sitesettings->company_logo ?? '' }}" class="form-control" id="logo" />
-                @if (isset($sitesettings) && method_exists($sitesettings, 'getFirstMediaUrl'))
+                @if (isset($sitesettings) && $sitesettings->hasMedia('logo'))
                     <img id="logo-image-before-upload" src="{{ $sitesettings->getFirstMediaUrl('logo') ?? '' }}" style="height: 200px; width: 200px;">
                 @else
-                    <img id="logo-image-before-upload" src="{{ url('uploads/images/default_logo.png') }}" alt="No Image" style="height: 200px; width: 200px;">
+                    <img id="logo-image-before-upload" src="{{ url('uploads/default/defaultlogo.png') }}" alt="No Image" style="height: 200px; width: 200px;">
                 @endif
             </div>
             <div class="form-group">
                 <label class="label">flavicon</label>
                 <input type="file" name="company_flavicon" value="{{ old('company_flavicon') ?? '' }}" class="form-control" id="flavicon" />
-                @if (isset($sitesettings) && method_exists($sitesettings, 'getFirstMediaUrl'))
+                @if (isset($sitesettings) && $sitesettings->hasMedia('logo'))
                 <img id="flavicon-image-before-upload" src="{{ $sitesettings->getFirstMediaUrl('flavicon') ?? '' }}" style="height: 100px; width: 90px;">
                 @else
-                <img id="flavicon-image-before-upload" src="{{ url('uploads/images/default_logo.png') }}" alt="No Image" style="height: 100px; width: 90px;">
+                <img id="flavicon-image-before-upload" src="{{ url('uploads/default/defaultlogo.png') }}" alt="No Image" style="height: 100px; width: 90px;">
                 @endif
             </div>
             <hr>

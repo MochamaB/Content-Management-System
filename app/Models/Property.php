@@ -18,11 +18,15 @@ class Property extends Model implements HasMedia, Auditable
     use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
     protected $table = 'properties';
     protected $fillable = [
+        'user_id',
         'property_name',
+        'property_slogan',
         'property_type',
         'property_location',
         'property_streetname',
+        'property_description',
         'property_status',
+
 
     ];
     protected $relationships = [
