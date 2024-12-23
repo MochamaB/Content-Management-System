@@ -28,7 +28,6 @@ class Slider extends Model implements HasMedia
         'slider_title' => ['label' => 'TITLE', 'inputType' => 'text','required' =>true,'readonly' => ''],
         'slider_picture' => ['label' => 'Slider Picture', 'inputType' => 'picture','required' =>true, 'readonly' => ''],
         'slider_desc' => ['label' => 'Description', 'inputType' => 'textarea', 'required' =>true,'readonly' => ''],
-        'slider_info' => ['label' => 'Information', 'inputType' => 'textarea', 'required' =>true,'readonly' => ''],
       
        
       

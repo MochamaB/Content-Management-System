@@ -61,6 +61,7 @@ class InvoiceController extends Controller
         $baseQuery = Invoice::with('unit', 'property', 'payments')->ApplyCurrentMonthFilters($filters);
         $cardDashboad = $this->cardService->invoiceCard($baseQuery->get());
         $chartData = $this->getInvoiceStatusChartData($baseQuery->get());
+        $dashboardConfig = $this->dashboard($baseQuery->get());
         $tabTitles = ['All'] + Invoice::$statusLabels;
         // Convert the associative array to an indexed array to manipulate the order
         $tabTitles = array_merge(['All'], Invoice::$statusLabels);
@@ -113,7 +114,36 @@ class InvoiceController extends Controller
           //  ,['cardData' => $cardData]
       //  ));
 
-        return View('admin.CRUD.form', compact( 'controller','tabTitles', 'tabContents','filters','filterdata','cardDashboad','tabCounts','chartData'));
+        return View('admin.CRUD.form', compact( 'dashboardConfig','controller','tabTitles', 'tabContents','filters','filterdata','cardDashboad','tabCounts','chartData'));
+    }
+
+    ///TOP DASHBOARD DATA FUNCTION
+    protected function dashboard($data)
+    {
+        return [
+            'rows' => [
+                [
+                    'columns' => [
+                        [
+                            'width' => 'col-md-7',
+                            'component' => 'admin.Dashboard.widgets.totalcard',
+                            'data' => [
+                                'cardData' => $this->cardService->invoiceCard($data),
+                                'title' => 'Overview'
+                            ]
+                        ],
+                        [
+                            'width' => 'col-md-5',
+                            'component' => 'admin.Dashboard.charts.doughnutChart',
+                            'data' => [
+                                'chartData' => $this->getInvoiceStatusChartData($data),
+                                'title' => 'Invoice Status'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 
 

@@ -1,3 +1,4 @@
+
 <form id="dateRangeForm" action="{{ url($routeParts[0]) }}" method="GET">
     <div class="d-flex align-items-center">
         <!-- Select Input -->

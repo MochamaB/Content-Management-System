@@ -159,6 +159,7 @@ class CardService
 
         // Calculate the occupancy rate
         $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
+        
         // Format the occupancy rate (optional)
         $formattedOccupancyRate = number_format($occupancyRate, 1);
         $ticketcount =  $property->flatMap(function ($property) {
@@ -178,10 +179,26 @@ class CardService
             'Commercial' => ['title' => 'Commercial', 'value' => $commercialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
             'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
             'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
-            'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '', 'desc' => ''],
+          //  'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '', 'desc' => ''],
 
         ];
         return $cards;
+    }
+    public function propertyOccupancyRate($property)
+    {
+        $unitCount =  $property->flatMap(function ($property) {
+            return $property->units;
+        })->count();
+        $unitOccupied = $property->flatMap(function ($property) {
+            return $property->units->filter(function ($unit) {
+                return $unit->lease && $unit->lease->status == 'Active'; // Example condition
+            });
+        })->count();
+          // Calculate the occupancy rate
+          $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
+
+          return $occupancyRate;
+
     }
     public function unitCard($units)
     {

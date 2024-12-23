@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class ClientListingController extends Controller
+class ContactController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,18 +14,8 @@ class ClientListingController extends Controller
      */
     public function index()
     {
-        return view('client.Property.property_index');
+        return view('client.Property.property_contact');
     }
-
-    public function forrent()
-    {
-        return view('client.Property.property_forrent');
-    }
-    public function forsale()
-    {
-        return view('client.Property.property_forsale');
-    }
-
 
     /**
      * Show the form for creating a new resource.

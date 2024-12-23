@@ -54,6 +54,7 @@ class PropertyController extends Controller
         $cardData = $this->cardService->propertyCard($tablevalues);
         //   $tablevalues = Property::withUserUnits()->get();
         $viewData = $this->formData($this->model);
+        $dashboardConfig = $this->dashboard($tablevalues);
      //   $cardData = $this->cardData($this->model);
       //  dd($cardData);
         $controller = $this->controller;
@@ -81,7 +82,36 @@ class PropertyController extends Controller
             'viewData' => $viewData,
             'filterdata' => $filterdata,
             'cardData' => $cardData,
+            'dashboardConfig' => $dashboardConfig
         ]);
+    }
+     ///TOP DASHBOARD DATA FUNCTION
+    protected function dashboard($data)
+    {
+        return [
+            'rows' => [
+                [
+                    'columns' => [
+                        [
+                            'width' => 'col-md-9',
+                            'component' => 'admin.Dashboard.widgets.card',
+                            'data' => [
+                                'cardData' => $this->cardService->propertyCard($data),
+                                'title' => 'Overview'
+                            ]
+                        ],
+                        [
+                            'width' => 'col-md-3',
+                            'component' => 'admin.Dashboard.charts.circleProgressChart',
+                            'data' => [
+                                'percentage' =>  $this->cardService->propertyOccupancyRate($data),
+                                'title' => 'Occupancy Rate'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**
@@ -117,7 +147,7 @@ class PropertyController extends Controller
             $validatedData = $request->validate($validationRules);
             $property = new Property;
             $property->fill($validatedData);
-            $property->property_status ='Active';
+          //  $property->property_status ='Active';
             $property->save();
 
             return redirect()->route('property.show', $property->id)->with('status', 'Property Added Successfully');

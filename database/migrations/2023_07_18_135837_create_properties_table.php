@@ -17,7 +17,7 @@ class CreatePropertiesTable extends Migration
             $table->id()->index();
             $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('property_name');
-            $table->string('property_slogan')->default('Where modern style meets comfort.');
+            $table->string('property_slogan')->default('Where modern style meets comfort.')->nullable();
             $table->string('property_type');
             $table->string('property_location');
             $table->string('property_streetname');

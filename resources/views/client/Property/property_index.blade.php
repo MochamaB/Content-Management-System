@@ -1,6 +1,15 @@
 @extends('layouts.client.client')
 
 @section('content')
+<div class="page-head"> 
+            <div class="container">
+                <div class="row">
+                    <div class="page-head-content">
+                        <h1 class="page-title">All Properties</h1>               
+                    </div>
+                </div>
+            </div>
+        </div>
 
 <div class="content-area blog-page padding-top-40" style="background-color: #FCFCFC; padding-bottom: 55px;">
     <div class="container">

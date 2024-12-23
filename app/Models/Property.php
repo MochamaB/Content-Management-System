@@ -45,6 +45,9 @@ class Property extends Model implements HasMedia, Auditable
         'property_name' => ['label' => 'Property Name', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_location' => ['label' => 'Location', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
         'property_streetname' => ['label' => 'Street Address', 'inputType' => 'text', 'required' => true, 'readonly' => ''],
+        'property_slogan' => ['label' => 'Slogan', 'inputType' => 'text', 'required' => false, 'readonly' => ''],
+        'user_id' => ['label' => 'Property Agent / Manager', 'inputType' => 'select', 'required' => false, 'readonly' => ''],
+        'property_description' => ['label' => 'Description', 'inputType' => 'textarea', 'required' => false, 'readonly' => ''],
 
 
 
@@ -56,6 +59,9 @@ class Property extends Model implements HasMedia, Auditable
         'property_name' => 'required',
         'property_location' => 'required',
         'property_streetname' => 'required',
+        'user_id' => 'nullable',
+        'property_slogan' => 'nullable',
+        'property_description' => 'nullable',
 
     ];
 
@@ -65,6 +71,9 @@ class Property extends Model implements HasMedia, Auditable
         'property_location',
         'property_streetname',
         'property_status',
+        'user_id',
+        'property_slogan',
+        'property_description',
         // Add other attributes you want to audit here.
     ];
     protected $auditThreshold = 10;
@@ -92,6 +101,19 @@ class Property extends Model implements HasMedia, Auditable
                     $data[$category] = $propertytype->pluck('property_type', 'id')->toArray();
                 }
                 return $data;
+                case 'user_id':
+                    // Retrieve the supervised units' properties
+                    $users = User::with('units', 'roles')
+                    ->visibleToUser()
+                    ->excludeTenants()
+                    ->get()
+                    ->mapWithKeys(function ($user) {
+                        return [$user->id => $user->firstname . ' ' . $user->lastname];
+                    });
+                    return $users;
+                case 'property_slogan':
+                $slogan = 'Where modern style meets comfort.';
+                return $slogan;
         }
     }
 

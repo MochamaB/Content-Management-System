@@ -87,11 +87,10 @@
         @endif
         <!--link -->
         <!--- Footer -->
-        @if (isset($card['count']) && $card['count'] !== '')
-        <h6 class="text-muted text-center mt-3" >
-                        <span class="badge badge-dark">
-                        {{$card['count'] ?? 0 }}
-                            </span>
+        @if (!empty($card['links']))
+        <h6 class="text-muted text-center" >
+                        <a class="text-muted text-small" href="{{ url($card['links']) }}">
+                            View More</a>
                 </h6>
         @endif
 

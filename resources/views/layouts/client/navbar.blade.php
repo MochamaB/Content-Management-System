@@ -52,12 +52,12 @@
                 <button class="navbar-btn nav-button wow bounceInRight register" onclick="window.location = ('{{ route('register') }}')" data-wow-delay="0.4s">Registration</button>
             </div>
             <ul class="main-nav nav navbar-nav navbar-right">
-                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="{{ url('/')}}">Home</a></li>
-                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="{{ url('/properties')}}">Properties</a></li>
-                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="">For Rent</a></li>
-                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="" href="">For Sale</a></li>
+                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="{{ request()->is('/') ? 'active' : '' }}" href="{{ url('/')}}">Home</a></li>
+                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="{{ request()->is('properties') ? 'active' : '' }}" href="{{ url('/properties')}}">Properties</a></li>
+                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="{{ request()->is('listing/forrent') ? 'active' : '' }}" href="{{ url('listing/forrent')}}">For Rent</a></li>
+                <li class="wow fadeInDown" data-wow-delay="0.1s"><a class="{{ request()->is('listing/forsale') ? 'active' : '' }}" href="{{ url('listing/forsale')}}">For Sale</a></li>
 
-                <li class="wow fadeInDown" data-wow-delay="0.4s"><a href="contact.html">Contact</a></li>
+                <li class="wow fadeInDown" data-wow-delay="0.4s"><a class="{{ request()->is('contactus') ? 'active' : '' }}" href="{{ url('/contactus')}}">Contact</a></li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->

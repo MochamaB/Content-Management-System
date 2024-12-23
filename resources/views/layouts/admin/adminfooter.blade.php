@@ -231,52 +231,70 @@
 </script>
 
 <script type="text/javascript">
-  
-$(document).ready(function() {
-  // Get the initial from_date and to_date values from the request or set to null if not provided
-  var fromDate = "{{ request('from_date', null) }}";
+ $(document).ready(function() {
+    var fromDate = "{{ request('from_date', null) }}";
     var toDate = "{{ request('to_date', null) }}";
-
-    // If from_date and to_date are not provided (i.e., on first page load), display "This Month"
-    if (!fromDate || !toDate) {
-        $('#daterange').val('This Month');
-    } else {
-        // If from_date and to_date are present (i.e., after filtering), display the date range
-        $('#daterange').val(moment(fromDate).format('YYYY MMM') + ' - ' + moment(toDate).format('YYYY MMM'));
+    
+    var ranges = {
+        'Today': [moment(), moment()],
+        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    };
+    
+    // Function to find range label
+    function findRangeLabel(start, end) {
+        for (let label in ranges) {
+            if (ranges[label][0].format('YYYY-MM-DD') === start.format('YYYY-MM-DD') &&
+                ranges[label][1].format('YYYY-MM-DD') === end.format('YYYY-MM-DD')) {
+                return label;
+            }
+        }
+        return start.format('YYYY MMM') + ' - ' + end.format('YYYY MMM');
     }
-    // Initialize Date Range Picker
+    
+    // Set initial value
+    if (fromDate && toDate) {
+        $('#daterange').val(findRangeLabel(moment(fromDate), moment(toDate)));
+    } else {
+        $('#daterange').val('This Month');
+    }
+
     $('#daterange').daterangepicker({
-      startDate: fromDate ? moment(fromDate) : moment().startOf('month'),  // Set start date from request or default
-        endDate: toDate ? moment(toDate) : moment().endOf('month'),    
+        startDate: fromDate ? moment(fromDate) : moment().startOf('month'),
+        endDate: toDate ? moment(toDate) : moment().endOf('month'),
+        ranges: ranges,
         locale: {
-            format: 'YYYY MMM',               // Format: 2024 August
-            separator: ' - ',                  // Date range separator
+            format: 'YYYY MMM',
+            separator: ' - '
         },
-        autoUpdateInput: false,                 // Automatically update the input field
-        showDropdowns: true,                   // Show year/month dropdowns
-        alwaysShowCalendars: true,
-    }, function(start, end) {
-        // Set the hidden fields with the start and end date
+        autoUpdateInput: false,
+        showDropdowns: true,
+        alwaysShowCalendars: false,
+        showCustomRangeLabel: true,
+        opens: 'left'
+    }, function(start, end, label) {
         $('#from_date').val(start.format('YYYY-MM-DD'));
         $('#to_date').val(end.format('YYYY-MM-DD'));
-
-          // Disable the input field to prevent it from being submitted
-          $('#daterange').prop('disabled', true);
-
-        // Submit the form after selecting the date range
-        $('#dateRangeForm').submit();
-    });
-     // Submit the form when any of the select inputs change
-     $('#property').on('change', function() {
+        
+        // Update input with range label or custom date range
+        $('#daterange').val(label || (start.format('YYYY MMM') + ' - ' + end.format('YYYY MMM')));
+        
+        $('#daterange').prop('disabled', true);
         $('#dateRangeForm').submit();
     });
 
-    // Re-enable the daterange input after form submission
+    // Rest of the code remains the same
+    $('#property').on('change', function() {
+        $('#dateRangeForm').submit();
+    });
+
     $('#dateRangeForm').on('submit', function() {
         $('#daterange').prop('disabled', false);
     });
 
-    // Set default values for hidden inputs on page load
     $('#from_date').val(moment().startOf('month').format('YYYY-MM-DD'));
     $('#to_date').val(moment().endOf('month').format('YYYY-MM-DD'));
 });

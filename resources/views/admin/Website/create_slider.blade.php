@@ -40,14 +40,7 @@
                     </textarea>
                 </div>
         </div>
-        <div class="col-md-8" >        
-                <div class="form-group">
-                    <label class="label"> Information<span class="requiredlabel">*</span></label>
-                    <textarea class="form-control" style=" width: 100%;padding:5px;" id="" name="slider_info">
-                    {{old('slider_info')}}
-                    </textarea>
-                </div>
-        </div>
+      
         <hr>
         <div class="col-md-6">
             <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0 submitBtn" id="submitBtn">Add Slider</button>

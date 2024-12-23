@@ -47,8 +47,34 @@ class SliderController extends Controller
     
     public function index()
     { 
+        $tabTitles = collect([
+            'Preview',
+            'Sliders',
+        ]);
+
+        $tabContents = [];
+
+        $slider = Slider::all();
+        $controller = $this->controller;
+        $tabContents = [];
+        foreach ($tabTitles as $title) {
+            if ($title === 'Preview') {
+                // Pass preview flag to indicate preview mode
+                $tabContents[] = View('admin.Website.preview_slider', [
+                    'slider' => $slider,
+                    'isPreview' => true
+                ])->render();
+            } else {
+                // Your existing slider management view
+                $tabContents[] = View('admin.Website.edit_slider', [
+                    'slider' => $slider
+                ])->render();
+            }
+        }
+    
+    /*
         $tablevalues= $this->model::all();
-        $viewData = $this->sliderData();
+      //  $viewData = $this->sliderData();
         $controller = $this->controller;
 
         $tableData = [
@@ -75,7 +101,9 @@ class SliderController extends Controller
            ];
        }
 
-       return View('admin.CRUD.form',compact('tableData','controller'),$viewData);
+       return View('admin.CRUD.form',compact('tableData','controller'));
+       */
+      return View('admin.Setting.website_index', compact('controller','tabTitles', 'tabContents'));
    }
 
     /**
@@ -106,7 +134,6 @@ class SliderController extends Controller
             'slider_title' => 'required',
             'slider_picture' => 'required|image|mimetypes:image/jpeg,image/png,image/gif,image/svg,image/jfif|max:2048',
             'slider_desc' => 'nullable',
-            'slider_info' => 'nullable',
         ], [
             'slider_picture.required' => 'Please upload an image.',
             'slider_picture.image' => 'Invalid image format. Only JPG, PNG, JPEG, GIF, or SVG allowed.',

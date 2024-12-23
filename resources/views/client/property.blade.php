@@ -43,7 +43,7 @@
                                         <a href="">{{ $property->property_name }}</a>
                                     </h5>
                                     <div class="dot-hr"></div>
-                                    <span class="pull-left"><b>Type :</b> {{ $property->propertyType->property_category }}</span>
+                                    <span class="pull-left"><b>Type :</b> {{ $property->propertyType->property_category }} - {{ $property->propertyType->property_type }}</span>
                                     <span class="proerty-price pull-right"><i class="pe-7s-map-marker strong"> </i>
                                         {{$property->property_location}}, {{$property->property_streetname}}
                                     </span>
@@ -51,7 +51,7 @@
                             </div>
                         </div>
                          <!-- "Show All Properties" box -->
-                         <div class="col-sm-12 col-md-3 p0">
+                         <div class="col-sm-12 col-md-4 p0">
                             <div class="box-tree more-proerty text-center">
                                 <div class="item-tree-icon">
                                     <i class="fa fa-th"></i>

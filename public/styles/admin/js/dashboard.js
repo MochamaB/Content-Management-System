@@ -764,24 +764,34 @@
       });
     }
 
-    if ($("#doughnutChart").length) { 
+    if ($("#doughnutChart").length) {
       const doughnutChartData = window.doughnutChartData || {
-        labels: ['No Data'],
-        data: [1],
-        colors: ['#E0E0E0']
-    }; // Chart data from PHP
+          labels: ['No Data'],
+          data: [1],
+          colors: ['#E0E0E0']
+      };
+  
+      // Check if all values are zero
+      const hasData = doughnutChartData.data.some(value => value > 0);
+      
+      const chartData = hasData ? doughnutChartData : {
+          labels: ['No Data Available'],
+          data: [1],
+          colors: ['#E0E0E0']
+      };
+  
       const doughnutChartCanvas = document.getElementById('doughnutChart');
       
       new Chart(doughnutChartCanvas, {
           type: 'doughnut',
           data: {
-              labels: doughnutChartData.labels,
+              labels: chartData.labels,
               datasets: [{
-                  data: doughnutChartData.data,
-                  backgroundColor: doughnutChartData.colors || [
+                  data: chartData.data,
+                  backgroundColor: chartData.colors || [
                       "#0000ff", "#ffaf00", "#1E283D", "#10a939", "#6a008a"
                   ],
-                  borderColor: doughnutChartData.colors || [
+                  borderColor: chartData.colors || [
                       "#0000ff", "#ffaf00", "#1E283D", "#10a939", "#6a008a"
                   ],
               }]
@@ -803,31 +813,31 @@
               }
           },
           plugins: [{
-              afterDatasetUpdate: function (chart) {
+              afterDatasetUpdate: function(chart) {
                   const chartId = chart.canvas.id;
                   const legendId = `${chartId}-legend`;
                   const ul = document.createElement('ul');
-                //  ul.style.listStyle = 'none'; // Optional: Remove bullet points
                   
-                  // Total sum of the dataset
-                  const total = chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
-  
-                  for (let i = 0; i < chart.data.datasets[0].data.length; i++) {
-                      const value = chart.data.datasets[0].data[i];
-                      const percentage = ((value / total) * 100).toFixed(2); // Calculate percentage
-  
-                      // Add legend item with percentage
-                      ul.innerHTML += `
-                          <li style="display: flex; align-items: center; text-transform: capitalize; margin-bottom: 5px;">
-                              <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px;"></span>
-                              ${chart.data.labels[i]} - ${percentage}%
-                          </li>
-                      `;
+                  if (!hasData) {
+                      ul.innerHTML = '<li>No data available</li>';
+                  } else {
+                      const total = chart.data.datasets[0].data.reduce((acc, val) => acc + val, 0);
+                      
+                      for (let i = 0; i < chart.data.datasets[0].data.length; i++) {
+                          const value = chart.data.datasets[0].data[i];
+                          const percentage = ((value / total) * 100).toFixed(2);
+                          
+                          ul.innerHTML += `
+                              <li style="display: flex; align-items: center; text-transform: capitalize; margin-bottom: 5px;">
+                                  <span style="background-color: ${chart.data.datasets[0].backgroundColor[i]}; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px;"></span>
+                                  ${chart.data.labels[i]} - ${percentage}%
+                              </li>
+                          `;
+                      }
                   }
   
-                  // Clear previous legend and append the new one
                   const legendContainer = document.getElementById(legendId);
-                  legendContainer.innerHTML = ''; // Clear old content
+                  legendContainer.innerHTML = '';
                   legendContainer.appendChild(ul);
               }
           }]
