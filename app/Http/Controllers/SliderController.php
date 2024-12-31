@@ -47,38 +47,14 @@ class SliderController extends Controller
     
     public function index()
     { 
-        $tabTitles = collect([
-            'Preview',
-            'Sliders',
-        ]);
-
-        $tabContents = [];
-
-        $slider = Slider::all();
-        $controller = $this->controller;
-        $tabContents = [];
-        foreach ($tabTitles as $title) {
-            if ($title === 'Preview') {
-                // Pass preview flag to indicate preview mode
-                $tabContents[] = View('admin.Website.preview_slider', [
-                    'slider' => $slider,
-                    'isPreview' => true
-                ])->render();
-            } else {
-                // Your existing slider management view
-                $tabContents[] = View('admin.Website.edit_slider', [
-                    'slider' => $slider
-                ])->render();
-            }
-        }
+       
     
-    /*
         $tablevalues= $this->model::all();
       //  $viewData = $this->sliderData();
         $controller = $this->controller;
 
         $tableData = [
-            'headers' => ['ID', 'PICTURE','DESCRIPTION', 'INFORMATION','ACTIONS'],
+            'headers' => ['ID', 'PICTURE','DESCRIPTION','ACTIONS'],
             'rows' => [],
         ];
 
@@ -92,18 +68,14 @@ class SliderController extends Controller
                 overflow: hidden;
                 white-space: wrap;
                 text-overflow: ellipsis;">'.$item->slider_desc.'</div>',
-                '<div class="col-sm-3" style=" width: 300px;
-                overflow: hidden;
-                white-space: wrap;
-                text-overflow: ellipsis;">'.$item->slider_info.'</div>', // Apply the word-wrap class here
+                 // Apply the word-wrap class here
                  // Add action buttons to each row
                  'isDeleted' => $isDeleted,
            ];
        }
 
        return View('admin.CRUD.form',compact('tableData','controller'));
-       */
-      return View('admin.Setting.website_index', compact('controller','tabTitles', 'tabContents'));
+       
    }
 
     /**
