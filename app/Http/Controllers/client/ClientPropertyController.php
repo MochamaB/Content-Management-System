@@ -48,7 +48,8 @@ class ClientPropertyController extends Controller
      */
     public function show($id)
     {
-        //
+        $property = Property::find($id);
+        return view('client.Property.property_show', compact('property'));
     }
 
     /**

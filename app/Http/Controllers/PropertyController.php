@@ -50,7 +50,10 @@ class PropertyController extends Controller
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
         $filterdata = $this->filterService->getPropertyFilters($request);
-        $tablevalues = Property::with('units','propertyType')->showSoftDeleted()->ApplyFilters($filters)->get();
+        $tablevalues = Property::with(['units', 'propertyType', 'amenities', 'utilities', 'users', 'paymentMethods','vendors', 'sliders'])
+        ->showSoftDeleted()
+        ->ApplyFilters($filters)
+        ->get();
         $cardData = $this->cardService->propertyCard($tablevalues);
         //   $tablevalues = Property::withUserUnits()->get();
         $viewData = $this->formData($this->model);
@@ -58,20 +61,61 @@ class PropertyController extends Controller
      //   $cardData = $this->cardData($this->model);
       //  dd($cardData);
         $controller = $this->controller;
+        // PROGRESS DATA
+        
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['PROPERTY', 'LOCATION', 'NO OF UNITS', 'TYPE', 'ACTIONS'],
+            'headers' => ['PROPERTY', 'LOCATION', 'UNITS', 'TYPE', 'SETUP PROGRESS',''],
             'rows' => [],
         ];
 
         foreach ($tablevalues as $item) {
             $isDeleted = $item->deleted_at !== null;
+             // Progress calculation
+            $relatedCounts = [
+                'amenities' => $item->amenities->count(),
+                'units' => $item->units->count(),
+                'utilities' => $item->utilities->count(),
+                'users' => $item->users->count(),
+                'paymentMethods' => $item->paymentMethods->count(),
+                'vendors' => $item->vendors->count(),
+                'sliders' => $item->sliders->count(),
+            ];
+            $completed = array_sum($relatedCounts);
+            $expectedCounts = [
+                'amenities' => 10, // Adjust these values based on your requirements
+                'units' => 20,
+                'utilities' => 5,
+                'users' => 15,
+                'paymentMethods' => 5,
+                'vendors' => 7,
+                'sliders' => 10,
+            ];
+            $total = array_sum($expectedCounts); // Total expected setup items
+            $progressPercentage = ($total > 0) ? round(min(($completed / $total) * 100, 100)) : 0;
+            // Generate the progress bar HTML
+            $progressBarHtml = '<div>
+                    <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
+                        <p class="text-success">' . $progressPercentage . '%</p>
+                        <p>' . $completed . '/' . $total . '</p>
+                    </div>
+                    <div class="progress progress-md">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                            style="width: ' . $progressPercentage . '%;" 
+                            aria-valuenow="' . $progressPercentage . '" 
+                            aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                </div>';
+
+
             $tableData['rows'][] = [
                 'id' => $item->id,
                 $item->property_name . ' - ' . $item->property_streetname,
                 $item->property_location,
                 $item->units->count(),
                 $item->propertyType->property_type,
+                $progressBarHtml,
                 'isDeleted' => $isDeleted,
             ];
         }

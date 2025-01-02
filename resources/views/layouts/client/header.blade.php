@@ -29,6 +29,7 @@
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/owl.theme.css') }}">
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/owl.transitions.css') }}">
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/jquery.slitslider.css') }}">
+        <link rel="stylesheet" href="{{ asset('styles/client/assets/css/lightslider.min.css') }}">
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('styles/client/assets/css/responsive.css') }}">
         <noscript>

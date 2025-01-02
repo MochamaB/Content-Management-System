@@ -1,6 +1,19 @@
 @extends('layouts.client.client')
 
 @section('content')
+<style>
+#image-gallery li {
+    width: 100%;
+    height: 350px; /* Adjust to desired height */
+    overflow: hidden; /* Hide extra content */
+}
+
+#image-gallery img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure consistent dimensions */
+}
+</style>
 <div class="page-head"> 
             <div class="container">
                 <div class="row">
@@ -25,18 +38,18 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <p class="author-category">
-                                By <a href="#">John Snow</a>
-                                in <a href="blog.html">Webdesign</a>
+                                Slogan<a href="#"> {{$property->property_slogan ?? 'Spacious units available'}}</a>
+                                
                             </p>
                         </div>
                         <div class="col-sm-6 right">
                             <p class="date-comments">
-                                <a href="single.html"><i class="fa fa-calendar-o"></i> June 20, 2013</a>
-                                <a href="single.html"><i class="fa fa-comment-o"></i> 8 Comments</a>
+                                <a href="single.html"><i class="fa fa-home"></i> Number of Units {{$property->units->count()}}</a>
+                               
                             </p>
                         </div>
                     </div>
-                    <div class="image wow fadeInLeft animated">
+                    <div class="image wow fadeInLeft animated" style="margin-bottom:-20px">
                         <div class="light-slide-item">
                             <div class="clearfix">
                                 <div class="favorite-and-print">
@@ -48,11 +61,11 @@
                                     </a>
                                 </div>
 
-                                <ul id="image-gallery" class="gallery list-unstyled cS-hidden" style="max-height:300px">
+                                <ul id="image-gallery" class="gallery list-unstyled cS-hidden">
                                     @if($property->sliders->isNotEmpty())
                                     @foreach($property->sliders as $slider)
                                     <li data-thumb="{{ $slider->getFirstMediaUrl('slider', 'thumb') }}">
-                                        <a href="{{ route('property.show', $property->id) }}">
+                                        <a href="{{ url('/properties/'.$property->id)}}">
                                             <img src="{{ $slider->getFirstMediaUrl('slider', 'thumb') }}" alt="Property Image">
                                         </a>
                                     </li>
@@ -71,7 +84,7 @@
                     </div>
                    
                     <p class="read-more">
-                        <a href="single.html" class="btn btn-default btn-border">Continue reading</a>
+                        <a href="{{ url('/properties/'.$property->id)}}" class="btn btn-default btn-border">Go To Property <i class="fa fa-arrow-circle-right"></i></a>
                     </p>
                 </section>
 
@@ -84,12 +97,12 @@
                         <h3 class="panel-title">Property Details</h3>
                     </div>
                     <div class="panel-body text-widget">
-                    <p><span class="pull-left"><b>Property Type :</b> {{ $property->propertyType->property_category }}</span></p>
-                    <p><span class="pull-left"><b>Location :</b> {{ $property->property_location }} {{ $property->property_streetname }}</span></p>
-                    <p><span class="pull-left"><b>Amount of Units :</b> {{ $property->units->count() }} </span></p>
+                    <p><span class=""><b>Type :</b> {{ $property->propertyType->property_category }} - {{ $property->propertyType->property_type }}</span></p>
+                    <p><span class=""><b>Location :</b> {{ $property->property_location }} {{ $property->property_streetname }}</span></p>
+                    <p><span class=""><b>Number of Listings :</b> {{ $property->units->count() }} </span></p>
                         <p>
-                        <span class="pull-left"><b>Description :</b>
-                            Improved own provided blessing may peculiar domestic. Sight house has sex never. No visited raising gravity outward subject my cottage mr be. Hold do at tore in park feet near my case.
+                        <span class=""><b>Description :</b>
+                        {{ $property->property_description }}
                         </p>
 
                     </div>
@@ -107,5 +120,24 @@
 
     </div>
 </div>
+@push('scripts')
+<script>
+     $(document).ready(function () {
+
+$('#image-gallery').lightSlider({
+    gallery: true,
+    item: 1,
+    thumbItem: 9,
+    slideMargin: 0,
+    speed: 500,
+    auto: true,
+    loop: true,
+    onSliderLoad: function () {
+        $('#image-gallery').removeClass('cS-hidden');
+    }
+});
+});
+</script>
+@endpush
 
 @endsection

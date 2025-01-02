@@ -22,6 +22,7 @@
 
 <script src="{{ asset('styles/client/assets/js/jquery.ba-cond.min.js') }}"></script>
 <script src="{{ asset('styles/client/assets/js/jquery.slitslider.js') }}"></script>
+<script src="{{ asset('styles/client/assets/js/lightslider.min.js') }}"></script>
 
 <script src="{{ asset('styles/client/assets/js/main.js') }}"></script>
 

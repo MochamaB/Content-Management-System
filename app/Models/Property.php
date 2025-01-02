@@ -216,6 +216,10 @@ class Property extends Model implements HasMedia, Auditable
         return $this->hasMany(Slider::class, 'property_id');
     }
 
+    public function vendors()
+    {
+        return $this->hasMany(Vendor::class);
+    }
     public function getIdentifier()
     {
         return $this->property_name;
