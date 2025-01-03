@@ -76,6 +76,9 @@ class DashboardService
 
 
         $propertyCount = $property->count();
+        $activeProperty = $property->filter(function ($property) {
+            return $property->property_status === 0;
+        });
         $residentialProperties = $property->filter(function ($property) {
             return $property->propertyType->property_category === 'Residential';
         });
@@ -93,7 +96,18 @@ class DashboardService
             });
         })->count();
 
-        // Calculate the occupancy rate
+         // Count units in residential properties
+        $residentialUnitCount = $residentialProperties->flatMap(function ($property) {
+            return $property->units;
+        })->count();
+
+        // Count units in commercial properties
+        $commercialUnitCount = $commercialProperties->flatMap(function ($property) {
+            return $property->units;
+        })->count();
+
+        // Calculate the occupancy rate and number
+        $availableunits = $unitCount - $unitOccupied;
         $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
         
         // Format the occupancy rate (optional)
@@ -110,10 +124,10 @@ class DashboardService
 
 
         $cards =  [
-            'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
-            'Residential' => ['title' => 'Residential', 'value' => $residentialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
-            'Commercial' => ['title' => 'Commercial', 'value' => $commercialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active'],
-            'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
+            'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active', 'icon' => 'mdi mdi-city', 'count' => $propertyCount,'countname' => 'Active'],
+            'Residential' => ['title' => 'Residential', 'value' => $residentialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active', 'icon' => 'mdi mdi-home','count' => $residentialUnitCount,'countname' => 'Total units'],
+            'Commercial' => ['title' => 'Commercial', 'value' => $commercialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active','icon' => 'mdi mdi-office-building','count' => $commercialUnitCount,'countname' => 'Total spaces'],
+            'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => '', 'icon' => 'mdi mdi-door','count' => $availableunits,'countname' => 'Available Units'],
           //  'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
           //  'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '', 'desc' => ''],
 
@@ -136,6 +150,76 @@ class DashboardService
           return $occupancyRate;
 
     }
+   
+
+    public function unitCard($units)
+    {
+
+
+        $unitCount = $units->count();
+        // Get the count of units that are for sale
+        $forRent = $units->filter(function ($unit) {
+            return $unit->unit_type === 'rent';
+        })->count();
+        // Get the count of units that are for sale
+        $forSale = $units->filter(function ($unit) {
+            return $unit->unit_type === 'sale';
+        })->count();
+        $unitsleased =  $units->filter(function ($unit) {
+            return $unit->lease !== null;
+        })->count();
+        $vacant = $unitCount - $unitsleased;
+        //  $paymentCount = $invoicePayments->sum('payments_count');
+        // Define the columns for the unit report
+        $cards =  [
+            'unitCount' => ['title' => 'Total Units', 'icon' => 'mdi mdi-door', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'forRent' => ['title' => 'For Rent', 'icon' => 'fa fa-key', 'value' => $forRent, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'forSale' => ['title' => 'For Sale', 'icon' => 'fa fa-money', 'value' => $forSale, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'unitsleased' => ['title' => 'Leases', 'icon' => 'fa fa-handshake-o', 'value' => $unitsleased, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'Vacant Units' => ['title' => 'Vacant Units', 'icon' => 'fa fa-minus-square-o', 'value' => $vacant, 'amount' => '', 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+    public function unitOccupancyRate($unit)
+    {
+        $unitCount = $unit->count();
+        $unitOccupied =  $unit->filter(function ($unit) {
+            return $unit->lease && $unit->lease->status == 'Active';
+        })->count();
+          // Calculate the occupancy rate
+          $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
+
+          return $occupancyRate;
+
+    }
+
+    public function invoiceCard($invoices)
+    {
+
+
+        $invoiceCount =  $this->invoiceRepository->getInvoiceCount($invoices);
+        $amountinvoiced = $this->invoiceRepository->getAmountinvoiced($invoices);
+        $invoicepaid = $this->invoiceRepository->getInvoicepaidAmount($invoices);
+        $paymentCount =  $this->invoiceRepository->getInvoicePaymentCount($invoices);
+        $balance = $amountinvoiced - $invoicepaid;
+        $balanceCount = $invoiceCount - $paymentCount;
+        $paymentRate = $invoiceCount > 0 ? ($paymentCount / $invoiceCount) * 100 : 0;
+        $payRate = number_format($paymentRate, 1);
+        //   $invoicepaid =  $invoices->filter(function ($invoice) {
+        //        return $invoice->payments !== null;
+        //   })->sum('payments.totalamount');
+        //  $invoicePayments = $invoices->withCount('payments')->get();
+        //  $paymentCount = $invoicePayments->sum('payments_count');
+        // Define the columns for the unit report
+        $cards =  [
+            'total' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'percentage' => '', 'count' => $invoiceCount,'countname' => 'Total No'],
+            'invoicepaid' => ['title' => 'Paid', 'value' => '', 'amount' => $invoicepaid, 'percentage' => '', 'count' => $paymentCount,'countname' => 'No of paid'],
+            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'count' => $balanceCount,'countname' => 'No of unpaid'],
+        ];
+        return $cards;
+    }
+
+
 
 
 }

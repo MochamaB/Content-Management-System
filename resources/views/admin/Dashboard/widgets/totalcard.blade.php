@@ -88,11 +88,12 @@
         <!--link -->
         <!--- Footer -->
         @if (isset($card['count']) && $card['count'] !== '')
-        <h6 class="text-muted text-center mt-3" >
-                        <span class="badge badge-dark">
-                        {{$card['count'] ?? 0 }}
-                            </span>
-                </h6>
+        <p class="text-muted text-left mt-4">
+                <span class="badge badge-filter">
+                {{ $card['countname'] ?? '' }} &nbsp; 
+                <strong style="color: black;">{{ $card['count'] ?? 0 }}</strong>
+                </span>
+            </p>
         @endif
 
     </div>

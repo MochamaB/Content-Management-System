@@ -3,8 +3,10 @@
 <form method="POST" action="{{ url($routeParts[0]) }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
     <input type="hidden" name="model_name" value="{{ ucfirst($routeParts[0]) }}">
+    <div class="row">
+    <!-- Left Column: Other Inputs -->
+    <div class="col-md-6" style="padding-right:30px">
     @foreach($fields as $field => $attributes)
-    <div class="col-md-6">
         <div class="form-group">
             <!--- LABEL -->
             <label class="label" id="label-{{ $field }}">{{ $attributes['label'] }}
@@ -69,8 +71,15 @@
 
 
         </div>
-    </div>
+    
     @endforeach
+        </div>
+        @if($usesMedia)
+        <div class="col-md-6" style="border-left: 2px solid #dee2e6;">
+            @include('admin.CRUD.upload_media')
+        </div>
+        @endif
+    </div>
     <div class="col-md-4">
         <button type="submit" class="btn btn-primary btn-lg text-white mb-0 me-0" style="text-transform: capitalize;" id="submit">
         <i class="mdi mdi-content-save ms-1"></i>

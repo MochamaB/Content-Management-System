@@ -12,6 +12,7 @@ use App\Events\AssignUserToUnit;
 use App\Http\Controllers\MeterReadingController;
 use App\Services\InvoiceService;
 use App\Services\CardService;
+use App\Services\DashboardService;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 
@@ -30,9 +31,10 @@ class UnitController extends Controller
     private $tableViewDataService;
     private $cardService;
     private $filterService;
+    private $dashboardService;
 
     public function __construct(InvoiceService $invoiceService,TableViewDataService $tableViewDataService,
-    CardService $cardService,FilterService $filterService)
+    CardService $cardService,FilterService $filterService, DashboardService $dashboardService)
     {
         $this->model = Unit::class;
         $this->controller = collect([
@@ -43,6 +45,7 @@ class UnitController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->cardService = $cardService;
         $this->filterService = $filterService;
+        $this->dashboardService = $dashboardService;
     }
 
     public function getUnitData($unitdata)
@@ -77,6 +80,7 @@ class UnitController extends Controller
         $filterdata = $this->filterService->getUnitFilters();
         $baseQuery = $this->model::with('property','lease')->showSoftDeleted()->ApplyFilters($filters);
         $cardData = $this->cardService->unitCard($baseQuery->get());
+        $dashboardConfig = $this->unitTopDashboard($baseQuery->get());
       //  $controller = $this->controller;
       //  $tableData = $this->getUnitData($unitdata);
         $tabTitles = ['All','For Rent','For Sale'];
@@ -107,7 +111,36 @@ class UnitController extends Controller
         return View('admin.CRUD.form', compact('tabTitles', 'tabContents','tabCounts','filterdata', 'tableData', 'controller'),
         [
             'cardData' => $cardData,
+            'dashboardConfig' => $dashboardConfig
         ]);
+    }
+
+    protected function unitTopDashboard($data)
+    {
+        return [
+            'rows' => [
+                [
+                    'columns' => [
+                        [
+                            'width' => 'col-md-9',
+                            'component' => 'admin.Dashboard.widgets.card',
+                            'data' => [
+                                'cardData' => $this->dashboardService->unitCard($data),
+                                'title' => 'Overview'
+                            ]
+                        ],
+                        [
+                            'width' => 'col-md-3',
+                            'component' => 'admin.Dashboard.charts.circleProgressChart',
+                            'data' => [
+                                'percentage' =>  $this->dashboardService->unitOccupancyRate($data),
+                                'title' => 'Occupancy Rate'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**

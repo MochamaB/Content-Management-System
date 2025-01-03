@@ -17,6 +17,7 @@ use App\Notifications\InvoiceGeneratedNotification;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Services\DashboardService;
 use App\Models\Website;
 use App\Traits\FormDataTrait;
 use Illuminate\Support\Facades\Session;
@@ -35,10 +36,11 @@ class InvoiceController extends Controller
     private $tableViewDataService;
     private $filterService;
     private $cardService;
+    private $dashboardService;
 
 
     public function __construct(InvoiceService $invoiceService, TableViewDataService $tableViewDataService,
-    FilterService $filterService, CardService $cardService)
+    FilterService $filterService, CardService $cardService, DashboardService $dashboardService)
     {
         $this->model = Invoice::class;
         $this->controller = collect([
@@ -49,6 +51,7 @@ class InvoiceController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
         $this->cardService = $cardService;
+        $this->dashboardService = $dashboardService;
     }
 
 
@@ -128,7 +131,7 @@ class InvoiceController extends Controller
                             'width' => 'col-md-7',
                             'component' => 'admin.Dashboard.widgets.totalcard',
                             'data' => [
-                                'cardData' => $this->cardService->invoiceCard($data),
+                                'cardData' => $this->dashboardService->invoiceCard($data),
                                 'title' => 'Overview'
                             ]
                         ],

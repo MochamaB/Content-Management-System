@@ -243,8 +243,19 @@ class Property extends Model implements HasMedia, Auditable
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
-            ->width(368)
-            ->height(232)
-            ->sharpen(10);
+            ->width(150)
+            ->height(150)
+            ->sharpen(10)
+            ->performOnCollections('property-photo');
+    }
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images');
+        $this->addMediaCollection('videos');
+        $this->addMediaCollection('documents');
+       
+        //add options
+    
+        
     }
 }

@@ -43,7 +43,8 @@
     <div class="col text-left pb-2">
         @if (!empty($card['value']) || $card['value'] === 0)
         <p class="statistics-title d-flex align-items-bottom">
-            <i class="mdi mdi-numeric" style="color: #1F3BB3; padding-left: 5px;"></i> <!-- Change the color and add padding -->
+            <i class="{{ $card['icon'] ?? 'mdi mdi-numeric' }}"
+                style="color: #1F3BB3; padding-left: 5px;"></i> <!-- Change the color and add padding -->
             <span style="padding-left: 5px;">{{ $card['title'] }}</span>
         </p> <!--Title -->
 
@@ -52,7 +53,8 @@
         </h3>
         @elseif(!empty($card['amount']) || $card['amount'] === 0)
         <p class="statistics-title d-flex align-items-bottom">
-            <i class="mdi mdi-cash" style="color: #5dc71b; padding-left: 5px;"></i> <!-- Change the color and add padding -->
+            <i class="{{ $card['icon'] ?? ' mdi mdi-cash' }}"
+                style="color: #5dc71b; padding-left: 5px;"></i> <!-- Change the color and add padding -->
             <span style="padding-left: 5px;">{{ $card['title'] }}</span>
         </p> <!--Title -->
 
@@ -70,29 +72,36 @@
             <span style="padding-left: 5px;">{{ $card['title'] }}</span>
         </p> <!--Title -->
         @php
-            $percentage = $card['percentage'] ?? 0;
-            // Determine the color based on percentage value
-            if ($percentage < 50) {
-                $color = 'red';
-            } elseif ($percentage > 80) {
-                $color = 'blue';
+        $percentage = $card['percentage'] ?? 0;
+        // Determine the color based on percentage value
+        if ($percentage < 50) {
+            $color='red' ;
+            } elseif ($percentage> 80) {
+            $color = 'blue';
             } else {
-                $color = 'black'; // Default color for percentages between 50 and 80
+            $color = 'black'; // Default color for percentages between 50 and 80
             }
-        @endphp
-        <h3 class="rate-percentage" style="color: {{ $color }};">
+            @endphp
+            <h3 class="rate-percentage" style="color: {{ $color }};">
 
-            {{ $card['percentage'] ?? 0 }} %
-        </h3>
-        @endif
-        <!--link -->
-        <!--- Footer -->
-        @if (!empty($card['links']))
-        <h6 class="text-muted text-center" >
-                        <a class="text-muted text-small" href="{{ url($card['links']) }}">
-                            View More</a>
-                </h6>
-        @endif
+                {{ $card['percentage'] ?? 0 }} %
+            </h3>
+            @endif
+            <!--link -->
+            <!--- Footer -->
+            @if (!empty($card['links']))
+            <h6 class="text-muted text-center">
+                <a class="text-muted text-small" href="{{ url($card['links']) }}">
+                    View More</a>
+            </h6>
+            @elseif (isset($card['count']) && $card['count'] !== '')
+            <p class="text-muted text-left mt-4">
+                <span class="badge badge-filter">
+                {{ $card['countname'] ?? '' }} &nbsp; 
+                <strong style="color: black;">{{ $card['count'] ?? 0 }}</strong>
+                </span>
+            </p>
+            @endif
 
     </div>
     @endforeach

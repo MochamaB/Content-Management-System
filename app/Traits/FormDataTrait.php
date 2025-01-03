@@ -3,6 +3,8 @@
 
 namespace App\Traits;
 
+use Spatie\MediaLibrary\HasMedia;
+
 trait FormDataTrait
 {
     public function formData($modelClass, $model = null, $specialvalue = null, $defaultData = [])
@@ -10,6 +12,9 @@ trait FormDataTrait
 
         $fields = $modelClass::$fields;
         $data = ($model) ? [] : null;
+
+         // Check if the model implements InteractsWithMedia
+         $usesMedia = in_array(HasMedia::class, class_implements($modelClass));
 
         // For create and edit
         foreach ($fields as $field => $label) {
@@ -24,7 +29,7 @@ trait FormDataTrait
             $actualvalues = ($model) ? $model : null;
         }
 
-        return compact('fields', 'data', 'actualvalues', 'specialvalue', 'defaultData');
+        return compact('fields', 'data', 'actualvalues', 'specialvalue', 'defaultData','usesMedia','model');
     }
 
     public function cardData($modelClass, $model = null)

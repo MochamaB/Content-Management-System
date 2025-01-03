@@ -14,6 +14,7 @@ use App\Models\Setting;
 use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Services\CardService;
+use App\Services\DashboardService;
 
 class PropertyController extends Controller
 {
@@ -28,8 +29,10 @@ class PropertyController extends Controller
     private $tableViewDataService;
     protected $filterService;
     private $cardService;
+    private $dashboardService;
 
-    public function __construct(TableViewDataService $tableViewDataService,FilterService $filterService, CardService $cardService)
+    public function __construct(TableViewDataService $tableViewDataService,FilterService $filterService, CardService $cardService,
+    DashboardService $dashboardService)
     {
         $this->model = Property::class;
 
@@ -40,6 +43,8 @@ class PropertyController extends Controller
         $this->tableViewDataService = $tableViewDataService;
         $this->filterService = $filterService;
         $this->cardService = $cardService;
+        $this->dashboardService = $dashboardService;
+
     }
 
 
@@ -54,7 +59,7 @@ class PropertyController extends Controller
         ->showSoftDeleted()
         ->ApplyFilters($filters)
         ->get();
-        $cardData = $this->cardService->propertyCard($tablevalues);
+      //  $cardData = $this->cardService->propertyCard($tablevalues);
         //   $tablevalues = Property::withUserUnits()->get();
         $viewData = $this->formData($this->model);
         $dashboardConfig = $this->dashboard($tablevalues);
@@ -65,7 +70,7 @@ class PropertyController extends Controller
         
         /// TABLE DATA ///////////////////////////
         $tableData = [
-            'headers' => ['PROPERTY', 'LOCATION', 'UNITS', 'TYPE', 'SETUP PROGRESS',''],
+            'headers' => ['PROPERTY', 'NO OF UNITS', 'TYPE', 'SETUP PROGRESS',''],
             'rows' => [],
         ];
 
@@ -107,12 +112,26 @@ class PropertyController extends Controller
                         </div>
                     </div>
                 </div>';
-
+            /// Default Property Image
+            $mediaURL = $item->getFirstMediaUrl('property-photo');
+            if ($mediaURL) {
+                $coverimage = url($item->getFirstMediaUrl('property-photo'));
+            } else {
+                $coverimage = url('uploads/default/defaultproperty2.jpg');
+            }
+            //url('resources/uploads/images/' . Auth::user()->profilepicture ?? 'avatar.png');
+            $propertyDetails =     '<div class="d-flex "> <img src="' . $coverimage . '" alt="">
+            <div>
+             <h6 style ="padding:0.1rem 0.1rem">' .  $item->property_name . ' - ' . $item->property_location.'</h6>
+                <p class="text-muted" style ="padding:0.1rem 0.1rem"> <i class="mdi mdi-map-marker mr-1" style="vertical-align: middle;font-size:1.4rem"></i>'. $item->property_streetname .
+                '</p>
+            </div>
+          </div>';
 
             $tableData['rows'][] = [
                 'id' => $item->id,
-                $item->property_name . ' - ' . $item->property_streetname,
-                $item->property_location,
+               // $item->property_name . ' - ' . $item->property_streetname,
+                $propertyDetails,
                 $item->units->count(),
                 $item->propertyType->property_type,
                 $progressBarHtml,
@@ -125,7 +144,6 @@ class PropertyController extends Controller
             'controller' => $this->controller,
             'viewData' => $viewData,
             'filterdata' => $filterdata,
-            'cardData' => $cardData,
             'dashboardConfig' => $dashboardConfig
         ]);
     }
@@ -140,7 +158,7 @@ class PropertyController extends Controller
                             'width' => 'col-md-9',
                             'component' => 'admin.Dashboard.widgets.card',
                             'data' => [
-                                'cardData' => $this->cardService->propertyCard($data),
+                                'cardData' => $this->dashboardService->propertyCard($data),
                                 'title' => 'Overview'
                             ]
                         ],
@@ -148,7 +166,7 @@ class PropertyController extends Controller
                             'width' => 'col-md-3',
                             'component' => 'admin.Dashboard.charts.circleProgressChart',
                             'data' => [
-                                'percentage' =>  $this->cardService->propertyOccupancyRate($data),
+                                'percentage' =>  $this->dashboardService->propertyOccupancyRate($data),
                                 'title' => 'Occupancy Rate'
                             ]
                         ]
