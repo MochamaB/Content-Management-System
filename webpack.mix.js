@@ -15,3 +15,7 @@ mix.js('resources/js/app.js', 'public/js')
     .postCss('resources/css/app.css', 'public/css', [
         //
     ]);
+
+    mix.js('node_modules/dropzone/dist/dropzone.js', 'public/js')
+   .sass('node_modules/dropzone/dist/dropzone.css', 'public/css');
+

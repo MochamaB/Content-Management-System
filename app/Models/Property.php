@@ -12,10 +12,11 @@ use App\Traits\SoftDeleteScope;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
+use App\Traits\MediaUpload;
 
 class Property extends Model implements HasMedia, Auditable
 {
-    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait;
+    use HasFactory, InteractsWithMedia, FilterableScope, SoftDeletes, SoftDeleteScope, AuditableTrait, MediaUpload;
     protected $table = 'properties';
     protected $fillable = [
         'user_id',
@@ -88,6 +89,11 @@ class Property extends Model implements HasMedia, Auditable
 
     public static $headingAfterField = 'property_name';
     public static $additionalHeading = 'New Property';
+
+    public function getSloganAttribute($value)
+    {
+        return $value ?? 'Spacious units available';
+    }
 
     public static function getFieldData($field)
     {

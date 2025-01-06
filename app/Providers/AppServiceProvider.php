@@ -209,13 +209,13 @@ class AppServiceProvider extends ServiceProvider
                     'meter-reading' => ['display' => 'Meter Readings'],
                 ]],
 
-                'Maintenance' => ['icon' => 'broom', 'submodules' => [
+                'Maintenance' => ['icon' => 'wrench', 'submodules' => [
                     'vendor-category' => ['display' => 'Vendor Categories'],
                     'vendors' => ['display' => 'Vendors'],
                     'ticket' => ['display' => 'All Tickets'],
                 ]],
 
-                'Accounting' => ['icon' => 'cash-usd', 'submodules' => [
+                'Accounting' => ['icon' => 'currency-usd', 'submodules' => [
                     'expense' => ['display' => 'Bills & Expenses'],
                     'deposit' => ['display' => 'Deposits'],
                     'transaction' => ['display' => 'Financials'],
@@ -227,7 +227,7 @@ class AppServiceProvider extends ServiceProvider
                     'transaction-type' => ['display' => 'Transaction Types'],
                 ]],
 
-                'Communication' => ['icon' => 'email-open', 'submodules' => [
+                'Communication' => ['icon' => 'chat', 'submodules' => [
                     'notification' => ['display' => 'Notification Center'],
                     'email' => ['display' => 'Emails'],
                     'textmessage' => ['display' => 'Text Messages'],

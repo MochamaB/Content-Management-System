@@ -181,4 +181,26 @@ class MediaController extends Controller
 
         return redirect()->back()->with('status', 'Media deleted successfully.');
     }
+
+    public function upload(Request $request)
+{
+    $media = $request->file('files')->store('uploads');
+    $file = $model->addMedia($request->file('files'))->toMediaCollection(); // Use your specific model logic
+    
+    return response()->json([
+        'success' => true,
+        'media_id' => $file->id,
+        'url' => $file->getUrl(),
+    ]);
+}
+
+public function remove(Request $request)
+{
+    $media = Media::find($request->media_id); // Adjust model lookup
+    if ($media) {
+        $media->delete();
+        return response()->json(['success' => true]);
+    }
+    return response()->json(['success' => false, 'message' => 'Media not found']);
+}
 }

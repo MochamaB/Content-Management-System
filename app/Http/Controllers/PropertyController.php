@@ -199,6 +199,8 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
+        $files = $request->file('files');
+        dd($files);
         //// Data Entry validation/////////////
         if (Property::where('property_name', $request->property_name)
             ->exists()
@@ -392,6 +394,8 @@ class PropertyController extends Controller
             '2' => $property->property_location,
         ]);
 
+        
+
         return View('admin.CRUD.form', compact('pageheadings'), $viewData);
     }
 
@@ -404,6 +408,8 @@ class PropertyController extends Controller
      */
     public function update(Property $property, Request $request)
     {
+        $files = $request->file('files',[]);
+        dd($files);
         $validationRules = Property::$validation;
         $validatedData = $request->validate($validationRules);
         $property->fill($validatedData);

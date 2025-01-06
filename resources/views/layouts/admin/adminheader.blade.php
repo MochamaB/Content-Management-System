@@ -27,6 +27,8 @@
 
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Dropzone CSS -->
+<link rel="stylesheet" href="{{ asset('styles/admin/vendors/dropzone/dropzone.css') }}">
 
 
   <style>

@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "compass-mixins": "^0.12.12",
+        "dropzone": "^6.0.0-beta.2",
         "sweetalert2": "^11.14.4"
     }
 }

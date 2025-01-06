@@ -321,6 +321,8 @@
 <script src="{{ asset('styles/admin/vendors/chart.js/Chart.min.js') }}"></script>
 <script src="{{ asset('styles/admin/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
 <script src="{{ asset('styles/admin/vendors/progressbar.js/progressbar.min.js') }}"></script>
+<!-- Dropzone JS -->
+<script src="{{ asset('styles/admin/vendors/dropzone/dropzone.js') }}"></script>
 
 <!-- End plugin js for this page -->
 <!-- inject:js -->

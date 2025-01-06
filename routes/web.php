@@ -220,6 +220,8 @@ Route::group(['middleware' => ['auth', 'permission','verified']], function () {
             'uses' => 'App\Http\Controllers\MediaController@create'
         ]);
         Route::resource('media', MediaController::class, ['except' => 'create']);
+        Route::post('/upload', [MediaController::class, 'upload'])->name('upload.endpoint');
+        Route::post('/remove', [MediaController::class, 'remove'])->name('remove.endpoint');
     });
 
 //<!-------------------------------- Maintenance Module ---------------------------------------------->////

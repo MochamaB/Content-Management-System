@@ -84,8 +84,10 @@ class UtilityController extends Controller
             session()->put('previousUrl', url()->previous());
         }
         $viewData = $this->formData($this->model);
+        $information = 'Create default utilities for the property except the Rent utility which is added in
+                    the lease creation process';
 
-        return View('admin.CRUD.form', $viewData);
+        return View('admin.CRUD.form',compact('information'), $viewData);
     }
 
     /**

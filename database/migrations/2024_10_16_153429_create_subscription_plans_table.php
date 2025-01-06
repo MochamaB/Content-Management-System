@@ -15,12 +15,21 @@ return new class extends Migration
     {
         Schema::create('subscription_plans', function (Blueprint $table) {
             $table->id()->index();
-            $table->string('plan_name')->nullable();
-            $table->string('currency')->nullable();
-            $table->decimal('price')->nullable();
-            $table->unsignedTinyInteger('max_properties')->default(1);
-            $table->unsignedTinyInteger('max_units')->default(20);
-            $table->unsignedTinyInteger('max_users')->default(25);
+            $table->string('plan_name')->index();
+            $table->string('title')->nullable();
+            $table->string('description')->nullable();
+            $table->string('currency', 3);
+            $table->decimal('price', 10, 2);
+            $table->integer('max_properties')->nullable();
+            $table->integer('max_units')->nullable();
+            $table->integer('max_users')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->json('modules')->nullable();
+            $table->json('features')->nullable();
+            $table->string('billing_cycle')->default('monthly');
+            $table->integer('grace_days')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
            
             $table->timestamps();
             $table->softDeletes();

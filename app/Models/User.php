@@ -55,6 +55,7 @@ class User extends Authenticatable implements HasMedia, Auditable
         'provider',
         'provider_id'
     ];
+    
 
     public static $fields = [
         'firstname' => ['label' => 'First Name', 'inputType' => 'text', 'required' => true, 'readonly' => true],
@@ -69,6 +70,13 @@ class User extends Authenticatable implements HasMedia, Auditable
 
         // Add more fields as needed
     ];
+
+    public function getFullnameAttribute()
+    {
+        return "{$this->firstname} {$this->lastname}";
+    }
+    protected $appends = ['fullname'];
+
     public static function getFieldData($field)
     {
         switch ($field) {
