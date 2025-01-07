@@ -22,7 +22,7 @@
     border-radius: 50%;
 }
 </style>
-</style>
+
 <div class="d-flex justify-content-between align-items-start">
     <div>
         <h5 class="card-title card-title-dash pt-1"><b>{{$title ?? ''}}</b></h5>

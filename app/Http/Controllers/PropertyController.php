@@ -155,7 +155,7 @@ class PropertyController extends Controller
                 [
                     'columns' => [
                         [
-                            'width' => 'col-md-9',
+                            'width' => 'col-md-9 col-sm-12',
                             'component' => 'admin.Dashboard.widgets.card',
                             'data' => [
                                 'cardData' => $this->dashboardService->propertyCard($data),
@@ -163,7 +163,7 @@ class PropertyController extends Controller
                             ]
                         ],
                         [
-                            'width' => 'col-md-3',
+                            'width' => 'col-md-3 col-sm-12',
                             'component' => 'admin.Dashboard.charts.circleProgressChart',
                             'data' => [
                                 'percentage' =>  $this->dashboardService->propertyOccupancyRate($data),
@@ -199,7 +199,7 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        $files = $request->file('files');
+        $files =$request->file('uploaded_files', []);
         dd($files);
         //// Data Entry validation/////////////
         if (Property::where('property_name', $request->property_name)

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Models\Property;
 use App\Models\Website;
+use App\Services\DashboardService;
 
 class UtilityController extends Controller
 {
@@ -20,8 +21,9 @@ class UtilityController extends Controller
     use FormDataTrait;
     protected $controller;
     protected $model;
+    private $dashboardService;
 
-    public function __construct()
+    public function __construct(DashboardService $dashboardService)
     {
         $this->model = Utility::class;
 
@@ -29,6 +31,7 @@ class UtilityController extends Controller
             '0' => 'utility', // Use a string for the controller name
             '1' => ' Utility',
         ]);
+        $this->dashboardService = $dashboardService;
     }
 
     public function getUtilitiesData($utilitiesdata)
@@ -66,11 +69,33 @@ class UtilityController extends Controller
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
         $tableData = $this->getUtilitiesData($utilitiesdata);
+        $dashboardConfig = $this->dashboard($utilitiesdata);
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
 
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller'));
+        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller','dashboardConfig'));
     }
+
+    protected function dashboard($data)
+    {
+        return [
+            'rows' => [
+                [
+                    'columns' => [
+                        [
+                            'width' => 'col-md-12',
+                            'component' => 'admin.Dashboard.widgets.card',
+                            'data' => [
+                                'cardData' => $this->dashboardService->utilityCard($data),
+                                'title' => 'Overview'
+                            ]
+                        ],
+                    ]
+                ]
+            ]
+        ];
+    }
+
 
     /**
      * Show the form for creating a new resource.

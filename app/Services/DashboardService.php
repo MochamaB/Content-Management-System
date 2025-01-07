@@ -39,13 +39,13 @@ class DashboardService
         'OverDue' => 'error',
         'In Progress' => 'information',
         'Assigned' => 'dark',
-    
+
         // Priority levels
         'critical' => 'error',
         'high' => 'warning',
         'normal' => 'active',
         'low' => 'dark',
-    
+
         // Payment statuses
         'Paid' => 'active',
         'Unpaid' => 'warning',
@@ -96,7 +96,7 @@ class DashboardService
             });
         })->count();
 
-         // Count units in residential properties
+        // Count units in residential properties
         $residentialUnitCount = $residentialProperties->flatMap(function ($property) {
             return $property->units;
         })->count();
@@ -109,7 +109,7 @@ class DashboardService
         // Calculate the occupancy rate and number
         $availableunits = $unitCount - $unitOccupied;
         $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
-        
+
         // Format the occupancy rate (optional)
         $formattedOccupancyRate = number_format($occupancyRate, 1);
         $ticketcount =  $property->flatMap(function ($property) {
@@ -124,12 +124,12 @@ class DashboardService
 
 
         $cards =  [
-            'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active', 'icon' => 'mdi mdi-city', 'count' => $propertyCount,'countname' => 'Active'],
-            'Residential' => ['title' => 'Residential', 'value' => $residentialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active', 'icon' => 'mdi mdi-home','count' => $residentialUnitCount,'countname' => 'Total units'],
-            'Commercial' => ['title' => 'Commercial', 'value' => $commercialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active','icon' => 'mdi mdi-office-building','count' => $commercialUnitCount,'countname' => 'Total spaces'],
-            'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => '', 'icon' => 'mdi mdi-door','count' => $availableunits,'countname' => 'Available Units'],
-          //  'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
-          //  'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '', 'desc' => ''],
+            'propertycount' => ['title' => 'Total Properties', 'value' => $propertyCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active', 'icon' => 'mdi mdi-city', 'count' => $propertyCount, 'countname' => 'Active'],
+            'Residential' => ['title' => 'Residential', 'value' => $residentialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active', 'icon' => 'mdi mdi-home', 'count' => $residentialUnitCount, 'countname' => 'Total units'],
+            'Commercial' => ['title' => 'Commercial', 'value' => $commercialCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => 'Active', 'icon' => 'mdi mdi-office-building', 'count' => $commercialUnitCount, 'countname' => 'Total spaces'],
+            'unitcount' => ['title' => 'Total Units', 'value' => $unitCount, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => '', 'icon' => 'mdi mdi-door', 'count' => $availableunits, 'countname' => 'Available Units'],
+            //  'unitOccupied' => ['title' => 'Occupied Units', 'value' => $unitOccupied, 'amount' => '', 'percentage' => '', 'links' => '', 'desc' => ''],
+            //  'occupancyRate' => ['title' => 'Occupancy Rate', 'value' => '', 'amount' => '', 'percentage' => $formattedOccupancyRate, 'links' => '', 'desc' => ''],
 
         ];
         return $cards;
@@ -144,13 +144,12 @@ class DashboardService
                 return $unit->lease && $unit->lease->status == 'Active'; // Example condition
             });
         })->count();
-          // Calculate the occupancy rate
-          $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
+        // Calculate the occupancy rate
+        $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
 
-          return $occupancyRate;
-
+        return $occupancyRate;
     }
-   
+
 
     public function unitCard($units)
     {
@@ -186,12 +185,37 @@ class DashboardService
         $unitOccupied =  $unit->filter(function ($unit) {
             return $unit->lease && $unit->lease->status == 'Active';
         })->count();
-          // Calculate the occupancy rate
-          $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
+        // Calculate the occupancy rate
+        $occupancyRate = $unitCount > 0 ? ($unitOccupied / $unitCount) * 100 : 0;
 
-          return $occupancyRate;
-
+        return $occupancyRate;
     }
+
+    public function utilityCard($utilities)
+    {
+        $totalUtilities = $utilities->count();
+        $recurringCharges = $utilities->where('is_recurring_by_default', true)->count();
+        $fixedCharges = $utilities->where('utility_type', 'fixed amount')->count();
+        $rateBasedCharges = $utilities->where('utility_type', 'by rate')->count();
+        $highestRate = $utilities->max('default_rate');
+        $lowestRate = $utilities->min('default_rate');
+        $averageRate = $utilities->avg('default_rate');
+
+        // Optional: Group by charge cycles
+        $chargeCycles = $utilities->groupBy('default_charge_cycle')
+            ->map(fn($group) => $group->count());
+
+        $cards = [
+            'totalUtilities' => ['title' => 'Total Utilities','icon' => 'mdi mdi-water','value' => $totalUtilities],
+            'recurringCharges' => ['title' => 'Recurring Utilities','icon' => 'mdi mdi-refresh','value' => $recurringCharges],
+            'fixedCharges' => ['title' => 'Fixed-Based Utilities','icon' => 'mdi mdi-currency-usd','value' => $fixedCharges],
+            'rateBasedCharges' => ['title' => 'Rate-Based Utilities','icon' => 'mdi mdi-chart-line','value' => $rateBasedCharges],
+
+        ];
+
+        return $cards;
+    }
+
 
     public function invoiceCard($invoices)
     {
@@ -212,14 +236,10 @@ class DashboardService
         //  $paymentCount = $invoicePayments->sum('payments_count');
         // Define the columns for the unit report
         $cards =  [
-            'total' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'percentage' => '', 'count' => $invoiceCount,'countname' => 'Total No'],
-            'invoicepaid' => ['title' => 'Paid', 'value' => '', 'amount' => $invoicepaid, 'percentage' => '', 'count' => $paymentCount,'countname' => 'No of paid'],
-            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'count' => $balanceCount,'countname' => 'No of unpaid'],
+            'total' => ['title' => 'Amount Invoiced', 'value' => '', 'amount' => $amountinvoiced, 'percentage' => '', 'count' => $invoiceCount, 'countname' => 'Total No'],
+            'invoicepaid' => ['title' => 'Paid', 'value' => '', 'amount' => $invoicepaid, 'percentage' => '', 'count' => $paymentCount, 'countname' => 'No of paid'],
+            'balance' => ['title' => 'Balance', 'value' => '', 'amount' => $balance, 'percentage' => '', 'count' => $balanceCount, 'countname' => 'No of unpaid'],
         ];
         return $cards;
     }
-
-
-
-
 }

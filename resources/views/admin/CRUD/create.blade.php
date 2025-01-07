@@ -6,9 +6,9 @@
     <div class="row">
         <!-- Left Column: Other Inputs -->
         <div class="col-md-6" style="padding-right:30px">
-            @if($information)
-            <div class="media alert-info mb-3 p-3">
-                <i class="ti-info-alt icon-md text-warning d-flex align-self-start me-2 mb-3" style="color:#ffaf00"></i>
+            @if(isset($information))
+            <div class="media alert-info mb-3 p-3" style="border-left: 5px solid #0000ff;">
+                <i class="ti-info-alt icon-md text-information d-flex align-self-start me-2 mb-3"></i>
                 <div class="media-body">
                     <p class="card-text">{{$information}}.</p>
                 </div>
@@ -85,7 +85,7 @@
         </div>
         @if($usesMedia)
         <div class="col-md-6" style="border-left: 2px solid #dee2e6;">
-            @include('admin.CRUD.upload_media')
+            @include('admin.CRUD.uploadmedia')
         </div>
         @endif
     </div>
