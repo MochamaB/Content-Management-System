@@ -73,6 +73,38 @@ class TableViewDataService
     }
 
 
+    public function getUtilityData($utilitiesdata)
+    {
+
+        /// TABLE DATA ///////////////////////////
+        $sitesettings = Website::first();
+        $tableData = [
+            'headers' => ['UTILITY', 'PROPERTY', 'TYPE','CYCLE', 'RATE', ''],
+            'rows' => [],
+        ];
+
+        foreach ($utilitiesdata as  $item) {
+            $isDeleted = $item->deleted_at !== null;
+            $tableData['rows'][] = [
+                'id' => $item->id,
+                $item->utility_name,
+                $item->property->property_name,
+                $item->utility_type,
+                $item->default_charge_cycle,
+                $sitesettings->site_currency.' '.number_format($item->default_rate, 0, '.', ','),
+                'isDeleted' => $isDeleted,
+
+
+            ];
+        }
+
+        return $tableData;
+        /// TABLE DATA ///////////////////////////
+       
+        }
+
+
+        
 
     public function getUnitData($unitdata)
     {

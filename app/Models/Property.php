@@ -81,7 +81,7 @@ class Property extends Model implements HasMedia, Auditable
     public function transformAudit(array $data): array
     {
         $data['property_id'] = $this->id;
-    
+
         return $data;
     }
 
@@ -107,17 +107,17 @@ class Property extends Model implements HasMedia, Auditable
                     $data[$category] = $propertytype->pluck('property_type', 'id')->toArray();
                 }
                 return $data;
-                case 'user_id':
-                    // Retrieve the supervised units' properties
-                    $users = User::with('units', 'roles')
+            case 'user_id':
+                // Retrieve the supervised units' properties
+                $users = User::with('units', 'roles')
                     ->visibleToUser()
                     ->excludeTenants()
                     ->get()
                     ->mapWithKeys(function ($user) {
                         return [$user->id => $user->firstname . ' ' . $user->lastname];
                     });
-                    return $users;
-                case 'property_slogan':
+                return $users;
+            case 'property_slogan':
                 $slogan = 'Where modern style meets comfort.';
                 return $slogan;
         }
@@ -125,18 +125,18 @@ class Property extends Model implements HasMedia, Auditable
 
     ///// Data for populating cards
     /////Card options
- 
+
 
     public function getRelationships()
     {
         return $this->relationships;
     }
-    
+
     /**
      * The amenities that belong to the property.
      */
 
-     
+
     public function propertyType()
     {
         return $this->belongsTo(PropertyType::class, 'property_type');
@@ -170,7 +170,7 @@ class Property extends Model implements HasMedia, Auditable
     {
         return $this->belongsToMany(User::class, 'unit_user', 'property_id', 'user_id');
     }
-    
+
 
     public function settings()
     {
@@ -252,16 +252,31 @@ class Property extends Model implements HasMedia, Auditable
             ->width(150)
             ->height(150)
             ->sharpen(10)
-            ->performOnCollections('property-photo');
+            ->performOnCollections('images');
+
+        // Document conversions (for PDFs)
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('documents')
+            ->width(150)
+            ->height(150)
+            ->format('jpg')
+            ->pdfPageNumber(1);
+
+        // Video conversions
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('videos')
+            ->extractVideoFrameAtSecond(1)
+            ->width(150)
+            ->height(150);
     }
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images');
         $this->addMediaCollection('videos');
         $this->addMediaCollection('documents');
-       
+
         //add options
-    
-        
+
+
     }
 }

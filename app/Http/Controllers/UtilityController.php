@@ -10,6 +10,7 @@ use App\Traits\FormDataTrait;
 use App\Models\Property;
 use App\Models\Website;
 use App\Services\DashboardService;
+use App\Services\TableViewDataService;
 
 class UtilityController extends Controller
 {
@@ -22,8 +23,9 @@ class UtilityController extends Controller
     protected $controller;
     protected $model;
     private $dashboardService;
+    private $tableViewDataService;
 
-    public function __construct(DashboardService $dashboardService)
+    public function __construct(DashboardService $dashboardService, TableViewDataService $tableViewDataService,)
     {
         $this->model = Utility::class;
 
@@ -32,6 +34,7 @@ class UtilityController extends Controller
             '1' => ' Utility',
         ]);
         $this->dashboardService = $dashboardService;
+        $this->tableViewDataService = $tableViewDataService;
     }
 
     public function getUtilitiesData($utilitiesdata)
@@ -65,15 +68,14 @@ class UtilityController extends Controller
     {
 
         $utilitiesdata = Utility::with('property')->get();
-        $mainfilter =  Property::pluck('property_name')->toArray();
         $viewData = $this->formData($this->model);
         $controller = $this->controller;
-        $tableData = $this->getUtilitiesData($utilitiesdata);
+        $tableData = $this->tableViewDataService->getUtilityData($utilitiesdata);
         $dashboardConfig = $this->dashboard($utilitiesdata);
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
 
-        return View('admin.CRUD.form', compact('mainfilter', 'tableData', 'controller','dashboardConfig'));
+        return View('admin.CRUD.form', compact('tableData', 'controller','dashboardConfig'));
     }
 
     protected function dashboard($data)

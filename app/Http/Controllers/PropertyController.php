@@ -15,6 +15,7 @@ use App\Services\TableViewDataService;
 use App\Services\FilterService;
 use App\Services\CardService;
 use App\Services\DashboardService;
+use App\Actions\UploadMediaAction;
 
 class PropertyController extends Controller
 {
@@ -30,9 +31,10 @@ class PropertyController extends Controller
     protected $filterService;
     private $cardService;
     private $dashboardService;
+    protected $uploadMediaAction;
 
     public function __construct(TableViewDataService $tableViewDataService,FilterService $filterService, CardService $cardService,
-    DashboardService $dashboardService)
+    DashboardService $dashboardService, UploadMediaAction $uploadMediaAction,)
     {
         $this->model = Property::class;
 
@@ -44,6 +46,7 @@ class PropertyController extends Controller
         $this->filterService = $filterService;
         $this->cardService = $cardService;
         $this->dashboardService = $dashboardService;
+        $this->uploadMediaAction = $uploadMediaAction;
 
     }
 
@@ -187,8 +190,10 @@ class PropertyController extends Controller
     public function create()
     {
         $viewData = $this->formData($this->model);
+        $informationSecondary = 'Upload all files associated with the property such as pictures, videos and documents
+                        like the lease agreement and rules and regulations ';
 
-        return View('admin.CRUD.form', $viewData);
+        return View('admin.CRUD.form',compact('informationSecondary'), $viewData);
     }
 
     /**
@@ -290,8 +295,7 @@ class PropertyController extends Controller
 
         //3.UTILITIES
         $utilities = $property->utilities;
-        $utilityController = new UtilityController();
-        $utilityTableData = $utilityController->getUtilitiesData($utilities);
+        $utilityTableData = $this->tableViewDataService->getUtilityData($utilities);
 
         // PAYMENT METHODS
         $paymentMethods = $property->paymentMethods;
@@ -386,17 +390,25 @@ class PropertyController extends Controller
      */
     public function edit(Property $property)
     {
-        
+
         $viewData = $this->formData($this->model, $property);
         $pageheadings = collect([
             '0' => $property->property_name,
             '1' => $property->property_streetname,
             '2' => $property->property_location,
         ]);
-
+        // Fetch existing media
+        $collectionNames = ['images', 'documents', 'videos']; // Add more as needed
+        $existingMedia = collect(); // Initialize an empty collection
         
+        foreach ($collectionNames as $collectionName) {
+            $existingMedia = $existingMedia->merge($property->getMedia($collectionName));
+        }
+     //   dd($existingMedia);
 
-        return View('admin.CRUD.form', compact('pageheadings'), $viewData);
+
+
+        return View('admin.CRUD.form', compact('pageheadings', 'existingMedia'), $viewData);
     }
 
     /**
@@ -408,11 +420,27 @@ class PropertyController extends Controller
      */
     public function update(Property $property, Request $request)
     {
-        $files = $request->file('files',[]);
-        dd($files);
+        
         $validationRules = Property::$validation;
         $validatedData = $request->validate($validationRules);
         $property->fill($validatedData);
+
+        /// FILE UPLOAD AND DELETE
+
+        // Check if deleted_files is filled or uploaded_files are present
+        if (($request->filled('deleted_files') || $request->hasFile('uploaded_files'))) {
+            // Proceed with your logic, since at least one is true
+            if ($request->filled('deleted_files')) {
+                 $removedFilesIds = explode(',', $request->input('deleted_files'));
+                 $this->uploadMediaAction->deleteFile($removedFilesIds, $property);
+            }
+
+            if ($request->hasFile('uploaded_files')) {
+                $uploadedFiles = $request->file('uploaded_files', []);
+                $this->uploadMediaAction->UploadFile($uploadedFiles, $property);
+                }
+        }
+       
         $property->update();
 
         return redirect($this->controller['0'])->with('status', $this->controller['1'] . ' Edited Successfully');

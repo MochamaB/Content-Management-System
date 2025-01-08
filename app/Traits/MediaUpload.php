@@ -37,7 +37,7 @@ trait MediaUpload
             ->toMediaCollection($mediaCollection);
     }
 
-  
+
 
     public function deleteFile($path, $disk = 'public')
     {
@@ -49,7 +49,7 @@ trait MediaUpload
         // Handle removed media
         if ($request->filled('removed_media')) {
             $removedMediaIds = explode(',', $request->input('removed_media'));
-            
+
             foreach ($removedMediaIds as $mediaId) {
                 if (!empty($mediaId)) {
                     $this->deleteMedia($mediaId);
@@ -60,12 +60,12 @@ trait MediaUpload
         // Handle new media uploads
         foreach ($collections as $collection) {
             $files = $request->file($collection, []);
-            
+
             if (!empty($files)) {
                 foreach ($files as $file) {
                     if ($file) {
                         $this->addMedia($file)
-                             ->toMediaCollection($collection);
+                            ->toMediaCollection($collection);
                     }
                 }
             }
@@ -80,8 +80,8 @@ trait MediaUpload
     public static function getAllowedFileTypes()
     {
         return [
-            'images' => ['image/jpeg', 'image/png', 'image/gif'],
-            'videos' => ['video/mp4', 'video/quicktime', 'video/mpeg'],
+            'images' => ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'],
+            'videos' => ['video/mp4', 'video/quicktime', 'video/mpeg','video/mov'],
             'documents' => [
                 'application/pdf',
                 'application/msword',
@@ -90,5 +90,47 @@ trait MediaUpload
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             ]
         ];
+    }
+
+    /////////
+    public function UploadFile($uploadedFiles, $model)
+    {
+        foreach ($uploadedFiles as $file) {
+            // Determine the collection based on MIME type
+            $mimeType = $file->getMimeType();
+            $collection = $this->getMediaCollectionForMimeType($mimeType);
+
+            if ($collection) {
+                // Add the file to the determined collection
+                $model->addMedia($file)->toMediaCollection($collection);
+            }
+        }
+    }
+    /**
+     * Get the media collection name based on the MIME type.
+     */
+    private function getMediaCollectionForMimeType($mimeType)
+    {
+        // Define mapping of MIME types to collections
+        $mimeCollectionMap = [
+            'images' => ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'],
+            'videos' => ['video/mp4', 'video/quicktime', 'video/mpeg','video/mov'],
+            'documents' => [
+               'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            ],
+        ];
+
+        foreach ($mimeCollectionMap as $collection => $mimeTypes) {
+            if (in_array($mimeType, $mimeTypes)) {
+                return $collection;
+            }
+        }
+
+        // Return null if no matching collection is found
+        return null;
     }
 }
