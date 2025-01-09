@@ -70,7 +70,7 @@ class DashboardService
     }
 
 
-    /////// DASHBOARD CARDS
+    /////// PROPERTY DASHBOARD CARDS
     public function propertyCard($property)
     {
 
@@ -149,6 +149,9 @@ class DashboardService
 
         return $occupancyRate;
     }
+    
+
+    /////////////////
 
 
     public function unitCard($units)

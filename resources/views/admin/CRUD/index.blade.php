@@ -12,6 +12,7 @@
 
 <form class="filterForm" method="GET" action="{{ url()->current() }}">
     @if(isset($dashboardConfig)) <!-- ONE CARD COVERS WHOLE AREA --->
+            @include('admin.CRUD.card_title')
             @include('admin.Dashboard.card_section')
         
     @endif

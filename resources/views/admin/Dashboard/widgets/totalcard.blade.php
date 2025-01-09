@@ -36,7 +36,14 @@
         }
     }
 </style>
-@include('admin.CRUD.card_title')
+<div class="d-flex justify-content-between align-items-start">
+    <div>
+    <h5 class="card-title card-title-dash pt-1"><b>{{$title ?? ''}}</b></h5>
+    </div>
+    <div>
+
+    </div>
+</div>
 <div class="row statistics-details " style="margin: 10px 0px; padding:15px 10px 0px 0px; ">
     @foreach($cardData as $cardType => $card)
     <!-- TOTAL CARDS -->

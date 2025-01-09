@@ -276,6 +276,9 @@ class PropertyController extends Controller
             //    'Payments'
             // Add more tab titles as needed
         ]);
+
+        //1. SUMMARY 
+        $dashboardConfig = $this->summaryDashboard($property);
         //1. AMENITIES
         $amenities = $property->amenities;
         $allamenities = Amenity::all();
@@ -344,7 +347,7 @@ class PropertyController extends Controller
         $tabContents = [];
         foreach ($tabTitles as $title) {
             if ($title === 'Summary') {
-                $tabContents[] = View('admin.Property.show_summary', $viewData, compact('amenities', 'allamenities','specialvalue','property'))->render();
+                $tabContents[] = View('admin.Property.show_summary', $viewData, compact('amenities', 'allamenities','dashboardConfig','property'))->render();
             } elseif ($title === 'Units') {
                 $tabContents[] = View('admin.CRUD.index_show', ['tableData' => $unitTableData,'controller' => ['unit']], 
                 compact('amenities', 'allamenities'))->render();
@@ -382,6 +385,34 @@ class PropertyController extends Controller
         return View('admin.CRUD.form', compact('pageheadings', 'tabTitles', 'tabContents'));
     }
 
+    //// FUNCTION FOR SUMMARY PAGE /////////
+    protected function summaryDashboard($data)
+    {
+        return [
+            'rows' => [
+                [
+                    'columns' => [
+                        [
+                            'width' => 'col-md-9 col-sm-12',
+                            'component' => 'admin.Dashboard.widgets.card',
+                            'data' => [
+                                'cardData' =>$this->dashboardService->unitCard($data->units),
+                                'title' => 'Overview'
+                            ]
+                        ],
+                        [
+                            'width' => 'col-md-3 col-sm-12',
+                            'component' => 'admin.Dashboard.charts.circleProgressChart',
+                            'data' => [
+                                'percentage' =>   $this->dashboardService->unitOccupancyRate($data->units),
+                                'title' => 'Occupancy Rate'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+    }
     /**
      * Show the form for editing the specified resource.
      *
