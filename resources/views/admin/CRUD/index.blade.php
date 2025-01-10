@@ -10,10 +10,12 @@
 -->
 
 
-<form class="filterForm" method="GET" action="{{ url()->current() }}">
+<form  id="dateRangeForm" class="filterForm" method="GET" action="{{ url()->current() }}">
     @if(isset($dashboardConfig)) <!-- ONE CARD COVERS WHOLE AREA --->
-            @include('admin.CRUD.card_title')
-            @include('admin.Dashboard.card_section')
+            @if(isset($filters))
+                @include('admin.CRUD.card_title')
+            @endif
+                @include('admin.Dashboard.card_section')
         
     @endif
     <div class=" contwrapper">

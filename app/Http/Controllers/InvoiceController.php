@@ -60,6 +60,7 @@ class InvoiceController extends Controller
         // Clear previousUrl if navigating to a new create method
         session()->forget('previousUrl');
         $filters = $request->except(['tab','_token','_method']);
+       // dd($filters);
         $filterdata = $this->filterService->getInvoiceFilters();
         $baseQuery = Invoice::with('unit', 'property', 'payments')->ApplyCurrentMonthFilters($filters);
         $cardDashboad = $this->cardService->invoiceCard($baseQuery->get());

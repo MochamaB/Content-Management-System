@@ -1,10 +1,10 @@
 
-<form id="dateRangeForm" action="{{ url($routeParts[0]) }}" method="GET">
+<form class="filterForm" method="GET" action="{{ url()->current() }}">
     <div class="d-flex align-items-center">
         <!-- Select Input -->
         <div class="form-group mr-2 mb-0" style="color: #000;font-weight: 600;font-size: 0.8rem;">
-            @if(isset($filterdata))
-            @foreach($filterdata as $key => $filter)
+            @if(isset($dashboardFilterData))
+            @foreach($dashboardFilterData as $key => $filter)
             <select name="{{ $key }}" id="property" class="formcontrol2 calendar" style="min-width: 200px;">
                 <option value="">All {{ $filter['label'] }}</option>
                 @foreach ($filter['values'] as $id => $value)

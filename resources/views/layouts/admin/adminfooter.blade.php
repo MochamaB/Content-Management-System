@@ -230,8 +230,20 @@
   });
 </script>
 
+<!--- Script for filtering by date -->
 <script type="text/javascript">
  $(document).ready(function() {
+   // Debug check
+   if (!$('#daterange').length) {
+        console.error('Daterange input not found in DOM');
+        return;
+    }
+     // Add console logs to check initial state
+     console.log('Elements found:', {
+        daterange: $('#daterange').length,
+        fromDate: $('#from_date').length,
+        toDate: $('#to_date').length
+    });
     var fromDate = "{{ request('from_date', null) }}";
     var toDate = "{{ request('to_date', null) }}";
     

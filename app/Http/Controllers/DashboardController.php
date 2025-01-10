@@ -50,19 +50,19 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $tabTitles = collect([
-            'Dashboard',
+            'Overview',
             'Properties',
             'Financials',
         ]);
         $tabIcons = collect([
-            'Dashboard' => 'icon-chart', 
-            'Properties' => 'icon-home',
-            'Financials' => 'icon-calculator',
+            'Overview' => '', 
+            'Properties' => '',
+            'Financials' => '',
         ]);
         $controller = $this->controller;
         $user = auth()->user();
         $filters = $request->except(['tab','_token','_method']);
-        $filterdata = $this->filterService->getDashboardFilters();
+        $dashboardFilterData = $this->filterService->getDashboardFilters();
         $properties = Property::with('units', 'leases', 'invoices')->applyFilters($filters)->get();
         $units = Unit::with('property', 'lease', 'invoices','tickets')->get();
 
@@ -89,7 +89,7 @@ class DashboardController extends Controller
 
             $tabContents = [];
             foreach ($tabTitles as $title) {
-                if ($title === 'Dashboard') {
+                if ($title === 'Overview') {
                     $tabContents[] = View('admin.Dashboard.dashboardall',
                     compact('properties','cardData','chartData','tickets','taxSummary','paymentType'))->render();
                 } elseif ($title === 'Properties') {
@@ -99,7 +99,7 @@ class DashboardController extends Controller
                 }
             }
 
-        return View('admin.Dashboard.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents','tabIcons','filterdata'));
+        return View('admin.Dashboard.dashboard', compact('cardData', 'controller','tabTitles', 'tabContents','tabIcons','dashboardFilterData'));
     }
 
     /**

@@ -1,9 +1,8 @@
-<div class="btn-wrapper d-flex align-items-center justify-content-end">
-    <h3>Overview</h3>
+<form  id="dateRangeForm" class="filterForm" method="GET" action="{{ url()->current() }}">
     @include('admin.CRUD.card_title')
-        
-        </div>
+</form>
+               
 @if(isset($dashboardConfig)) <!-- ONE CARD COVERS WHOLE AREA --->
             @include('admin.Dashboard.card_section')
         
-    @endif
+@endif
