@@ -124,5 +124,9 @@ class Utility extends Model implements Auditable
     {
         return $this->utility_name;
     }
+    public function unitCharges()
+    {
+        return $this->hasMany(Unitcharge::class, 'utility_id');
+    }
 
 }

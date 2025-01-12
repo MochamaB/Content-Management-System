@@ -35,6 +35,7 @@ use App\Services\FilterService;
 use App\Services\CardService;
 use App\Services\SmsService;
 use App\Services\LeaseMoveOutService;
+use App\Services\DashboardService;
 
 
 
@@ -59,6 +60,7 @@ class LeaseController extends Controller
     private $cardService;
     protected $smsService;
     protected $leaseMoveOutService;
+    private $dashboardService;
 
 
 
@@ -73,7 +75,8 @@ class LeaseController extends Controller
         FilterService $filterService,
         CardService $cardService,
         SmsService $smsService,
-        LeaseMoveOutService $leaseMoveOutService
+        LeaseMoveOutService $leaseMoveOutService,
+        DashboardService $dashboardService, 
     ) {
         $this->model = Lease::class;
 
@@ -93,6 +96,7 @@ class LeaseController extends Controller
         $this->cardService = $cardService;
         $this->smsService = $smsService;
         $this->leaseMoveOutService = $leaseMoveOutService;
+        $this->dashboardService = $dashboardService;
     }
     public function index(Request $request)
     {
@@ -102,7 +106,8 @@ class LeaseController extends Controller
         $filters = $request->except(['tab', '_token', '_method']);
         $filterdata = $this->filterService->getLeaseFilters($request);
         $baseQuery = lease::with('property', 'unit', 'user')->showSoftDeleted()->ApplyFilters($filters);
-        $cardData = $this->cardService->leaseCard($baseQuery->get());
+    //    $cardData = $this->cardService->leaseCard($baseQuery->get());
+        $dashboardConfig = $this->dashboard($baseQuery->get());
 
         $tabTitles = ['All'] + Lease::$statusLabels;
         $tabContents = [];
@@ -153,8 +158,29 @@ class LeaseController extends Controller
 
         return View(
             'admin.CRUD.form',
-            compact('tabTitles', 'tabContents', 'controller', 'filterdata', 'filters', 'cardData', 'tabCounts')
+            compact('tabTitles', 'tabContents', 'controller', 'filterdata', 'filters', 'dashboardConfig', 'tabCounts')
         );
+    }
+
+    protected function dashboard($data)
+    {
+        return [
+            'rows' => [
+                [
+                    'columns' => [
+                        [
+                            'width' => 'col-md-12 col-sm-12',
+                            'component' => 'admin.Dashboard.widgets.card',
+                            'data' => [
+                                'cardData' => $this->dashboardService->leaseCard($data),
+                                'title' => 'Overview'
+                            ]
+                        ],
+                        
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**

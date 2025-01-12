@@ -47,7 +47,7 @@
     .input-group-text {
     display: flex;
     align-items: center;
-    padding: 0.375rem 0.75rem;
+    padding: 0.375rem 0.15rem;
     font-size: 0.875rem;
     font-weight: 400;
     line-height: 1;

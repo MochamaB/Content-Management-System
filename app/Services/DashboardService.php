@@ -219,6 +219,35 @@ class DashboardService
         return $cards;
     }
 
+    public function leaseCard($lease)
+    {
+
+
+        $leaseCount = $lease->count();
+        // Get the count of units that are for sale
+        $activeleases = $lease->filter(function ($lease) {
+            return $lease->status === Lease::STATUS_ACTIVE;
+        })->count();
+        // Get the count of units that are for sale
+        $open = $lease->filter(function ($lease) {
+            return $lease->lease_period === 'open';
+        })->count();
+        $fixed = $lease->filter(function ($lease) {
+            return $lease->lease_period === 'fixed';
+        })->count();
+        $inactive = $leaseCount - $activeleases;
+        //  $paymentCount = $invoicePayments->sum('payments_count');
+        // Define the columns for the unit report
+        $cards =  [
+            'leaseCount' => ['title' => 'Total Leases', 'icon' => '', 'value' => $leaseCount, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'activeleases' => ['title' => 'Active', 'icon' => '', 'value' => $activeleases, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'open' => ['title' => 'Open Leases', 'icon' => '', 'value' => $open, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'fixed' => ['title' => 'Closed Leases', 'icon' => '', 'value' => $fixed, 'amount' => '', 'percentage' => '', 'links' => ''],
+            'inactive Units' => ['title' => 'Inactive / Suspended', 'icon' => '', 'value' => $inactive, 'amount' => '', 'percentage' => '', 'links' => ''],
+        ];
+        return $cards;
+    }
+
 
     public function invoiceCard($invoices)
     {

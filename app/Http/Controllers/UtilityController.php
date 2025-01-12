@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Chartofaccount;
 use App\Models\Utility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Traits\FormDataTrait;
 use App\Models\Property;
+use App\Models\Unitcharge;
 use App\Models\Website;
 use App\Services\DashboardService;
 use App\Services\TableViewDataService;
@@ -171,15 +173,14 @@ class UtilityController extends Controller
             session()->put('previousUrl', url()->previous());
         }
         $utility->load('property','accounts');
+        $account = Chartofaccount::whereIn('account_type', ['Income', 'Liability'])->get();
+        $accounts = $account->groupBy('account_type');
+        $information = 'Select the unit charges attached to this utility that will be also be edited with the change of the
+                        utility account, type, rate or billing cycle ';
+        $unitCharges = Unitcharge::where('utility_id', $utility->id)->get();
         
-        $specialvalue = collect([
-            'property_id' => $utility->property->property_name, // Use a string for the controller name
-            'chartofaccounts_id' => $utility->accounts->account_name,
-        ]);
 
-        $viewData = $this->formData($this->model, $utility, $specialvalue);
-
-        return View('admin.CRUD.form', $viewData);
+        return View('admin.Property.edit_utility',compact('utility','accounts','information','unitCharges'));
     }
 
     /**
@@ -192,15 +193,29 @@ class UtilityController extends Controller
     public function update(Request $request, Utility $utility)
     {
         $validatedData = $request->validate([
-            'property_id' => 'required',
-            'chartofaccounts_id' => 'required|numeric',
-            'utility_name' => 'required',
+            'chartofaccounts_id' => 'required',
             'utility_type' => 'required',
-            'rate' => 'required|numeric',
+            'default_charge_cycle' => 'required',
+            'default_rate' => 'required|numeric',
+            'selected_charges' => 'array'
         ]);
         $utility = Utility::find($utility->id);
         $utility->fill($validatedData);
         $utility->update();
+
+        $selectedCharges = $request->input('selected_charges', []);
+        // Update all selected unit charges that belong to this utility
+    if (!empty($selectedCharges)) {
+        UnitCharge::whereIn('id', $selectedCharges)
+            ->where('utility_id', $utility->id)
+            ->update([
+                'chartofaccounts_id' => $validatedData['chartofaccounts_id'],
+                'charge_type' => $validatedData['utility_type'],
+                'charge_cycle' => $validatedData['default_charge_cycle'],
+                'rate' => $validatedData['default_rate']
+            ]);
+    }
+
         $redirectUrl = session()->pull('previousUrl', $this->controller['0']);
         return redirect($redirectUrl)->with('status', $this->controller['1'] . ' Edited Successfully');
     }
