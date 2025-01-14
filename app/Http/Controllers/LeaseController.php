@@ -217,7 +217,11 @@ class LeaseController extends Controller
                     ->get();
             }
         }
+        $defaultRentAccount = Chartofaccount::where('account_name', 'like', '%Rent Income%')->first();
+        $defaultUtilityAccount = Chartofaccount::where('account_name', 'like', '%Utility Income%')->first();
         $splitRentcharges = $request->session()->get('wizard_splitRentcharges');
+        $information = 'If you select the 1st of the month as the start date, invoicing and the charge will be calculated for that month but if not 
+                        then it will start charging/invoicing from the following month ';
 
         //4. Deposit Charge /////
         $depositcharge = $request->session()->get('wizard_depositcharge');
@@ -225,6 +229,8 @@ class LeaseController extends Controller
         $accounts = $account->groupBy('account_type');
         $depositaccount = Chartofaccount::whereIn('account_type', ['Liability'])->get();
         $depositaccounts = $depositaccount->groupBy('account_type');
+        $defaultDepositAccount = Chartofaccount::where('account_name', 'like', '%Security Deposit%')->first();
+       
 
         ///5. Utilities ////
         $utilities = Utility::where('property_id', $lease->property_id ?? '')->get();
@@ -236,7 +242,18 @@ class LeaseController extends Controller
                 ->get();
         }
         $sessioncharges = $request->session()->get('wizard_utilityCharges');
+        if(empty($utilities)){
+        $utilInfo = 'Utilities will be billed together with rent';
+        }else{
+        $utilInfo = 'Utility will be have separate invoice';
+        }
+        $informationSecondary = '<p>'.$utilInfo.'</p>
+        <p>If you select the 1st of the month as the start date, invoicing and the charge will be calculated for that month but if not, 
+        then it will start charging/invoicing from the following month</p>';
 
+        // LEASE AGREEMENT
+        $property = $lease ? Property::find($lease->property_id) : null;
+        $documents = $property ? $property->getMedia('documents') : null;
         //  dd($utilityCharges);
 
         //   $viewData = $this->formData($this->model);
@@ -257,13 +274,13 @@ class LeaseController extends Controller
             } elseif ($title === 'Tenant Cosigners') {
                 $stepContents[] = View('wizard.lease.tenantdetails', compact('lease', 'tenantdetails'))->render();
             } elseif ($title === 'Rent') {
-                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges', 'existingRentCharge', 'existingSplitRentCharge', 'sessioncharges'))->render();
+                $stepContents[] = View('wizard.lease.rent', compact('accounts', 'lease', 'rentcharge', 'splitRentcharges', 'existingRentCharge', 'existingSplitRentCharge', 'sessioncharges','information','defaultRentAccount','defaultUtilityAccount'))->render();
             } elseif ($title === 'Security Deposit') {
-                $stepContents[] = View('wizard.lease.deposit', compact('depositaccounts', 'lease', 'depositcharge'))->render();
+                $stepContents[] = View('wizard.lease.deposit', compact('depositaccounts', 'lease', 'depositcharge','defaultDepositAccount'))->render();
             } elseif ($title === 'Utilities') {
-                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges', 'existingUtilityCharge'))->render();
+                $stepContents[] = View('wizard.lease.utilities', compact('lease', 'rentcharge', 'utilities', 'sessioncharges', 'existingUtilityCharge','defaultUtilityAccount','informationSecondary'))->render();
             } elseif ($title === 'Lease Agreement') {
-                $stepContents[] = View('wizard.lease.leaseagreement')->render();
+                $stepContents[] = View('wizard.lease.leaseagreement', compact('documents'))->render();
             }
         }
 
@@ -278,9 +295,12 @@ class LeaseController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'leaseagreement' => 'required|mimes:csv,txt,pdf|max:2048',
-        ]);
+       // $files =$request->file('uploaded_files', []);
+       // dd($files);
+        //TODO: Populate the uploaded lease or generated lease and make it required
+     //   $request->validate([
+      //      'leaseagreement' => 'required|mimes:csv,txt,pdf|max:2048',
+       // ]);
 
         ///1. SAVE LEASE DETAILS
         $leasedetails = $request->session()->get('wizard_lease');
@@ -294,9 +314,20 @@ class LeaseController extends Controller
         ///2. SAVE TENANT COSIGNER DETAILS
         $tenantdetails = $request->session()->get('wizard_tenantdetails');
         if (!empty($tenantdetails)) {
-            $tenantdetailsModel = new Tenantdetails();
-            $tenantdetailsModel->fill($tenantdetails->toArray());
-            $tenantdetailsModel->save();
+            // Check if an existing cosigner with the same number or email exists
+            $existingCosigner = Tenantdetails::where('emergency_number', $tenantdetails['emergency_number'])
+            ->orWhere('emergency_email', $tenantdetails['emergency_email'])
+            ->first();
+
+            // If an existing cosigner is found, skip the save operation
+            if ($existingCosigner) {
+                $existingCosigner->fill($tenantdetails->toArray());
+                $existingCosigner->save();
+            } else {
+                $tenantdetailsModel = new Tenantdetails();
+                $tenantdetailsModel->fill($tenantdetails->toArray());
+                $tenantdetailsModel->save();
+            }
         }
 
         //3. SAVE RENT CHARGE
@@ -310,6 +341,7 @@ class LeaseController extends Controller
             if ($existingCharge) {
                 // Update the existing charge
                 $existingCharge->fill($rentcharge->toArray());
+                $existingCharge->last_billed = now();
                 $existingCharge->updated_at = now();
                 $existingCharge->save();
                 // Use the existing charge's ID as the parent_id
@@ -362,6 +394,7 @@ class LeaseController extends Controller
             if ($existingDepositCharge) {
                 // Update the existing charge
                 $existingDepositCharge->fill($depositcharge->toArray());
+                $existingDepositCharge->last_billed = now();
                 $existingDepositCharge->updated_at = now();
                 $existingDepositCharge->save();
 
@@ -404,7 +437,14 @@ class LeaseController extends Controller
         $propertyId = $leasedetails->property_id;
         $unit->users()->attach($user, ['property_id' => $propertyId]);
 
-        //8. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
+         //8. UPLOAD OR GENERATE LEASE AGREEMENT
+
+        if ($request->hasFile('uploaded_files')) {
+            $uploadedFiles = $request->file('uploaded_files', []);
+            $this->uploadMediaAction->UploadFile($uploadedFiles, $lease);
+            }
+
+        //9. SEND EMAIL TO THE TENANT AND THE PROPERTY MANAGERS
         //   $notificationsEnabled = Setting::getSettingForModel(get_class($lease), $lease->id, 'leasenotifications');
         $user = User::find($lease->user_id);
         // Redirect to the lease.create route with a success message
@@ -431,12 +471,7 @@ class LeaseController extends Controller
         }
 
 
-        //8. UPLOAD LEASE AGREEMENT
-        //  $unit
-        //    ->addMediaFromRequest('leaseagreement')
-        //   ->withProperties(['unit_id' => $unit->id, 'property_id' => $propertyId])
-        //   ->toMediaCollection('Lease-Agreement');
-        $this->uploadMediaAction->handle($unit, 'leaseagreement', 'Lease-Agreement', $request);
+    
 
 
 
@@ -707,7 +742,7 @@ class LeaseController extends Controller
 
     public function cosigner(Request $request)
     {
-
+       
         $validatedData = $request->validate([
             'user_id' => 'required',
             'user_relationship' => 'required',
@@ -715,6 +750,36 @@ class LeaseController extends Controller
             'emergency_number' => 'required',
             'emergency_email' => 'required|email',
         ]);
+
+        // Step 2: Check if the number or email already exists
+        $existingCosigner = TenantDetails::where('emergency_number', $request->emergency_number)
+        ->orWhere('emergency_email', $request->emergency_email)
+        ->first();
+        if ($existingCosigner && !$request->has('use_existing_cosigner')) {
+            // Step 3: Redirect back with an error message and the existing data
+            return redirect()->back()
+                ->withInput(array_merge($request->all(), ['use_existing_cosigner' => 1]))
+                ->with([
+                    'statuserror' => "The cosigner information already exists and belongs to {$existingCosigner->emergency_name}. Click next to use this cosigner",
+                    'existingCosigner' => $existingCosigner // Pass the existing cosigner
+                ]); // Pass existing data to the view
+        }
+        //step 4: CHeck if the data passed is the same as original cosigner data
+        if ($request->has('use_existing_cosigner')) {
+            if (
+                $request->emergency_name !== $existingCosigner->emergency_name ||
+                $request->emergency_email !== $existingCosigner->emergency_email ||
+                $request->emergency_number !== $existingCosigner->emergency_number
+            ) {
+                //step 5 Return back if theres a change
+                return redirect()->back()
+                    ->withInput(array_merge($request->all(), ['use_existing_cosigner' => 1]))
+                    ->with([
+                        'statuserror' => "You cannot modify the cosigner’s data when using the existing cosigner.",
+                        'existingCosigner' => $existingCosigner // Pass the existing cosigner
+                    ]); // Pass existing data to the view
+            }
+        }
 
         if (empty($request->session()->get('wizard_tenantdetails'))) {
             $tenantdetails = new Tenantdetails();
@@ -749,6 +814,7 @@ class LeaseController extends Controller
         /// 2.1. Use the action to update the next date
         $result = $this->updateNextDateAction->handle($chargeCycle, $startDate, $chargeType);
         $updatedAt = $result['updatedAt'];
+        $lastBilled = $result['lastBilled'];
         $nextDate = $result['nextDate'];
 
 
@@ -756,6 +822,7 @@ class LeaseController extends Controller
             $rentcharge = new Unitcharge();
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
+            $rentcharge->last_billed = $lastBilled;
             $rentcharge->updated_at = $updatedAt;
             $request->session()->put('wizard_rentcharge', $rentcharge);
             //     $rentcharge->save();
@@ -763,10 +830,12 @@ class LeaseController extends Controller
             $rentcharge = $request->session()->get('wizard_rentcharge');
             $rentcharge->fill($validatedData);
             $rentcharge->nextdate = $nextDate;
+            $rentcharge->last_billed = $lastBilled;
             $rentcharge->updated_at = $updatedAt;
             $request->session()->put('wizard_rentcharge', $rentcharge);
             //      $rentcharge->update();
         }
+        // CHECK IF THE SPLIT CHARGE NAME IS ALREADY A PROPERTY UTILITY OR AATTACHED TO THE UNIT
         $splitchargeNames = $request->input('splitcharge_name', []);
 
         if (!empty($splitchargeNames)) {
@@ -810,7 +879,7 @@ class LeaseController extends Controller
                     'unit_id' => $rentcharge->unit_id,
                     'chartofaccounts_id' => $request->input("splitchartofaccounts_id.{$index}"),
                     'charge_name' => $chargeName,
-                    'charge_cycle' => $rentcharge->charge_cycle, ///Charge cycle is same to the rent cycle
+                    'charge_cycle' => $rentcharge->charge_cycle, ///Charge cycle is same to the rent/parent cycle
                     'charge_type' => $request->input("splitcharge_type.{$index}"),
                     'rate' => $request->input("splitrate.{$index}"),
                     'parent_id' => $rentchargeIdentifier, ///Add temporary uniqueid
@@ -884,7 +953,29 @@ class LeaseController extends Controller
                 /// 2.1. Use the action to update the next date
                 $result = $this->updateNextDateAction->handle($chargeCycle, $startDate, $chargeType);
                 $updatedAt = $result['updatedAt'];
+                $lastBilled = $result['lastBilled'];
                 $nextDate = $result['nextDate'];
+                ///OTHER FIELDS
+              
+                $utility = Utility::find($request->input("utility_id.{$index}"));
+                /// Check which fields differ from utility defaults
+                $overriddenFields = [];
+
+                if ($request->input("chartofaccounts_id.{$index}") != $utility->chartofaccounts_id) {
+                    $overriddenFields[] = 'chartofaccounts_id';
+                }
+
+                if ($request->input("charge_type.{$index}") != $utility->utility_type) {
+                    $overriddenFields[] = 'charge_type';
+                }
+
+                if ($request->input("charge_cycle.{$index}") != $utility->default_charge_cycle) {
+                    $overriddenFields[] = 'charge_cycle';
+                }
+
+                if ($request->input("rate.{$index}") != $utility->default_rate) {
+                    $overriddenFields[] = 'rate';
+                }
 
                 $utilitycharge = [
                     'property_id' => $request->input('property_id'),
@@ -898,10 +989,13 @@ class LeaseController extends Controller
                     'parent_id' => $request->input('parent_id'),
                     'recurring_charge' => $request->input('recurring_charge'),
                     'startdate' => $startDate,
+                    'last_billed' => $lastBilled,
                     'nextdate' => $nextDate,
                     'created_at' => now(),
                     'updated_at' => $updatedAt,
                     // ... Other fields ...
+                    'override_defaults' => !empty($overriddenFields),
+                    'overridden_fields' => !empty($overriddenFields) ? json_encode($overriddenFields) : null,
                 ];
 
 

@@ -37,6 +37,7 @@ class UpdateNextDateAction
         
         return [
             'updatedAt' => $startDate,
+            'lastBilled' => $startDate,
             'nextDate' => $nextDate
         ];
     }
@@ -57,7 +58,7 @@ class UpdateNextDateAction
         };
         $nextDate = $startDate->copy()->addMonths($monthsToAdd)->startOfMonth();
         // Update the nextdate attribute in the Unitcharge model
-        $unitcharge->update(['nextdate' => $nextDate]);
+        $unitcharge->update(['nextdate' => $nextDate,'last_billed' => now()]);
         return $nextDate;
     }
 
@@ -88,7 +89,8 @@ class UpdateNextDateAction
         $nextDate = $startDate->copy()->addMonths($monthsToAdd)->startOfMonth();
         // Update the nextdate attribute in the Unitcharge model
         $unitcharge->update(['nextdate' => $nextDate,
-                            'updated_at' => $startDate]);
+                            'updated_at' => $startDate,
+                            'last_billed' => $startDate]);
         return $nextDate;
     }
 }

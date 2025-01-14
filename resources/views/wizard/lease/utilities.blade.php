@@ -1,17 +1,9 @@
 @if(($routeParts[1] === 'create'))
 <h4><b> Add Utilities </b></h4>
 <hr>
-<div class="d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center">
-        <i class="mdi mdi-information text-muted me-1"></i>
-        @if(empty($utilities))
-        <h6> Utilities will be billed together with rent.</h6>
-        @else
-        <h6> Each Utility will be have separate invoice.</h6>
-        @endif
-       
-    </div>
-</div><br />
+
+@include('admin.CRUD.information', ['message' => $informationSecondary ?? ''])
+
 <form method="POST" action="{{ url('assignutilities') }}" class="myForm" enctype="multipart/form-data" novalidate>
 @csrf
     @if(!empty($utilities))

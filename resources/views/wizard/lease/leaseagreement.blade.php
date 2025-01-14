@@ -2,11 +2,18 @@
 <form method="POST" action="{{ url('lease') }}" class="myForm" enctype="multipart/form-data" novalidate>
     @csrf
 
-    <div class="col-md-8">
+    <h5><b> Complete Lease Creation</b></h5>
+    <hr>
+    <div class="col-md-9">
         <div class="form-group">
             <label class="label">Upload Lease Agreement<span class="requiredlabel">*</span></label>
-            <input type="file" name="leaseagreement" class="form-control" id="file" required />
-            <img id="fileImage" src="{{ url('uploads/nofile.png') }}" style="height: 200px; width: 200px;">
+            @include('admin.CRUD.upload_media')
+            <hr>
+            <label class="label">Or Generate Lease Document<span class="requiredlabel">*</span></label>
+
+
+            <hr>
+
         </div>
     </div>
     <div class="form-group">

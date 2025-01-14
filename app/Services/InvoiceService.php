@@ -199,13 +199,13 @@ class InvoiceService
     {
         if ($unitcharge->charge_type === 'units') {
             $nextdateFormatted = Carbon::parse($unitcharge->nextdate)->format('Y-m-d');
-            $updatedFormatted = Carbon::parse($unitcharge->updated_at ?? Carbon::now())->format('Y-m-d');
+            $lastBilledFormatted = Carbon::parse($unitcharge->last_billed ?? Carbon::now())->format('Y-m-d');
 
             $amount = 0.00;
             $meterReadings = MeterReading::where('unit_id', $unitcharge->unit_id)
                 ->where('unitcharge_id', $unitcharge->id)
                 ->where('startdate', '<=', $nextdateFormatted)
-                ->where('enddate', '>=', $updatedFormatted)
+                ->where('enddate', '>=', $lastBilledFormatted)
                 ->get();
             
             // TODO: find out why its generating wrong amounts
@@ -253,13 +253,13 @@ class InvoiceService
 
                 if ($childcharge->charge_type === 'units') {
                     $nextdateFormatted = Carbon::parse($childcharge->nextdate)->format('Y-m-d');
-                    $updatedFormatted = Carbon::parse($childcharge->updated_at ?? Carbon::now())->format('Y-m-d');
+                    $lastBilledFormatted = Carbon::parse($childcharge->last_billed ?? Carbon::now())->format('Y-m-d');
 
                     $amount = 0.00;
                     $meterReadings = MeterReading::where('unit_id', $childcharge->unit_id)
                         ->where('unitcharge_id', $childcharge->id)
                         ->where('startdate', '<=', $nextdateFormatted)
-                        ->where('enddate', '>=', $updatedFormatted)
+                        ->where('enddate', '>=', $lastBilledFormatted)
                         ->get();
 
                     foreach ($meterReadings as $reading) {

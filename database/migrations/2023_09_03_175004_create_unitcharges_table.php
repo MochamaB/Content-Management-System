@@ -26,6 +26,7 @@ class CreateUnitchargesTable extends Migration
             $table->decimal('rate');
             $table->string('recurring_charge');
             $table->timestamp("startdate")->nullable();
+            $table->timestamp("last_billed")->nullable();
             $table->timestamp("nextdate")->nullable();
             $table->boolean('override_defaults')->default(false);
             // Optional: Add columns to track which fields are overridden

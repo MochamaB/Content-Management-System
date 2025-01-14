@@ -519,12 +519,12 @@ class TableViewDataService
         foreach ($unitchargedata as $item) {
             $MeterReadingLink = ''; // Initialize $MeterReadingLink here
             $nextdateFormatted = Carbon::parse($item->nextdate)->format('Y-m-d');
-            $updatedFormatted = Carbon::parse($item->updated_at ?? Carbon::now())->format('Y-m-d');
+            $lastBilledFormatted = Carbon::parse($item->last_billed ?? Carbon::now())->format('Y-m-d');
             if ($item->charge_type == 'units') {
                 // Use the relationship to check for meter readings
                 $checkMeterReadings = $item->meterReading()
                     ->where('startdate', '<=', $nextdateFormatted)
-                    ->where('enddate', '>=', $updatedFormatted)
+                    ->where('enddate', '>=', $lastBilledFormatted)
                     ->exists();
                 if (!$checkMeterReadings) {
                     $MeterReadingLink = '<a style="vertical-align: top;" href="' . route('meter-reading.create', ['id' => $item->unit_id, 'model' => 'units']) . '" class="table">
@@ -550,7 +550,7 @@ class TableViewDataService
                 $chargeCycle = $item->charge_cycle .
                 '<span style="padding-bottom: 5px; display: inline-block;">: Last - Next Billing</span><br>' .
                 '<span class="text-muted" style="font-weight: 500; font-style: italic; margin-top: 5px; display: inline-block;">' .
-                \Carbon\Carbon::parse($item->updated_at)->format('Y M') . ' - ' . \Carbon\Carbon::parse($item->nextdate)->format('Y M') .
+                \Carbon\Carbon::parse($item->last_billed)->format('Y M') . ' - ' . \Carbon\Carbon::parse($item->nextdate)->format('Y M') .
                 '</span>';
             }
             $recurring_charge = $item->recurring_charge . '<br/>' . $MeterReadingLink;
@@ -561,7 +561,7 @@ class TableViewDataService
                     if ($child->charge_type == 'units') {
                         $childCheckMeterReadings = $child->meterReading()
                             ->where('startdate', '<=', $nextdateFormatted)
-                            ->where('enddate', '>=', $updatedFormatted)
+                            ->where('enddate', '>=', $lastBilledFormatted)
                             ->exists();
                         if (!$childCheckMeterReadings) {
                             $childMeterReadingLink = '<a href="' . route('meter-reading.create', ['id' => $child->unit_id, 'model' => 'units']) . '" class="table">

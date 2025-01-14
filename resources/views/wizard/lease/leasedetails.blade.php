@@ -42,8 +42,8 @@
         <div class="form-group">
             <label class="label">Lease Period<span class="requiredlabel">*</span></label>
             <select name="lease_period" id="lease_period" class="formcontrol2" placeholder="Select" required>
-                <option value="{{$lease->lease_period ?? ''}}">{{$lease->lease_period ?? 'Select Period'}}</option>
-                <option value="open"> Open (Terminated at-will)</option>
+                <option value="{{$lease->lease_period ?? 'open'}}">{{$lease->lease_period ?? ' Open (Month to month)'}}</option>
+                <option value="open"> Open (Month to month)</option>
                 <option value="fixed">Fixed</option>
 
             </select>

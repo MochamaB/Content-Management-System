@@ -27,7 +27,7 @@
             <div class="form-group">
                 <label class="label">Rent Cycle<span class="requiredlabel">*</span></label>
                 <select name="charge_cycle" id="charge_cycle" class="formcontrol2" placeholder="Select" required>
-                    <option value="">Select Rent Cycle</option>
+                   
                     @if (!empty($existingRentCharge->charge_cycle))
                     <option value="{{ $existingRentCharge->charge_cycle }}" selected>{{ $existingRentCharge->charge_cycle }}</option>
                     @endif
@@ -48,7 +48,7 @@
                 <label class="label">Account<span class="requiredlabel">*</span></label>
                 <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
                     <!-- Default Select Option -->
-                    <option value="">Select Account/Rent Income Account</option>
+                    <option value="{{$defaultRentAccount->id ?? ''}}">{{$defaultRentAccount->account_name ?? 'Select Account/Rent Income Account'}}</option>
                     <!-- Dynamically add the existing rent charge account -->
                     @if (!empty($existingRentCharge->chartofaccounts_id))
                     <option value="{{ $existingRentCharge->chartofaccounts_id }}" selected>
@@ -83,6 +83,7 @@
                 </div>
             </div>
         </div>
+        @include('admin.CRUD.information', ['message' => $information ?? ''])
 
         <div class="col-md-8">
             <div class="form-group">

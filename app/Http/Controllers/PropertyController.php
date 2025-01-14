@@ -204,8 +204,7 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        $files =$request->file('uploaded_files', []);
-        dd($files);
+       
         //// Data Entry validation/////////////
         if (Property::where('property_name', $request->property_name)
             ->exists()
@@ -217,6 +216,11 @@ class PropertyController extends Controller
             $property = new Property;
             $property->fill($validatedData);
           //  $property->property_status ='Active';
+          //// UPLOAD FILES
+          if ($request->hasFile('uploaded_files')) {
+            $uploadedFiles = $request->file('uploaded_files', []);
+            $this->uploadMediaAction->UploadFile($uploadedFiles, $property);
+            }
             $property->save();
 
             return redirect()->route('property.show', $property->id)->with('status', 'Property Added Successfully');

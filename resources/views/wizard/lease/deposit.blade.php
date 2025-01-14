@@ -33,7 +33,9 @@
                 <div class="form-group">
                     <label class="label">Account<span class="requiredlabel">*</span></label>
                     <select name="chartofaccounts_id" id="chartofaccounts_id" class="formcontrol2" placeholder="Select" required>
-                        <option value="{{$depositcharge->chartofaccounts_id ?? ''}}">{{$depositcharge->chartofaccounts->account_name ?? 'Select Account/ Security Liability'}}</option>
+                        <option value="{{$defaultDepositAccount->id ?? $depositcharge->chartofaccounts_id ?? ''}}">
+                            {{$defaultDepositAccount->account_name ?? $depositcharge->chartofaccounts->account_name ?? 'Select Account/ Security Liability'}}
+                        </option>
                         @foreach($depositaccounts as $accounttype => $account)
                         <optgroup label="{{ $accounttype }}">
                             @foreach($account as $item)

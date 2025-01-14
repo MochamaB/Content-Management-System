@@ -112,38 +112,48 @@
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Store the original link URL when triggering the modal
-        let targetUrl = null;
-
-        // Add event listener for all links
-        document.querySelectorAll("a").forEach(link => {
-            link.addEventListener("click", function(e) {
-                // Check if the current URL is `/lease/create`
-                if (window.location.pathname === "/lease/create") {
-                    // Prevent navigation
-                    e.preventDefault();
-
-                    // Check if it's not the close modal button itself
-                    if (!link.hasAttribute("data-target")) {
-                        // Set the target URL to navigate after confirmation
-                        targetUrl = link.href;
-                        // Update the form action dynamically
-                        // Extract the last part of the URL
-                        const parts = targetUrl.split("/").filter(Boolean);
-                        const lastPart = parts.length > 0 ? parts[parts.length - 1] : "lease";
-                        const form = document.querySelector("#closeWizardForm");
-                        form.action = `/closewizard/${encodeURIComponent(lastPart)}`;
-                       
-
-                        // Show the modal
-                        $('#closeWizardModal').modal('show');
-                    }
-                }
-            });
+    const cancelBtn = document.querySelector("[data-dismiss='modal']");
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", function() {
+            // alert('Cancel button clicked!');
+            $('#closeWizardModal').modal('hide');
         });
+    }
+});
+   document.addEventListener("DOMContentLoaded", function() {
+    
+    // Store the original link URL when triggering the modal
+    let targetUrl = null;
 
-        // Add event listener for the close wizard button
-        const closeWizardButton = document.querySelector(".closebtn");
+    // Add event listener for all links
+    document.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", function(e) {
+            // Check if the current URL is `/lease/create`
+            if (window.location.pathname === "/lease/create") {
+                // Prevent navigation
+                e.preventDefault();
+
+                // Check if it's not the close modal button itself
+                if (!link.hasAttribute("data-target")) {
+                    // Set the target URL to navigate after confirmation
+                    targetUrl = link.href;
+                    // Update the form action dynamically
+                    // Extract the last part of the URL
+                    const parts = targetUrl.split("/").filter(Boolean);
+                    const lastPart = parts.length > 0 ? parts[parts.length - 1] : "lease";
+                    const form = document.querySelector("#closeWizardForm");
+                    form.action = `/closewizard/${encodeURIComponent(lastPart)}`;
+
+                    // Show the modal
+                    $('#closeWizardModal').modal('show');
+                }
+            }
+        });
+    });
+
+    // Add event listener for the close wizard button (optional for the form)
+    const closeWizardButton = document.querySelector(".closebtn");
+    if (closeWizardButton) {
         closeWizardButton.addEventListener("click", function() {
             const form = document.querySelector("#closeWizardForm");
 
@@ -155,9 +165,19 @@
             // Show the modal
             $('#closeWizardModal').modal('show');
         });
+    }
 
+    // Handle the cancel button behavior
+    const cancelBtn = document.querySelector("[data-dismiss='modal']");
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", function() {
+            alert();
+            // Just dismiss the modal when clicking cancel
+            $('#closeWizardModal').modal('hide');
+        });
+    }
+});
 
-    });
 </script>
 
 

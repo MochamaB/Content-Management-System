@@ -25,6 +25,7 @@ class Unitcharge extends Model
         'parent_id',
         'recurring_charge',
         'startdate',
+        'last_billed',
         'nextdate',
         'updated_at',
 
@@ -50,6 +51,7 @@ class Unitcharge extends Model
         'parent_id' => 'nullable',
         'recurring_charge' => 'required',
         'startdate' => 'nullable',
+        'last_billed' => 'nullable',
         'updated_at' => 'nullable',
         
 

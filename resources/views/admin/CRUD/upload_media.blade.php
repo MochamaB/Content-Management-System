@@ -127,7 +127,7 @@
 @endif
 <div class="form-group">
     <label class="label pt-2" style="font-size: 0.872rem;line-height: 1.4rem;text-transform:capitalize">
-        Upload {{ $routeParts[0] }} Files</label>
+        </label>
 
     <div id="dropzone-area" class="dropzone">
         <div class="dz-message d-flex align-items-center justify-content-center">

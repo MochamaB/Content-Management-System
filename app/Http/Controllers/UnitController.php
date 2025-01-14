@@ -154,9 +154,10 @@ class UnitController extends Controller
             session()->put('previousUrl', url()->previous());
         }
         $viewData = $this->formData($this->model);
+        $informationSecondary = 'Upload all files associated with the unit ';
        
      
-        return View('admin.CRUD.form', $viewData);
+        return View('admin.CRUD.form',compact('informationSecondary'), $viewData);
     }
 
     /**
