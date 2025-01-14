@@ -91,7 +91,7 @@ class Lease extends Model implements HasMedia, Auditable
 
     public function getStatusLabel()
     {
-    return self::$statusLabels[$this->status] ?? 'Unknown Status';
+        return self::$statusLabels[$this->status] ?? 'Unknown Status';
     }
 
     public static function getFieldData($field)
@@ -193,16 +193,36 @@ class Lease extends Model implements HasMedia, Auditable
         }
     }
     ///Spatie Media conversions
+    ///Spatie Media conversions
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')
             ->width(150)
             ->height(150)
-            ->sharpen(10);
+            ->sharpen(10)
+            ->performOnCollections('images');
+
+        // Document conversions (for PDFs)
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('documents')
+            ->width(150)
+            ->height(150)
+            ->format('jpg')
+            ->pdfPageNumber(1);
+
+        // Video conversions
+        $this->addMediaConversion('thumb')
+            ->performOnCollections('videos')
+            ->extractVideoFrameAtSecond(1)
+            ->width(150)
+            ->height(150);
     }
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('Lease-Agreement');
+        $this->addMediaCollection('images');
+        $this->addMediaCollection('videos');
+        $this->addMediaCollection('documents');
+
         //add options
 
 
